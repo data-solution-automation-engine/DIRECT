@@ -1,0 +1,13 @@
+<Variables>
+  <Variable Name="V_BATCH_ID" DataType="Int32">0</Variable>
+  <Variable Name="V_BATCH_ID_LIST" DataType="String"></Variable>
+  <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Variable>
+  <Variable Name="V_BATCH_INSTANCE_START_DATETIME" DataType="DateTime">1899-12-31</Variable>
+  <Variable Name="V_BATCH_INSTANCE_STATUS_CODE" DataType="String"></Variable>
+  <Variable Name="V_CHECK_BATCH_FAIL" DataType="Int32">0</Variable>
+  <Variable Name="V_FREQUENCY_CODE" DataType="String"></Variable>
+  <Variable Name="V_NEXT_RUN_ALLOWED_START_DATETIME" DataType="DateTime">1899-12-31</Variable>
+  <Variable Name="V_NEXT_RUN_INDICATOR" DataType="String"></Variable>
+  <Variable Name="V_PACKAGE_PATH_SSIS" DataType="String"></Variable>
+  <Variable Name="V_PROCESSING_INDICATOR" DataType="String"></Variable>
+</Variables>

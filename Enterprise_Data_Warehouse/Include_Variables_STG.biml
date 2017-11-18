@@ -1,0 +1,27 @@
+<Variables>
+  <Variable Name="V_AREA_CODE" DataType="String"></Variable>
+  <Variable Name="V_BATCH_ID" DataType="Int32" EvaluateAsExpression="true">@[$Package::V_BATCH_ID]</Variable>
+  <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
+  <Variable Name="V_BATCH_INSTANCE_START_DATETIME" DataType="DateTime" EvaluateAsExpression="true">@[$Package::V_BATCH_INSTANCE_START_DATETIME]</Variable>
+  <Variable Name="V_CDC_LAST_MODULE_INSTANCE_END_DATETIME" DataType="DateTime">1899-12-31</Variable>
+  <Variable Name="V_CDC_LAST_MODULE_INSTANCE_END_IDENTIFIER" DataType="String">0</Variable>
+  <Variable Name="V_EVENT_TYPE_CODE" DataType="String"></Variable>
+  <Variable Name="V_LOAD_TYPE" DataType="String"></Variable>
+  <Variable Name="V_MODULE_ID" DataType="Int32">0</Variable>
+  <Variable Name="V_MODULE_INSTANCE_ID" DataType="Int32">0</Variable>
+  <Variable Name="V_MODULE_INSTANCE_START_DATETIME" DataType="DateTime">1899-12-31</Variable>
+  <Variable Name="V_MODULE_INSTANCE_START_IDENTIFIER" DataType="String"></Variable>
+  <Variable Name="V_PACKAGE_PATH_SSIS" DataType="String"></Variable>
+  <Variable Name="V_PROCESSING_INDICATOR" DataType="String"></Variable>
+  <Variable Name="V_ROW_COUNT_DELETED" DataType="Int32">0</Variable>
+  <Variable Name="V_ROW_COUNT_DISCARDED" DataType="Int32">0</Variable>
+  <Variable Name="V_ROW_COUNT_INPUT" DataType="Int32">0</Variable>
+  <Variable Name="V_ROW_COUNT_INSERTED" DataType="Int32">0</Variable>
+  <Variable Name="V_ROW_COUNT_REJECTED" DataType="Int32">0</Variable>
+  <Variable Name="V_ROW_COUNT_UPDATED" DataType="Int32">0</Variable>
+  <Variable Name="V_SQL_TRUNCATE_STG" DataType="String"></Variable>
+  <Variable Name="V_TABLE_CODE" DataType="String"></Variable>
+  <Variable Name="V_MODULE_ERROR_CODE" DataType="String"></Variable>
+  <Variable Name="V_SQL_SELECTION" DataType="String"><#=SourceSQLStatement#></Variable>  
+  <Variable Name="V_SQL_TRUNCATE_STG_LANDING" DataType="String" EvaluateAsExpression="true">@[User::V_SQL_TRUNCATE_STG]+"_LANDING"</Variable>
+</Variables>

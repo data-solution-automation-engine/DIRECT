@@ -1,0 +1,5 @@
+<Parameters>
+  <Parameter Name="V_BATCH_ID" DataType="Int32">0</Parameter>
+  <Parameter Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Parameter>
+  <Parameter Name="V_BATCH_INSTANCE_START_DATETIME" DataType="DateTime">1899-12-31</Parameter>
+</Parameters>

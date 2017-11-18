@@ -1,0 +1,769 @@
+<!--
+   Pattern: SQL Server Full Outer Join No Sorter
+
+   Purpose:				
+	Generate Source to Staging ETL packages using the Full Outer Join mechanism on two SQL Server sources.
+	This is the template that uses the file storage as SSIS storage mechanism.
+
+   Comments:
+-->
+
+<#@ include file="Include_C_References.biml" #>	
+<#@ include file="Include_BIML_Configuration.biml" #>
+	
+<#  
+	// This parameter is meant to identify the Biml pattern, so it can only be applied to source-to-staging ETLs that are administered to use it.
+	// The intent is to prevent packages from being overwritten accidentally.
+
+	string bimlPatternName = "SQL Server Full Outer Join No Sorter";
+	var currentDateTime = DateTime.Now;
+
+    string sqlStatementForTablesToImport =  "SELECT [STAGING_AREA_TABLE_NAME], [SOURCE_TABLE_SYSTEM_NAME], [SOURCE_TABLE_NAME] " +
+                                            "FROM [interface].[INTERFACE_SOURCE_TO_STAGING] " +
+                                            "WHERE CHANGE_DATA_CAPTURE_TYPE= '"+bimlPatternName+"' ";
+      
+ 	string currentSchemaName = "dbo";
+	string StagingAreaTableName;
+	string SourceTableName;   
+	string sourceSystemName;
+	string HistoryAreaTableName;
+	string HistoryAreaTableIndexName;   
+	string CurrentNaturalKey; 
+	string MainNaturalKey;  
+	string AttDataType;
+	string AttName;
+	string AttLength;
+	string AttScale;
+	int sortKey;	
+#>
+
+<Biml>
+
+	<#@ include file="Include_STG_ScriptProject.biml" #>	
+	<#@ include file="Include_STG_Connections.biml" #>	
+	
+	<Packages>
+		
+		<#
+	
+		DataTable tables = ExternalDataAccess.GetDataTable(connectionStringGEN, sqlStatementForTablesToImport);
+
+		foreach (DataRow row in tables.Rows)
+		{
+
+			// **************************************************************************************
+			// Variables and parameters
+			// **************************************************************************************
+
+			int	SourceBusinessKeyID=0;   
+			StagingAreaTableName = (string)row["STAGING_AREA_TABLE_NAME"];
+			string[] parts = StagingAreaTableName.Split('_'); 
+			sourceSystemName = parts[1]; 
+			SourceTableName = StagingAreaTableName.Replace("STG_"+sourceSystemName+"_", "");
+			HistoryAreaTableName = "H"+StagingAreaTableName;
+			HistoryAreaTableIndexName = "IX_"+HistoryAreaTableName;	
+			MainNaturalKey ="";
+			
+			if (sourceSystemName=="Default")
+			{
+				SourceSystemPrefix = SourceSystemPrefix;	
+			}
+			else if (sourceSystemName=="MIDAS")
+			{
+				SourceSystemPrefix = SourceSystemPrefixMIDAS;
+			}
+			else if (sourceSystemName=="E5")
+			{
+				SourceSystemPrefix = SourceSystemPrefixE5;
+			}
+			else if (sourceSystemName=="MDM")
+			{
+				SourceSystemPrefix = SourceSystemPrefixMDM;
+			}
+			else if (sourceSystemName=="DWIN")
+			{
+				SourceSystemPrefix = SourceSystemPrefixDWIN;
+			}
+			else
+			{
+				SourceSystemPrefix = "Error";
+			}	
+	
+			StringBuilder ErrorCapture = new StringBuilder();
+			StringBuilder DebuggingString = new StringBuilder();
+			StringBuilder SqlStatementForSourceAttribute = new StringBuilder();		    	
+			StringBuilder SourceSQLStatement = new StringBuilder();
+			StringBuilder HSTGSQLStatement = new StringBuilder();
+			StringBuilder SqlStatementForNaturalKey = new StringBuilder();
+			StringBuilder SqlStatementForBusinessKey = new StringBuilder();
+			StringBuilder SqlStatementForBusinessKeyHub = new StringBuilder();
+			StringBuilder SqlStatementForBusinessKeyAttribute = new StringBuilder();
+			var SqlStatementForLnkBusinessKeyAttribute = new StringBuilder();
+				
+			// **************************************************************************************
+			// Retrieving the Natural Key for the Staging Area table
+			// **************************************************************************************
+	
+			SqlStatementForNaturalKey.AppendLine("SELECT C.name AS ATTRIBUTE_NAME");
+			SqlStatementForNaturalKey.AppendLine("FROM sys.index_columns A");
+			SqlStatementForNaturalKey.AppendLine("JOIN sys.indexes B");
+			SqlStatementForNaturalKey.AppendLine("ON A.object_id=B.object_id");
+			SqlStatementForNaturalKey.AppendLine("  AND A.index_id=B.index_id");
+			SqlStatementForNaturalKey.AppendLine("JOIN sys.columns C");
+			SqlStatementForNaturalKey.AppendLine("ON A.column_id=C.column_id");
+			SqlStatementForNaturalKey.AppendLine("  AND A.object_id=C.object_id");
+			SqlStatementForNaturalKey.AppendLine("WHERE B.name='"+HistoryAreaTableIndexName+"'");
+			SqlStatementForNaturalKey.AppendLine("  AND C.name<>'OMD_INSERT_DATETIME'");
+			SqlStatementForNaturalKey.AppendLine("  AND C.name<>'OMD_SOURCE_ROW_ID'");
+			SqlStatementForNaturalKey.AppendLine();					
+	
+			DataTable NaturalKeyDataTable = ExternalDataAccess.GetDataTable(connectionStringHSTG, SqlStatementForNaturalKey.ToString());	
+			NaturalKeyDataTable.PrimaryKey = new DataColumn[] { NaturalKeyDataTable.Columns["ATTRIBUTE_NAME"] }; 	
+	
+			foreach (DataRow NaturalKey in NaturalKeyDataTable.Rows)
+			{
+				CurrentNaturalKey = (string)NaturalKey["ATTRIBUTE_NAME"];
+				MainNaturalKey = CurrentNaturalKey;
+			}  
+			
+			// **************************************************************************************					
+			// Query the Staging Area to retrieve what keys need to be pre-hashed
+			// **************************************************************************************
+  			
+			StringBuilder hashListQuery = new StringBuilder();
+
+			hashListQuery.Append("SELECT ");
+			hashListQuery.AppendLine();
+			hashListQuery.AppendLine(" COLUMN_NAME, ");
+			hashListQuery.AppendLine(" CASE ");
+			hashListQuery.AppendLine("   WHEN SUBSTRING(COLUMN_NAME,10,3)='HUB' THEN 'HUB' ");
+			hashListQuery.AppendLine("   WHEN SUBSTRING(COLUMN_NAME,10,3)='LNK' THEN 'LNK' ");
+			hashListQuery.AppendLine(" ELSE 'UNKNOWN' ");
+			hashListQuery.AppendLine(" END AS TABLE_TYPE, ");
+			hashListQuery.AppendLine(" SUBSTRING(COLUMN_NAME, 10,LEN(COLUMN_NAME)) AS TABLE_NAME ");							
+			hashListQuery.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
+			hashListQuery.AppendLine("WHERE TABLE_NAME= '"+StagingAreaTableName+"'");
+			hashListQuery.AppendLine("  AND SUBSTRING(COLUMN_NAME,1,8)='OMD_HASH'");
+			hashListQuery.AppendLine("  AND COLUMN_NAME!='OMD_HASH_FULL_RECORD'");
+			hashListQuery.AppendLine("ORDER BY ORDINAL_POSITION");
+
+			DataTable HashList = ExternalDataAccess.GetDataTable(connectionStringSTG, hashListQuery.ToString());
+			HashList.PrimaryKey = new DataColumn[] { HashList.Columns["COLUMN_NAME"] }; 	
+     	
+			// **************************************************************************************					
+			// Query the Staging Area to retrieve the attributes and datatypes, precisions and length
+			// **************************************************************************************
+  		
+			SqlStatementForSourceAttribute.Append("SELECT COLUMN_NAME, DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION, NUMERIC_SCALE");
+			SqlStatementForSourceAttribute.AppendLine();
+			SqlStatementForSourceAttribute.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
+			SqlStatementForSourceAttribute.AppendLine("WHERE TABLE_NAME= '"+StagingAreaTableName+"'");
+			SqlStatementForSourceAttribute.AppendLine("  AND SUBSTRING(COLUMN_NAME,1,4)<>'OMD_'");
+			SqlStatementForSourceAttribute.AppendLine("ORDER BY ORDINAL_POSITION");
+		
+			DataTable SourceStructure = ExternalDataAccess.GetDataTable(connectionStringSTG, SqlStatementForSourceAttribute.ToString());
+
+			// **************************************************************************************		
+			// Creating the source query
+			// **************************************************************************************
+
+			SourceSQLStatement.Append("SELECT");
+			SourceSQLStatement.AppendLine();
+
+			// Adding the attributes to the main query against the source system
+	
+			foreach (DataRow attribute in SourceStructure.Rows)
+			{
+				AttDataType = attribute["DATA_TYPE"].ToString();
+				AttName = attribute["COLUMN_NAME"].ToString();	
+				AttScale = attribute["NUMERIC_SCALE"].ToString();	
+				AttLength = attribute["CHARACTER_MAXIMUM_LENGTH"].ToString();
+				
+				DataRow foundRow = NaturalKeyDataTable.Rows.Find(AttName);
+				// Lookup the primary key(s) as they need to be specifically converted to support the MJO
+		
+				//if (foundRow != null)
+				//{	
+					if (AttDataType=="bit")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(INT,"+AttName+") AS SRC_"+AttName+",");
+					}
+					else if (AttDataType=="float" || AttDataType=="int" || AttDataType=="real" || AttDataType=="money" || AttDataType=="numeric" || AttDataType=="bigint" || AttDataType=="tinyint")	
+					{
+						//if (AttScale=="20")
+						//{
+							SourceSQLStatement.AppendLine("   CONVERT(NUMERIC(38,20),"+AttName+") AS SRC_"+AttName+",");
+						//}
+						//else
+						//{
+						//	SourceSQLStatement.AppendLine("   CONVERT(NUMERIC(38,0),"+AttName+") AS SRC_"+AttName+",");
+						//}
+					}
+					else if (AttDataType=="GUID" || AttDataType=="uniqueidentifier")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR(100),"+AttName+") AS SRC_"+AttName+",");
+					}
+					else if (AttDataType=="nvarchar" || AttDataType=="varchar")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR("+AttLength+"),"+AttName+") AS SRC_"+AttName+",");
+					}
+					else if (AttDataType=="text" || AttDataType=="ntext")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR(4000),"+AttName+") AS SRC_"+AttName+",");
+					}
+					else if (AttDataType=="datetime" || AttDataType=="datetime2")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(DATETIME2(7),"+AttName+") AS SRC_"+AttName+",");
+					}								
+					else
+					{
+						SourceSQLStatement.AppendLine("   "+AttName+" AS SRC_"+AttName+",");	
+					}		    
+				//}
+				//else
+				//{
+					// This concerns all non-key attributes
+				//	if (AttDataType=="nvarchar" || AttDataType=="varchar")	
+				//	{
+				//		SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR("+AttLength+"),"+AttName+") AS SRC_"+AttName+",");
+				//	
+				//	} 
+				//	else
+				//	{
+				//		SourceSQLStatement.AppendLine("   "+AttName+" AS SRC_"+AttName+",");		
+				//	}
+				//}	
+			} 
+	
+			// Hash on full record
+			SourceSQLStatement.AppendLine("   CONVERT(CHAR(32),HASHBYTES('MD5',");
+	
+			foreach (DataRow attribute in SourceStructure.Rows)
+			{
+				SourceSQLStatement.AppendLine("      ISNULL(RTRIM(CONVERT(NVARCHAR(100),"+attribute["COLUMN_NAME"].ToString()+")),'NA')+'|'+");
+			} 		
+				
+			SourceSQLStatement.Remove(SourceSQLStatement.Length -3,3);
+			SourceSQLStatement.AppendLine();	
+			SourceSQLStatement.AppendLine("   ),2) AS SRC_OMD_HASH_FULL_RECORD,");
+
+			// Hash on Business Keys
+			foreach (DataRow Hub in HashList.Rows)
+			{
+
+				var hubTableName=Hub["TABLE_NAME"];
+
+			    if (Hub["TABLE_TYPE"].ToString()=="HUB")
+				{
+					SqlStatementForBusinessKeyHub.Clear();
+					SqlStatementForBusinessKeyAttribute.Clear();
+
+					// **************************************************************************************
+					// Retrieving the Business Keys for future parallel DV2.0 processing
+					// **************************************************************************************
+
+					SqlStatementForBusinessKeyHub.Append("SELECT");
+					SqlStatementForBusinessKeyHub.AppendLine();
+					SqlStatementForBusinessKeyHub.AppendLine("c.STAGING_AREA_TABLE_ID,");
+ 					SqlStatementForBusinessKeyHub.AppendLine("c.STAGING_AREA_TABLE_NAME,");
+ 					SqlStatementForBusinessKeyHub.AppendLine("b.HUB_TABLE_NAME,");
+ 					SqlStatementForBusinessKeyHub.AppendLine("a.SOURCE_BUSINESS_KEY_ID, ");
+ 					SqlStatementForBusinessKeyHub.AppendLine("d.SOURCE_BUSINESS_KEY ");
+					SqlStatementForBusinessKeyHub.AppendLine("FROM GEN_STAGING_HUB_RELN a ");
+					SqlStatementForBusinessKeyHub.AppendLine("JOIN GEN_HUB b ON a.HUB_TABLE_ID=b.HUB_TABLE_ID ");
+					SqlStatementForBusinessKeyHub.AppendLine("JOIN GEN_STAGING_AREA c on a.STAGING_AREA_TABLE_ID = c.STAGING_AREA_TABLE_ID ");
+					SqlStatementForBusinessKeyHub.AppendLine("JOIN GEN_BUSINESS_KEY d on d.SOURCE_BUSINESS_KEY_ID = a.SOURCE_BUSINESS_KEY_ID ");
+					SqlStatementForBusinessKeyHub.AppendLine("WHERE STAGING_AREA_TABLE_NAME= '"+StagingAreaTableName+"'");
+					SqlStatementForBusinessKeyHub.AppendLine("AND b.HUB_TABLE_NAME= '"+hubTableName+"'");
+
+					DataTable BusinessKeyDataTable = ExternalDataAccess.GetDataTable(connectionStringOMD, SqlStatementForBusinessKeyHub.ToString());	
+			
+					foreach (DataRow BusinessKey in BusinessKeyDataTable.Rows)
+					{
+						SourceBusinessKeyID = (int)BusinessKey["SOURCE_BUSINESS_KEY_ID"];
+					}	
+
+					// **************************************************************************************
+					// Retrieving the Business Keys attribute(s) as represented in the source for hashing
+					// **************************************************************************************
+
+					SqlStatementForBusinessKeyAttribute.AppendLine("SELECT comp.COMPONENT_ID, COMPONENT_TYPE, COMPONENT_ELEMENT_VALUE AS ATTRIBUTE_NAME");
+					SqlStatementForBusinessKeyAttribute.AppendLine("FROM");
+					SqlStatementForBusinessKeyAttribute.AppendLine("GEN_COMPONENT comp");
+					SqlStatementForBusinessKeyAttribute.AppendLine("JOIN GEN_COMPONENT_ELEMENT elem ");
+  					SqlStatementForBusinessKeyAttribute.AppendLine("ON comp.COMPONENT_ID=elem.COMPONENT_ID");
+ 					SqlStatementForBusinessKeyAttribute.AppendLine("AND elem.SOURCE_BUSINESS_KEY_ID = comp.SOURCE_BUSINESS_KEY_ID");
+					SqlStatementForBusinessKeyAttribute.AppendLine("WHERE comp.SOURCE_BUSINESS_KEY_ID= '"+SourceBusinessKeyID+"'");
+					SqlStatementForBusinessKeyAttribute.AppendLine("ORDER BY comp.COMPONENT_ORDER,COMPONENT_ELEMENT_ORDER");
+			
+					DataTable BusinessKeyAttributeDataTable = ExternalDataAccess.GetDataTable(connectionStringOMD, SqlStatementForBusinessKeyAttribute.ToString());	
+
+					SourceSQLStatement.AppendLine("   CONVERT(CHAR(32),HASHBYTES('MD5',");
+
+					foreach (DataRow Attribute in BusinessKeyAttributeDataTable.Rows)
+					{
+						SourceSQLStatement.AppendLine("      ISNULL(RTRIM(CONVERT(VARCHAR(100),"+Attribute["ATTRIBUTE_NAME"].ToString()+")),'NA')+'|'+");
+					}
+
+					SourceSQLStatement.Remove(SourceSQLStatement.Length -3,3);
+					SourceSQLStatement.AppendLine();	
+					SourceSQLStatement.AppendLine("   ),2) AS OMD_HASH_"+hubTableName+",");
+				}
+				else 
+				{
+					ErrorCapture.AppendLine("There is no Hub detected: processing "+hubTableName+" as "+Hub["TABLE_TYPE"]);
+				}
+
+			}
+
+			// Hash on Link Keys
+			foreach (DataRow Lnk in HashList.Rows)
+			{
+				var lnkTableName=Lnk["TABLE_NAME"];
+
+			    if (Lnk["TABLE_TYPE"].ToString()=="LNK")
+				{
+					// **************************************************************************************
+					// Retrieving the Business Keys attribute(s) as represented in the source for hashing
+					// *************************************************************************************
+					
+					SqlStatementForLnkBusinessKeyAttribute.Clear();
+
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("SELECT ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("  c.STAGING_AREA_TABLE_NAME,");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("  b.HUB_TABLE_NAME,");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("  d.SOURCE_BUSINESS_KEY,");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("  f.LINK_TABLE_NAME,");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("  COMPONENT_ELEMENT_VALUE");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("FROM GEN_STAGING_HUB_RELN a ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_HUB b ON a.HUB_TABLE_ID=b.HUB_TABLE_ID ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_STAGING_AREA c on a.STAGING_AREA_TABLE_ID = c.STAGING_AREA_TABLE_ID ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_BUSINESS_KEY d on d.SOURCE_BUSINESS_KEY_ID = a.SOURCE_BUSINESS_KEY_ID ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_HUB_LINK_RELN e on b.HUB_TABLE_ID=e.HUB_TABLE_ID");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_LINK f on e.LINK_TABLE_ID=f.LINK_TABLE_ID");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_COMPONENT comp on d.SOURCE_BUSINESS_KEY_ID=comp.SOURCE_BUSINESS_KEY_ID");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("JOIN GEN_COMPONENT_ELEMENT elem ON comp.COMPONENT_ID=elem.COMPONENT_ID");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("AND elem.SOURCE_BUSINESS_KEY_ID = comp.SOURCE_BUSINESS_KEY_ID");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("WHERE ");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("   STAGING_AREA_TABLE_NAME= '"+StagingAreaTableName+"'");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("AND f.LINK_TABLE_NAME= '"+lnkTableName+"'");
+					SqlStatementForLnkBusinessKeyAttribute.AppendLine("ORDER BY HUB_TABLE_NAME, comp.COMPONENT_ID, COMPONENT_ELEMENT_ORDER");
+
+					DataTable LnkBusinessKeyAttributeDataTable = ExternalDataAccess.GetDataTable(connectionStringOMD, SqlStatementForLnkBusinessKeyAttribute.ToString());	
+
+					SourceSQLStatement.AppendLine("   CONVERT(CHAR(32),HASHBYTES('MD5',");
+
+					foreach (DataRow Attribute in LnkBusinessKeyAttributeDataTable.Rows)
+					{
+						SourceSQLStatement.AppendLine("      ISNULL(RTRIM(CONVERT(NVARCHAR(100),"+Attribute["COMPONENT_ELEMENT_VALUE"].ToString()+")),'NA')+'|'+");
+					}
+
+					SourceSQLStatement.Remove(SourceSQLStatement.Length -3,3);
+					SourceSQLStatement.AppendLine();	
+					SourceSQLStatement.AppendLine("   ),2) AS OMD_HASH_"+lnkTableName+",");
+				}
+				else 
+				{
+					ErrorCapture.AppendLine("There is no Link detected: processing "+lnkTableName+" as "+Lnk["TABLE_TYPE"]+" with source as "+StagingAreaTableName);
+				}
+			}
+
+			SourceSQLStatement.Remove(SourceSQLStatement.Length -3,3);
+			SourceSQLStatement.AppendLine();
+			SourceSQLStatement.AppendLine("FROM "+SourceTableName);
+			SourceSQLStatement.AppendLine("ORDER BY");	
+	
+			foreach (DataRow attribute in SourceStructure.Rows)
+			{
+				AttDataType = attribute["DATA_TYPE"].ToString();
+				AttName = attribute["COLUMN_NAME"].ToString();	
+				AttScale = attribute["NUMERIC_SCALE"].ToString();	
+				AttLength = attribute["CHARACTER_MAXIMUM_LENGTH"].ToString();
+				
+				DataRow foundRow2 = NaturalKeyDataTable.Rows.Find(AttName);
+				// Lookup the primary key(s) as they need to be specifically converted to support the MJO
+		
+				if (foundRow2 != null)
+				{	
+					if (AttDataType=="bit")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(INT,"+AttName+"),");
+					}
+					else if (AttDataType=="float" || AttDataType=="int" || AttDataType=="real" || AttDataType=="money" || AttDataType=="numeric" || AttDataType=="bigint" || AttDataType=="tinyint")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NUMERIC(38,20),"+AttName+"),");
+					}
+					else if (AttDataType=="GUID" || AttDataType=="uniqueidentifier")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR(100),"+AttName+"),");
+					}
+					else if (AttDataType=="nvarchar" || AttDataType=="varchar")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR("+AttLength+"),"+AttName+"),");
+					}
+					else if (AttDataType=="text" || AttDataType=="ntext")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(NVARCHAR(4000),"+AttName+"),");
+					}
+					else if (AttDataType=="datetime" || AttDataType=="datetime2")	
+					{
+						SourceSQLStatement.AppendLine("   CONVERT(DATETIME2(7),"+AttName+"),");
+					}								
+					else
+					{
+						SourceSQLStatement.AppendLine("   "+AttName+",");	
+					}		    
+				}	
+			} 
+			SourceSQLStatement.Remove(SourceSQLStatement.Length - 3,3);				
+
+
+			
+									
+	
+			// **************************************************************************************		
+			// Creating the History Area query
+			// **************************************************************************************
+	
+			HSTGSQLStatement.Append("SELECT");
+			HSTGSQLStatement.AppendLine();
+			HSTGSQLStatement.AppendLine("   A.OMD_HASH_FULL_RECORD AS HSTG_OMD_HASH_FULL_RECORD,");			
+
+			// Adding the attributes to the main query against the source system
+			foreach (DataRow attribute in SourceStructure.Rows)
+			{
+					HSTGSQLStatement.Append("   A."+attribute["COLUMN_NAME"].ToString()+" AS HSTG_"+attribute["COLUMN_NAME"].ToString()+",");
+					HSTGSQLStatement.AppendLine();						    
+			} 
+	
+			HSTGSQLStatement.Remove(HSTGSQLStatement.Length - 3,3);
+			HSTGSQLStatement.AppendLine();
+			HSTGSQLStatement.AppendLine("FROM "+HistoryAreaTableName + " A");	
+															
+			HSTGSQLStatement.AppendLine("   JOIN (");						
+			HSTGSQLStatement.AppendLine("        SELECT");						
+
+			foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+			{
+				HSTGSQLStatement.Append("            "+BusinessKey["ATTRIBUTE_NAME"].ToString());					    
+				HSTGSQLStatement.Append(",");
+			}								
+
+			HSTGSQLStatement.AppendLine();	
+			HSTGSQLStatement.AppendLine("            MAX(OMD_INSERT_DATETIME) AS MAX_OMD_INSERT_DATETIME");	
+			HSTGSQLStatement.AppendLine("        FROM "+HistoryAreaTableName);	
+			HSTGSQLStatement.AppendLine("        GROUP BY");	
+	
+			foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+			{
+				HSTGSQLStatement.Append("         "+BusinessKey["ATTRIBUTE_NAME"].ToString());					    
+				HSTGSQLStatement.Append(",");
+			} 								
+			HSTGSQLStatement.Remove(HSTGSQLStatement.Length - 1,1);	
+		
+			HSTGSQLStatement.AppendLine();	
+			HSTGSQLStatement.AppendLine("        ) B ON");	
+		
+			foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+			{
+				HSTGSQLStatement.Append("   A."+BusinessKey["ATTRIBUTE_NAME"].ToString()+" = B."+BusinessKey["ATTRIBUTE_NAME"].ToString());					    
+				HSTGSQLStatement.AppendLine("   AND");
+			}		
+	
+			HSTGSQLStatement.Remove(HSTGSQLStatement.Length - 7,7);							
+			HSTGSQLStatement.AppendLine();
+			HSTGSQLStatement.AppendLine("   AND");
+			HSTGSQLStatement.AppendLine("   A.OMD_INSERT_DATETIME = B.MAX_OMD_INSERT_DATETIME");	
+			HSTGSQLStatement.AppendLine("WHERE OMD_CDC_OPERATION != 'Delete'");													
+			HSTGSQLStatement.AppendLine("ORDER BY ");		
+	
+			foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+			{
+				HSTGSQLStatement.Append("  A."+BusinessKey["ATTRIBUTE_NAME"].ToString());					    
+				HSTGSQLStatement.Append(",");
+			} 								
+			HSTGSQLStatement.Remove(HSTGSQLStatement.Length - 1,1);			
+		
+			// Logging
+			DebuggingString.AppendLine("= = = = = =");
+			DebuggingString.AppendLine(StagingAreaTableName.ToString());	
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");		             						
+			DebuggingString.AppendLine("Query for the source data");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(SourceSQLStatement.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");	
+
+			DebuggingString.AppendLine("Query for the Natural Key(s)");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(SqlStatementForNaturalKey.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");	
+
+			DebuggingString.AppendLine("Query for the list of Hash keys to pre-process");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(hashListQuery.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");				
+
+			DebuggingString.AppendLine("Query for the Hubs and Business Keys");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(SqlStatementForBusinessKeyHub.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");	
+
+			DebuggingString.AppendLine("Query for the Attributes that compose the Business Key for hashing");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(SqlStatementForBusinessKeyAttribute.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");	
+
+			DebuggingString.AppendLine("Query for the Attributes that compose the Link Key for hashing");
+			DebuggingString.AppendLine("= = = = = =");	
+			DebuggingString.AppendLine(SqlStatementForLnkBusinessKeyAttribute.ToString());
+			DebuggingString.AppendLine();		
+			DebuggingString.AppendLine("= = = = = =");				
+
+			DebuggingString.AppendLine("Query for the History Area data");
+			DebuggingString.AppendLine("= = = = = =");			
+			DebuggingString.AppendLine(HSTGSQLStatement.ToString());
+			DebuggingString.AppendLine();	
+			DebuggingString.AppendLine("= = = = = =");		             						
+	
+			DebuggingString.AppendLine("Query for the Source Structure data");
+			DebuggingString.AppendLine("= = = = = =");			
+			DebuggingString.AppendLine(SqlStatementForSourceAttribute.ToString());
+			DebuggingString.AppendLine();	
+			DebuggingString.AppendLine("= = = = = =");	
+
+			DebuggingString.AppendLine("Other comments and notifications");
+			DebuggingString.AppendLine("= = = = = =");			
+			DebuggingString.AppendLine(ErrorCapture.ToString());
+			DebuggingString.AppendLine();	
+			DebuggingString.AppendLine("= = =End of file = = =");		 
+			
+			using (StreamWriter outfile = 	new StreamWriter(mydocpath + @"\BIML_log_"+StagingAreaTableName+".txt"))
+			{
+				outfile.Write(DebuggingString.ToString());
+				outfile.Close();
+			}	
+	
+			#>
+		
+			<Package Name="<#=PackagePrefix#>_<#=SourceSystemPrefix#>_<#=SourceTableName.ToUpper()#>" Language="None" LoggingMode="Disabled" ConstraintMode="Parallel">
+
+				<Annotations>
+					<Annotation AnnotationType="Description">Package <#=PackagePrefix#>_<#=SourceSystemPrefix#>_<#=SourceTableName.ToUpper()#> generated from template <#=bimlPatternName#> at <#=currentDateTime#>.</Annotation>
+				</Annotations>
+		
+				<#@ include file="Include_Parameters.biml" #>	
+				<#@ include file="Include_Variables_STG.biml" #>	
+				<#@ include file="Include_OMD_OnError_Event.biml" #>
+
+
+				<Variables>
+					<Variable Name="V_SQL_TRUNCATE_STG_LANDING" DataType="String" EvaluateAsExpression="true">@[User::V_SQL_TRUNCATE_STG]+"_LANDING"</Variable>
+				</Variables>
+						
+				<Tasks>
+		
+					<#@ include file="Include_OMD_OnPreExecute_Event.biml" #>	
+
+					<ExecuteSQL Name="EST - Truncate Staging Area target table" ConnectionName="STG">
+						<Annotations>
+							<Annotation AnnotationType="Description">For Staging Area processes the target table is always truncated with each run.</Annotation>
+						</Annotations>
+						<VariableInput VariableName="User.V_SQL_TRUNCATE_STG">
+						</VariableInput>
+						<Parameters>
+							<Parameter Name="0" VariableName="User.V_TABLE_CODE" Length="-1" DataType="AnsiString" DataTypeCodeOverride="129" />
+						</Parameters>				
+						<PrecedenceConstraints LogicalType="And">
+							<Inputs>
+								<Input OutputPathName="SCT - Dummy Placeholder.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;P&quot;" />
+							</Inputs>
+						</PrecedenceConstraints>
+					</ExecuteSQL>				
+			
+					<Dataflow Name="DFT - <#=StagingAreaTableName#>" DelayValidation="true" FailPackageOnFailure="true">
+			
+						<#@ include file="Include_OMD_OnPostExecute_Event.biml" #>
+				
+						<PrecedenceConstraints>
+							<Inputs>
+								<Input OutputPathName="EST - Truncate Staging Area target table.Output" EvaluationOperation="Constraint" />
+							</Inputs>
+						</PrecedenceConstraints>
+				
+						<Annotations>
+							<Annotation AnnotationType="Description">Data Flow Task which moves data from the source table or file to the Staging Area (STG) table</Annotation>
+						</Annotations>
+				
+						<Transformations>
+											
+							<OleDbSource Name="SRC - <#=SourceTableName#>" DefaultCodePage="1252" AlwaysUseDefaultCodePage="true" ConnectionName="SOURCE_<#=sourceSystemName#>">
+								<ErrorHandling ErrorRowDisposition="IgnoreFailure" TruncationRowDisposition="IgnoreFailure"  />
+									<DirectInput>
+										<#=SourceSQLStatement#>
+									</DirectInput>	
+								<Columns>
+									<#sortKey = 0;
+									foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+									{
+										CurrentNaturalKey = (string)BusinessKey["ATTRIBUTE_NAME"];
+										sortKey = sortKey + 1;
+										#><Column SourceColumn="SRC_<#=CurrentNaturalKey#>" SortKeyPosition="<#=sortKey#>" TargetColumn="SRC_<#=CurrentNaturalKey#>" /><#
+									} 
+									#>
+								</Columns>														
+							</OleDbSource>
+																													
+							<OleDbSource Name="SRC - <#=HistoryAreaTableName#>" DefaultCodePage="1252" AlwaysUseDefaultCodePage="true" ConnectionName="HSTG">
+								<ErrorHandling ErrorRowDisposition="IgnoreFailure" TruncationRowDisposition="IgnoreFailure" />
+									<DirectInput>
+										<#=HSTGSQLStatement#>
+									</DirectInput>
+								<Columns>
+									<#sortKey = 0;
+									foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+									{
+										CurrentNaturalKey = (string)BusinessKey["ATTRIBUTE_NAME"];
+										sortKey = sortKey + 1;
+										#><Column SourceColumn="HSTG_<#=CurrentNaturalKey#>" SortKeyPosition="<#=sortKey#>" TargetColumn="HSTG_<#=CurrentNaturalKey#>" /><#
+									} 
+									#>
+								</Columns>								
+							</OleDbSource>	
+						
+							<MergeJoin Name="MJO - Full Outer Join" JoinType="FullOuterJoin">
+								<LeftInputPath OutputPathName="SRC - <#=SourceTableName#>.Output">
+									<Columns> 
+									</Columns> 
+								</LeftInputPath>
+								<RightInputPath OutputPathName="SRC - <#=HistoryAreaTableName#>.Output"> 
+									<Columns> 
+									</Columns> 
+								</RightInputPath> 
+								<JoinKeys>
+								<# 
+								foreach (DataRow BusinessKey in NaturalKeyDataTable.Rows)
+								{
+								CurrentNaturalKey = (string)BusinessKey["ATTRIBUTE_NAME"];
+								#><JoinKey LeftColumn = "SRC_<#=CurrentNaturalKey#>" RightColumn = "HSTG_<#=CurrentNaturalKey#>" /><#
+								} 
+								#> 
+								</JoinKeys> 
+							</MergeJoin>
+						
+							<DataConversion Name="DCO - Attribute Conversion">                            
+							<InputPath OutputPathName="MJO - Full Outer Join.Output" />
+								<Columns>												
+									<#
+									foreach (DataRow attribute in SourceStructure.Rows)
+									{
+										AttDataType = attribute["DATA_TYPE"].ToString();
+										AttLength = attribute["CHARACTER_MAXIMUM_LENGTH"].ToString();										
+										AttScale = attribute["NUMERIC_SCALE"].ToString();	
+									
+										if (AttDataType=="numeric")	
+										{							
+												#><Column SourceColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" TargetColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" DataType="Decimal" Precision="38" Scale="20"/><#
+										}
+										else if (AttDataType=="nvarchar")
+										{
+											#><Column SourceColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" TargetColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" DataType="String" Length="<#=AttLength#>" CodePage="1252"/><#
+										}
+										else if (AttDataType=="datetime2" || AttDataType=="datetime")
+										{
+											#><Column SourceColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" TargetColumn="SRC_<#=attribute["COLUMN_NAME"].ToString()#>" DataType="DateTime2" Scale="7" /><#
+										}
+									} 									
+									#>
+								</Columns>															                       
+							</DataConversion>	
+																			
+				
+							<DerivedColumns Name="DRC - Interpret Join Results">
+							<InputPath OutputPathName="DCO - Attribute Conversion.Output" />
+								<Columns>
+									<Column Name="OMD_CDC_OPERATION" DataType="AnsiString" Length="100" CodePage="1252">(ISNULL(HSTG_<#=MainNaturalKey#>) ? "Insert" : (ISNULL(SRC_<#=MainNaturalKey#>) ? "Delete" : ((SRC_OMD_HASH_FULL_RECORD != HSTG_OMD_HASH_FULL_RECORD) ? "Update" : "No Change")))</Column>
+									<Column Name="OMD_HASH_FULL_RECORD" DataType="AnsiString" Length="32">(ISNULL(SRC_<#=MainNaturalKey#>) ? HSTG_OMD_HASH_FULL_RECORD : SRC_OMD_HASH_FULL_RECORD)</Column>																	
+							
+									<#
+									foreach (DataRow attribute in SourceStructure.Rows)
+									{
+										AttDataType = attribute["DATA_TYPE"].ToString();
+										AttLength = attribute["CHARACTER_MAXIMUM_LENGTH"].ToString();										
+										AttScale = attribute["NUMERIC_SCALE"].ToString();	
+								
+										if (AttDataType=="numeric")	
+										{
+											#><Column Name="<#=attribute["COLUMN_NAME"].ToString()#>" DataType="Decimal" Precision="38" Scale="20">(ISNULL(SRC_<#=MainNaturalKey#>) ? HSTG_<#=attribute["COLUMN_NAME"].ToString()#> : SRC_<#=attribute["COLUMN_NAME"].ToString()#>)</Column><#
+										}
+										else if (AttDataType=="nvarchar")
+										{
+											#><Column Name="<#=attribute["COLUMN_NAME"].ToString()#>" DataType="String" Length="<#=AttLength#>" CodePage="1252">(ISNULL(SRC_<#=MainNaturalKey#>) ? HSTG_<#=attribute["COLUMN_NAME"].ToString()#> : SRC_<#=attribute["COLUMN_NAME"].ToString()#>)</Column><#
+										}
+										else if (AttDataType=="datetime2" || AttDataType=="datetime")
+										{
+											#><Column Name="<#=attribute["COLUMN_NAME"].ToString()#>" DataType="DateTime2" Scale="7">(ISNULL(SRC_<#=MainNaturalKey#>) ? HSTG_<#=attribute["COLUMN_NAME"].ToString()#> : SRC_<#=attribute["COLUMN_NAME"].ToString()#>)</Column><#
+										}										
+									} 						
+									#>												
+
+								</Columns>							
+							</DerivedColumns>
+					
+							<ConditionalSplit Name="CDS - Filter No Changes">
+								<InputPath OutputPathName="DRC - Interpret Join Results.Output" />
+								<OutputPaths>
+									<OutputPath Name="Changes in values">
+										<Expression>OMD_CDC_OPERATION != "No Change"</Expression>
+									</OutputPath>
+									<OutputPath Name="No changes - discard">
+										<Expression>OMD_CDC_OPERATION == "No Change"</Expression>
+									</OutputPath>
+								</OutputPaths>
+							</ConditionalSplit>
+                    
+							<RowCount Name="CNT - INPUT" VariableName="User.V_ROW_COUNT_INPUT">
+								<InputPath OutputPathName="CDS - Filter No Changes.Changes in values" />
+							</RowCount>
+
+							<RowCount Name="CNT - DISCARDED" VariableName="User.V_ROW_COUNT_DISCARDED">
+								<InputPath OutputPathName="CDS - Filter No Changes.No changes - discard" />
+							</RowCount>
+					
+							<DerivedColumns Name="DRC - Standard Values">
+							<InputPath OutputPathName="CNT - INPUT.Output" />
+								<Columns>
+									<Column Name="OMD_INSERT_MODULE_INSTANCE_ID" DataType="Int32">@[User::V_MODULE_INSTANCE_ID]</Column>
+									<Column Name="OMD_RECORD_SOURCE" DataType="AnsiString" Length="100" CodePage="1252">"<#=sourceSystemName#>"</Column>
+									<Column Name="OMD_EVENT_DATETIME" DataType="DateTime">@[User::V_BATCH_INSTANCE_START_DATETIME] &lt; (DT_DATE)"1900-01-01" ? @[User::V_MODULE_INSTANCE_START_DATETIME] : @[User::V_BATCH_INSTANCE_START_DATETIME]</Column>                  									
+								</Columns>
+							</DerivedColumns>							
+					
+							<RowCount Name="CNT - INSERTED" VariableName="User.V_ROW_COUNT_INSERTED">
+								<InputPath OutputPathName="DRC - Standard Values.Output" />
+							</RowCount>
+					
+							<OleDbDestination Name="DST - <#=StagingAreaTableName#>" ConnectionName="STG" MaximumInsertCommitSize="2147483647" DefaultCodePage="1252" FastLoadOptions="" TableLock="0" CheckConstraints="0">
+								<ExternalTableOutput Table="[<#=currentSchemaName#>].[<#=StagingAreaTableName#>]" />
+							</OleDbDestination>																
+						
+						</Transformations>
+				
+					</Dataflow>
+				</Tasks>
+		
+			</Package>
+		
+			<#
+		}
+		#>
+	
+	</Packages>
+
+</Biml>

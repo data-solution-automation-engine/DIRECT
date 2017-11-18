@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="STG" DTS:DTSID="{1DF1E1DF-BBB1-47C2-BDA7-79E7CFE60853}" DTS:refId="Package.ConnectionManagers[STG]" DTS:CreationName="OLEDB">
+  <DTS:ObjectData>
+    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11.1;server=BISERVER;initial catalog=EDW_100_Staging_Area;user id=sa">
+      <DTS:Password DTS:Name="Password" Sensitive="1"></DTS:Password>
+    </DTS:ConnectionManager>
+  </DTS:ObjectData>
+  <DTS:PropertyExpression DTS:Name="Password">"K3kobus2"</DTS:PropertyExpression>
+</DTS:ConnectionManager>

@@ -1,0 +1,1687 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/25/2017 7:16:42 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="LAPTOP-RBS8FBTA"
+  DTS:CreatorName="roela"
+  DTS:DTSID="{B86DAACC-9471-4C46-8D5C-BB0CDE0D24DD}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:ISOLevel="4096"
+  DTS:LastModifiedProductVersion="14.0.1000.169"
+  DTS:LocaleID="3081"
+  DTS:ObjectName="m_Module_Wrapper_Example"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="2"
+  DTS:VersionGUID="{59D333C5-7923-41C2-83C4-095049E8FACE}"
+  DTS:VersionMajor="0">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{AC674F70-0483-442E-A224-D3878B9C1570}"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{6D2B2A58-BCEC-431B-A01A-8DDA3207CE0F}"
+      DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="7"
+      DTS:DTSID="{23E03A0A-3804-4201-B135-5159A6B6F80B}"
+      DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
+      <DTS:Property
+        DTS:DataType="7"
+        DTS:Name="ParameterValue">12/31/1899</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{B65D3623-300E-408F-8757-2773E951C803}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_AREA_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{27C54F91-0684-4062-9B83-8759486B53A9}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_ID]"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{5EC3B359-BC0E-445F-853F-DE133AC425CA}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{D79536E5-106E-4F11-8248-08101B83B505}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_INSTANCE_START_DATETIME]"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">12/31/1899</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{253FF0C9-9516-4EF1-AFBE-09738C85ED41}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_EVENT_TYPE_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{891CD421-DC3D-4986-A5D8-5BA863CB7CE9}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_ERROR_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{11ED7261-70D6-425D-884C-6075A45C9449}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{26D1A8ED-9495-47C8-9B82-EDBB91EF02A5}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_CDC_END_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">12/31/1899</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{B3CDEE32-0A2C-4414-A84E-AE9E056F4167}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_CDC_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">12/31/1899</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{3A0E39A1-DB14-4633-9956-9304A82FDDF6}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{1679C7B3-68B7-46B7-B397-582EC5DA7748}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">12/31/1899</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{EFD2719E-EFCA-4ABA-BFF9-0F224DF5D71F}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_START_IDENTIFIER">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{071DFAFF-7B45-4088-AE96-8EEE2A6BF403}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_PACKAGE_PATH_OMD">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0E787DC5-ACEF-4296-B621-106C9E9BBCD7}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_PACKAGE_PATH_SSIS">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6E6440D7-5446-4BCC-B54F-241C1DC9116B}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_PROCESSING_INDICATOR">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{450200DA-561E-4553-8F39-37DBF00088E5}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_DELETED">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{87F085D8-1705-438E-8769-A01092F6AA13}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_DISCARDED">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{2E8F527D-0ACC-4867-AB23-B3C8BBBFFC3A}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_INPUT">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{3F61EDD9-3FDA-44FE-89DB-4159EDB196F9}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_INSERTED">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{9C72CF4F-9C52-4B50-9118-B5693F7ACF60}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_REJECTED">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{46DC1955-7E2F-4148-8D25-3772777A3A2D}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_ROW_COUNT_UPDATED">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{EBF28774-6259-4878-8A33-4F225B3699CD}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_TABLE_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:LoggingOptions
+    DTS:LoggingMode="2" />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DFT - &lt;placeholder&gt;"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:DelayValidation="True"
+      DTS:DTSID="{8E57B8F2-9A18-4907-AE4E-DF4D924F61A6}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:FailPackageOnFailure="True"
+      DTS:ISOLevel="4096"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT - &lt;placeholder&gt;"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:EventHandlers>
+        <DTS:EventHandler
+          DTS:refId="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]"
+          DTS:CreationName="OnPostExecute"
+          DTS:DTSID="{07E673FA-4D83-45E2-AE67-FD556396A57E}"
+          DTS:EventID="0"
+          DTS:EventName="OnPostExecute"
+          DTS:LocaleID="-1">
+          <DTS:Variables>
+            <DTS:Variable
+              DTS:CreationName=""
+              DTS:Description="The propagate property of the event&#xA;The propagate property of the event"
+              DTS:DTSID="{B5D14C91-22D4-4F84-BC8C-4C284EE9C921}"
+              DTS:IncludeInDebugDump="6789"
+              DTS:Namespace="System"
+              DTS:ObjectName="Propagate">
+              <DTS:VariableValue
+                DTS:DataType="11">-1</DTS:VariableValue>
+            </DTS:Variable>
+          </DTS:Variables>
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]\OMD Complete Processing"
+              DTS:CreationName="STOCK:SEQUENCE"
+              DTS:DTSID="{2C01E0B8-7248-4DD0-AFB4-C66E73D89FB8}"
+              DTS:ExecutableType="STOCK:SEQUENCE"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="OMD Complete Processing">
+              <DTS:Variables />
+              <DTS:Executables>
+                <DTS:Executable
+                  DTS:refId="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]\OMD Complete Processing\EPT - Module Success"
+                  DTS:CreationName="Microsoft.ExecutePackageTask"
+                  DTS:DTSID="{0F02E0F0-C62C-4B79-8036-C5BAA1ED4803}"
+                  DTS:ExecutableType="Microsoft.ExecutePackageTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EPT - Module Success"
+                  DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <ExecutePackageTask>
+                      <UseProjectReference>True</UseProjectReference>
+                      <PackageName>Module_Success.dtsx</PackageName>
+                      <ParameterAssignment>
+                        <ParameterName>V_AREA_CODE</ParameterName>
+                        <BindedVariableOrParameterName>User::V_AREA_CODE</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_BATCH_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_BATCH_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_ERROR_CODE</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_ERROR_CODE</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_DELETED</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_DELETED</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_DISCARDED</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_DISCARDED</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_INPUT</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_INPUT</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_INSERTED</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_INSERTED</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_REJECTED</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_REJECTED</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_ROW_COUNT_UPDATED</ParameterName>
+                        <BindedVariableOrParameterName>User::V_ROW_COUNT_UPDATED</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                    </ExecutePackageTask>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+              </DTS:Executables>
+            </DTS:Executable>
+          </DTS:Executables>
+        </DTS:EventHandler>
+      </DTS:EventHandlers>
+      <DTS:ObjectData>
+        <pipeline
+          BLOBTempStoragePath=""
+          bufferTempStoragePath=""
+          version="1" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\SCT - Dummy Placeholder"
+      DTS:CreationName="Microsoft.ScriptTask"
+      DTS:Description="Dummy placeholder for event handling."
+      DTS:DTSID="{164CB973-E3B0-42CC-BAE1-694E01FFBE5D}"
+      DTS:ExecutableType="Microsoft.ScriptTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="SCT - Dummy Placeholder"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:LoggingMode="1" />
+      <DTS:EventHandlers>
+        <DTS:EventHandler
+          DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]"
+          DTS:CreationName="OnPreExecute"
+          DTS:DTSID="{A9AA0040-DC46-434D-B7DD-EFDC75FAE057}"
+          DTS:EventID="0"
+          DTS:EventName="OnPreExecute"
+          DTS:LocaleID="-1">
+          <DTS:Variables>
+            <DTS:Variable
+              DTS:CreationName=""
+              DTS:Description="The propagate property of the event&#xA;The propagate property of the event"
+              DTS:DTSID="{966A00D4-51B2-4DF9-8D2E-3DC389CFEFF1}"
+              DTS:IncludeInDebugDump="6789"
+              DTS:Namespace="System"
+              DTS:ObjectName="Propagate">
+              <DTS:VariableValue
+                DTS:DataType="11">-1</DTS:VariableValue>
+            </DTS:Variable>
+          </DTS:Variables>
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Abort Processing"
+              DTS:CreationName="STOCK:SEQUENCE"
+              DTS:DTSID="{25946558-391C-4D03-A16F-193ACD81AB2A}"
+              DTS:ExecutableType="STOCK:SEQUENCE"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="Abort Processing">
+              <DTS:Variables />
+              <DTS:Executables>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Abort Processing\EPT - Abort the current Module Instance"
+                  DTS:CreationName="Microsoft.ExecutePackageTask"
+                  DTS:Description="Call the Module Abort OMD event (package)."
+                  DTS:DTSID="{3706E8A5-3CE2-473B-AD24-D606C3121C11}"
+                  DTS:ExecutableType="Microsoft.ExecutePackageTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EPT - Abort the current Module Instance"
+                  DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <ExecutePackageTask>
+                      <UseProjectReference>True</UseProjectReference>
+                      <PackageName>Module_Abort.dtsx</PackageName>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                    </ExecutePackageTask>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+              </DTS:Executables>
+            </DTS:Executable>
+            <DTS:Executable
+              DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Cancel (Skip) Processing"
+              DTS:CreationName="STOCK:SEQUENCE"
+              DTS:DTSID="{1A7E46DD-53F4-4DC8-8F48-CFDD53B15A54}"
+              DTS:ExecutableType="STOCK:SEQUENCE"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="Cancel (Skip) Processing">
+              <DTS:Variables />
+              <DTS:Executables>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Cancel (Skip) Processing\EPT - Skip the current Module Instance"
+                  DTS:CreationName="Microsoft.ExecutePackageTask"
+                  DTS:Description="Call the Module Skip OMD event (package)."
+                  DTS:DTSID="{1CCDEEDE-6E3C-4662-9BAE-4881900F6245}"
+                  DTS:ExecutableType="Microsoft.ExecutePackageTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EPT - Skip the current Module Instance"
+                  DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <ExecutePackageTask>
+                      <UseProjectReference>True</UseProjectReference>
+                      <PackageName>Module_Skip.dtsx</PackageName>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                    </ExecutePackageTask>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+              </DTS:Executables>
+            </DTS:Executable>
+            <DTS:Executable
+              DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event"
+              DTS:CreationName="STOCK:SEQUENCE"
+              DTS:DTSID="{9B19CF15-67AD-4CDE-8E78-BC9CB1D3ADF1}"
+              DTS:ExecutableType="STOCK:SEQUENCE"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="OMD Pre-Initialise Event">
+              <DTS:Variables />
+              <DTS:Executables>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Create new Module Instance"
+                  DTS:CreationName="Microsoft.ExecutePackageTask"
+                  DTS:Description="Call the Module Create Instance OMD event (package)."
+                  DTS:DTSID="{ED2B9EE5-FE1B-4D89-BBFC-F07DE0F5CD53}"
+                  DTS:ExecutableType="Microsoft.ExecutePackageTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EPT - Create new Module Instance"
+                  DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <ExecutePackageTask>
+                      <UseProjectReference>True</UseProjectReference>
+                      <PackageName>Module_Create_Instance.dtsx</PackageName>
+                      <ParameterAssignment>
+                        <ParameterName>V_BATCH_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_BATCH_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_START_DATETIME</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_START_DATETIME</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_PACKAGE_EXECUTION_GUID</ParameterName>
+                        <BindedVariableOrParameterName>System::ExecutionInstanceGUID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                    </ExecutePackageTask>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Module Evaluation"
+                  DTS:CreationName="Microsoft.ExecutePackageTask"
+                  DTS:Description="Call the Module Evaluation OMD event (package)."
+                  DTS:DTSID="{49B87197-07B3-4052-918F-BBA90797760A}"
+                  DTS:ExecutableType="Microsoft.ExecutePackageTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EPT - Module Evaluation"
+                  DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <ExecutePackageTask>
+                      <UseProjectReference>True</UseProjectReference>
+                      <PackageName>Module_Eval.dtsx</PackageName>
+                      <ParameterAssignment>
+                        <ParameterName>V_AREA_CODE</ParameterName>
+                        <BindedVariableOrParameterName>User::V_AREA_CODE</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_BATCH_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_BATCH_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_BATCH_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_BATCH_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_ID</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_ID</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_MODULE_INSTANCE_START_DATETIME</ParameterName>
+                        <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_START_DATETIME</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                      <ParameterAssignment>
+                        <ParameterName>V_TABLE_CODE</ParameterName>
+                        <BindedVariableOrParameterName>User::V_TABLE_CODE</BindedVariableOrParameterName>
+                      </ParameterAssignment>
+                    </ExecutePackageTask>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get Module Information"
+                  DTS:CreationName="Microsoft.ExecuteSQLTask"
+                  DTS:Description="Retrieve the Module ID, Table Code and Area Code for the specific Module (package name)."
+                  DTS:DTSID="{F6FB6C0C-8305-4A3A-98F3-221BF07E7833}"
+                  DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EST - Get Module Information"
+                  DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <SQLTask:SqlTaskData
+                      SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+                      SQLTask:SqlStatementSource="&#xA;                SELECT module.MODULE_ID, AREA_CODE, ISNULL(DATA_STORE_CODE,'None') AS TABLE_CODE&#xA;                FROM OMD_MODULE module LEFT OUTER JOIN OMD_MODULE_DATA_STORE dst&#xA;                ON module.MODULE_ID=dst.MODULE_ID AND RELATIONSHIP_TYPE='Target'&#xA;                LEFT JOIN OMD_DATA_STORE ds&#xA;                ON ds.DATA_STORE_ID=dst.DATA_STORE_ID&#xA;                WHERE MODULE_CODE =?&#xA;              "
+                      SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="0"
+                        SQLTask:DtsVariableName="User::V_MODULE_ID" />
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="1"
+                        SQLTask:DtsVariableName="User::V_AREA_CODE" />
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="2"
+                        SQLTask:DtsVariableName="User::V_TABLE_CODE" />
+                      <SQLTask:ParameterBinding
+                        SQLTask:ParameterName="0"
+                        SQLTask:DtsVariableName="System::PackageName"
+                        SQLTask:ParameterDirection="Input"
+                        SQLTask:DataType="129"
+                        SQLTask:ParameterSize="-1" />
+                    </SQLTask:SqlTaskData>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Module Instance ID"
+                  DTS:CreationName="Microsoft.ExecuteSQLTask"
+                  DTS:Description="Retrieve the newly created Module Instance ID from the OMD repository."
+                  DTS:DTSID="{7701B982-A22C-47BF-AA19-AC5DBE3E756A}"
+                  DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EST - Get the Module Instance ID"
+                  DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <SQLTask:SqlTaskData
+                      SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+                      SQLTask:SqlStatementSource="SELECT MODULE_INSTANCE_ID FROM OMD_MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE='E' AND MODULE_ID=? AND START_DATETIME=? AND BATCH_INSTANCE_ID=?"
+                      SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="0"
+                        SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" />
+                      <SQLTask:ParameterBinding
+                        SQLTask:ParameterName="0"
+                        SQLTask:DtsVariableName="User::V_MODULE_ID"
+                        SQLTask:ParameterDirection="Input"
+                        SQLTask:DataType="3"
+                        SQLTask:ParameterSize="-1" />
+                      <SQLTask:ParameterBinding
+                        SQLTask:ParameterName="1"
+                        SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_START_DATETIME"
+                        SQLTask:ParameterDirection="Input"
+                        SQLTask:DataType="7"
+                        SQLTask:ParameterSize="-1" />
+                      <SQLTask:ParameterBinding
+                        SQLTask:ParameterName="2"
+                        SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_ID"
+                        SQLTask:ParameterDirection="Input"
+                        SQLTask:DataType="3"
+                        SQLTask:ParameterSize="-1" />
+                    </SQLTask:SqlTaskData>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Processing Indicator for the current Module Instance"
+                  DTS:CreationName="Microsoft.ExecuteSQLTask"
+                  DTS:Description="Verify the OMD repository to see if the Module Evaluation has completed succesfully and with what status (Processing Indicator)."
+                  DTS:DTSID="{904A0E20-B470-4108-A8DE-A253EAD5D51B}"
+                  DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EST - Get the Processing Indicator for the current Module Instance"
+                  DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <SQLTask:SqlTaskData
+                      SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+                      SQLTask:SqlStatementSource="SELECT PROCESSING_INDICATOR FROM OMD_MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=?"
+                      SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="0"
+                        SQLTask:DtsVariableName="User::V_PROCESSING_INDICATOR" />
+                      <SQLTask:ParameterBinding
+                        SQLTask:ParameterName="0"
+                        SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                        SQLTask:ParameterDirection="Input"
+                        SQLTask:DataType="3"
+                        SQLTask:ParameterSize="-1" />
+                    </SQLTask:SqlTaskData>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+                <DTS:Executable
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Set the Module Instance Start Datetime"
+                  DTS:CreationName="Microsoft.ExecuteSQLTask"
+                  DTS:Description="Set the Module Instace Start Datetime as the system datetime (time of running)."
+                  DTS:DTSID="{579658BC-E75A-45C9-8EA4-3757C9867839}"
+                  DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+                  DTS:LocaleID="-1"
+                  DTS:ObjectName="EST - Set the Module Instance Start Datetime"
+                  DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:ObjectData>
+                    <SQLTask:SqlTaskData
+                      SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+                      SQLTask:SqlStatementSource="SELECT GETDATE() AS MODULE_INSTANCE_START_DATETIME"
+                      SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                      <SQLTask:ResultBinding
+                        SQLTask:ResultName="MODULE_INSTANCE_START_DATETIME"
+                        SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_START_DATETIME" />
+                    </SQLTask:SqlTaskData>
+                  </DTS:ObjectData>
+                </DTS:Executable>
+              </DTS:Executables>
+              <DTS:PrecedenceConstraints>
+                <DTS:PrecedenceConstraint
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EPT - Create new Module Instance_To_EST - Get the Module Instance ID]"
+                  DTS:CreationName=""
+                  DTS:DTSID="{49B1014B-C30B-4CF9-912A-AA1E8DB956B3}"
+                  DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Create new Module Instance"
+                  DTS:LogicalAnd="True"
+                  DTS:ObjectName="Constraint_EPT - Create new Module Instance_To_EST - Get the Module Instance ID"
+                  DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Module Instance ID" />
+                <DTS:PrecedenceConstraint
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EPT - Module Evaluation_To_EST - Get the Processing Indicator for the current Module Instance]"
+                  DTS:CreationName=""
+                  DTS:DTSID="{4199DD0E-9AC1-416B-B53D-D1F99F9790B8}"
+                  DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Module Evaluation"
+                  DTS:LogicalAnd="True"
+                  DTS:ObjectName="Constraint_EPT - Module Evaluation_To_EST - Get the Processing Indicator for the current Module Instance"
+                  DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Processing Indicator for the current Module Instance" />
+                <DTS:PrecedenceConstraint
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Get Module Information_To_EPT - Create new Module Instance]"
+                  DTS:CreationName=""
+                  DTS:DTSID="{EB650309-AE30-485D-8C01-40BC46F11894}"
+                  DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get Module Information"
+                  DTS:LogicalAnd="True"
+                  DTS:ObjectName="Constraint_EST - Get Module Information_To_EPT - Create new Module Instance"
+                  DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Create new Module Instance" />
+                <DTS:PrecedenceConstraint
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Get the Module Instance ID_To_EPT - Module Evaluation]"
+                  DTS:CreationName=""
+                  DTS:DTSID="{2526A3A8-CC56-4D69-A40E-61A0CEA38ECA}"
+                  DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Module Instance ID"
+                  DTS:LogicalAnd="True"
+                  DTS:ObjectName="Constraint_EST - Get the Module Instance ID_To_EPT - Module Evaluation"
+                  DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Module Evaluation" />
+                <DTS:PrecedenceConstraint
+                  DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Set the Module Instance Start Datetime_To_EST - Get Module Information]"
+                  DTS:CreationName=""
+                  DTS:DTSID="{24CBF833-272D-4FF3-A1DD-BCE37BAB3024}"
+                  DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Set the Module Instance Start Datetime"
+                  DTS:LogicalAnd="True"
+                  DTS:ObjectName="Constraint_EST - Set the Module Instance Start Datetime_To_EST - Get Module Information"
+                  DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get Module Information" />
+              </DTS:PrecedenceConstraints>
+            </DTS:Executable>
+          </DTS:Executables>
+          <DTS:PrecedenceConstraints>
+            <DTS:PrecedenceConstraint
+              DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute].PrecedenceConstraints[Constraint_OMD Pre-Initialise Event_To_Abort Processing]"
+              DTS:CreationName=""
+              DTS:DTSID="{86937EB0-4B43-4157-91AF-08A334001AB7}"
+              DTS:EvalOp="3"
+              DTS:Expression="@V_PROCESSING_INDICATOR == &quot;A&quot;"
+              DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event"
+              DTS:ObjectName="Constraint_OMD Pre-Initialise Event_To_Abort Processing"
+              DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Abort Processing" />
+            <DTS:PrecedenceConstraint
+              DTS:refId="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute].PrecedenceConstraints[Constraint_OMD Pre-Initialise Event_To_Cancel (Skip) Processing]"
+              DTS:CreationName=""
+              DTS:DTSID="{20623126-A9AA-4579-94A9-7767FAF90566}"
+              DTS:EvalOp="3"
+              DTS:Expression="@V_PROCESSING_INDICATOR == &quot;C&quot;"
+              DTS:From="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event"
+              DTS:ObjectName="Constraint_OMD Pre-Initialise Event_To_Cancel (Skip) Processing"
+              DTS:To="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Cancel (Skip) Processing" />
+          </DTS:PrecedenceConstraints>
+        </DTS:EventHandler>
+      </DTS:EventHandlers>
+      <DTS:ObjectData>
+        <ScriptProject
+          Name="sp_3f1c8c22bf154bb1bd4c3407775c08f2"
+          VSTAMajorVersion="3"
+          VSTAMinorVersion="0"
+          Language="CSharp">
+          <ProjectItem
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="iso-8859-1"?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"  >
+    <Profiles>
+        <Profile Name="(Default)" />
+    </Profiles>
+    <Settings /></SettingsFile>]]></ProjectItem>
+          <ProjectItem
+            Name="Properties\Resources.resx"
+            Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string" />
+                            <xsd:attribute name="name" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    </root>]]></ProjectItem>
+          <ProjectItem
+            Name="sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj"
+            Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+	    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <OutputType>Library</OutputType>
+        <RootNamespace>sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj</RootNamespace>
+        <AssemblyName>sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj</AssemblyName>
+        <ProjectGuid>{C792B577-3187-41B4-A778-35BF1292DEDE}</ProjectGuid>
+		        <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <NoStandardLibraries>false</NoStandardLibraries>
+		    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		        <DebugSymbols>true</DebugSymbols>
+        <Optimize>false</Optimize>
+        <OutputPath>.\bin\Debug\</OutputPath>
+        <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <WarningLevel>4</WarningLevel>
+		    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		        <DebugSymbols>false</DebugSymbols>
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Release\</OutputPath>
+        <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+        <DefineConstants>TRACE</DefineConstants>
+        <WarningLevel>4</WarningLevel>
+		    </PropertyGroup>
+    <PropertyGroup>
+        <PreBuildEvent>
+        </PreBuildEvent>
+        <PostBuildEvent>
+        </PostBuildEvent>
+    </PropertyGroup>
+    <ItemGroup>
+                <Reference Include="System" />
+                <Reference Include="System.Data" />
+                <Reference Include="System.Windows.Forms" />
+                <Reference Include="System.Xml" />
+                <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+                <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+            </ItemGroup>
+	    <ItemGroup>
+        <Folder Include="Resources\" />
+        <AppDesigner Include="Properties\" />
+        <EmbeddedResource Include="Properties\Resources.resx">
+						<Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			        </EmbeddedResource>
+        <Compile Include="Properties\Resources.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+		        <None Include="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+        <Compile Include="Properties\Settings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+        </Compile>
+
+				<Compile Include="ScriptMain.cs">
+			<SubType>Code</SubType>
+		</Compile>
+				<Compile Include="Properties\AssemblyInfo.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		
+		
+		
+		
+		    </ItemGroup>
+		<!-- Include the build rules for a C# project.-->
+    <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+		<!-- This section defines VSTA properties that describe the host-changable project properties. -->
+    <ProjectExtensions>
+        <VisualStudio>
+            <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+                <ProjectProperties HostName="VSTAHostName" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoExeName="" />
+                <Host Name="SSIS_ScriptTask" />
+                <ProjectClient>
+                    <HostIdentifier>SSIS_ST120</HostIdentifier>
+                </ProjectClient>
+            </FlavorProperties>
+        </VisualStudio>
+    </ProjectExtensions>
+    <PropertyGroup>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworkProfile></TargetFrameworkProfile>
+    </PropertyGroup></Project>]]></ProjectItem>
+          <ProjectItem
+            Name="ScriptMain.cs"
+            Encoding="UTF8"><![CDATA[
+        using System;
+        using System.Data;
+        using Microsoft.SqlServer.Dts.Runtime;
+        using System.Windows.Forms;
+
+        namespace ST_787c56676e9b4c8caf26dcb5758f89f7
+        {
+        [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+        public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+        {
+        public void Main()
+        {
+        // TODO: Add your code here
+        Dts.TaskResult = (int)ScriptResults.Success;
+        }
+
+        enum ScriptResults
+        {
+        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+        }
+        }
+      ]]></ProjectItem>
+          <ProjectItem
+            Name="Project"
+            Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="4.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:ProjectId>{b4291eab-2d2e-45c0-a026-f19b5dee5e3f}</msb:ProjectId>
+		<msb:NoContent>Reference;Import;Folder</msb:NoContent>
+		<msb:Language>msBuild</msb:Language>
+		<msb:DisplayName>sp_3f1c8c22bf154bb1bd4c3407775c08f2</msb:DisplayName>
+		<msb:CodeName>sp_3f1c8c22bf154bb1bd4c3407775c08f2</msb:CodeName>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+				<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+				<msb:File Include="Properties\Resources.Designer.cs"/>
+				<msb:File Include="Properties\AssemblyInfo.cs"/>
+				<msb:File Include="ScriptMain.cs"/>
+								<msb:File Include="Properties\Settings.settings"/>
+						<msb:Project Include="sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+          <ProjectItem
+            Name="Properties\Settings.Designer.cs"
+            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Settings.get_Default():sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Settings")]
+
+namespace sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties
+{
+
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+
+        public static Settings Default
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+
+    }
+}]]></ProjectItem>
+          <ProjectItem
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[
+        using System.Reflection;
+        using System.Runtime.CompilerServices;
+
+        [assembly: AssemblyTitle("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyDescription("")]
+        [assembly: AssemblyConfiguration("")]
+        [assembly: AssemblyCompany("")]
+        [assembly: AssemblyProduct("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyCopyright("Roelant Vos")]
+        [assembly: AssemblyTrademark("")]
+        [assembly: AssemblyCulture("")]
+        [assembly: AssemblyVersion("1.0.*")]
+      ]]></ProjectItem>
+          <ProjectItem
+            Name="Properties\Resources.Designer.cs"
+            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Resources.get_ResourceManager():System.Resources.ResourceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Resources.get_Culture():System.Globalization.CultureInfo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Resources.set_Culture(System.Globalization.CultureInfo):Void")]
+
+namespace sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties {
+    using System;
+
+
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    internal class Resources
+    {
+
+        private static global::System.Resources.ResourceManager resourceMan;
+
+        private static global::System.Globalization.CultureInfo resourceCulture;
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get {
+                if ((resourceMan == null))
+                {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+
+    }
+}]]></ProjectItem>
+          <BinaryItem
+            Name="\bin\release\sp_3f1c8c22bf154bb1bd4c3407775c08f2.csproj.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
+ZGUuDQ0KJAAAAAAAAABQRQAATAEDAHpW8FkAAAAAAAAAAOAAAiELAQsAAA4AAAAIAAAAAAAADiwA
+AAAgAAAAQAAAAAAAEAAgAAAAAgAABAAAAAAAAAAEAAAAAAAAAACAAAAAAgAAAAAAAAMAQIUAABAA
+ABAAAAAAEAAAEAAAAAAAABAAAAAAAAAAAAAAALgrAABTAAAAAEAAACAEAAAAAAAAAAAAAAAAAAAA
+AAAAAGAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAIAAACAAAAAAAAAAAAAAACCAAAEgAAAAAAAAAAAAAAC50ZXh0AAAAFAwAAAAgAAAADgAAAAIA
+AAAAAAAAAAAAAAAAACAAAGAucnNyYwAAACAEAAAAQAAAAAYAAAAQAAAAAAAAAAAAAAAAAABAAABA
+LnJlbG9jAAAMAAAAAGAAAAACAAAAFgAAAAAAAAAAAAAAAAAAQAAAQgAAAAAAAAAAAAAAAAAAAADw
+KwAAAAAAAEgAAAACAAUA1CAAAOQKAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAADYCKA0AAAoWbw4AAAoqHgIoDwAACioafgQAAAQqLnMEAAAG
+gAQAAAQqHgIoEQAACioeAigUAAAKKgAAABMwAgAtAAAAAQAAEX4FAAAELSByAQAAcNAFAAACKBUA
+AApvFgAACnMXAAAKCgaABQAABH4FAAAEKhp+BgAABCoeAoAGAAAEKkJTSkIBAAEAAAAAAAwAAAB2
+NC4wLjMwMzE5AAAAAAUAbAAAAHwDAAAjfgAA6AMAACQFAAAjU3RyaW5ncwAAAAAMCQAAhAAAACNV
+UwCQCQAAEAAAACNHVUlEAAAAoAkAAEQBAAAjQmxvYgAAAAAAAAACAAABVx2iAQkCAAAA+iUzABYA
+AAEAAAAbAAAABQAAAAYAAAAJAAAAAQAAABgAAAACAAAAEAAAAAEAAAACAAAAAwAAAAQAAAABAAAA
+AwAAAAEAAAAAAAoAAQAAAAAABgAHAd4ACgAzASwBDgBNATgBCgBlASwBCgDEAbMBCgD1AeABCgBd
+AksCCgB0AksCCgCRAksCCgCwAksCCgDJAksCCgDiAksCCgD9AksCCgAYA0sCCgAxA0sCCgBqA0oD
+CgCKA0oDBgDTA94ABgD1A94ACgAeBEoDDgBYBEAECgCCBG8ECgCfBCwBCgCkBCwBCgDIBEsCDgD0
+BN4EDgANBd4EAAAAAAEAAAAAAAEAAQABABAAOQBEAAUAAQABAAMBAABoAAAACQABAAMAAAEQAHYA
+fwANAAQAAwAAABAAtQB/ABEABQAGAAYGdwEXAFaAfwEaAFaAhwEaABEAjwEoABEA1AE2ABEAAQI6
+AFAgAAAAAIYAbAETAAEAXiAAAAAAhhhxARMAAQBmIAAAAACWCJ8BLAABAHkgAAAAAIYYcQETAAEA
+bSAAAAAAkRg5BGcAAQCBIAAAAACDGHEBEwABAIwgAAAAAJMIEQI+AAEAxSAAAAAAkwglAkMAAQDM
+IAAAAACTCDECSAABAAAAAQBFAjkAcQFYAEEAcQFYAEkAcQFYAFEAcQFYAFkAcQFYAGEAcQFYAGkA
+cQFYAHEAcQFYAHkAcQFYAIEAcQFdAIkAcQETAJEAcQETAAkABwRiAJkADwRdAAkAcQETAKEAcQET
+ABkAcQETAKkAcQFrALEAcQETACEAcQETALkAtgSyALkA0QS5ACkAcQG+ANEAcQHKAAgACAAeAAgA
+DAAjAC4ACwDZAC4AEwACAS4AWwAiAS4AIwACAS4AUwAZAS4AKwDZAC4AOwACAS4AGwACAS4AMwAI
+AUMAYwAjAEkAwwDQAGkAwwDQAIEAgwAjAKMAmwAjAKMAkwBxAKMAgwAjAMUABAABAAUAAgAAAKsB
+MQAAAMQBTgAAAD0CUwACAAMAAwACAAcABQACAAgABwABAAkABwAEgAAAAQAAAGsZjYcAAAAAAACo
+AwAADAAAAAAAAAAAAAAAAQC/AAAAAAAEAAAAAAAAAAAAAAAKACMBAAAAAAQAAAAAAAAAAAAAAAoA
+LAEAAAAAAwACAAAAAAAAPE1vZHVsZT4Ac3BfM2YxYzhjMjJiZjE1NGJiMWJkNGMzNDA3Nzc1YzA4
+ZjIuY3Nwcm9qLmRsbABTY3JpcHRNYWluAFNUXzc4N2M1NjY3NmU5YjRjOGNhZjI2ZGNiNTc1OGY4
+OWY3AFNjcmlwdFJlc3VsdHMAU2V0dGluZ3MAc3BfM2YxYzhjMjJiZjE1NGJiMWJkNGMzNDA3Nzc1
+YzA4ZjIuY3Nwcm9qLlByb3BlcnRpZXMAUmVzb3VyY2VzAE1pY3Jvc29mdC5TcWxTZXJ2ZXIuU2Ny
+aXB0VGFzawBNaWNyb3NvZnQuU3FsU2VydmVyLkR0cy5UYXNrcy5TY3JpcHRUYXNrAFZTVEFSVFNj
+cmlwdE9iamVjdE1vZGVsQmFzZQBtc2NvcmxpYgBTeXN0ZW0ARW51bQBTeXN0ZW0uQ29uZmlndXJh
+dGlvbgBBcHBsaWNhdGlvblNldHRpbmdzQmFzZQBPYmplY3QATWFpbgAuY3RvcgB2YWx1ZV9fAFN1
+Y2Nlc3MARmFpbHVyZQBkZWZhdWx0SW5zdGFuY2UAZ2V0X0RlZmF1bHQARGVmYXVsdABTeXN0ZW0u
+UmVzb3VyY2VzAFJlc291cmNlTWFuYWdlcgByZXNvdXJjZU1hbgBTeXN0ZW0uR2xvYmFsaXphdGlv
+bgBDdWx0dXJlSW5mbwByZXNvdXJjZUN1bHR1cmUAZ2V0X1Jlc291cmNlTWFuYWdlcgBnZXRfQ3Vs
+dHVyZQBzZXRfQ3VsdHVyZQBDdWx0dXJlAHZhbHVlAFN5c3RlbS5SZWZsZWN0aW9uAEFzc2VtYmx5
+VGl0bGVBdHRyaWJ1dGUAQXNzZW1ibHlEZXNjcmlwdGlvbkF0dHJpYnV0ZQBBc3NlbWJseUNvbmZp
+Z3VyYXRpb25BdHRyaWJ1dGUAQXNzZW1ibHlDb21wYW55QXR0cmlidXRlAEFzc2VtYmx5UHJvZHVj
+dEF0dHJpYnV0ZQBBc3NlbWJseUNvcHlyaWdodEF0dHJpYnV0ZQBBc3NlbWJseVRyYWRlbWFya0F0
+dHJpYnV0ZQBBc3NlbWJseUN1bHR1cmVBdHRyaWJ1dGUAQXNzZW1ibHlWZXJzaW9uQXR0cmlidXRl
+AFN5c3RlbS5SdW50aW1lLkNvbXBpbGVyU2VydmljZXMAQ29tcGlsYXRpb25SZWxheGF0aW9uc0F0
+dHJpYnV0ZQBSdW50aW1lQ29tcGF0aWJpbGl0eUF0dHJpYnV0ZQBzcF8zZjFjOGMyMmJmMTU0YmIx
+YmQ0YzM0MDc3NzVjMDhmMi5jc3Byb2oAU1NJU1NjcmlwdFRhc2tFbnRyeVBvaW50QXR0cmlidXRl
+AFNjcmlwdE9iamVjdE1vZGVsAGdldF9EdHMAc2V0X1Rhc2tSZXN1bHQAQ29tcGlsZXJHZW5lcmF0
+ZWRBdHRyaWJ1dGUALmNjdG9yAFN5c3RlbS5Db2RlRG9tLkNvbXBpbGVyAEdlbmVyYXRlZENvZGVB
+dHRyaWJ1dGUAU3lzdGVtLkRpYWdub3N0aWNzAERlYnVnZ2VyTm9uVXNlckNvZGVBdHRyaWJ1dGUA
+VHlwZQBSdW50aW1lVHlwZUhhbmRsZQBHZXRUeXBlRnJvbUhhbmRsZQBBc3NlbWJseQBnZXRfQXNz
+ZW1ibHkAU3lzdGVtLkNvbXBvbmVudE1vZGVsAEVkaXRvckJyb3dzYWJsZUF0dHJpYnV0ZQBFZGl0
+b3JCcm93c2FibGVTdGF0ZQAAAAB/cwBwAF8AMwBmADEAYwA4AGMAMgAyAGIAZgAxADUANABiAGIA
+MQBiAGQANABjADMANAAwADcANwA3ADUAYwAwADgAZgAyAC4AYwBzAHAAcgBvAGoALgBQAHIAbwBw
+AGUAcgB0AGkAZQBzAC4AUgBlAHMAbwB1AHIAYwBlAHMAAAAAAD11Jnr2jelKjCW3YJbAPokACImE
+Xc2AgMyRCLd6XFYZNOCJAyAAAQIGCAMGEQwEAAAAAAQBAAAAAwYSEAQAABIQBAgAEhADBhIVAwYS
+GQQAABIVBAAAEhkFAAEBEhkECAASFQQIABIZBCABAQ4EIAEBCAQgABJNAwAAAQUgAgEODkABADNT
+eXN0ZW0uUmVzb3VyY2VzLlRvb2xzLlN0cm9uZ2x5VHlwZWRSZXNvdXJjZUJ1aWxkZXIHMi4wLjAu
+MAAABgABEl0RYQQgABJlBiACAQ4SZQQHARIVBSABARFtCAEAAgAAAAAAKAEAI1NUXzc4N2M1NjY3
+NmU5YjRjOGNhZjI2ZGNiNTc1OGY4OWY3AAAFAQAAAAAQAQALUm9lbGFudCBWb3MAAAgBAAgAAAAA
+AB4BAAEAVAIWV3JhcE5vbkV4Y2VwdGlvblRocm93cwEAAADgKwAAAAAAAAAAAAD+KwAAACAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAA8CsAAAAAAAAAAAAAAAAAAAAAX0NvckRsbE1haW4AbXNjb3JlZS5k
+bGwAAAAAAP8lACAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAQAQAAAAGAAAgAAAAAAAAAAAAAAAAAAAAQABAAAAMAAAgAAAAAAAAAAAAAAAAAAAAQAA
+AAAASAAAAFhAAADEAwAAAAAAAAAAAADEAzQAAABWAFMAXwBWAEUAUgBTAEkATwBOAF8ASQBOAEYA
+TwAAAAAAvQTv/gAAAQAAAAEAjYdrGQAAAQCNh2sZPwAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAA
+AEQAAAABAFYAYQByAEYAaQBsAGUASQBuAGYAbwAAAAAAJAAEAAAAVAByAGEAbgBzAGwAYQB0AGkA
+bwBuAAAAAAAAALAEJAMAAAEAUwB0AHIAaQBuAGcARgBpAGwAZQBJAG4AZgBvAAAAAAMAAAEAMAAw
+ADAAMAAwADQAYgAwAAAAcAAkAAEARgBpAGwAZQBEAGUAcwBjAHIAaQBwAHQAaQBvAG4AAAAAAFMA
+VABfADcAOAA3AGMANQA2ADYANwA2AGUAOQBiADQAYwA4AGMAYQBmADIANgBkAGMAYgA1ADcANQA4
+AGYAOAA5AGYANwAAAEAADwABAEYAaQBsAGUAVgBlAHIAcwBpAG8AbgAAAAAAMQAuADAALgA2ADUA
+MAA3AC4AMwA0ADcAMAAxAAAAAACAAC8AAQBJAG4AdABlAHIAbgBhAGwATgBhAG0AZQAAAHMAcABf
+ADMAZgAxAGMAOABjADIAMgBiAGYAMQA1ADQAYgBiADEAYgBkADQAYwAzADQAMAA3ADcANwA1AGMA
+MAA4AGYAMgAuAGMAcwBwAHIAbwBqAC4AZABsAGwAAAAAADwADAABAEwAZQBnAGEAbABDAG8AcAB5
+AHIAaQBnAGgAdAAAAFIAbwBlAGwAYQBuAHQAIABWAG8AcwAAAIgALwABAE8AcgBpAGcAaQBuAGEA
+bABGAGkAbABlAG4AYQBtAGUAAABzAHAAXwAzAGYAMQBjADgAYwAyADIAYgBmADEANQA0AGIAYgAx
+AGIAZAA0AGMAMwA0ADAANwA3ADcANQBjADAAOABmADIALgBjAHMAcAByAG8AagAuAGQAbABsAAAA
+AABoACQAAQBQAHIAbwBkAHUAYwB0AE4AYQBtAGUAAAAAAFMAVABfADcAOAA3AGMANQA2ADYANwA2
+AGUAOQBiADQAYwA4AGMAYQBmADIANgBkAGMAYgA1ADcANQA4AGYAOAA5AGYANwAAAEQADwABAFAA
+cgBvAGQAdQBjAHQAVgBlAHIAcwBpAG8AbgAAADEALgAwAC4ANgA1ADAANwAuADMANAA3ADAAMQAA
+AAAASAAPAAEAQQBzAHMAZQBtAGIAbAB5ACAAVgBlAHIAcwBpAG8AbgAAADEALgAwAC4ANgA1ADAA
+NwAuADMANAA3ADAAMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAMAAAAEDwA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
+        </ScriptProject>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint_SCT - Dummy Placeholder_To_DFT - HUB_CUSTOMER]"
+      DTS:CreationName=""
+      DTS:DTSID="{5D942D28-94C4-45E5-8F8D-47304BBB67EE}"
+      DTS:EvalOp="3"
+      DTS:Expression="@V_PROCESSING_INDICATOR == &quot;P&quot;"
+      DTS:From="Package\SCT - Dummy Placeholder"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint_SCT - Dummy Placeholder_To_DFT - HUB_CUSTOMER"
+      DTS:To="Package\DFT - &lt;placeholder&gt;" />
+  </DTS:PrecedenceConstraints>
+  <DTS:EventHandlers>
+    <DTS:EventHandler
+      DTS:refId="Package.EventHandlers[OnError]"
+      DTS:CreationName="OnError"
+      DTS:DTSID="{FBFEEF9A-17AA-4F89-802D-CD3A5D060124}"
+      DTS:EventID="0"
+      DTS:EventName="OnError"
+      DTS:LocaleID="-1">
+      <DTS:Variables>
+        <DTS:Variable
+          DTS:CreationName=""
+          DTS:Description="The propagate property of the event&#xA;The propagate property of the event"
+          DTS:DTSID="{84336D19-C6D3-4359-9358-6BD447CD2C03}"
+          DTS:IncludeInDebugDump="6789"
+          DTS:Namespace="System"
+          DTS:ObjectName="Propagate">
+          <DTS:VariableValue
+            DTS:DataType="11">-1</DTS:VariableValue>
+        </DTS:Variable>
+      </DTS:Variables>
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package.EventHandlers[OnError]\OMD OnError Event"
+          DTS:CreationName="STOCK:SEQUENCE"
+          DTS:DTSID="{801AB641-7996-4FC0-A76D-A8286BE94CCC}"
+          DTS:ExecutableType="STOCK:SEQUENCE"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="OMD OnError Event">
+          <DTS:Variables />
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package.EventHandlers[OnError]\OMD OnError Event\EPT - Module Failure"
+              DTS:CreationName="Microsoft.ExecutePackageTask"
+              DTS:DTSID="{15DAF69D-C673-442E-9FD9-E7FDB5C41B35}"
+              DTS:ExecutableType="Microsoft.ExecutePackageTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="EPT - Module Failure"
+              DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <ExecutePackageTask>
+                  <UseProjectReference>True</UseProjectReference>
+                  <PackageName>Module_Failure.dtsx</PackageName>
+                  <ParameterAssignment>
+                    <ParameterName>V_BATCH_INSTANCE_ID</ParameterName>
+                    <BindedVariableOrParameterName>User::V_BATCH_INSTANCE_ID</BindedVariableOrParameterName>
+                  </ParameterAssignment>
+                  <ParameterAssignment>
+                    <ParameterName>V_ERROR_CODE</ParameterName>
+                    <BindedVariableOrParameterName>System::ErrorCode</BindedVariableOrParameterName>
+                  </ParameterAssignment>
+                  <ParameterAssignment>
+                    <ParameterName>V_ERROR_DESCRIPTION</ParameterName>
+                    <BindedVariableOrParameterName>System::ErrorDescription</BindedVariableOrParameterName>
+                  </ParameterAssignment>
+                  <ParameterAssignment>
+                    <ParameterName>V_EVENT_TYPE_CODE</ParameterName>
+                    <BindedVariableOrParameterName>User::V_EVENT_TYPE_CODE</BindedVariableOrParameterName>
+                  </ParameterAssignment>
+                  <ParameterAssignment>
+                    <ParameterName>V_MODULE_INSTANCE_ID</ParameterName>
+                    <BindedVariableOrParameterName>User::V_MODULE_INSTANCE_ID</BindedVariableOrParameterName>
+                  </ParameterAssignment>
+                </ExecutePackageTask>
+              </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable
+              DTS:refId="Package.EventHandlers[OnError]\OMD OnError Event\EST - Set V_EVENT_TYPE_CODE"
+              DTS:CreationName="Microsoft.ExecuteSQLTask"
+              DTS:Description="Use the correct Event Type Code for Internal SSIS errors (2)."
+              DTS:DTSID="{F3E80627-46B5-4F23-86D0-A2F312974171}"
+              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="EST - Set V_EVENT_TYPE_CODE"
+              DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <SQLTask:SqlTaskData
+                  SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+                  SQLTask:SqlStatementSource="SELECT '2' AS V_EVENT_TYPE_CODE"
+                  SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  <SQLTask:ResultBinding
+                    SQLTask:ResultName="V_EVENT_TYPE_CODE"
+                    SQLTask:DtsVariableName="User::V_EVENT_TYPE_CODE" />
+                </SQLTask:SqlTaskData>
+              </DTS:ObjectData>
+            </DTS:Executable>
+          </DTS:Executables>
+          <DTS:PrecedenceConstraints>
+            <DTS:PrecedenceConstraint
+              DTS:refId="Package.EventHandlers[OnError]\OMD OnError Event.PrecedenceConstraints[Constraint_EST - Set V_EVENT_TYPE_CODE_To_EPT - Module Failure]"
+              DTS:CreationName=""
+              DTS:DTSID="{D3E6BE30-1ED6-43F9-8BA1-4A9CFDB4A41C}"
+              DTS:From="Package.EventHandlers[OnError]\OMD OnError Event\EST - Set V_EVENT_TYPE_CODE"
+              DTS:LogicalAnd="True"
+              DTS:ObjectName="Constraint_EST - Set V_EVENT_TYPE_CODE_To_EPT - Module Failure"
+              DTS:To="Package.EventHandlers[OnError]\OMD OnError Event\EPT - Module Failure" />
+          </DTS:PrecedenceConstraints>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:EventHandler>
+  </DTS:EventHandlers>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="178,42"
+          Id="Package\DFT - &lt;placeholder&gt;"
+          TopLeft="12,107.5" />
+        <NodeLayout
+          Size="202,42"
+          Id="Package\SCT - Dummy Placeholder"
+          TopLeft="5.50000000000001,5.5" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint_SCT - Dummy Placeholder_To_DFT - HUB_CUSTOMER]"
+          TopLeft="103.75,47.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8,18.25,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <DtsEventHandler
+    design-time-name="Package.EventHandlers[OnError]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package.EventHandlers[OnError]\OMD OnError Event\EPT - Module Failure"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package.EventHandlers[OnError]\OMD OnError Event\EST - Set V_EVENT_TYPE_CODE"
+          TopLeft="NaN,NaN" />
+        <EdgeLayout
+          Id="Package.EventHandlers[OnError]\OMD OnError Event.PrecedenceConstraints[Constraint_EST - Set V_EVENT_TYPE_CODE_To_EPT - Module Failure]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="NaN,NaN"
+          Size="NaN,NaN"
+          Id="Package.EventHandlers[OnError]\OMD OnError Event"
+          TopLeft="NaN,NaN" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+  <DtsEventHandler
+    design-time-name="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]\OMD Complete Processing\EPT - Module Success"
+          TopLeft="NaN,NaN" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="NaN,NaN"
+          Size="NaN,NaN"
+          Id="Package\DFT - &lt;placeholder&gt;.EventHandlers[OnPostExecute]\OMD Complete Processing"
+          TopLeft="NaN,NaN" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+  <DtsEventHandler
+    design-time-name="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Abort Processing\EPT - Abort the current Module Instance"
+          TopLeft="NaN,NaN" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="NaN,NaN"
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Abort Processing"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Cancel (Skip) Processing\EPT - Skip the current Module Instance"
+          TopLeft="NaN,NaN" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="NaN,NaN"
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\Cancel (Skip) Processing"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Create new Module Instance"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EPT - Module Evaluation"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get Module Information"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Module Instance ID"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Get the Processing Indicator for the current Module Instance"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event\EST - Set the Module Instance Start Datetime"
+          TopLeft="NaN,NaN" />
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EPT - Create new Module Instance_To_EST - Get the Module Instance ID]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EPT - Module Evaluation_To_EST - Get the Processing Indicator for the current Module Instance]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Get Module Information_To_EPT - Create new Module Instance]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Get the Module Instance ID_To_EPT - Module Evaluation]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event.PrecedenceConstraints[Constraint_EST - Set the Module Instance Start Datetime_To_EST - Get Module Information]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="NaN,NaN"
+          Size="NaN,NaN"
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute]\OMD Pre-Initialise Event"
+          TopLeft="NaN,NaN" />
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute].PrecedenceConstraints[Constraint_OMD Pre-Initialise Event_To_Abort Processing]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\SCT - Dummy Placeholder.EventHandlers[OnPreExecute].PrecedenceConstraints[Constraint_OMD Pre-Initialise Event_To_Cancel (Skip) Processing]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

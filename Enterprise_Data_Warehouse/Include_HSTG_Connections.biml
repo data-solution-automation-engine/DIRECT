@@ -1,0 +1,5 @@
+<Connections>
+	<Connection Name="OMD" CreateInProject="true" ConnectionString="<#=connectionStringOMD#>"/>
+	<Connection Name="STG" CreateInProject="true" ConnectionString="<#=connectionStringSTG#>"/>
+	<Connection Name="HSTG" CreateInProject="true" ConnectionString="<#=connectionStringHSTG#>"/>
+</Connections>

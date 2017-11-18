@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="SOURCE"
+  DTS:DTSID="{EE7652D6-54D4-4F7F-9B29-C0F3E3390840}"
+  DTS:CreationName="OLEDB">
+  <DTS:PropertyExpression
+    DTS:Name="Password">"xgt81btq15"</DTS:PropertyExpression>
+  <DTS:ObjectData>
+    <DTS:ConnectionManager
+      DTS:ConnectionString="Data Source=MIDASREP;User ID=DWSSIS;Provider=OraOLEDB.Oracle.1;Persist Security Info=True;" />
+  </DTS:ObjectData>
+</DTS:ConnectionManager>

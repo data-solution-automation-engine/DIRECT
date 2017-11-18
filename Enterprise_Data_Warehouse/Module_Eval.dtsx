@@ -1,0 +1,2476 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="1/25/2011 11:50:28 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="A8WSERVER02"
+  DTS:CreatorName="A8\a8user"
+  DTS:DTSID="{BE3B12C2-4DAD-4CBF-A6BB-2C08471F6086}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LocaleID="3081"
+  DTS:ObjectName="Module_Eval"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="451"
+  DTS:VersionGUID="{A742455E-10EE-49DC-A2DB-822D690241C2}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="SSIS_ETL_CONFIG"
+      DTS:ConfigurationType="5"
+      DTS:CreationName=""
+      DTS:DTSID="{ECE71457-A997-4C43-B0D4-0F8486767D19}"
+      DTS:ObjectName="OMD_FRAMEWORK_XML_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="&quot;CONFIG&quot;;&quot;[dbo].[SSIS Configurations]&quot;;&quot;OMD_FRAMEWORK_CONFIGURATION&quot;;"
+      DTS:ConfigurationType="7"
+      DTS:CreationName=""
+      DTS:DTSID="{40B3F61C-DD17-421F-8BB6-2FAF18A0A685}"
+      DTS:ObjectName="OMD_FRAMEWORK_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="&quot;CONFIG&quot;;&quot;[dbo].[SSIS Configurations]&quot;;&quot;STAGING_AREA_CONFIGURATION&quot;;"
+      DTS:ConfigurationType="7"
+      DTS:CreationName=""
+      DTS:DTSID="{1A053266-D80C-4627-A42B-3B20B4F8D593}"
+      DTS:ObjectName="STAGING_AREA_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="&quot;CONFIG&quot;;&quot;[dbo].[SSIS Configurations]&quot;;&quot;HISTORY_AREA_CONFIGURATION&quot;;"
+      DTS:ConfigurationType="7"
+      DTS:CreationName=""
+      DTS:DTSID="{D1D064B8-7EE9-41F0-B871-3EC1EB850FA5}"
+      DTS:ObjectName="HISTORY_AREA_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="&quot;CONFIG&quot;;&quot;[dbo].[SSIS Configurations]&quot;;&quot;INTEGRATION_AREA_CONFIGURATION&quot;;"
+      DTS:ConfigurationType="7"
+      DTS:CreationName=""
+      DTS:DTSID="{EC40EED2-CFE3-4352-9674-76ED3E7F94CB}"
+      DTS:ObjectName="INTEGRATION_AREA_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_AREA_CODE"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_AREA_CODE].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{8BD7AB08-9D4F-46F3-954D-0C98858100E8}"
+      DTS:ObjectName="V_AREA_CODE" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_BATCH_ID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_ID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{FE67AA25-5343-476C-8821-72CAD1989550}"
+      DTS:ObjectName="V_BATCH_ID" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_BATCH_INSTANCE_ID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_ID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{8E1AA091-78B7-4340-8433-4EAEF1266FF4}"
+      DTS:ObjectName="V_BATCH_INSTANCE_ID" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_MODULE_ID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_ID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{34759D9E-3A4F-4C9E-9486-711D12F55334}"
+      DTS:ObjectName="V_MODULE_ID" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_MODULE_INSTANCE_ID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_ID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{AAF973A2-55DB-4751-8109-AE05ABB882B3}"
+      DTS:ObjectName="V_MODULE_INSTANCE_ID" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_MODULE_INSTANCE_START_DATETIME"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_START_DATETIME].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{9BCD6F44-9F27-4EC7-9F53-081644408409}"
+      DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_TABLE_CODE"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_TABLE_CODE].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{57099707-33DA-4136-B3F5-7DF314C390BC}"
+      DTS:ObjectName="V_TABLE_CODE" />
+  </DTS:Configurations>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{7FD19357-593D-4BE6-A777-0884C513C932}"
+      DTS:ObjectName="V_AREA_CODE">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{22BF14F3-4597-4053-A5D4-69BCFA84A347}"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{D5632F88-7FD4-48BB-BA24-1D719226D0A8}"
+      DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{8CF4B064-4C51-499C-98A0-E563E4DAA929}"
+      DTS:ObjectName="V_MODULE_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{7117D538-0507-47E1-B735-7E60A2424297}"
+      DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="7"
+      DTS:DTSID="{2771DEBB-C72B-4DB7-9C3B-108B012FD095}"
+      DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME">
+      <DTS:Property
+        DTS:DataType="7"
+        DTS:Name="ParameterValue">2/11/2014 9:25:08 AM</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{93F43237-E7EF-4A55-A5B9-4B5665182ED8}"
+      DTS:ObjectName="V_TABLE_CODE">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{836D1DAA-FD29-4AA7-A08B-3029B777E944}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_AREA_CODE]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_AREA_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{2B2A4433-C7C2-44FD-8700-43584A8C801C}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_ID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6C81F6D7-D83D-4298-A230-7393E3D6103E}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{4F95B98A-2498-47A5-9B14-2CC982632A7E}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_VALIDATION">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{2FE57B43-9B4E-4B57-BDF8-23B0EEA137C5}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{FC096F45-283C-4BCA-95B5-4F261D101A9E}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_BATCH_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{CC22C387-5CE1-4CA2-997E-97B95F2204AD}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_END_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">1/25/2011 2:39:32 PM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{951E3160-8462-4A89-A512-3EA81D1B2482}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_EXECUTION_STATUS_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{BBC08A39-AD6C-4AA6-B8C2-1A4139353D35}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_MODULE_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{45B65F86-98FD-4F78-8D52-F3A566492869}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_MODULE_INSTANCE_ID_LIST">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0CA303B2-B336-42D2-A405-83E8B6A88395}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_NEXT_RUN_INDICATOR">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{923CB327-EBC6-4BE2-9060-6088F313453A}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_LAST_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">1/25/2011 2:39:12 PM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{C276BFCD-4687-42C1-8DD7-43979BA08B3D}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_ACTIVE_INSTANCE_CONTROL">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{A33D805A-118A-4E9F-9C07-0A8DA84AC339}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_HISTORY">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{B5F9193A-6A73-42BD-B4F1-BBAD4AC858EB}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_MODULE_ID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{A5EE7052-B90A-4B21-83A4-8493D185C7AB}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_MODULE_INSTANCE_ID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0CB2F97A-92DC-4AF6-9DF0-C9AC12A01BDC}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_MODULE_INSTANCE_START_DATETIME]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">2/11/2014 9:25:08 AM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{CE26C385-B80E-411E-BABB-511722F288FF}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_RUN_DATE">
+      <DTS:VariableValue
+        DTS:DataType="7">1/27/2011 5:06:42 PM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{8D6582E8-F4F0-4B3C-B2EB-20DDC9D73682}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_SQL_ROLLBACK_HSTG">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{EDCD2971-1092-4E62-809E-DC25750274E7}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_SQL_ROLLBACK_INT_Delete">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{3B7C14CB-9436-45C0-92B7-13E3A8D0E3EE}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_SQL_ROLLBACK_INT_Update">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{C4F697D0-2059-484A-8E96-8BBC3E45C867}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_SQL_ROLLBACK_STG">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{7A145047-F8D3-44B5-8573-69C4238B0A58}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_SQL_ROLLBACK_STG_SOURCE_CONTROL">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{72EE3B39-C078-43FB-A40D-08BE68C2EE05}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_TABLE_CODE]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_TABLE_CODE">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:LoggingOptions
+    DTS:FilterKind="0"
+    DTS:LoggingMode="1">
+    <DTS:Property
+      DTS:DataType="8"
+      DTS:Name="EventFilter">4,7,OnError,10,OnProgress,12,OnTaskFailed,22,OnVariableValueChanged</DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnError"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnProgress"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnTaskFailed"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnVariableValueChanged"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+  </DTS:LoggingOptions>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Module Eval"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{C260AE12-A0F3-45CB-90A0-75EF67E2C1ED}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Module Eval">
+      <DTS:Variables>
+        <DTS:Variable
+          DTS:CreationName=""
+          DTS:DTSID="{725EE842-CAC2-4C8E-8E30-F7C2E384869D}"
+          DTS:IncludeInDebugDump="2345"
+          DTS:Namespace="User"
+          DTS:ObjectName="V_CONNECTION_STRING_HELPER">
+          <DTS:VariableValue
+            DTS:DataType="8"
+            xml:space="preserve"></DTS:VariableValue>
+        </DTS:Variable>
+        <DTS:Variable
+          DTS:CreationName=""
+          DTS:DTSID="{0A500E60-2B88-495A-A205-BA39CABE2CEF}"
+          DTS:IncludeInDebugDump="2345"
+          DTS:Namespace="User"
+          DTS:ObjectName="V_CONNECTION_STRING_INTPR">
+          <DTS:VariableValue
+            DTS:DataType="8"
+            xml:space="preserve"></DTS:VariableValue>
+        </DTS:Variable>
+        <DTS:Variable
+          DTS:CreationName=""
+          DTS:DTSID="{3DF2BB29-3CA0-4A8B-9890-1D5566623CE1}"
+          DTS:IncludeInDebugDump="2345"
+          DTS:Namespace="User"
+          DTS:ObjectName="V_CONNECTION_STRING_PRES">
+          <DTS:VariableValue
+            DTS:DataType="8"
+            xml:space="preserve"></DTS:VariableValue>
+        </DTS:Variable>
+        <DTS:Variable
+          DTS:CreationName=""
+          DTS:DTSID="{9D0F7C21-E864-4174-B5A8-2C946263F8DB}"
+          DTS:IncludeInDebugDump="2345"
+          DTS:Namespace="User"
+          DTS:ObjectName="V_INACTIVE_INDICATOR_MODULE_LEVEL">
+          <DTS:VariableValue
+            DTS:DataType="8"
+            xml:space="preserve"></DTS:VariableValue>
+        </DTS:Variable>
+      </DTS:Variables>
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Check for multiple active Module Instances"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{C8EFA4D5-D43B-46A8-A486-8C7A894B5075}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:FailPackageOnFailure="True"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Check for multiple active Module Instances"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="SELECT&#xA;&#x9;CASE&#x9;&#xA;&#x9;&#x9;WHEN ActiveInstancesCount IS NULL THEN 'Process'&#xA;&#x9;&#x9;WHEN ActiveInstancesCount IS NOT NULL AND MinimumInstance= ? THEN 'Process'&#xA;&#x9;&#x9;ELSE 'Abort'&#xA;&#x9;END AS ModuleActiveInstanceControl&#xA;FROM &#xA;(&#xA;   SELECT MODULE_ID, MIN(MODULE_INSTANCE_ID) as MinimumInstance&#xA;   FROM OMD_MODULE_INSTANCE&#xA;   WHERE EXECUTION_STATUS_CODE = 'E' &#xA;     AND MODULE_ID = ? &#xA;   GROUP BY MODULE_ID&#xA;  -- Check for the lowest instance of the Module Instances since the process must continue if it's the first of the started instances for the particular Module.&#xA;) MininumInstance&#xA;LEFT OUTER JOIN&#xA;(&#xA;   SELECT MODULE_ID, COUNT(*) as ActiveInstancesCount &#xA;   FROM OMD_MODULE_INSTANCE&#xA;   WHERE EXECUTION_STATUS_CODE = 'E' &#xA;     AND MODULE_ID = ?&#xA;     AND MODULE_INSTANCE_ID &lt;&gt; ?&#xA;   GROUP BY MODULE_ID&#xA;   -- Check if there are no additional running instances other than the current Module Instance&#xA;)  ActiveInstances ON ActiveInstances.MODULE_ID=MininumInstance.MODULE_ID"
+              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="ModuleActiveInstanceControl"
+                SQLTask:DtsVariableName="User::V_MODULE_ACTIVE_INSTANCE_CONTROL" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="1"
+                SQLTask:DtsVariableName="User::V_MODULE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="2"
+                SQLTask:DtsVariableName="User::V_MODULE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="3"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Correct OMD Source Control"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{814a0e12-965d-4675-ac99-30c6c4ff797c}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Correct OMD Source Control"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="1">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStmtSourceType="Variable"
+              SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_STG_SOURCE_CONTROL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Get the details of the previous Module Instance"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{AF41A26D-9C12-46EE-9259-17274FA1969A}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Get the details of the previous Module Instance"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="DECLARE @MODULE_ID INT = ?&#xA;DECLARE @BATCH_ID INT = ? -- zero 0 if it is not executed by a batch&#xA;&#xA;SELECT &#xA;         IsNull(Max(LastBatchInstanceID),-1)              AS 'LastBatchInstanceID'&#xA;         ,IsNull(Max(LastModuleInstanceID),-1)            AS 'LastModuleInstanceID'&#xA;         ,IsNull(Max(LastStartDateTime),'1900-01-01')     AS 'LastStartTime'&#xA;         ,Max(LastEndDateTime)                            AS 'LastEndTime'&#xA;         ,IsNull(Max(LastExecutionStatus),'I')            AS 'LastExecutionStatus'&#xA;         ,IsNull(Max(LastNextRunIndicator),'P')           AS 'LastNextExecutionFlag'&#xA;         ,ISNULL(Max(LastModuleInstanceIDList),'-1')      AS 'LastModuleInstanceIDList'&#xA;         ,(SELECT INACTIVE_INDICATOR FROM OMD_MODULE WHERE MODULE_ID = @MODULE_ID) AS InactiveIndicator&#xA;FROM&#xA;(&#xA;        (&#xA;&#x9;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;SELECT &#xA;                    A.BATCH_INSTANCE_ID        AS 'LastBatchInstanceID', &#xA;                    A.MODULE_INSTANCE_ID       AS 'LastModuleInstanceID', &#xA;                    A.START_DATETIME           AS 'LastStartDateTime',&#xA;                    A.END_DATETIME             AS 'LastEndDateTime',&#xA;                    A.EXECUTION_STATUS_CODE    AS 'LastExecutionStatus', &#xA;                    A.NEXT_RUN_INDICATOR       AS 'LastNextRunIndicator',&#xA;                    (SELECT Cast(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;             '(' + &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; STUFF&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; (&#xA;                                       (&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   Select ',' + CAST(MODULE_INSTANCE_ID AS VARCHAR(20))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   From  OMD_MODULE_INSTANCE MI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;         LEFT JOIN OMD_BATCH_INSTANCE BI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; ON MI.BATCH_INSTANCE_ID = BI.BATCH_INSTANCE_ID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   Where MI.MODULE_ID = @MODULE_ID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;         AND ISNULL(BI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; AND MI.MODULE_INSTANCE_ID &gt;&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; (&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;-- Find the last successful module run/batch run depending on if it is executed by a batch or not&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;SELECT ISNULL(MAX(MODULE_INSTANCE_ID),0) &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;      FROM OMD_MODULE_INSTANCE SUB_MI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   LEFT JOIN OMD_BATCH_INSTANCE SUB_BI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   ON SUB_MI.BATCH_INSTANCE_ID = SUB_BI.BATCH_INSTANCE_ID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;     WHERE SUB_MI.MODULE_ID=@MODULE_ID &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;       &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   AND ISNULL(SUB_BI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   AND &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   (&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;    (&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;    --last successful module run without a batch&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;@BATCH_ID = 0&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;AND SUB_MI.EXECUTION_STATUS_CODE='S' &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;AND SUB_MI.NEXT_RUN_INDICATOR = 'P'&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;OR&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   --last successful batch run&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;@BATCH_ID &lt;&gt; 0&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;AND SUB_BI.EXECUTION_STATUS_CODE='S' &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;) &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   )&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; )&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;AND MI.EXECUTION_STATUS_CODE&lt;&gt;'E'&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;FOR XML PATH ('')  -- convert list module id to single variable&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   )&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;   ,1,1,''&#xA;                                  ) &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;  + ')' as varchar(500)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; )&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;) AS 'LastModuleInstanceIDList'&#xA;&#xA;              FROM OMD_MODULE_INSTANCE A&#xA;&#xA;             WHERE A.MODULE_INSTANCE_ID = &#xA;                   (&#xA;                        (&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;  select max(MODULE_INSTANCE_ID) &#xA;                            from OMD_MODULE_INSTANCE WMI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;     LEFT JOIN OMD_BATCH_INSTANCE WBI&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; ON WMI.BATCH_INSTANCE_ID = WBI.BATCH_INSTANCE_ID&#xA;                           where WMI.MODULE_ID = @MODULE_ID &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;         AND WMI.EXECUTION_STATUS_CODE &lt;&gt; 'E'&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; AND ISNULL(WBI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;)                &#xA;                   )&#xA;       )&#xA;       &#xA;&#x9;   UNION ALL -- return if there is nothing, to give at least a result for SSIS&#xA;       &#xA;&#x9;   SELECT Null, Null, Null, Null, Null, Null,Null&#xA;) as sub1"
+              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="0"
+                SQLTask:DtsVariableName="User::V_LAST_BATCH_INSTANCE_ID" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="1"
+                SQLTask:DtsVariableName="User::V_LAST_MODULE_INSTANCE_ID" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="2"
+                SQLTask:DtsVariableName="User::V_LAST_START_DATETIME" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="3"
+                SQLTask:DtsVariableName="User::V_LAST_END_DATETIME" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="4"
+                SQLTask:DtsVariableName="User::V_LAST_EXECUTION_STATUS_CODE" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="5"
+                SQLTask:DtsVariableName="User::V_LAST_NEXT_RUN_INDICATOR" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="6"
+                SQLTask:DtsVariableName="User::V_LAST_MODULE_INSTANCE_ID_LIST" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="7"
+                SQLTask:DtsVariableName="User::V_INACTIVE_INDICATOR_MODULE_LEVEL" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="1"
+                SQLTask:DtsVariableName="User::V_BATCH_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Re-process HSTG"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{18CAD63D-AE95-44B1-A55E-E057BA25BB7C}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Re-process HSTG"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="2">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{387D76BD-04CC-438B-BE36-47F922838C69}"
+              SQLTask:SqlStmtSourceType="Variable"
+              SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_HSTG" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Re-process INT Delete"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{B7FDB2AC-2DB3-42ED-B0DB-22EA2D8A1D39}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Re-process INT Delete"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{C24EDCC3-B6F4-4AFE-B416-65A7325CFCD2}"
+              SQLTask:SqlStmtSourceType="Variable"
+              SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_INT_Delete" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Re-process INT Update"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{8ae574ff-1abf-4d13-abcd-3ab2682c159f}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Re-process INT Update"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{C24EDCC3-B6F4-4AFE-B416-65A7325CFCD2}"
+              SQLTask:SqlStmtSourceType="Variable"
+              SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_INT_Update" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Re-process STG"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{EC8C70C0-3F2D-4D23-AB24-EE99EE4E7567}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Re-process STG"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="1">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5CBCE390-8497-48D6-B9FB-6209F7A41896}"
+              SQLTask:SqlStmtSourceType="Variable"
+              SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_STG" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{02F6E95F-FE65-40E2-87F1-366778E97B92}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Set Processing Indicator to Recovery"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="UPDATE OMD_MODULE_INSTANCE set PROCESSING_INDICATOR = 'R'  WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Set the current Processing Indicator to Proceed"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{29FB471B-42F2-4439-A9E8-93E411DBADB2}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Set the current Processing Indicator to Proceed"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="3">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="UPDATE OMD_MODULE_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to Proceed"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{1399F183-511A-4BE7-A089-27340783266A}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Set the Processing Indicator to Proceed"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="4">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="UPDATE OMD_MODULE_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{7CBCC51B-C388-4BB0-9737-2DF1CC479342}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Set the Processing Indicator to signal Abort of the run"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="5">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="UPDATE OMD_MODULE_INSTANCE set PROCESSING_INDICATOR = 'A' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to Skip this run"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{2fc89041-c00a-4c5a-8061-7a10001ad7c0}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Set the Processing Indicator to Skip this run"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="6">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="UPDATE OMD_MODULE_INSTANCE set PROCESSING_INDICATOR = 'C'  WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\EST - Validate Batch processing"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{5F041E47-8221-460B-BCDB-404B0CE9EA18}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Validate Batch processing"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="SELECT &#xA;&#x9;Min(INACTIVE_INDICATOR) as INACTIVE_INDICATOR,&#xA;&#x9;CASE&#xA;&#x9;&#x9;WHEN Min(BATCH_ID) IS NULL THEN 'Incorrect'&#xA;&#x9;&#x9;ELSE 'Correct'&#xA;&#x9;END as BATCH_VALIDATION&#xA;&#x9;-- The Batch validation is used to Abort a run if the OMD_BATCH_MODULE table is not used correctly&#xA;&#x9;-- In this scenario you expect a record to be returned if the Module is run from a Batch (i.e. there's a valid Batch Instance).&#xA;FROM (&#xA;SELECT BATCH_ID, MODULE_ID, INACTIVE_INDICATOR&#xA;FROM OMD_BATCH_MODULE&#xA;WHERE BATCH_ID= ? AND MODULE_ID = ?&#xA;UNION ALL -- return if there is nothing, to give at least a result for SSIS&#xA;SELECT null, null, null&#xA;) sub"
+              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="INACTIVE_INDICATOR"
+                SQLTask:DtsVariableName="User::V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="BATCH_VALIDATION"
+                SQLTask:DtsVariableName="User::V_BATCH_VALIDATION" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_BATCH_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="1"
+                SQLTask:DtsVariableName="User::V_MODULE_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Module Eval\SCT - Prepare Dynamic SQL statements"
+          DTS:CreationName="Microsoft.ScriptTask"
+          DTS:Description="Script Task"
+          DTS:DTSID="{77943920-A6E8-47B4-8BED-9127A11DA362}"
+          DTS:ExecutableType="Microsoft.ScriptTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="SCT - Prepare Dynamic SQL statements"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <ScriptProject
+              Name="ST_0ae4df085b4a40d6bdb9bf02548216f3"
+              VSTAMajorVersion="3"
+              VSTAMinorVersion="0"
+              Language="CSharp"
+              ReadOnlyVariables="User::V_LAST_MODULE_INSTANCE_ID,User::V_LAST_MODULE_INSTANCE_ID_LIST,User::V_TABLE_CODE"
+              ReadWriteVariables="User::V_SQL_ROLLBACK_HSTG,User::V_SQL_ROLLBACK_INT_Delete,User::V_SQL_ROLLBACK_INT_Update,User::V_SQL_ROLLBACK_STG,User::V_SQL_ROLLBACK_STG_SOURCE_CONTROL">
+              <ProjectItem
+                Name="Properties\Resources.resx"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+</root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Settings.get_Default():ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Sett" +
+    "ings")]
+
+namespace ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties
+{
+
+
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+
+        public static Settings Default
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="ScriptMain.cs"
+                Encoding="UTF8"><![CDATA[/*
+   Microsoft SQL Server Integration Services Script Task
+   Write scripts using Microsoft Visual C# 2008.
+   The ScriptMain is the entry point class of the script.
+*/
+
+using System;
+using System.Data;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Windows.Forms;
+
+namespace ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj
+{
+    [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+    public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+    {
+
+        #region VSTA generated code
+        enum ScriptResults
+        {
+            Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+            Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+        #endregion
+
+        public void Main()
+        {
+            // STG Delete SQL
+            Dts.Variables["V_SQL_ROLLBACK_STG"].Value = "TRUNCATE TABLE " + Dts.Variables["V_TABLE_CODE"].Value.ToString();
+            Dts.Variables["V_SQL_ROLLBACK_STG_SOURCE_CONTROL"].Value = "DELETE FROM OMD_SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();                   
+
+
+            // HSTG Delete SQL
+            Dts.Variables["V_SQL_ROLLBACK_HSTG"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE OMD_INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();            
+
+            // INT Delete SQL
+            Dts.Variables["V_SQL_ROLLBACK_INT_Delete"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE OMD_INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+
+            // INT Update SQL    
+            Dts.Variables["V_SQL_ROLLBACK_INT_Update"].Value = "UPDATE [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] SET OMD_EXPIRY_DATETIME = '9999-12-31', OMD_CURRENT_RECORD_INDICATOR = 'Y' WHERE OMD_INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+                    
+            Dts.TaskResult = (int)ScriptResults.Success;
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="4.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:Language>msBuild</msb:Language>
+		<msb:CodeName>st_0ae4df085b4a40d6bdb9bf02548216f3</msb:CodeName>
+		<msb:DisplayName>st_0ae4df085b4a40d6bdb9bf02548216f3</msb:DisplayName>
+		<msb:ProjectId>{0C2D82E4-9443-4EE4-9C9D-40604B38382B}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_0ae4df085b4a40d6bdb9bf02548216f3.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Microsoft 2011")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
+                Name="st_0ae4df085b4a40d6bdb9bf02548216f3.csproj"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- This section defines project-level properties.
+
+       Configuration - Specifies whether the default configuration is Release or Debug.
+       Platform - Specifies what CPU the output of this project can run on.
+       OutputType - Must be "Library" for VSTA.
+       NoStandardLibraries - Set to "false" for VSTA.
+       RootNamespace - In C#, this specifies the namespace given to new files.
+                       In Visual Basic, all objects are wrapped in this namespace at runtime.
+       AssemblyName - Name of the output assembly.
+  -->
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <RootNamespace>ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj</RootNamespace>
+    <AssemblyName>ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj</AssemblyName>
+    <ProjectGuid>{BA80AC48-FCE8-4F6F-9E85-0F8178BC9127}</ProjectGuid>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+  </PropertyGroup>
+  <!-- This section defines properties that are set when the "Debug" configuration is
+       selected.
+
+       DebugSymbols - If true, create symbols (.pdb). If false, do not create symbols.
+       Optimize - If true, optimize the build output. If false, do not optimize.
+       OutputPath - Output path of the project relative to the project file.
+       EnableUnmanagedDebugging - If true, starting the debugger will attach both managed and unmanaged debuggers.
+       DefineConstants - Constants defined for the preprocessor.
+       Warning Level - Warning level for the compiler.
+  -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <!-- This section defines properties that are set when the "Release" configuration is
+       selected.
+
+       DebugSymbols - If true, create symbols (.pdb). If false, do not create symbols.
+       Optimize - If true, optimize the build output. If false, do not optimize.
+       OutputPath - Output path of the project relative to the project file.
+       EnableUnmanagedDebugging - If true, starting the debugger will attach both managed and unmanaged debuggers.
+       DefineConstants - Constants defined for the preprocessor.
+       Warning Level - Warning level for the compiler.
+  -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <!-- This section enables pre- and post-build steps. However,
+       it is recommended that MSBuild tasks be used instead of these properties.
+  -->
+  <PropertyGroup>
+    <PreBuildEvent></PreBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
+  </PropertyGroup>
+  <!-- This sections specifies references for the project. -->
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=Neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=Neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+  <!-- This section defines the user source files that are part of the
+       project.
+
+       Compile - Specifies a source file to compile.
+       EmbeddedResource - Specifies a .resx file for embedded resources.
+       None - Specifies a file that is not to be passed to the compiler (for instance,
+              a text file or XML file).
+       AppDesigner - Specifies the directory where the application properties files can
+                     be found.
+  -->
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <!-- Include the default configuration information and metadata files for the add-in.
+         These files are copied to the build output directory when the project is
+         built, and the path to the configuration file is passed to add-in on the command
+         line when debugging.
+    -->
+  </ItemGroup>
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- This section defines VSTA properties that describe the host-changable project properties. -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="VSTAHostName" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoExeName="" />
+        <Host Name="SSIS_ScriptTask" />
+        <ProjectClient>
+          <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties
+{
+
+
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources
+    {
+
+        private static global::System.Resources.ResourceManager resourceMan;
+
+        private static global::System.Globalization.CultureInfo resourceCulture;
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources()
+        {
+        }
+
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if ((resourceMan == null))
+                {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
+                return resourceCulture;
+            }
+            set
+            {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <BinaryItem
+                Name="ST_0ae4df085b4a40d6bdb9bf02548216f3.csproj.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
+ZGUuDQ0KJAAAAAAAAABQRQAATAEDAFGks1gAAAAAAAAAAOAAIiALATAAABQAAAAIAAAAAAAA0jIA
+AAAgAAAAQAAAAAAAEAAgAAAAAgAABAAAAAAAAAAEAAAAAAAAAACAAAAAAgAAAAAAAAMAQIUAABAA
+ABAAAAAAEAAAEAAAAAAAABAAAAAAAAAAAAAAAIAyAABPAAAAAEAAANwEAAAAAAAAAAAAAAAAAAAA
+AAAAAGAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAIAAACAAAAAAAAAAAAAAACCAAAEgAAAAAAAAAAAAAAC50ZXh0AAAA2BIAAAAgAAAAFAAAAAIA
+AAAAAAAAAAAAAAAAACAAAGAucnNyYwAAANwEAAAAQAAAAAYAAAAWAAAAAAAAAAAAAAAAAABAAABA
+LnJlbG9jAAAMAAAAAGAAAAACAAAAHAAAAAAAAAAAAAAAAAAAQAAAQgAAAAAAAAAAAAAAAAAAAAC0
+MgAAAAAAAEgAAAACAAUAjCIAADwPAAABAAAAAAAAAMgxAAC4AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAABMwBgDIAQAAAAAAAAIoEAAACm8RAAAKcgEAAHBvEgAACnIn
+AABwAigQAAAKbxEAAApyRwAAcG8SAAAKbxMAAApvFAAACigVAAAKbxYAAAoCKBAAAApvEQAACnJh
+AABwbxIAAApypQAAcAIoEAAACm8RAAAKch0BAHBvEgAACm8TAAAKbxQAAAooFQAACm8WAAAKAigQ
+AAAKbxEAAApyWwEAcG8SAAAKcoMBAHACKBAAAApvEQAACnJHAABwbxIAAApvEwAACm8UAAAKcp8B
+AHACKBAAAApvEQAACnIdAQBwbxIAAApvEwAACm8UAAAKKBcAAApvFgAACgIoEAAACm8RAAAKcvMB
+AHBvEgAACnKDAQBwAigQAAAKbxEAAApyRwAAcG8SAAAKbxMAAApvFAAACnKfAQBwAigQAAAKbxEA
+AApyHQEAcG8SAAAKbxMAAApvFAAACigXAAAKbxYAAAoCKBAAAApvEQAACnInAgBwbxIAAApyWwIA
+cAIoEAAACm8RAAAKckcAAHBvEgAACm8TAAAKbxQAAApybQIAcAIoEAAACm8RAAAKch0BAHBvEgAA
+Cm8TAAAKbxQAAAooFwAACm8WAAAKAigQAAAKFm8YAAAKKh4CKBkAAAoqHgIoGgAACiqufgEAAAQt
+HnJYAwBw0AMAAAIoGwAACm8cAAAKcx0AAAqAAQAABH4BAAAEKhp+AgAABCoeAoACAAAEKhp+AwAA
+BCoeAigeAAAKKi5zCAAABoADAAAEKgAAQlNKQgEAAQAAAAAADAAAAHY0LjAuMzAzMTkAAAAABQBs
+AAAA0AMAACN+AAA8BAAAiAUAACNTdHJpbmdzAAAAAMQJAADYAwAAI1VTAJwNAAAQAAAAI0dVSUQA
+AACsDQAAkAEAACNCbG9iAAAAAAAAAAIAAAFXHaABCQMAAAD6ATMAFgAAAQAAAB4AAAAFAAAABgAA
+AAkAAAABAAAAHgAAAAIAAAAQAAAAAgAAAAMAAAAEAAAAAQAAAAQAAAABAAAAAQAAAAAAhgMBAAAA
+AAAGAAECXQQGAJACXQQGAE0BSgQPANgEAAAGAHoBCwQGAOQBCwQGAMUBCwQGAHcCCwQGACECCwQG
+ADoCCwQGAJEBCwQGAKwByAIKAFUCNQMKAMwANQMGAMUDvgMGADABSgQGAFkFvgMGAC0EfQQGAB0E
+9gMOAAABcAMOAGEBcAMOAOgA4QMGABUBXQQKAF4DNQMSACEFdwASAEoAdwAGAOQCvgMGAJcAvgMG
+AFMAvgMGAH8FCwQAAAAAAQAAAAAAAQABAAEAEADWA+sCOQABAAEAAAAQAIQE5wRFAAEAAwAAARAA
+KwXnBFkAAwAHAAMBAABEBQAAPQAEAAoAEQDKA3UAEQC8AHkAEQA6AH0ABgYpAIEAVoA0BYQAVoCc
+AIQAUCAAAAAAhgDcAwYAAQAkIgAAAACGGD0EBgABACwiAAAAAIMYPQQGAAEANCIAAAAAkwgpBIgA
+AQBgIgAAAACTCKQAjQABAGciAAAAAJMIsACSAAEAbyIAAAAAlghgBZgAAgB2IgAAAACGGD0EBgAC
+AH4iAAAAAJEYQwSdAAIAAAABAMICCQA9BAEAEQA9BAYAGQA9BAoAKQA9BBAAMQA9BBAAOQA9BBAA
+QQA9BBAASQA9BBAAUQA9BBAAWQA9BBAAYQA9BBAAaQA9BAYAgQA9BAYAqQA9BBUAuQA9BAYAcQA8
+BRsAwQAdBSAAyQC1AyUA0QCuAisAiQDiAi8A2QBSBTMA0QC4AjkA2QBSBT4AwQBsBQEAcQA9BAYA
+iQA9BAYA4QBlAEYA4QB7BU0AkQA9BFIAsQA9BAYACAAUAGsACAAYAHAAKQBzANgALgALALAALgAT
+ALkALgAbANgALgAjAOEALgArABEBLgAzABEBLgA7ABcBLgBDAOEALgBLACYBLgBTABEBLgBbAEYB
+QwBjAHAASQBzANgAYQB7AHAAYwBrAHAAAwABAAQAAwAAAC0EoQAAAMQApgAAAGQFqwACAAQAAwAC
+AAUABQABAAYABQACAAcABwAEgAAAAQAAAHsYeGIAAAAAAADrAgAABAAAAAAAAAAAAAAAWQAxAAAA
+AAAMAAAAAAAAAAAAAABiABYDAAAAAAQAAAAAAAAAAAAAAFkAvgMAAAAADAAAAAAAAAAAAAAAYgAK
+AAAAAAAAAAAAAQAAAI4EAAAFAAIAAAAAAAA8TW9kdWxlPgBNaWNyb3NvZnQuU3FsU2VydmVyLk1h
+bmFnZWREVFMAdmFsdWVfXwBtc2NvcmxpYgBkZWZhdWx0SW5zdGFuY2UAVmFyaWFibGUAUnVudGlt
+ZVR5cGVIYW5kbGUAR2V0VHlwZUZyb21IYW5kbGUATWljcm9zb2Z0LlNxbFNlcnZlci5EdHMuUnVu
+dGltZQBUeXBlAEZhaWx1cmUAZ2V0X0N1bHR1cmUAc2V0X0N1bHR1cmUAcmVzb3VyY2VDdWx0dXJl
+AFZTVEFSVFNjcmlwdE9iamVjdE1vZGVsQmFzZQBBcHBsaWNhdGlvblNldHRpbmdzQmFzZQBFZGl0
+b3JCcm93c2FibGVTdGF0ZQBDb21waWxlckdlbmVyYXRlZEF0dHJpYnV0ZQBEZWJ1Z2dlck5vblVz
+ZXJDb2RlQXR0cmlidXRlAERlYnVnZ2FibGVBdHRyaWJ1dGUARWRpdG9yQnJvd3NhYmxlQXR0cmli
+dXRlAEFzc2VtYmx5VGl0bGVBdHRyaWJ1dGUAQXNzZW1ibHlUcmFkZW1hcmtBdHRyaWJ1dGUAVGFy
+Z2V0RnJhbWV3b3JrQXR0cmlidXRlAEFzc2VtYmx5Q29uZmlndXJhdGlvbkF0dHJpYnV0ZQBBc3Nl
+bWJseURlc2NyaXB0aW9uQXR0cmlidXRlAENvbXBpbGF0aW9uUmVsYXhhdGlvbnNBdHRyaWJ1dGUA
+QXNzZW1ibHlQcm9kdWN0QXR0cmlidXRlAEFzc2VtYmx5Q29weXJpZ2h0QXR0cmlidXRlAFNTSVNT
+Y3JpcHRUYXNrRW50cnlQb2ludEF0dHJpYnV0ZQBBc3NlbWJseUNvbXBhbnlBdHRyaWJ1dGUAUnVu
+dGltZUNvbXBhdGliaWxpdHlBdHRyaWJ1dGUAZ2V0X1ZhbHVlAHNldF9WYWx1ZQB2YWx1ZQBTeXN0
+ZW0uUnVudGltZS5WZXJzaW9uaW5nAFRvU3RyaW5nAFNUXzBhZTRkZjA4NWI0YTQwZDZiZGI5YmYw
+MjU0ODIxNmYzLmNzcHJvagBNaWNyb3NvZnQuU3FsU2VydmVyLlNjcmlwdFRhc2sATWljcm9zb2Z0
+LlNxbFNlcnZlci5EdHMuVGFza3MuU2NyaXB0VGFzawBTY3JpcHRPYmplY3RNb2RlbABTeXN0ZW0u
+Q29tcG9uZW50TW9kZWwAU1RfMGFlNGRmMDg1YjRhNDBkNmJkYjliZjAyNTQ4MjE2ZjMuY3Nwcm9q
+LmRsbABnZXRfSXRlbQBTeXN0ZW0ARW51bQByZXNvdXJjZU1hbgBTY3JpcHRNYWluAFN5c3RlbS5D
+b25maWd1cmF0aW9uAFN5c3RlbS5HbG9iYWxpemF0aW9uAFN5c3RlbS5SZWZsZWN0aW9uAEN1bHR1
+cmVJbmZvAGdldF9SZXNvdXJjZU1hbmFnZXIALmN0b3IALmNjdG9yAFN5c3RlbS5EaWFnbm9zdGlj
+cwBTeXN0ZW0uUnVudGltZS5Db21waWxlclNlcnZpY2VzAFN5c3RlbS5SZXNvdXJjZXMAU1RfMGFl
+NGRmMDg1YjRhNDBkNmJkYjliZjAyNTQ4MjE2ZjMuY3Nwcm9qLlByb3BlcnRpZXMuUmVzb3VyY2Vz
+LnJlc291cmNlcwBEZWJ1Z2dpbmdNb2RlcwBTVF8wYWU0ZGYwODViNGE0MGQ2YmRiOWJmMDI1NDgy
+MTZmMy5jc3Byb2ouUHJvcGVydGllcwBnZXRfVmFyaWFibGVzAFNldHRpbmdzAFN1Y2Nlc3MAZ2V0
+X0R0cwBTY3JpcHRSZXN1bHRzAENvbmNhdABPYmplY3QAZ2V0X0RlZmF1bHQAc2V0X1Rhc2tSZXN1
+bHQAZ2V0X0Fzc2VtYmx5AAAlVgBfAFMAUQBMAF8AUgBPAEwATABCAEEAQwBLAF8AUwBUAEcAAB9U
+AFIAVQBOAEMAQQBUAEUAIABUAEEAQgBMAEUAIAAAGVYAXwBUAEEAQgBMAEUAXwBDAE8ARABFAABD
+VgBfAFMAUQBMAF8AUgBPAEwATABCAEEAQwBLAF8AUwBUAEcAXwBTAE8AVQBSAEMARQBfAEMATwBO
+AFQAUgBPAEwAAHdEAEUATABFAFQARQAgAEYAUgBPAE0AIABPAE0ARABfAFMATwBVAFIAQwBFAF8A
+QwBPAE4AVABSAE8ATAAgAFcASABFAFIARQAgAE0ATwBEAFUATABFAF8ASQBOAFMAVABBAE4AQwBF
+AF8ASQBEACAASQBOACAAAD1WAF8ATABBAFMAVABfAE0ATwBEAFUATABFAF8ASQBOAFMAVABBAE4A
+QwBFAF8ASQBEAF8ATABJAFMAVAAAJ1YAXwBTAFEATABfAFIATwBMAEwAQgBBAEMASwBfAEgAUwBU
+AEcAABtEAEUATABFAFQARQAgAEYAUgBPAE0AIABbAABTXQAgAFcASABFAFIARQAgAE8ATQBEAF8A
+SQBOAFMARQBSAFQAXwBNAE8ARABVAEwARQBfAEkATgBTAFQAQQBOAEMARQBfAEkARAAgAEkATgAg
+AAAzVgBfAFMAUQBMAF8AUgBPAEwATABCAEEAQwBLAF8ASQBOAFQAXwBEAGUAbABlAHQAZQAAM1YA
+XwBTAFEATABfAFIATwBMAEwAQgBBAEMASwBfAEkATgBUAF8AVQBwAGQAYQB0AGUAABFVAFAARABB
+AFQARQAgAFsAAIDpXQAgAFMARQBUACAATwBNAEQAXwBFAFgAUABJAFIAWQBfAEQAQQBUAEUAVABJ
+AE0ARQAgAD0AIAAnADkAOQA5ADkALQAxADIALQAzADEAJwAsACAATwBNAEQAXwBDAFUAUgBSAEUA
+TgBUAF8AUgBFAEMATwBSAEQAXwBJAE4ARABJAEMAQQBUAE8AUgAgAD0AIAAnAFkAJwAgAFcASABF
+AFIARQAgAE8ATQBEAF8ASQBOAFMARQBSAFQAXwBNAE8ARABVAEwARQBfAEkATgBTAFQAQQBOAEMA
+RQBfAEkARAAgAEkATgAgAAF/UwBUAF8AMABhAGUANABkAGYAMAA4ADUAYgA0AGEANAAwAGQANgBi
+AGQAYgA5AGIAZgAwADIANQA0ADgAMgAxADYAZgAzAC4AYwBzAHAAcgBvAGoALgBQAHIAbwBwAGUA
+cgB0AGkAZQBzAC4AUgBlAHMAbwB1AHIAYwBlAHMAAGosLt0VYNlOqy8376mqPw0ABCABAQgDIAAB
+BSABARERBCABAQ4FIAEBEVEEIAASYQQgABJlBSABEmkcAyAAHAMgAA4FAAIODg4EIAEBHAcABA4O
+Dg4OBgABEnERdQQgABJ5BiACAQ4SeQi3elxWGTTgiQiJhF3NgIDMkQQAAAAABAEAAAADBhJJAwYS
+TQMGEhACBggDBhEUBAAAEkkEAAASTQUAAQESTQQAABIQAwAAAQQIABJJBAgAEk0ECAASEAgBAAgA
+AAAAAB4BAAEAVAIWV3JhcE5vbkV4Y2VwdGlvblRocm93cwEIAQACAAAAAAAvAQAqU1RfMGFlNGRm
+MDg1YjRhNDBkNmJkYjliZjAyNTQ4MjE2ZjMuY3Nwcm9qAAAFAQAAAAAOAQAJTWljcm9zb2Z0AAAf
+AQAaQ29weXJpZ2h0IEAgTWljcm9zb2Z0IDIwMTEAAEcBABouTkVURnJhbWV3b3JrLFZlcnNpb249
+djQuMAEAVA4URnJhbWV3b3JrRGlzcGxheU5hbWUQLk5FVCBGcmFtZXdvcmsgNAAAtAAAAM7K774B
+AAAAkQAAAGxTeXN0ZW0uUmVzb3VyY2VzLlJlc291cmNlUmVhZGVyLCBtc2NvcmxpYiwgVmVyc2lv
+bj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUw
+ODkjU3lzdGVtLlJlc291cmNlcy5SdW50aW1lUmVzb3VyY2VTZXQCAAAAAAAAAAAAAABQQURQQURQ
+tAAAAKgyAAAAAAAAAAAAAMIyAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC0MgAAAAAAAAAAAAAA
+AF9Db3JEbGxNYWluAG1zY29yZWUuZGxsAAAAAAD/JQAgABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAQAQAAAAGAAAgAAAAAAAAAAAAAAAAAAAAQABAAAAMAAAgAAAAAAAAAAAAAAAAAAAAQAAAAAA
+SAAAAFhAAAB+BAAAAAAAAAAAAAB+BDQAAABWAFMAXwBWAEUAUgBTAEkATwBOAF8ASQBOAEYATwAA
+AAAAvQTv/gAAAQAAAAEAeGJ7GAAAAQB4YnsYPwAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAEQA
+AAABAFYAYQByAEYAaQBsAGUASQBuAGYAbwAAAAAAJAAEAAAAVAByAGEAbgBzAGwAYQB0AGkAbwBu
+AAAAAAAAALAE3gMAAAEAUwB0AHIAaQBuAGcARgBpAGwAZQBJAG4AZgBvAAAAugMAAAEAMAAwADAA
+MAAwADQAYgAwAAAAGgABAAEAQwBvAG0AbQBlAG4AdABzAAAAAAAAADQACgABAEMAbwBtAHAAYQBu
+AHkATgBhAG0AZQAAAAAATQBpAGMAcgBvAHMAbwBmAHQAAAB+ACsAAQBGAGkAbABlAEQAZQBzAGMA
+cgBpAHAAdABpAG8AbgAAAAAAUwBUAF8AMABhAGUANABkAGYAMAA4ADUAYgA0AGEANAAwAGQANgBi
+AGQAYgA5AGIAZgAwADIANQA0ADgAMgAxADYAZgAzAC4AYwBzAHAAcgBvAGoAAAAAAD4ADwABAEYA
+aQBsAGUAVgBlAHIAcwBpAG8AbgAAAAAAMQAuADAALgA2ADIANgA3AC4AMgA1ADIAMAA4AAAAAAB+
+AC8AAQBJAG4AdABlAHIAbgBhAGwATgBhAG0AZQAAAFMAVABfADAAYQBlADQAZABmADAAOAA1AGIA
+NABhADQAMABkADYAYgBkAGIAOQBiAGYAMAAyADUANAA4ADIAMQA2AGYAMwAuAGMAcwBwAHIAbwBq
+AC4AZABsAGwAAAAAAFoAGwABAEwAZQBnAGEAbABDAG8AcAB5AHIAaQBnAGgAdAAAAEMAbwBwAHkA
+cgBpAGcAaAB0ACAAQAAgAE0AaQBjAHIAbwBzAG8AZgB0ACAAMgAwADEAMQAAAAAAKgABAAEATABl
+AGcAYQBsAFQAcgBhAGQAZQBtAGEAcgBrAHMAAAAAAAAAAACGAC8AAQBPAHIAaQBnAGkAbgBhAGwA
+RgBpAGwAZQBuAGEAbQBlAAAAUwBUAF8AMABhAGUANABkAGYAMAA4ADUAYgA0AGEANAAwAGQANgBi
+AGQAYgA5AGIAZgAwADIANQA0ADgAMgAxADYAZgAzAC4AYwBzAHAAcgBvAGoALgBkAGwAbAAAAAAA
+dgArAAEAUAByAG8AZAB1AGMAdABOAGEAbQBlAAAAAABTAFQAXwAwAGEAZQA0AGQAZgAwADgANQBi
+ADQAYQA0ADAAZAA2AGIAZABiADkAYgBmADAAMgA1ADQAOAAyADEANgBmADMALgBjAHMAcAByAG8A
+agAAAAAAQgAPAAEAUAByAG8AZAB1AGMAdABWAGUAcgBzAGkAbwBuAAAAMQAuADAALgA2ADIANgA3
+AC4AMgA1ADIAMAA4AAAAAABGAA8AAQBBAHMAcwBlAG0AYgBsAHkAIABWAGUAcgBzAGkAbwBuAAAA
+MQAuADAALgA2ADIANgA3AC4AMgA1ADIAMAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAMAAAA1DIAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
+            </ScriptProject>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{4F8E24B9-FE0D-4243-80EC-B3670F65E289}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_MODULE_ACTIVE_INSTANCE_CONTROL == &quot;Abort&quot;"
+          DTS:From="Package\Module Eval\EST - Check for multiple active Module Instances"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{C7413602-5A70-4648-9AFB-D5F74CB2F3CD}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_MODULE_ACTIVE_INSTANCE_CONTROL == &quot;Process&quot;"
+          DTS:From="Package\Module Eval\EST - Check for multiple active Module Instances"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Module Eval\EST - Validate Batch processing" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 10]"
+          DTS:CreationName=""
+          DTS:DTSID="{7034D886-FA90-4323-B97A-B38CAF001965}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_AREA_CODE == &quot;HSTG&quot;"
+          DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 10"
+          DTS:To="Package\Module Eval\EST - Re-process HSTG" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 11]"
+          DTS:CreationName=""
+          DTS:DTSID="{12040A67-2A12-4D87-9782-AD4A05E63708}"
+          DTS:From="Package\Module Eval\EST - Re-process HSTG"
+          DTS:ObjectName="Constraint 11"
+          DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 12]"
+          DTS:CreationName=""
+          DTS:DTSID="{6F0B2EC1-D924-42E3-B9E7-4221547CCB61}"
+          DTS:From="Package\Module Eval\EST - Correct OMD Source Control"
+          DTS:ObjectName="Constraint 12"
+          DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 13]"
+          DTS:CreationName=""
+          DTS:DTSID="{A6F1D70A-DDDC-47DB-800A-A531F56D3AF2}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_AREA_CODE == &quot;INT&quot;"
+          DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 13"
+          DTS:To="Package\Module Eval\EST - Re-process INT Delete" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 14]"
+          DTS:CreationName=""
+          DTS:DTSID="{C1899B91-5C60-48D7-B860-8EB9D5FDA562}"
+          DTS:From="Package\Module Eval\EST - Re-process INT Delete"
+          DTS:ObjectName="Constraint 14"
+          DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 15]"
+          DTS:CreationName=""
+          DTS:DTSID="{7780A309-13E0-46F8-84DF-078CA2948152}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Incorrect&quot;"
+          DTS:From="Package\Module Eval\EST - Validate Batch processing"
+          DTS:ObjectName="Constraint 15"
+          DTS:To="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 16]"
+          DTS:CreationName=""
+          DTS:DTSID="{8D15FD77-E43B-4A53-9D50-76436681756A}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_BATCH_INSTANCE_ID == 0 || (@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Correct&quot; &amp;&amp; @V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL != &quot;Y&quot;)"
+          DTS:From="Package\Module Eval\EST - Validate Batch processing"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 16"
+          DTS:To="Package\Module Eval\EST - Get the details of the previous Module Instance" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 17]"
+          DTS:CreationName=""
+          DTS:DTSID="{CBCD04A4-8689-4970-BF58-AB43ACF92195}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Correct&quot; &amp;&amp; @V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL == &quot;Y&quot;"
+          DTS:From="Package\Module Eval\EST - Validate Batch processing"
+          DTS:ObjectName="Constraint 17"
+          DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Skip this run" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 18]"
+          DTS:CreationName=""
+          DTS:DTSID="{4DA28F2F-6433-42C7-A5E0-72D4BEC9A939}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_AREA_CODE == &quot;REP&quot;"
+          DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          DTS:ObjectName="Constraint 18"
+          DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{A33E880A-7914-488B-9DCB-5D5E9ED63B32}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR  == &quot;R&quot; &amp;&amp; @V_INACTIVE_INDICATOR_MODULE_LEVEL != &quot;Y&quot;"
+          DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
+          DTS:To="Package\Module Eval\SCT - Prepare Dynamic SQL statements" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 3]"
+          DTS:CreationName=""
+          DTS:DTSID="{3A70AB15-1CC9-4938-9459-CF79DF9EC6D1}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR == &quot;P&quot; &amp;&amp; @V_INACTIVE_INDICATOR_MODULE_LEVEL != &quot;Y&quot;"
+          DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 3"
+          DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 4]"
+          DTS:CreationName=""
+          DTS:DTSID="{6C6944E9-A9C3-428A-8787-CAA889E5E1F3}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR == &quot;C&quot; || @V_INACTIVE_INDICATOR_MODULE_LEVEL == &quot;Y&quot;"
+          DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance"
+          DTS:ObjectName="Constraint 4"
+          DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Skip this run" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 5]"
+          DTS:CreationName=""
+          DTS:DTSID="{E31FFE9A-3404-482B-A2DB-7F81D75EE0ED}"
+          DTS:EvalOp="3"
+          DTS:Expression="@V_AREA_CODE == &quot;STG&quot;"
+          DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 5"
+          DTS:To="Package\Module Eval\EST - Re-process STG" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 6]"
+          DTS:CreationName=""
+          DTS:DTSID="{B67BCAA8-7839-49E1-9D4D-2D5011D32488}"
+          DTS:From="Package\Module Eval\SCT - Prepare Dynamic SQL statements"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 6"
+          DTS:To="Package\Module Eval\EST - Set Processing Indicator to Recovery" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 7]"
+          DTS:CreationName=""
+          DTS:DTSID="{A734CFC8-3261-4A46-946D-D2838BB336F2}"
+          DTS:EvalOp="3"
+          DTS:Expression="(SUBSTRING(@V_TABLE_CODE,1,3) == &quot;SAT&quot;) || (SUBSTRING(@V_TABLE_CODE,1,8) ==&quot;LSAT&quot;)"
+          DTS:From="Package\Module Eval\EST - Re-process INT Delete"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 7"
+          DTS:To="Package\Module Eval\EST - Re-process INT Update" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 8]"
+          DTS:CreationName=""
+          DTS:DTSID="{77CB4F24-D59C-4B83-91EF-3703A6466743}"
+          DTS:From="Package\Module Eval\EST - Re-process STG"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 8"
+          DTS:To="Package\Module Eval\EST - Correct OMD Source Control" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 9]"
+          DTS:CreationName=""
+          DTS:DTSID="{1C644C3E-1BD6-470D-B9D4-0C8DEA008271}"
+          DTS:From="Package\Module Eval\EST - Re-process INT Update"
+          DTS:ObjectName="Constraint 9"
+          DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <NodeLayout
+          Size="245,44"
+          Id="Package\Module Eval\EST - Check for multiple active Module Instances"
+          TopLeft="392.150943396226,36.7358490566038" />
+        <NodeLayout
+          Size="216,44"
+          Id="Package\Module Eval\EST - Correct OMD Source Control"
+          TopLeft="560.075471698113,580.547169811321" />
+        <NodeLayout
+          Size="220,44"
+          Id="Package\Module Eval\EST - Get the details of the previous Module Instance"
+          TopLeft="503.698113207547,230.622641509434" />
+        <NodeLayout
+          Size="210,44"
+          Id="Package\Module Eval\EST - Re-process HSTG"
+          TopLeft="331.962264150943,553.11320754717" />
+        <NodeLayout
+          Size="202,44"
+          Id="Package\Module Eval\EST - Re-process INT Delete"
+          TopLeft="99.9622641509434,505.415094339623" />
+        <NodeLayout
+          Size="202,44"
+          Id="Package\Module Eval\EST - Re-process INT Update"
+          TopLeft="15.5094339622641,586.509433962264" />
+        <NodeLayout
+          Size="216,44"
+          Id="Package\Module Eval\EST - Re-process STG"
+          TopLeft="579.584905660377,474.433962264151" />
+        <NodeLayout
+          Size="212,44"
+          Id="Package\Module Eval\EST - Set Processing Indicator to Recovery"
+          TopLeft="331.132075471698,437.943396226415" />
+        <NodeLayout
+          Size="326,44"
+          Id="Package\Module Eval\EST - Set the current Processing Indicator to Proceed"
+          TopLeft="277.169811320755,690.88679245283" />
+        <NodeLayout
+          Size="196,44"
+          Id="Package\Module Eval\EST - Set the Processing Indicator to Proceed"
+          TopLeft="574.966517699329,345.754716981132" />
+        <NodeLayout
+          Size="220,44"
+          Id="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run"
+          TopLeft="281.924528301887,145" />
+        <NodeLayout
+          Size="196,51"
+          Id="Package\Module Eval\EST - Set the Processing Indicator to Skip this run"
+          TopLeft="834.264150943396,230.962264150943" />
+        <NodeLayout
+          Size="219,44"
+          Id="Package\Module Eval\EST - Validate Batch processing"
+          TopLeft="546.037735849057,144.962264150943" />
+        <NodeLayout
+          Size="212,44"
+          Id="Package\Module Eval\SCT - Prepare Dynamic SQL statements"
+          TopLeft="331.094339622641,345.830188679245" />
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint]"
+          TopLeft="472.943396226415,80.6603773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-81.1698113207547,64.3396226415094"
+              Start="0,0"
+              End="-81.1698113207547,56.8396226415094">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32.1509433962264" />
+                  <mssgle:LineSegment
+                    End="-81.1698113207547,32.1509433962264" />
+                  <mssgle:LineSegment
+                    End="-81.1698113207547,56.8396226415094" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-12,NaN,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 1]"
+          TopLeft="555.962264150943,80.6603773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="57.8867924528302,64.3018867924528"
+              Start="0,0"
+              End="57.8867924528302,56.8018867924528">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32.1509433962264" />
+                  <mssgle:LineSegment
+                    End="57.8867924528302,32.1509433962264" />
+                  <mssgle:LineSegment
+                    End="57.8867924528302,56.8018867924528" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="20.9433962264151,37.1509433962264,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 10]"
+          TopLeft="436.943396226415,481.867924528302">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-0.188679245283026,71.2452830188679"
+              Start="0,0"
+              End="-0.188679245283026,63.7452830188679">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,35.6226415094339" />
+                  <mssgle:LineSegment
+                    End="-0.188679245283026,35.6226415094339" />
+                  <mssgle:LineSegment
+                    End="-0.188679245283026,63.7452830188679" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8.09433962264151,40.6226415094339,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 11]"
+          TopLeft="436.754716981132,597.037735849057">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-58.6037735849056,93.8490566037736"
+              Start="0,0"
+              End="-58.6037735849056,86.3490566037736">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,46.9056603773586" />
+                  <mssgle:LineSegment
+                    End="-58.6037735849056,46.9056603773586" />
+                  <mssgle:LineSegment
+                    End="-58.6037735849056,86.3490566037736" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 12]"
+          TopLeft="667.88679245283,624.471698113208">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-165.207547169811,66.4150943396227"
+              Start="0,0"
+              End="-165.207547169811,58.9150943396227">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,33.2075471698113" />
+                  <mssgle:LineSegment
+                    End="-165.207547169811,33.2075471698113" />
+                  <mssgle:LineSegment
+                    End="-165.207547169811,58.9150943396227" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 13]"
+          TopLeft="374.679245283019,481.867924528302">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-173.88679245283,23.5471698113207"
+              Start="0,0"
+              End="-173.88679245283,16.0471698113207">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,5.88679245283015" />
+                  <mssgle:LineSegment
+                    End="-173.88679245283,5.88679245283015" />
+                  <mssgle:LineSegment
+                    End="-173.88679245283,16.0471698113207" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-94.9433962264151,10.8867924528302,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 14]"
+          TopLeft="242.301886792453,549.339622641509">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="135.849056603774,141.547169811321"
+              Start="0,0"
+              End="135.849056603774,134.047169811321">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,70.7547169811321" />
+                  <mssgle:LineSegment
+                    End="135.849056603774,70.7547169811321" />
+                  <mssgle:LineSegment
+                    End="135.849056603774,134.047169811321" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 15]"
+          TopLeft="546.037735849057,166.924528301887">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-44.4150943396226,0.0377358490566166"
+              Start="0,0"
+              End="-36.9150943396226,0.0377358490566166">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-22.188679245283,0" />
+                  <mssgle:LineSegment
+                    End="-22.188679245283,0.0377358490566166" />
+                  <mssgle:LineSegment
+                    End="-36.9150943396226,0.0377358490566166" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-12,NaN,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 16]"
+          TopLeft="613.849056603774,188.88679245283">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-0.339622641509436,41.7358490566037"
+              Start="0,0"
+              End="-0.339622641509436,34.2358490566037">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.8679245283018" />
+                  <mssgle:LineSegment
+                    End="-0.339622641509436,20.8679245283018" />
+                  <mssgle:LineSegment
+                    End="-0.339622641509436,34.2358490566037" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8.16981132075472,25.8679245283018,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 17]"
+          TopLeft="690.704402515724,188.962264150943">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="241.559748427672,42"
+              Start="0,0"
+              End="241.559748427672,34.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,12.9827742520399" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,12.9827742520399"
+                    Point2="0,16.9827742520399"
+                    Point3="4,16.9827742520399" />
+                  <mssgle:LineSegment
+                    End="237.559748427672,16.9827742520399" />
+                  <mssgle:CubicBezierSegment
+                    Point1="237.559748427672,16.9827742520399"
+                    Point2="241.559748427672,16.9827742520399"
+                    Point3="241.559748427672,20.9827742520399" />
+                  <mssgle:LineSegment
+                    End="241.559748427672,34.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="112.779874213836,21.9827742520399,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 18]"
+          TopLeft="499.207547169811,481.867924528302">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="3.47169811320755,209.018867924528"
+              Start="0,0"
+              End="3.47169811320755,201.518867924528">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.2264150943396" />
+                  <mssgle:LineSegment
+                    End="3.47169811320755,52.2264150943396" />
+                  <mssgle:LineSegment
+                    End="3.47169811320755,201.518867924528" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-6.26415094339622,57.2264150943396,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 2]"
+          TopLeft="572,274.547169811321">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-135.094339622641,71.2830188679245"
+              Start="0,0"
+              End="-135.094339622641,63.7830188679245">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,35.6226415094339" />
+                  <mssgle:LineSegment
+                    End="-135.094339622641,35.6226415094339" />
+                  <mssgle:LineSegment
+                    End="-135.094339622641,63.7830188679245" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-75.5471698113207,40.6226415094339,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 3]"
+          TopLeft="649.03144654088,274.622641509434">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="23.9350711584491,71.132075471698"
+              Start="0,0"
+              End="23.9350711584491,63.632075471698">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,24.7609835842245" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,24.7609835842245"
+                    Point2="0,28.7609835842245"
+                    Point3="4,28.7609835842245" />
+                  <mssgle:LineSegment
+                    End="19.9350711584491,28.7609835842245" />
+                  <mssgle:CubicBezierSegment
+                    Point1="19.9350711584491,28.7609835842245"
+                    Point2="23.9350711584491,28.7609835842245"
+                    Point3="23.9350711584491,32.7609835842245" />
+                  <mssgle:LineSegment
+                    End="23.9350711584491,63.632075471698" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="3.96753557922455,33.7609835842245,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 4]"
+          TopLeft="723.698113207547,254.542452830189">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="110.566037735849,0"
+              Start="0,0"
+              End="103.066037735849,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="103.066037735849,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="43.5330188679245,5,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 5]"
+          TopLeft="542.792452830189,459.905660377359">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="36.7924528301887,36.4905660377358"
+              Start="0,0"
+              End="29.2924528301887,36.4905660377358">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="18.4150943396226,0" />
+                  <mssgle:LineSegment
+                    End="18.4150943396226,36.4905660377358" />
+                  <mssgle:LineSegment
+                    End="29.2924528301887,36.4905660377358" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="10.4150943396226,-26,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 6]"
+          TopLeft="436.905660377358,389.754716981132">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0.0377358490565882,48.1886792452831"
+              Start="0,0"
+              End="0.0377358490565882,40.6886792452831">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,24.0754716981132" />
+                  <mssgle:LineSegment
+                    End="0.0377358490565882,24.0754716981132" />
+                  <mssgle:LineSegment
+                    End="0.0377358490565882,40.6886792452831" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 7]"
+          TopLeft="159.283018867925,549.339622641509">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-42.9433962264151,37.1698113207548"
+              Start="0,0"
+              End="-42.9433962264151,29.6698113207548">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,18.5660377358491" />
+                  <mssgle:LineSegment
+                    End="-42.9433962264151,18.5660377358491" />
+                  <mssgle:LineSegment
+                    End="-42.9433962264151,29.6698113207548" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-29.4716981132075,23.5660377358491,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 8]"
+          TopLeft="687.396226415094,518.358490566038">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-19.5094339622642,62.1886792452831"
+              Start="0,0"
+              End="-19.5094339622642,54.6886792452831">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.0943396226415" />
+                  <mssgle:LineSegment
+                    End="-19.5094339622642,31.0943396226415" />
+                  <mssgle:LineSegment
+                    End="-19.5094339622642,54.6886792452831" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Module Eval.PrecedenceConstraints[Constraint 9]"
+          TopLeft="116.339622641509,630.433962264151">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="220.301886792453,60.4528301886793"
+              Start="0,0"
+              End="220.301886792453,52.9528301886793">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,30.2264150943397" />
+                  <mssgle:LineSegment
+                    End="220.301886792453,30.2264150943397" />
+                  <mssgle:LineSegment
+                    End="220.301886792453,52.9528301886793" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <AnnotationLayout
+          Text="In case the Module is called from a (parent) Batch this&#xA;task verifies if the registration is done properly and&#xA;if the Module is disabled in the Batch (OMD_BATCH_MODULE)&#xA;configuration."
+          ParentId="Package\Module Eval"
+          Size="339,78"
+          Id="7d186d4b-93f7-4278-a7f8-e8f689286f54"
+          TopLeft="684.528301886792,57.6792452830189">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="The Module will be skipped if either the Module itself is set to inactive&#xA;or when the Module is disabled for a specific Batch."
+          ParentId="Package\Module Eval"
+          Size="375,51"
+          Id="113c390c-a340-4316-9299-89b6152c7ac6"
+          TopLeft="816.679245283019,145.566037735849">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="The default value for the Processing Indicator is 'A'&#xA;so the action to update the Processing Indicator is effectively&#xA;redundant but kept in the evaluation as a safety catch."
+          ParentId="Package\Module Eval"
+          Size="332,65"
+          Id="8959611b-de25-4f3e-9266-26bf639bba42"
+          TopLeft="173.245283018868,200.660377358491">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="Regarding the Skip process:&#xA;&#xA;- if it is detected that the Module was started from a Batch it should be registered &#xA;properly in the Batch/Module table and aborted if 'incorrect')&#xA;&#xA;- if it is independent AND the Module Inactive Indicator is set to 'Y' it should be skipped.&#xA;&#xA;- if it is not independent AND the Batch/Module Indicator is set to 'Y' it should be skipped.&#xA;&#xA;- if it is independent and the Module Inactive Indicator is set to 'N' it can proceed.&#xA;&#xA;- if it is not independent and the Batch/Modlue Indicator is set to 'N' AND the &#xA;registration is OK then it can proceed."
+          ParentId="Package\Module Eval"
+          Size="476,201"
+          Id="38b81fbc-8902-46d8-b16f-9252487f0b18"
+          TopLeft="793.924528301887,288.547169811321">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="This Script Task is required to prepare&#xA;the dynamic SQL. The table name is passed &#xA;as a parameter in these queries."
+          ParentId="Package\Module Eval"
+          Size="250,65"
+          Id="35e03da7-c5a7-4648-b864-50d1c6f53917"
+          TopLeft="71.433962264151,336.962264150943">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="Rollback for the Staging Area essentially &#xA;means truncating it before the next run."
+          ParentId="Package\Module Eval"
+          Size="232,51"
+          Id="33105503-6d8d-490e-9472-c106c0236b32"
+          TopLeft="789.471698113208,553.11320754717">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="Multiple active instances indicate corruption in the OMD repository."
+          ParentId="Package\Module Eval"
+          Size="361,38"
+          Id="5e1f9a25-0573-4aef-947c-186a980f117d"
+          TopLeft="390.867924528302,5.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <AnnotationLayout
+          Text="Used variables:&#xA;- V_MODULE_ID&#xA;- V_MODULE_INSTANCE_ID&#xA;- V_MODULE_ACTIVE_INSTANCE_CONTROL&#xA;- V_LAST_BATCH_INSTANCE_ID&#xA;- V_LAST_MODULE_INSTANCE_ID&#xA;- V_LAST_START_DATETIME&#xA;- V_LAST_END_DATETIME&#xA;- V_LAST_EXECUTION_FLAG&#xA;- V_LAST_MODULE_INSTANCE_ID_LIST&#xA;- V_LAST_NEXT_RUN_INDICATOR&#xA;- V_INACTIVE_INDICATOR&#xA;- V_BATCH_VALIDATION"
+          ParentId="Package\Module Eval"
+          Size="250,201"
+          Id="8b5e35fb-6503-483f-a0d9-05b814b030ce"
+          TopLeft="33.6226415094339,5.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="1275,790"
+          Size="1275,834"
+          Id="Package\Module Eval"
+          TopLeft="5.5,102.330188679245" />
+        <AnnotationLayout
+          Text="Name: &#xA;Module_Eval&#xA;&#xA;Description: &#xA;Execute on Module Eval&#xA;"
+          ParentId="Package"
+          Size="710,105"
+          Id="f0b8aa88-7165-40d0-808f-3e7e5120dab5"
+          TopLeft="6.31132075471692,7.5">
+          <AnnotationLayout.FontInfo>
+            <mssge:FontInfo
+              Family="Tahoma"
+              Size="11.25"
+              Color="#FF080000">
+              <mssge:FontInfo.TextDecorations>
+                <av:TextDecorationCollection />
+              </mssge:FontInfo.TextDecorations>
+            </mssge:FontInfo>
+          </AnnotationLayout.FontInfo>
+        </AnnotationLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

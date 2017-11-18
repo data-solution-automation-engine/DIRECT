@@ -1,0 +1,260 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="1/25/2011 11:50:28 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="A8WSERVER02"
+  DTS:CreatorName="A8\a8user"
+  DTS:DTSID="{5735E6ED-4E69-4C39-930A-B722F55C2084}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LocaleID="3081"
+  DTS:ObjectName="Batch_Create_Instance"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="170"
+  DTS:VersionGUID="{5556DC88-C967-4BCB-93E8-1B43BC648F54}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="SSIS_ETL_CONFIG"
+      DTS:ConfigurationType="5"
+      DTS:CreationName=""
+      DTS:DTSID="{5ED81DAE-61E3-48B8-B794-AAC6B8E37D71}"
+      DTS:ObjectName="OMD_FRAMEWORK_XML_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="&quot;CONFIG&quot;;&quot;[dbo].[SSIS Configurations]&quot;;&quot;OMD_FRAMEWORK_CONFIGURATION&quot;;"
+      DTS:ConfigurationType="7"
+      DTS:CreationName=""
+      DTS:DTSID="{E9A976EF-7DFD-459C-885F-A3C2CFB9C4A4}"
+      DTS:ObjectName="OMD_FRAMEWORK_CONFIGURATION" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_BATCH_ID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_ID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{F7016666-EF8D-49B1-AD68-752213D930C5}"
+      DTS:ObjectName="V_BATCH_ID" />
+    <DTS:Configuration
+      DTS:ConfigurationString="V_BATCH_INSTANCE_START_DATETIME"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_START_DATETIME].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{FA2403C1-8D15-4672-BCA5-8B9CDB3A3132}"
+      DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME" />
+    <DTS:Configuration
+      DTS:ConfigurationString="ExecutionInstanceGUID"
+      DTS:ConfigurationVariable="\Package.Variables[User::V_PACKAGE_EXECUTION_GUID].Properties[Value]"
+      DTS:CreationName=""
+      DTS:DTSID="{DCE0038B-B44F-40E3-8AEB-A372DB359BBA}"
+      DTS:ObjectName="V_PACKAGE_EXECUTION_GUID" />
+  </DTS:Configurations>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{A2FA947B-A775-4F5E-90C2-41F2AA5BEA77}"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="7"
+      DTS:DTSID="{1504B5D9-E85C-4E2B-8219-F3B189C90C47}"
+      DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
+      <DTS:Property
+        DTS:DataType="7"
+        DTS:Name="ParameterValue">2/11/2014 9:36:16 AM</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{1C9C2C90-6F05-4718-9E62-0C9C6DFF6E7B}"
+      DTS:ObjectName="V_PACKAGE_EXECUTION_GUID">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6C81F6D7-D83D-4298-A230-7393E3D6103E}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_ID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_ID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{1D1D949F-5330-482E-921D-C6258FFC725D}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_BATCH_INSTANCE_START_DATETIME]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
+      <DTS:VariableValue
+        DTS:DataType="7">2/11/2014 9:36:16 AM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{83FB6638-70F6-432D-933F-56BDEA9FCBEE}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::V_PACKAGE_EXECUTION_GUID]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="V_PACKAGE_EXECUTION_GUID">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:LoggingOptions
+    DTS:FilterKind="0"
+    DTS:LoggingMode="1">
+    <DTS:Property
+      DTS:DataType="8"
+      DTS:Name="EventFilter">3,7,OnError,12,OnTaskFailed,22,OnVariableValueChanged</DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnError"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnTaskFailed"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnVariableValueChanged"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+  </DTS:LoggingOptions>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Batch Create Instance"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{D4BFBE90-F70C-4375-A31F-1DA6F4CBD769}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Batch Create Instance">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Batch Create Instance\EST - Create new Batch Instance"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{ed95d76a-1108-4751-8043-02cfea745c91}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:FailPackageOnFailure="True"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="EST - Create new Batch Instance"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{6A486C3B-A2C0-4338-8929-A965D2C201EB}"
+              SQLTask:SqlStatementSource="INSERT INTO OMD_BATCH_INSTANCE (&#xA;BATCH_ID,  &#xA;START_DATETIME, &#xA;EXECUTION_STATUS_CODE, &#xA;NEXT_RUN_INDICATOR, &#xA;PROCESSING_INDICATOR,&#xA;BATCH_EXECUTION_SYSTEM_ID)&#xA;VALUES(&#xA;?,&#xA;?,&#xA;'E', &#xA;'P',&#xA;'A',&#xA;?&#xA;)&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::V_BATCH_ID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="1"
+                SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_START_DATETIME"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="7"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="2"
+                SQLTask:DtsVariableName="System::ExecutionInstanceGUID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="129"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="234,42"
+          Id="Package\Batch Create Instance\EST - Create new Batch Instance"
+          TopLeft="5.5,5.5" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="245,103"
+          Size="245,146"
+          Id="Package\Batch Create Instance"
+          TopLeft="5.50000000000003,5.5" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
