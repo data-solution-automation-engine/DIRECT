@@ -22,9 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", 
 		000_References\System.Windows.Forms.dll = 000_References\System.Windows.Forms.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DIRECT_Management", "..\DIRECT_Management\DIRECT_Management\DIRECT_Management.csproj", "{73971441-2782-43CF-862C-1F636528858A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{63307E6B-B417-4DB6-8FCF-4E9369D64E6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DIRECT_Management", "DIRECT_Management\DIRECT_Management.csproj", "{73971441-2782-43CF-862C-1F636528858A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
