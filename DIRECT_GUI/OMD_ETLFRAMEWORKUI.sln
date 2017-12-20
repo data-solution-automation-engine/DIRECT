@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{ECD6D718-D1CF-4119-97F3-97C25A0DFBF9}") = "OMD_ETLFRAMEWORKUI", "OMD_ETLFRAMEWORKUI.lsproj", "{17B16B5D-8FBD-4CBD-8A2C-7A35101C0AF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Scripts", "SQL Scripts", "{69D7A0EE-2CF0-4019-B711-60387CF694FF}"
+	ProjectSection(SolutionItems) = preProject
+		..\OMD_UI_DB_SCRIPTS\OMD_UI_DB_SCRIPTS.sql = ..\OMD_UI_DB_SCRIPTS\OMD_UI_DB_SCRIPTS.sql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://aubriprtfs01:8080/tfs/business%20intelligence%20collection
+		SccProjectUniqueName0 = Common\\Common.csproj
+		SccProjectTopLevelParentUniqueName0 = OMD_ETLFRAMEWORKUI.lsproj
+		SccProjectName0 = Common
+		SccAuxPath0 = http://aubriprtfs01:8080/tfs/business%20intelligence%20collection
+		SccLocalPath0 = Common
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = Client\\Client.csproj
+		SccProjectTopLevelParentUniqueName1 = OMD_ETLFRAMEWORKUI.lsproj
+		SccProjectName1 = Client
+		SccAuxPath1 = http://aubriprtfs01:8080/tfs/business%20intelligence%20collection
+		SccLocalPath1 = Client
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = Server\\Server.csproj
+		SccProjectTopLevelParentUniqueName2 = OMD_ETLFRAMEWORKUI.lsproj
+		SccProjectName2 = Server
+		SccAuxPath2 = http://aubriprtfs01:8080/tfs/business%20intelligence%20collection
+		SccLocalPath2 = Server
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName3 = OMD_ETLFRAMEWORKUI.lsproj
+		SccProjectName3 = .
+		SccAuxPath3 = http://aubriprtfs01:8080/tfs/business%20intelligence%20collection
+		SccLocalPath3 = .
+		SccProvider3 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17B16B5D-8FBD-4CBD-8A2C-7A35101C0AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17B16B5D-8FBD-4CBD-8A2C-7A35101C0AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17B16B5D-8FBD-4CBD-8A2C-7A35101C0AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17B16B5D-8FBD-4CBD-8A2C-7A35101C0AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDD1E5E9-370C-455B-B405-E2CDDC2D75B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDD1E5E9-370C-455B-B405-E2CDDC2D75B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDD1E5E9-370C-455B-B405-E2CDDC2D75B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDD1E5E9-370C-455B-B405-E2CDDC2D75B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD86EE7-F42D-4475-8E1F-D27043F90CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD86EE7-F42D-4475-8E1F-D27043F90CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD86EE7-F42D-4475-8E1F-D27043F90CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD86EE7-F42D-4475-8E1F-D27043F90CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{999C777F-EA5E-4223-9921-4D34236B8D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{999C777F-EA5E-4223-9921-4D34236B8D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{999C777F-EA5E-4223-9921-4D34236B8D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{999C777F-EA5E-4223-9921-4D34236B8D93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
