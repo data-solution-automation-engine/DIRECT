@@ -3,11 +3,5 @@
 	<Connection Name="OMD" CreateInProject="true" ConnectionString="<#=connectionStringOMD#>"/>
 	<Connection Name="STG" CreateInProject="true" ConnectionString="<#=connectionStringSTG#>"/>
 	<Connection Name="HSTG" CreateInProject="true" ConnectionString="<#=connectionStringHSTG#>"/>
-	<Connection Name="SOURCE_MIDAS" CreateInProject="true" ConnectionString="<#=connectionStringMIDAS#>"/>
-	<Connection Name="SOURCE_DWIN" CreateInProject="true" ConnectionString="<#=connectionStringDWIN#>"/>
-	<Connection Name="SOURCE_E5" CreateInProject="true" ConnectionString="<#=connectionStringE5#>"/>  
-  <Connection Name="SOURCE_MDM" CreateInProject="true" ConnectionString="<#=connectionStringMDM#>"/>
-  <Connection Name="SOURCE_ONEDATA" CreateInProject="true" ConnectionString="<#=connectionStringONEDATA#>"/>
-  <Connection Name="SOURCE_SAP" CreateInProject="true" ConnectionString="<#=connectionStringSAP#>"/>
-    <Connection Name="SOURCE_TRIDION" CreateInProject="true" ConnectionString="<#=connectionStringTRIDION#>"/>
-</Connections>
+	<Connection Name="SOURCE_EXAMPLE" CreateInProject="true" ConnectionString="<#=connectionStringSOURCE#>"/>
+	</Connections>

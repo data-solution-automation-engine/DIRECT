@@ -2,7 +2,7 @@
 // Configuring BIML environment 
 // THE ROOT PATH NEEDS TO BE LOCALISED / CHANGED FOR EVERY ENVIRONMENT AS DEVELOPERS WORK IN DIFFERENT DIRECTORIES
 
-string rootDirectory = @"D:\Git_Repositories\DIRECT\";
+string rootDirectory = @"C:\_TFS\DIRECT\";
 string mydocpath = rootDirectory + @"BIML_Logfiles\";
 
 System.Collections.Generic.Dictionary<string, string> configList = new Dictionary<string,string>();
