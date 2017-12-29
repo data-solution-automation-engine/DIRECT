@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -16,9 +18,11 @@ namespace OMD_Manager
         public FormMain()
         {
             InitializeComponent();
+
+            // Create the target (output) paths, if they don't exist already. Load the configuration file, or create a new template one if it doesn't exist.
             InitializePath();
 
-            richTextBoxOutput.Text = "Application initialised - OMD Management. \r\n\r\n";
+            richTextBoxInformation.Text = "Application initialised - Data Integration Runtime Execution Control Tool (DIRECT) Management. \r\n\r\n";
 
             try
             {
@@ -26,10 +30,11 @@ namespace OMD_Manager
             }
             catch (Exception ex)
             {
-                richTextBoxOutput.Text += "Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n";
+                richTextBoxInformation.Text += "Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n";
             }
 
-            InitialiseSourceTargetPaths();
+
+            //InitialiseSourceTargetPaths();
 
             //Programmatically enable checkboxes
             checkBoxGenerateStg.Checked = true;
@@ -46,6 +51,9 @@ namespace OMD_Manager
 
             //Run inital form content - if possible
             PopulateCheckbox();
+
+            //Populate the content on the re-initialisation page - if possible
+            PopulateReinitialisationCheckbox();
         }
 
 
@@ -53,13 +61,14 @@ namespace OMD_Manager
         {
             if (checkedListBoxStagingTables.CheckedItems.Count != 0)
             {
-                richTextBoxOutput.Clear();
+                richTextBoxInformation.Clear();
 
                 // Initial SQL and creation of output content (stringbuilder)
                 var insertIntoStatement = new StringBuilder();
+                var metadataDatabaseName = textBoxGenerationMetadataDatabaseName;
 
-                insertIntoStatement.AppendLine("/* Run the following in OMD_Framework database */");
-                insertIntoStatement.AppendLine("USE [EDW_900_OMD_Framework];");
+                insertIntoStatement.AppendLine("/* Run the following in ETL control framework database */");
+                insertIntoStatement.AppendLine("USE ["+metadataDatabaseName+"];");
                 insertIntoStatement.AppendLine();
 
                 // Add the initial delete statements
@@ -73,7 +82,7 @@ namespace OMD_Manager
                 {
                     if (checkBoxGenerateStg.Checked == false && checkBoxGenerateHstg.Checked == false && checkBoxGenerateInt.Checked == false && checkBoxGenerateEndDating.Checked == false)
                     {
-                        richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                        richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                     }
                     else
                     {
@@ -86,7 +95,7 @@ namespace OMD_Manager
                 {
                     if (checkBoxGenerateStg.Checked == false && checkBoxGenerateHstg.Checked == false && checkBoxGenerateInt.Checked == false && checkBoxGenerateEndDating.Checked == false)
                     {
-                        richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                        richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                     }
                     else
                     {
@@ -99,7 +108,7 @@ namespace OMD_Manager
                 {
                     if (checkBoxGenerateStg.Checked == false && checkBoxGenerateHstg.Checked == false && checkBoxGenerateInt.Checked == false && checkBoxGenerateEndDating.Checked == false)
                     {
-                        richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                        richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                     }
                     else
                     {
@@ -112,7 +121,7 @@ namespace OMD_Manager
                 {
                     if (checkBoxGenerateStg.Checked == false && checkBoxGenerateHstg.Checked == false && checkBoxGenerateInt.Checked == false && checkBoxGenerateEndDating.Checked == false)
                     {
-                        richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                        richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                     }
                     else
                     {
@@ -125,7 +134,7 @@ namespace OMD_Manager
                 {
                     if (checkBoxGenerateStg.Checked == false && checkBoxGenerateHstg.Checked == false && checkBoxGenerateInt.Checked == false && checkBoxGenerateEndDating.Checked == false)
                     {
-                        richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                        richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                     }
                     else
                     {
@@ -186,7 +195,7 @@ namespace OMD_Manager
                 }
                 else
                 {
-                    richTextBoxOutput.Text =
+                    richTextBoxInformation.Text =
                         "There was no metadata available to generate STG and HSTG Modules and Batches. Please check the metadata schema or the database connection.";
                 }
             }
@@ -229,7 +238,7 @@ namespace OMD_Manager
                 }
                 else
                 {
-                    richTextBoxOutput.Text =
+                    richTextBoxInformation.Text =
                         "There was no metadata available to generate STG and HSTG Modules and Batches. Please check the metadata schema or the database connection.";
                 }
             }
@@ -295,7 +304,7 @@ namespace OMD_Manager
                         DebuggingTextbox.Text = queryIntMetadata.ToString();
                     }
 
-                    var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+                    var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
                     try
                     {
@@ -303,7 +312,7 @@ namespace OMD_Manager
                     }
                     catch (Exception exception)
                     {
-                        richTextBoxOutput.Text =
+                        richTextBoxInformation.Text =
                             "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                             exception.Message;
                     }
@@ -312,7 +321,7 @@ namespace OMD_Manager
 
                     if (tables.Rows.Count == 0)
                     {
-                        richTextBoxOutput.Text =
+                        richTextBoxInformation.Text =
                             "There was no metadata available to generate STG and HSTG Modules and Batches. Please check the metadata schema or the database connection.";
                     }
 
@@ -406,7 +415,7 @@ namespace OMD_Manager
                         DebuggingTextbox.Text = queryIntMetadata.ToString();
                     }
 
-                    var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+                    var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
                     try
                     {
@@ -414,7 +423,7 @@ namespace OMD_Manager
                     }
                     catch (Exception exception)
                     {
-                        richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                        richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                                  exception.Message;
                     }
 
@@ -422,7 +431,7 @@ namespace OMD_Manager
 
                     if (tables.Rows.Count == 0)
                     {
-                        richTextBoxOutput.Text =
+                        richTextBoxInformation.Text =
                             "There was no metadata available to generate STG and HSTG Modules and Batches. Please check the metadata schema or the database connection.";
                     }
 
@@ -482,7 +491,7 @@ namespace OMD_Manager
                 DebuggingTextbox.Text += queryIntMetadata.ToString();
             }
 
-            var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
             try
             {
@@ -490,7 +499,7 @@ namespace OMD_Manager
             }
             catch (Exception exception)
             {
-                richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                             exception.Message;
             }
 
@@ -498,7 +507,7 @@ namespace OMD_Manager
 
             if (tables.Rows.Count == 0)
             {
-                richTextBoxOutput.Text =
+                richTextBoxInformation.Text =
                     "There was no metadata available to generate STG and HSTG Modules and Batches. Please check the metadata schema or the database connection.";
             }
 
@@ -534,7 +543,7 @@ namespace OMD_Manager
 
             if (checkBoxGenerateStg.Checked==false && checkBoxGenerateHstg.Checked==false && checkBoxGenerateInt.Checked==false && checkBoxGenerateEndDating.Checked==false)
             {
-                richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
             }
             else 
             {
@@ -641,7 +650,7 @@ namespace OMD_Manager
                 }
                 else
                 {
-                    richTextBoxOutput.Text = "No valid selection was made to generate outputs!";
+                    richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                 }
 
                 if (checkBoxOMDVerboseDebugging.Checked)
@@ -651,7 +660,7 @@ namespace OMD_Manager
             }
 
 
-            var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
             try
             {
@@ -659,7 +668,7 @@ namespace OMD_Manager
             }
             catch (Exception exception)
             {
-                richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                             exception.Message;
             }
 
@@ -669,7 +678,7 @@ namespace OMD_Manager
 
                 if (tables.Rows.Count == 0)
                 {
-                    richTextBoxOutput.Text = "There was no metadata available to generate Data Stores. Please check the metadata schema or the database connection.";
+                    richTextBoxInformation.Text = "There was no metadata available to generate Data Stores. Please check the metadata schema or the database connection.";
                 }
 
                 foreach (DataRow row in tables.Rows)
@@ -792,7 +801,7 @@ namespace OMD_Manager
                 DebuggingTextbox.Text += queryDataStoreMetadata.ToString();
             }
 
-            var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
             try
             {
@@ -800,7 +809,7 @@ namespace OMD_Manager
             }
             catch (Exception exception)
             {
-                richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                             exception.Message;
             }
 
@@ -808,7 +817,7 @@ namespace OMD_Manager
 
             if (tables.Rows.Count == 0)
             {
-                richTextBoxOutput.Text = "There was no metadata available to generate Module / Data Stores relationships. Please check the metadata schema or the database connection.";
+                richTextBoxInformation.Text = "There was no metadata available to generate Module / Data Stores relationships. Please check the metadata schema or the database connection.";
             }
 
             // STG
@@ -1042,7 +1051,7 @@ namespace OMD_Manager
                 DebuggingTextbox.Text += queryModuleBatchMetadata.ToString();
             }
 
-            var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
             try
             {
@@ -1050,7 +1059,7 @@ namespace OMD_Manager
             }
             catch (Exception exception)
             {
-                richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                             exception.Message;
             }
 
@@ -1058,7 +1067,7 @@ namespace OMD_Manager
 
             if (tables.Rows.Count == 0)
             {
-                richTextBoxOutput.Text = "There was no metadata available to generate Module / Data Stores relationships. Please check the metadata schema or the database connection.";
+                richTextBoxInformation.Text = "There was no metadata available to generate Module / Data Stores relationships. Please check the metadata schema or the database connection.";
             }
 
             // STG generation
@@ -1317,7 +1326,7 @@ namespace OMD_Manager
                 }
                 else
                 {
-                    richTextBoxOutput.Text += "\r\nThe required target directory " + targetPath + " is present.";
+                    richTextBoxInformation.Text += "\r\nThe required target directory " + targetPath + " is present.";
                 }
             }
             catch (Exception ex)
@@ -1385,12 +1394,16 @@ namespace OMD_Manager
                     var initialConfigurationFile = new StringBuilder();
 
                     initialConfigurationFile.AppendLine("/* ETL Metadata Management Configuration Settings */");
-                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2017 */");
+                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
                     initialConfigurationFile.AppendLine(@"targetPath|C:\Files\TestOutput\");
-                    initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_000_Metadata;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"MetaDataDatabaseName|EDW_000_Metadata");
-                    initialConfigurationFile.AppendLine(@"connectionStringOMD|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_900_OMD_Framework;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"OMDDatabaseName|EDW_900_OMD_Framework");                  
+                    initialConfigurationFile.AppendLine(@"connectionStringGenerationMetadata|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=EDW_000_Metadata;Integrated Security=SSPI");
+                    initialConfigurationFile.AppendLine(@"GenerationMetaDataDatabaseName|EDW_000_Metadata");
+                    initialConfigurationFile.AppendLine(@"connectionStringDirect|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=EDW_900_OMD_Framework;Integrated Security=SSPI");
+                    initialConfigurationFile.AppendLine(@"DirectDatabaseName|EDW_900_OMD_Framework");
+                    initialConfigurationFile.AppendLine(@"connectionStringSTG|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=EDW_100_Staging_Area;Integrated Security=SSPI");
+                    initialConfigurationFile.AppendLine(@"STGDatabaseName|EDW_100_Staging_Area");
+                    initialConfigurationFile.AppendLine(@"connectionStringPSA|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=EDW_150_History_Area;Integrated Security=SSPI");
+                    initialConfigurationFile.AppendLine(@"PSADatabaseName|EDW_150_History_Area");                
                     initialConfigurationFile.AppendLine("/* End of file */");
 
                     using (var outfile = new StreamWriter(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
@@ -1428,25 +1441,32 @@ namespace OMD_Manager
                 sr.Close();
                 fs.Close();
 
-                var connectionStringMetadata = configList["connectionStringMetadata"];
-                connectionStringMetadata = connectionStringMetadata.Replace("Provider=SQLNCLI11;", "");
-
-                var connectionStringOmd = configList["connectionStringOMD"];
-                connectionStringOmd= connectionStringOmd.Replace("Provider=SQLNCLI11;", "");
-
+                // Output Path
                 textBoxOutputPath.Text = configList["targetPath"];
-                textBoxMetadataConnection.Text = connectionStringMetadata;
-                textBoxMetaDataDatabaseName.Text = configList["MetaDataDatabaseName"];
 
-                textBoxOmdConnection.Text = connectionStringOmd;
-                textBoxOmdDatabase.Text = configList["OMDDatabaseName"];
+                // Generation Metadata                 
+                textBoxGenerationMetadataConnection.Text = configList["connectionStringGenerationMetadata"].ToString().Replace("Provider=SQLNCLI11;", ""); ;
+                textBoxGenerationMetadataDatabaseName.Text = configList["GenerationMetaDataDatabaseName"];
 
-                richTextBoxOutput.Text += "The default values were loaded. \r\n\r\n";
-                richTextBoxOutput.Text += @"The file " + chosenFile + " was uploaded successfully. \r\n";
+                // DIRECT Metadata
+                textBoxDirectConnection.Text = configList["connectionStringDirect"].ToString().Replace("Provider=SQLNCLI11;", "");
+                textBoxDirectDatabase.Text = configList["DirectDatabaseName"];
+
+                // Staging Area Metadata
+                textBoxSTGConnection.Text = configList["connectionStringSTG"].ToString().Replace("Provider=SQLNCLI11;", "");
+                textBoxSTGDatabase.Text = configList["STGDatabaseName"];
+
+                // Persistent Staging Metadata
+                textBoxPSAConnection.Text = configList["connectionStringPSA"].ToString().Replace("Provider=SQLNCLI11;", "");
+                textBoxPSADatabase.Text = configList["PSADatabaseName"];
+
+                // Reporting back to the user
+                richTextBoxInformation.Text += "The default values were loaded. \r\n\r\n";
+                richTextBoxInformation.Text += @"The file " + chosenFile + " was uploaded successfully. \r\n";
             }
             catch (Exception ex)
             {
-                richTextBoxOutput.Text += ("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+                richTextBoxInformation.Text += ("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
             }
 
         }
@@ -1560,7 +1580,7 @@ namespace OMD_Manager
                                              string.Concat("Backup_"+shortDatetime+"_",GlobalVariables.ConfigfileName);
 
                     File.Copy(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName,targetFilePathName);
-                    richTextBoxOutput.Text="A backup of the current configuration was made at "+targetFilePathName;
+                    richTextBoxInformation.Text="A backup of the current configuration was made at "+targetFilePathName;
                 }
                 else
                 {
@@ -1577,12 +1597,12 @@ namespace OMD_Manager
             {
                 var configurationFile = new StringBuilder();
 
-                configurationFile.AppendLine("/* OMD Management Configuration Settings */");
+                configurationFile.AppendLine("/* ETL Process Control Management Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at "+DateTime.Now+" */");
 
                 configurationFile.AppendLine("targetPath|" + textBoxOutputPath.Text + "");
-                configurationFile.AppendLine("connectionStringMetadata|" + textBoxMetadataConnection.Text + "");
-                configurationFile.AppendLine("MetaDataDatabaseName|" + textBoxMetaDataDatabaseName.Text + "");
+                configurationFile.AppendLine("connectionStringMetadata|" + textBoxGenerationMetadataConnection.Text + "");
+                configurationFile.AppendLine("MetaDataDatabaseName|" + textBoxGenerationMetadataDatabaseName.Text + "");
 
                 configurationFile.AppendLine("/* End of file */");
 
@@ -1648,7 +1668,7 @@ namespace OMD_Manager
                 DebuggingTextbox.Text = queryMetadata.ToString();
             }
 
-            var connOmd = new SqlConnection {ConnectionString = textBoxMetadataConnection.Text};
+            var connOmd = new SqlConnection {ConnectionString = textBoxGenerationMetadataConnection.Text};
 
             try
             {
@@ -1656,7 +1676,7 @@ namespace OMD_Manager
             }
             catch (Exception exception)
             {
-                richTextBoxOutput.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " +
                                          exception.Message;
             }
 
@@ -1666,7 +1686,7 @@ namespace OMD_Manager
 
                 if (tables.Rows.Count == 0)
                 {
-                    richTextBoxOutput.Text =
+                    richTextBoxInformation.Text =
                         "There was no metadata available to generate the base (Staging Area) tables. Please check the metadata schema or the database connection.";
                 }
 
@@ -1682,12 +1702,86 @@ namespace OMD_Manager
             }
         }
 
+        private void PopulateReinitialisationCheckbox()
+        {
+            // Clear the existing checkboxes
+            checkedListboxReinistalisation.Items.Clear();
+
+            // Query the metadata for the STG and HSTG tables
+            var queryMetadata = new StringBuilder();
+
+            if (radioButtonSTG.Checked)
+            {
+                queryMetadata.AppendLine("SELECT TABLE_NAME AS TABLE_NAME");
+                queryMetadata.AppendLine("FROM " + textBoxSTGDatabase.Text + ".INFORMATION_SCHEMA.TABLES spec");
+                queryMetadata.AppendLine("WHERE TABLE_NAME!='N/A' ");
+                queryMetadata.AppendLine("AND TABLE_TYPE='BASE TABLE' ");
+                queryMetadata.AppendLine("AND TABLE_NAME NOT LIKE '%_LANDING' ");
+                queryMetadata.AppendLine("AND TABLE_NAME LIKE '%" + textBoxReinitialisationFilterCriterion.Text + "%'");
+                queryMetadata.AppendLine("ORDER BY TABLE_NAME ");
+            }
+            else //It's a PSA selection
+            {
+                queryMetadata.AppendLine("SELECT MODULE_CODE AS TABLE_NAME");
+                queryMetadata.AppendLine("FROM OMD_SOURCE_CONTROL sct");
+                queryMetadata.AppendLine("JOIN OMD_MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID=modinst.MODULE_INSTANCE_ID");
+                queryMetadata.AppendLine("JOIN OMD_MODULE module ON modinst.MODULE_ID = module.MODULE_ID");
+                queryMetadata.AppendLine("WHERE MODULE_CODE LIKE '" + textBoxDataVaultPrefix .Text+ "%'");
+                queryMetadata.AppendLine("AND MODULE_CODE LIKE '%" + textBoxReinitialisationFilterCriterion.Text + "%'");
+                queryMetadata.AppendLine("ORDER BY MODULE_CODE ");
+            }
+
+            if (checkBoxOMDVerboseDebugging.Checked)
+            {
+                DebuggingTextbox.Text = queryMetadata.ToString();
+            }
+
+            var conn = new SqlConnection();
+            if (radioButtonSTG.Checked)
+            {
+                conn.ConnectionString = textBoxSTGConnection.Text;
+            }
+            else
+            {
+                conn.ConnectionString = textBoxDirectConnection.Text;
+            }
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception exception)
+            {
+                richTextBoxInformation.Text = "There was an error connecting to the database. \r\n\r\nThe error message is: " + exception.Message;
+            }
+
+            try
+            {
+                var tables = GetDataTable(ref conn, queryMetadata.ToString());
+
+                if (tables.Rows.Count == 0)
+                {
+                    richTextBoxInformation.Text =
+                        "There was no metadata available to generate the base tables. Please check the database connection.";
+                }
+
+                foreach (DataRow row in tables.Rows)
+                {                   
+                    checkedListboxReinistalisation.Items.Add((string)row["TABLE_NAME"]);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("There is no database connection! Please check the details in the information pane.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void checkBoxSelectAll_CheckedChanged(object sender, EventArgs e)
         {
             //MessageBox.Show(checkBoxSelectAll.Checked.ToString());
             for (int x = 0; x <= checkedListBoxStagingTables.Items.Count - 1; x++)
             {
-                if (checkBoxSelectAll.Checked)
+                if (checkBoxSelectAllMain.Checked)
                 {
                     checkedListBoxStagingTables.SetItemChecked(x, true);
                 }
@@ -1723,6 +1817,310 @@ namespace OMD_Manager
             PopulateCheckbox();
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void textBoxOutputPath_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void openConfigurationFileToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openOutputDirectoryToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(textBoxOutputPath.Text);
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text ="An error has occured while attempting to open the output directory. The error message is: "+ex;
+            }
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButtonSTG_CheckedChanged(object sender, EventArgs e)
+        {
+            PopulateReinitialisationCheckbox();
+        }
+
+        private void textBoxReinitialisationFilterCriterion_TextChanged(object sender, EventArgs e)
+        {
+            PopulateReinitialisationCheckbox();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            for (int x = 0; x <= checkedListboxReinistalisation.Items.Count - 1; x++)
+            {
+                if (checkBoxSelectAllReinistialisation.Checked)
+                {
+                    checkedListboxReinistalisation.SetItemChecked(x, true);
+                }
+                else
+                {
+                    checkedListboxReinistalisation.SetItemChecked(x, false);
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (checkedListboxReinistalisation.CheckedItems.Count != 0)
+            {
+                richTextBoxInformation.Clear();
+                DebuggingTextbox.Clear();
+
+                // Initial SQL and creation of output content (stringbuilder)
+                var sqlStatement = new StringBuilder();
+
+                string targetDatabaseName = "";
+                string sourceDatabaseName = "";
+                var conn = new SqlConnection();
+
+                if (radioButtonSTG.Checked)
+                {
+                    targetDatabaseName = textBoxSTGDatabase.Text; // Target is STG
+                    sourceDatabaseName = textBoxPSADatabase.Text; // Source is PSA
+                    conn.ConnectionString = textBoxSTGConnection.Text;
+                }
+                else // It's a PSA source
+                {
+                    targetDatabaseName = textBoxDirectDatabase.Text; // Source and target both DIRECT
+                    sourceDatabaseName = textBoxDirectDatabase.Text;
+                    conn.ConnectionString = textBoxDirectConnection.Text;
+                }
+
+                // Cycle through selected items (tables) and prepare statement
+                for (int x = 0; x <= checkedListboxReinistalisation.CheckedItems.Count - 1; x++)
+                {
+                    var targetTableName = checkedListboxReinistalisation.CheckedItems[x].ToString();
+                    var sourceTableName = "";
+
+                    //Convert to just a day
+                    var truncationDate = dateTimePickerReinitialisation.Value.ToString("yyyy-MM-dd");
+
+                    if (radioButtonSTG.Checked)
+                    {
+                        sourceTableName = 'H'+targetTableName; // Source is the PSA
+                    }
+                    else // It's a PSA source
+                    {
+                        sourceTableName = targetTableName; // Source and target are the same (PSA)
+                    }
+
+                    richTextBoxInformation.Text += "Working on " + targetTableName + ".";
+
+                    if (radioButtonSTG.Checked)
+                    {
+                        conn = generateSTGReinitialisationQuery(truncationDate, sqlStatement, targetDatabaseName, sourceDatabaseName, conn, targetTableName, sourceTableName);
+                    }
+                    else // It's a PSA source
+                    {
+                        conn = generatePSAReinitialisationQuery(truncationDate, sqlStatement, targetDatabaseName, sourceDatabaseName, conn, targetTableName, sourceTableName);
+                    }
+
+                    int returnValue = 0;
+                    if (checkBoxExecuteReinitialisation.Checked)
+                    {
+                        try
+                        {
+                            var server = new Server(new ServerConnection(conn));
+                            returnValue = server.ConnectionContext.ExecuteNonQuery(sqlStatement.ToString())+1;                
+                        }
+                        catch
+                        {
+                            richTextBoxInformation.Text += "The generated query could not be executed against the database. The attempted query was "+sqlStatement+".\r\n";
+                        }
+                    }
+                    
+                    richTextBoxInformation.Text += " Completed, processed "+returnValue+" row(s).\r\n";
+
+                    DebuggingTextbox.Text += sqlStatement.ToString();
+
+                    sqlStatement.Clear();
+                }
+
+                //Redirect to the output
+
+                this.MainTabControl.SelectedTab = tabPageOutput;
+            }
+            else
+            {
+                MessageBox.Show("No tables were selected to re-initialise...");
+            }
+        }
+
+        private SqlConnection generateSTGReinitialisationQuery(string truncationDate, StringBuilder sqlStatement, string targetDatabaseName, string sourceDatabaseName, SqlConnection conn, string targetTableName, string sourceTableName)
+        {
+            // Query the attribute metadata to create the customer insert and select statements for each table
+            var queryAttributeMetadata = new StringBuilder();
+
+            queryAttributeMetadata.AppendLine("SELECT COLUMN_NAME");
+            queryAttributeMetadata.AppendLine("FROM " + textBoxSTGDatabase.Text + ".INFORMATION_SCHEMA.COLUMNS");
+            queryAttributeMetadata.AppendLine("WHERE TABLE_NAME = '" + targetTableName + "' ");
+            queryAttributeMetadata.AppendLine("AND SUBSTRING(COLUMN_NAME,1,3)<>'OMD' ");
+
+            sqlStatement.AppendLine("/* Run the following in the " + targetDatabaseName + " database */");
+            sqlStatement.AppendLine("USE [" + targetDatabaseName + "];");
+            sqlStatement.AppendLine();
+
+            if (truncationDate=="1900-01-01")
+            {
+                // This indicates the full set. Run a truncate or it will take forever.
+                sqlStatement.AppendLine("TRUNCATE TABLE [" + targetDatabaseName + "].[dbo]. [" + targetTableName + "];");
+            }
+            else
+            {
+                // Run a delete for a selection.
+                sqlStatement.AppendLine("DELETE FROM [" + targetDatabaseName + "].[dbo]. [" + targetTableName + "] WHERE OMD_INSERT_DATETIME>='" + truncationDate + "';");
+            }
+
+            sqlStatement.AppendLine("SET IDENTITY_INSERT [" + targetDatabaseName + "].[dbo].[" + targetTableName + "] ON;");
+            sqlStatement.AppendLine("INSERT INTO [" + targetDatabaseName + "].[dbo].[" + targetTableName + "]");
+            sqlStatement.AppendLine("(");
+            sqlStatement.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID],");
+            sqlStatement.AppendLine("  [OMD_INSERT_DATETIME],");
+            sqlStatement.AppendLine("  [OMD_RECORD_SOURCE],");
+            sqlStatement.AppendLine("  [OMD_CDC_OPERATION],");
+            sqlStatement.AppendLine("  [OMD_HASH_FULL_RECORD],");
+            sqlStatement.AppendLine("  [OMD_EVENT_DATETIME],");
+            sqlStatement.AppendLine("  [OMD_SOURCE_ROW_ID],");
+
+            try
+            {
+                // Attribute selection (queried from data dictionary / catalog)
+                var attributeDataTable = GetDataTable(ref conn, queryAttributeMetadata.ToString());
+
+                foreach (DataRow row in attributeDataTable.Rows)
+                {
+                    sqlStatement.AppendLine("  [" + (string)row["COLUMN_NAME"] + "],");
+                }
+            }
+            catch
+            {
+                richTextBoxInformation.Text += "Issues have occurred querying the metadata for " + targetTableName + ". The attempted query was " + queryAttributeMetadata.ToString() + ".\r\n";
+            }
+
+            sqlStatement.Remove(sqlStatement.Length - 3, 3);
+            sqlStatement.AppendLine();
+            sqlStatement.AppendLine(")");
+
+            sqlStatement.AppendLine("SELECT");
+            sqlStatement.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID],");
+            sqlStatement.AppendLine("  [OMD_INSERT_DATETIME],");
+            sqlStatement.AppendLine("  [OMD_RECORD_SOURCE],");
+            sqlStatement.AppendLine("  [OMD_CDC_OPERATION],");
+            sqlStatement.AppendLine("  [OMD_HASH_FULL_RECORD],");
+            sqlStatement.AppendLine("  [OMD_EVENT_DATETIME],");
+            sqlStatement.AppendLine("  [OMD_SOURCE_ROW_ID],");
+
+            try
+            {
+                // Attribute selection (queried from data dictionary / catalog)
+                var attributeDataTable = GetDataTable(ref conn, queryAttributeMetadata.ToString());
+
+                foreach (DataRow row in attributeDataTable.Rows)
+                {
+                    sqlStatement.AppendLine("  [" + (string)row["COLUMN_NAME"] + "],");
+                }
+            }
+            catch
+            {
+                richTextBoxInformation.Text += "Issues have occurred querying the metadata for " + targetTableName + ". The attempted query was " + queryAttributeMetadata.ToString() + ".\r\n";
+            }
+
+            sqlStatement.Remove(sqlStatement.Length - 3, 3);
+            sqlStatement.AppendLine();
+
+            sqlStatement.AppendLine("FROM [" + sourceDatabaseName + "].[dbo].[" + sourceTableName + "]");
+
+            if (truncationDate != "1900-01-01")
+            {
+                // Add the WHERE clause for PSA selection
+                sqlStatement.AppendLine("WHERE OMD_INSERT_DATETIME>='" + truncationDate + "'");
+            }
+            sqlStatement.Remove(sqlStatement.Length - 2, 2);
+            sqlStatement.Append(";");
+            sqlStatement.AppendLine();
+
+            sqlStatement.AppendLine("SET IDENTITY_INSERT [" + targetDatabaseName + "].[dbo]. [" + targetTableName + "] OFF;");
+
+            sqlStatement.AppendLine();
+            sqlStatement.AppendLine("GO");
+            sqlStatement.AppendLine();
+            return conn;
+        }
+
+        private SqlConnection generatePSAReinitialisationQuery(string truncationDate, StringBuilder sqlStatement, string targetDatabaseName, string sourceDatabaseName, SqlConnection conn, string targetTableName, string sourceTableName)
+        {
+
+            // Delete the load window where the selected date falls in. You can't just delete greater than the date, you need to detect what the closest lower range is and delete from there.
+            sqlStatement.AppendLine("/* Run the following in the " + targetDatabaseName + " database */");
+            sqlStatement.AppendLine("USE [" + targetDatabaseName + "];");
+            sqlStatement.AppendLine();
+
+            sqlStatement.AppendLine("DELETE sct");
+            sqlStatement.AppendLine("FROM OMD_SOURCE_CONTROL sct");
+            sqlStatement.AppendLine("JOIN OMD_MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID=modinst.MODULE_INSTANCE_ID");
+            sqlStatement.AppendLine("JOIN OMD_MODULE module ON modinst.MODULE_ID = module.MODULE_ID");
+            sqlStatement.AppendLine("WHERE MODULE_CODE = '" + targetTableName + "'");
+            sqlStatement.AppendLine("AND MODULE_SOURCE_CONTROL_ID >= ");
+            sqlStatement.AppendLine("(");
+            sqlStatement.AppendLine("	SELECT MODULE_SOURCE_CONTROL_ID");
+            sqlStatement.AppendLine("	FROM OMD_SOURCE_CONTROL sct");
+            sqlStatement.AppendLine("	JOIN OMD_MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID=modinst.MODULE_INSTANCE_ID");
+            sqlStatement.AppendLine("	JOIN OMD_MODULE module ON modinst.MODULE_ID = module.MODULE_ID");
+            sqlStatement.AppendLine("	WHERE MODULE_CODE = '" + targetTableName + "'");
+            sqlStatement.AppendLine("	AND '" + truncationDate + "' BETWEEN INTERVAL_START_DATETIME AND INTERVAL_END_DATETIME");
+            sqlStatement.AppendLine(")");
+ 
+            sqlStatement.AppendLine();
+            sqlStatement.AppendLine("GO");
+            sqlStatement.AppendLine();
+
+            return conn;
+        }
+
+        private void checkBoxSelectAllReinistialisation_CheckedChanged(object sender, EventArgs e)
+        {
+            //MessageBox.Show(checkBoxSelectAll.Checked.ToString());
+            for (int x = 0; x <= checkedListboxReinistalisation.Items.Count - 1; x++)
+            {
+                if (checkBoxSelectAllReinistialisation.Checked)
+                {
+                    checkedListboxReinistalisation.SetItemChecked(x, true);
+                }
+                else
+                {
+                    checkedListboxReinistalisation.SetItemChecked(x, false);
+                }
+            }
+        }
+
+        private void groupBox12_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            PopulateReinitialisationCheckbox();
+        }
     }
 }
