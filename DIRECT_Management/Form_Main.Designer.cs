@@ -62,6 +62,8 @@ namespace OMD_Manager
             this.buttonGeneratePSA = new System.Windows.Forms.Button();
             this.tabPageHub = new System.Windows.Forms.TabPage();
             this.tabPageReinitialise = new System.Windows.Forms.TabPage();
+            this.dateTimePickerReinitialisation = new System.Windows.Forms.DateTimePicker();
+            this.button3 = new System.Windows.Forms.Button();
             this.checkBoxExecuteReinitialisation = new System.Windows.Forms.CheckBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -74,6 +76,11 @@ namespace OMD_Manager
             this.radioButtonPSA = new System.Windows.Forms.RadioButton();
             this.checkedListboxReinistalisation = new System.Windows.Forms.CheckedListBox();
             this.tabPageConnectivity = new System.Windows.Forms.TabPage();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBoxDataVaultPrefix = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBoxPrefix = new System.Windows.Forms.TextBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxGenerationMetadataConnection = new System.Windows.Forms.TextBox();
@@ -121,13 +128,7 @@ namespace OMD_Manager
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.textBoxPrefix = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.textBoxDataVaultPrefix = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.dateTimePickerReinitialisation = new System.Windows.Forms.DateTimePicker();
+            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTabControl.SuspendLayout();
             this.tabPageBatchModule.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -139,6 +140,7 @@ namespace OMD_Manager
             this.groupBox11.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tabPageConnectivity.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -147,7 +149,6 @@ namespace OMD_Manager
             this.tabPageOutput.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox12.SuspendLayout();
             this.SuspendLayout();
             // 
             // DebuggingTextbox
@@ -508,6 +509,26 @@ namespace OMD_Manager
             this.tabPageReinitialise.TabIndex = 12;
             this.tabPageReinitialise.Text = "Staging Layer Reinitialisation";
             // 
+            // dateTimePickerReinitialisation
+            // 
+            this.dateTimePickerReinitialisation.Location = new System.Drawing.Point(1144, 189);
+            this.dateTimePickerReinitialisation.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            this.dateTimePickerReinitialisation.Name = "dateTimePickerReinitialisation";
+            this.dateTimePickerReinitialisation.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerReinitialisation.TabIndex = 31;
+            this.dateTimePickerReinitialisation.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button3.Location = new System.Drawing.Point(235, 478);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(158, 39);
+            this.button3.TabIndex = 30;
+            this.button3.Text = "Refresh Selection";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // checkBoxExecuteReinitialisation
             // 
             this.checkBoxExecuteReinitialisation.AutoSize = true;
@@ -651,6 +672,58 @@ namespace OMD_Manager
             this.tabPageConnectivity.Size = new System.Drawing.Size(1366, 530);
             this.tabPageConnectivity.TabIndex = 3;
             this.tabPageConnectivity.Text = "Settings";
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.label12);
+            this.groupBox12.Controls.Add(this.textBoxDataVaultPrefix);
+            this.groupBox12.Controls.Add(this.label9);
+            this.groupBox12.Controls.Add(this.textBoxPrefix);
+            this.groupBox12.Location = new System.Drawing.Point(12, 391);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(199, 120);
+            this.groupBox12.TabIndex = 41;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Other Settings";
+            this.groupBox12.Enter += new System.EventHandler(this.groupBox12_Enter);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(5, 66);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(160, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Data Vault ETL Prefix / Identifier";
+            // 
+            // textBoxDataVaultPrefix
+            // 
+            this.textBoxDataVaultPrefix.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxDataVaultPrefix.Location = new System.Drawing.Point(7, 82);
+            this.textBoxDataVaultPrefix.Multiline = true;
+            this.textBoxDataVaultPrefix.Name = "textBoxDataVaultPrefix";
+            this.textBoxDataVaultPrefix.Size = new System.Drawing.Size(181, 20);
+            this.textBoxDataVaultPrefix.TabIndex = 31;
+            this.textBoxDataVaultPrefix.Text = "m_200_";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 22);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(76, 13);
+            this.label9.TabIndex = 30;
+            this.label9.Text = "DIRECT Prefix";
+            // 
+            // textBoxPrefix
+            // 
+            this.textBoxPrefix.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxPrefix.Location = new System.Drawing.Point(8, 38);
+            this.textBoxPrefix.Multiline = true;
+            this.textBoxPrefix.Name = "textBoxPrefix";
+            this.textBoxPrefix.Size = new System.Drawing.Size(180, 20);
+            this.textBoxPrefix.TabIndex = 29;
+            this.textBoxPrefix.Text = "OMD_";
             // 
             // groupBox9
             // 
@@ -922,6 +995,7 @@ namespace OMD_Manager
             this.openConfigurationFileToolStripMenuItem1,
             this.saveConfigurationFileToolStripMenuItem,
             this.openOutputDirectoryToolStripMenuItem1,
+            this.openConfigurationDirectoryToolStripMenuItem,
             this.exitToolStripMenuItem1});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
@@ -931,7 +1005,7 @@ namespace OMD_Manager
             // 
             this.openConfigurationFileToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.OpenFileIcon;
             this.openConfigurationFileToolStripMenuItem1.Name = "openConfigurationFileToolStripMenuItem1";
-            this.openConfigurationFileToolStripMenuItem1.Size = new System.Drawing.Size(201, 22);
+            this.openConfigurationFileToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.openConfigurationFileToolStripMenuItem1.Text = "Open Configuration File";
             this.openConfigurationFileToolStripMenuItem1.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem1_Click);
             // 
@@ -939,14 +1013,15 @@ namespace OMD_Manager
             // 
             this.saveConfigurationFileToolStripMenuItem.Image = global::OMD_Manager.Properties.Resources.SaveFile;
             this.saveConfigurationFileToolStripMenuItem.Name = "saveConfigurationFileToolStripMenuItem";
-            this.saveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.saveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.saveConfigurationFileToolStripMenuItem.Text = "Save Configuration File";
+            this.saveConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click_1);
             // 
             // openOutputDirectoryToolStripMenuItem1
             // 
             this.openOutputDirectoryToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem1.Name = "openOutputDirectoryToolStripMenuItem1";
-            this.openOutputDirectoryToolStripMenuItem1.Size = new System.Drawing.Size(201, 22);
+            this.openOutputDirectoryToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.openOutputDirectoryToolStripMenuItem1.Text = "Open Output Directory";
             this.openOutputDirectoryToolStripMenuItem1.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem1_Click);
             // 
@@ -954,7 +1029,7 @@ namespace OMD_Manager
             // 
             this.exitToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(201, 22);
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.exitToolStripMenuItem1.Text = "Exit";
             this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
@@ -1085,77 +1160,13 @@ namespace OMD_Manager
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
             // 
-            // groupBox12
+            // openConfigurationDirectoryToolStripMenuItem
             // 
-            this.groupBox12.Controls.Add(this.label12);
-            this.groupBox12.Controls.Add(this.textBoxDataVaultPrefix);
-            this.groupBox12.Controls.Add(this.label9);
-            this.groupBox12.Controls.Add(this.textBoxPrefix);
-            this.groupBox12.Location = new System.Drawing.Point(12, 391);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(199, 120);
-            this.groupBox12.TabIndex = 41;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "Other Settings";
-            this.groupBox12.Enter += new System.EventHandler(this.groupBox12_Enter);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 22);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(76, 13);
-            this.label9.TabIndex = 30;
-            this.label9.Text = "DIRECT Prefix";
-            // 
-            // textBoxPrefix
-            // 
-            this.textBoxPrefix.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxPrefix.Location = new System.Drawing.Point(8, 38);
-            this.textBoxPrefix.Multiline = true;
-            this.textBoxPrefix.Name = "textBoxPrefix";
-            this.textBoxPrefix.Size = new System.Drawing.Size(180, 20);
-            this.textBoxPrefix.TabIndex = 29;
-            this.textBoxPrefix.Text = "OMD_";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(5, 66);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(160, 13);
-            this.label12.TabIndex = 32;
-            this.label12.Text = "Data Vault ETL Prefix / Identifier";
-            // 
-            // textBoxDataVaultPrefix
-            // 
-            this.textBoxDataVaultPrefix.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxDataVaultPrefix.Location = new System.Drawing.Point(7, 82);
-            this.textBoxDataVaultPrefix.Multiline = true;
-            this.textBoxDataVaultPrefix.Name = "textBoxDataVaultPrefix";
-            this.textBoxDataVaultPrefix.Size = new System.Drawing.Size(181, 20);
-            this.textBoxDataVaultPrefix.TabIndex = 31;
-            this.textBoxDataVaultPrefix.Text = "m_200_";
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button3.Location = new System.Drawing.Point(235, 478);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(158, 39);
-            this.button3.TabIndex = 30;
-            this.button3.Text = "Refresh Selection";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // dateTimePickerReinitialisation
-            // 
-            this.dateTimePickerReinitialisation.Location = new System.Drawing.Point(1144, 189);
-            this.dateTimePickerReinitialisation.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
-            this.dateTimePickerReinitialisation.Name = "dateTimePickerReinitialisation";
-            this.dateTimePickerReinitialisation.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePickerReinitialisation.TabIndex = 31;
-            this.dateTimePickerReinitialisation.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            this.openConfigurationDirectoryToolStripMenuItem.Image = global::OMD_Manager.Properties.Resources.OpenDirectoryIcon;
+            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -1194,6 +1205,8 @@ namespace OMD_Manager
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tabPageConnectivity.ResumeLayout(false);
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox8.ResumeLayout(false);
@@ -1208,8 +1221,6 @@ namespace OMD_Manager
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox12.ResumeLayout(false);
-            this.groupBox12.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1313,6 +1324,7 @@ namespace OMD_Manager
         internal System.Windows.Forms.TextBox textBoxDataVaultPrefix;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.DateTimePicker dateTimePickerReinitialisation;
+        private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
     }
 }
 
