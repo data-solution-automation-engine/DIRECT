@@ -5,7 +5,7 @@ The repository essentially captures process information about the ETL and is an 
 
 This document references all other architectural documents because the metadata model is an integral part of a fully implemented system. For functionality such as rollback and recovery information about the individual ETL processes including the related layers and areas as defined in the Outline Architecture are retrieved from the OMD repository.
 
-The objective of the OMD Framework is to provide a structured approach to describing and recording ETL processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system.
+The objective of the DIRECT Framework is to provide a structured approach to describing and recording ETL processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system.
  
 # Overview
 This metadata model document covers the design and specifications for the Operational Metadata Repository (OMD). The documentation also includes the available (logical) scripted components for controlled execution of ETL within the Enterprise Data Warehouse. OMD covers a broad variety of process information, including (but not limited to):
@@ -19,17 +19,14 @@ This metadata model document covers the design and specifications for the Operat
 
 ## Positioning of DIRECT
 The position of the Staging Layer in the overall architecture is:
-
  
 ![Positioning](/DIRECT_Documentation/Images/Direct_Documentation_Figure1_Positioning.png)
-
  
-#	Concepts
+# Concepts
+## Elements of process information
+While the physical components involved in the end-to-end ETL process can vary in scope and can employ a range of technologies, the framework provides a logical layer of abstraction so that a consistent view of the workflow can be visualised, maintained and reported.
 
-##Elements of process information
-
-While the physical components involved in the end-to-end ETL process can vary in scope and can employ a range of technologies, the OMD framework provides a logical layer of abstraction so that a consistent view of the workflow can be visualised, maintained and reported.
-At the core of the OMD Framework is a logical model for describing units of work. All ETL processes executing within the Data Warehouse environment conform to this basic two-level hierarchy.
+At the core of the framework is a logical model for describing units of work. All ETL processes executing within the Data Warehouse environment conform to this basic two-level hierarchy.
 * Batch – contains a group of executable elements. This group typically applies to a single Layer and single Area but not necessarily so.  A Batch can be defined to fit any purpose by organising any available Module.
 * Module – the smallest executable unit. By definition of the structuring of ETL processes, a Module may only apply to a single Area of the Outline Architecture.
 In order to simplify the association of logical units of work and their physical counterparts the physical component model also conforms to a simple two level hierarchy.
@@ -37,19 +34,18 @@ In order to simplify the association of logical units of work and their physical
 * A Module can be an ETL process (Mapping, Package), an Operating System shell script or a SQL script (procedure call).
 The following diagram illustrates the logical and physical models for units of work:
  
-Figure 2: Logical and physical components
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
 
- 
-##	Orchestration
+## Orchestration
 The sequencing and submission of OMD work units is controlled by two different technologies. Batches are controlled by the enterprise scheduling tool according to the execution plan defined within that environment. The modules within a Batch are sequenced by the ETL engine.
 
 In this way it is not possible for a Batch to initiate a Module other than those defined within it nor is it possible for a Module to invoke a Module other than those within its own Batch. Batches are initiated only by the completion of another Batch and only at the direction of the scheduling software.
 
 Modules are initiated only through the completion of another Module within the same Batch and are not scheduled directly in the scheduling tool. The following figure illustrates the end-to-end orchestration structure for Batches and their Modules:
- Figure 3: Orchestration
 
+Figure 3: Orchestration
  
-##	Instantiation
+## Instantiation
 The OMD repository is required to record the execution status and history of the defined ETL processes as and when they are invoked. Dedicated data entities are provided for the recording of work unit executions or instances:
 *	Each execution of a Batch results in a Batch Instance.
 *	Each execution of a Module results in a Module Instance.
@@ -59,15 +55,15 @@ The following figure describes how a static Batch/Module definition creates run-
  
 Figure 4: Batch and Module instances
 
-##	Parameters
+## Parameters
 The OMD model provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
 
-##	Global logical model
+## Global logical model
 The concepts and principles described so far in this document form the basis of the OMD data model. The OMD data entities required to describe the OMD core concepts are described by the following Entity Relationship model:
  
 Figure 5: OMD logical model
 
-##	Execution layers
+## Execution layers
 There is a range of technologies and tools involved in the invocation and tracking of OMD work units. Logical control is passed between the layers as follows:
 1. The scheduling tool invokes the next job (Batch) in its plan/schedule. This may involve executing a common wrapper script or series of events.
 1. The repository is consulted for the execution syntax of the nominated Batch and creates a new Batch Instance if required.
@@ -81,7 +77,7 @@ The following diagram illustrates the layers and technologies involved in this p
  
 Figure 6: Process Execution
  
-##	Rollback and re-processing
+## Rollback and re-processing
 When processing errors occur, relevant information is recorded in the OMD repository by the OMD Framework. This information is used to properly recover from ETL loading errors and set the Data Warehouse back into the original state prior to the occurrence of the error. This can be configured to work at both Batch and Module level. 
 
 By default a Batch will roll back the data from all Modules that have been run as part of the specific Batch. A Module is always configured to recover if errors are detected in previous runs. This information is presented to the OMD Events as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This is in line with the overall ETL requirements as defined in Design Pattern 003 – Generic – ETL requirements. This specifies that ETL should be able to be rerun and recovery failed attempts.
@@ -96,17 +92,14 @@ The following is a high level overview of the reprocessing strategy. These actio
 **	Satellite table: deletion of all records inserted based on the Insert Module Instance ID attribute. Also included is an update of all records to set these to be the active record again (repair timelines) using the Update Module Instance ID information
 
 The Interpretation Area, Helper Area and Reporting Structure Area typically use a strategy similar to the ones used on the previous steps but can be custom defined to suit the (reporting) purpose. Custom rollback approaches are documented in Implementation Patterns for the corresponding purpose.
-
  
 # Physical design
-
 The physical implementation of the OMD framework requires the development of components in three distinct areas:
 1. The OMD repository database.
 1. The OMD events; the scripts and functions representing the framework logic.
 1. Housekeeping and support elements.
 
 ## OMD repository database
-
 The complete data model for the Operational Metadata Framework is managed using Embarcadero ER/Studio. This data model contains all involved entities, attributes and their descriptions.  Specific DDL for a variety of database can be generated from this model along with constraints and table comments for the descriptions. The model also contains content for the various tables including (reference) values for the Layers, Areas and code tables such as Frequency and Severity.
  
 Figure 7: OMD Repository physical model
@@ -178,7 +171,6 @@ Ultimately, the correct calling of the OMD events is orchestrated from the ETL p
 *	The Batch Instance processing interprets the Processing Indicator value and, depending on the value, calls the OMD Batch Skip event (Processing Indicator returns a ‘C’ value for cancellation / skipping) or the OMD Batch Abort event (Processing Indicator returns an ‘A’ value for abortion of the process). If the evaluation was done without finding any issues the Batch Evaluation will have returned a ‘P’ value for the Processing Indicator and the Module Instances of the Batch Instance can commence processing
 *	After all Module Instances have been completed successfully, the OMD Batch Success event is called
 *	If, at any stage, an error is encountered in either the Batch Instance or any of the Module Instances associated with the Batch Instance the OMD Batch Failure event is called
-
  
 This process is displayed in the following diagram:
  
