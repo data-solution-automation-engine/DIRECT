@@ -1,7 +1,7 @@
 # Introduction
 DIRECT is a data integration control and execution metadata model. It is a core and stand-alone component of the Data Integration Framework. Every Extract Transform and Load (ETL) process is linked to this model which provides the orchestration and management capabilities for data integration. ETL in this context is a broad definition covering various related data integration approachess such as ELT (Extract Load, Transform - pushdown into SQL or underlying processing) and LETS (Load-Extract-Transform-Store). ETL in this document essentially covers all processes that 'touch' data.
 
-The OMD model essentially captures process information about the ETL and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor ETL processes.
+The repository essentially captures process information about the ETL and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor ETL processes.
 
 This document references all other architectural documents because the metadata model is an integral part of a fully implemented system. For functionality such as rollback and recovery information about the individual ETL processes including the related layers and areas as defined in the Outline Architecture are retrieved from the OMD repository.
 
@@ -17,7 +17,7 @@ This metadata model document covers the design and specifications for the Operat
 * The logic which can be used to control the ETL processes
 * Housekeeping functions
 
-## Positioning of OMD
+## Positioning of DIRECT
 The position of the Staging Layer in the overall architecture is:
 
  
@@ -37,7 +37,7 @@ In order to simplify the association of logical units of work and their physical
 * A Module can be an ETL process (Mapping, Package), an Operating System shell script or a SQL script (procedure call).
 The following diagram illustrates the logical and physical models for units of work:
  
-Figure 2: OMD logical and physical components
+Figure 2: Logical and physical components
 
  
 ##	Orchestration
