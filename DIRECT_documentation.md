@@ -1,0 +1,5 @@
+The Operational Meta Data (OMD) model is a core and stand-alone component of the ETL Framework. Every ETL process is linked to this model which provides the orchestration and management capabilities for data integration. The OMD model essentially captures process information about the ETL and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor ETL processes.
+
+This document references all other architectural documents because the metadata model is an integral part of a fully implemented system. For functionality such as rollback and recovery information about the individual ETL processes including the related layers and areas as defined in the Outline Architecture are retrieved from the OMD repository.
+
+The objective of the OMD Framework is to provide a structured approach to describing and recording ETL processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system.
