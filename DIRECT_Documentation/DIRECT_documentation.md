@@ -21,7 +21,7 @@ This metadata model document covers the design and specifications for the Operat
 The position of the Staging Layer in the overall architecture is:
 
  
-![Positioning](DIRECT/DIRECT_Documentation/Images/Direct_Documentation_Figure1_Positioning.png)
+![Positioning](/DIRECT_Documentation/Images/Direct_Documentation_Figure1_Positioning.png)
 
  
 #	Concepts
