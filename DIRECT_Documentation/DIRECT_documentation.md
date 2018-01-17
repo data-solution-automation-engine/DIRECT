@@ -20,7 +20,7 @@ This metadata model document covers the design and specifications for the Operat
 ## Positioning of DIRECT
 The position of the Staging Layer in the overall architecture is:
  
-![Positioning](/DIRECT_Documentation/Images/Direct_Documentation_Figure1_Positioning.png)
+![Positioning](Images/Direct_Documentation_Figure1_Positioning.png)
  
 # Concepts
 ## Elements of process information
@@ -34,7 +34,7 @@ In order to simplify the association of logical units of work and their physical
 * A Module can be an ETL process (Mapping, Package), an Operating System shell script or a SQL script (procedure call).
 The following diagram illustrates the logical and physical models for units of work:
  
-<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
+<img src="Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
 
 ## Orchestration
 The sequencing and submission of OMD work units is controlled by two different technologies. Batches are controlled by the enterprise scheduling tool according to the execution plan defined within that environment. The modules within a Batch are sequenced by the ETL engine.
