@@ -70,7 +70,7 @@ Figure 5: OMD logical model
 ##	Execution layers
 There is a range of technologies and tools involved in the invocation and tracking of OMD work units. Logical control is passed between the layers as follows:
 1. The scheduling tool invokes the next job (Batch) in its plan/schedule. This may involve executing a common wrapper script or series of events.
-1. The OMD repository is consulted for the execution syntax of the nominated Batch and creates a new Batch Instance if required.
+1. The repository is consulted for the execution syntax of the nominated Batch and creates a new Batch Instance if required.
 1. The newly created Batch Instance is executed and the system awaits a response.
 1. The Modules defined within the Batch are called in turn with each creating and updating its own Module Instance.
 1. After the Module Instances have been run the control is returned to the OMD and the Batch Instance will be updated to reflect completion or failure.
