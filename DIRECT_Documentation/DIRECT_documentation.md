@@ -101,41 +101,39 @@ The physical implementation of the OMD framework requires the development of com
 ## OMD repository database
 The complete data model for the Operational Metadata Framework is managed using Embarcadero ER/Studio. This data model contains all involved entities, attributes and their descriptions.  Specific DDL for a variety of database can be generated from this model along with constraints and table comments for the descriptions. The model also contains content for the various tables including (reference) values for the Layers, Areas and code tables such as Frequency and Severity.
  
-Table	Description
-OMD_AREA	The Area table contains the list of Areas as defined in the ETL Framework Outline Architecture. This information is queried by OMD during Module execution to prepare rollback information if required. The Area is the most detailed classification of ETL processes in the ETL Framework. By defining the Area and specific settings on Module level (through naming conventions) the OMD rollback queries can be created dynamically.
-OMD_BATCH	The Batch table contains the unique list of Batches as registered in OMD. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys. 
-OMD_BATCH_INSTANCE	At runtime, OMD generates a new Batch Instance ID for the Batch execution. This information is stored in this table along with ETL process statistics. The Batch Instance table is the driving table for process control and recovery as it contain information about the status and results of the Batch run.
-OMD_BATCH_MODULE	The Batch Module table contains the relationships between batches and modules. It is a many-to-many relationship, i.e. one Batch can contain multiple Modules, and one Module could be utilised by multiple Batches
-OMD_DATA_AUDIT	The Data Audit table provides a location for custom functionality to perform sanity checks and/or housekeeping on specific data store. These processes should be run separately from the main ETL processes and can be configured to perform a range of supporting functionality such as clean-ups and reconciliation.
-OMD_DATA_AUDIT_TYPE	The Data Audit Type table was added to allow for a classification of Data Store Audits, and to provide additional handling and descriptive information about these housekeeping processes
+Table | Description
+- | -
+OMD_AREA	| The Area table contains the list of Areas as defined in the ETL Framework Outline Architecture. This information is queried by OMD during Module execution to prepare rollback information if required. The Area is the most detailed classification of ETL processes in the ETL Framework. By defining the Area and specific settings on Module level (through naming conventions) the OMD rollback queries can be created dynamically.
+OMD_BATCH	| The Batch table contains the unique list of Batches as registered in OMD. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys. 
+OMD_BATCH_INSTANCE	| At runtime, OMD generates a new Batch Instance ID for the Batch execution. This information is stored in this table along with ETL process statistics. The Batch Instance table is the driving table for process control and recovery as it contain information about the status and results of the Batch run.
+OMD_BATCH_MODULE |	The Batch Module table contains the relationships between batches and modules. It is a many-to-many relationship, i.e. one Batch can contain multiple Modules, and one Module could be utilised by multiple Batches
+OMD_DATA_AUDIT	| The Data Audit table provides a location for custom functionality to perform sanity checks and/or housekeeping on specific data store. These processes should be run separately from the main ETL processes and can be configured to perform a range of supporting functionality such as clean-ups and reconciliation.
+OMD_DATA_AUDIT_TYPE |	The Data Audit Type table was added to allow for a classification of Data Store Audits, and to provide additional handling and descriptive information about these housekeeping processes
 
-OMD_DATA_STORE	The Data Store table contains descriptive information of data stores that are read from or loaded by the ETL process. The ‘Allow Truncate Indicator’ attribute can be used in custom Stored Procedures to prevent accidental truncation of tables (safety catch).
-OMD_DATA_STORE_COLUMN	The Data Store Column table (optional) contains the names of columns (attributes) for each Data Store. This metadata is used in a variety of ways to support reporting and automation.
-OMD_DATA_STORE_COLUMN_MAPPING	The Data Store Column Mapping table contains the source to target column mapping between the data store columns (attributes) in a Module.
-OMD_DATA_STORE_FILE	The Data Store File contains additional descriptive information about data stores that are of a flat file format (e.g. xml file, flat file, etc). It contains information such as the file name, file extension and file location.
-OMD_DATA_STORE_OLEDB	The Data Store File contains additional descriptive information about data stores that are database tables. It contains information such as the connection name, schema name and table name.
-OMD_DATA_STORE_TYPE	The Data Store Type table contains optional descriptive information: the type of data stores, such as flat file or table.
-OMD_ERROR_BITMAP	The Error Bitmap table contains the master list of possible errors. One or more errors from this list may be detected and logged as an Error Bitmap in the target tables. A bitwise join will enable this bitmap to relate back to the various errors as defined in this table.
-OMD_ERROR_TYPE	The Error Type table contains descriptive information about types of events or errors for reporting purposes. By default all errors are associated with the Error Bitmap but additional errors and error types can be added.
-OMD_EVENT_LOG	The Event Log table is a generic logging table which is used to track and record events that happen during ETL execution. The Event Log table can contain informative details (i.e. ‘Batch Instance was created’) or information related to issues or errors provided by the ETL platform. 
-OMD_EVENT_TYPE	The Event Type table contains descriptive information about types of events or errors for reporting purposes, such as OMD process logs, environment related issues, and custom defined errors or ETL process errors.
-OMD_EXECUTION_STATUS	The Execution Status table contains descriptive attributes about the Execution Status codes that OMD uses during the ETL process. 
-OMD_FREQUENCY	The Frequency table contains descriptive information about the frequency codes of a Batch run.
-OMD_LAYER	The Layer table contains the list of Layers as defined in the ETL Framework Outline Architecture. Unlike the Areas this information is not queried by OMD during Module execution and is purely descriptive for use in reporting. The Layer is the higher level classification of ETL processes in the ETL Framework. 
-OMD_MODULE	The Module table contains the unique list of Modules as registered in OMD. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
-OMD_MODULE_DATA_STORE	The Module Data Store table contains the relationships between Modules and the Data Stores used in the Modules. For instance the target (mandatory) and source (optional) for each Module. 
-OMD_MODULE_INSTANCE	At runtime, OMD generates a new Module Instance ID for the Module execution. This information is stored in this table along with ETL process statistics. The Module Instance table is the driving table for process control and recovery as it contain information about the status and results of the Module run. The generated Module Instance ID is stored in the target tables for audit trail purposes. It also contains additional runtime details including the number of rows read (selected), updated, inserted, deleted, updated, discarded or rejected.
-
-
-OMD_MODULE_PARAMETER	The Module Parameter table creates a relationship between specific parameters and the Modules for which they are applicable. It is best practice to ‘register’ the Modules that require certain parameters in their processing using this table. 
-OMD_MODULE_TYPE	The Module Type table contains optional descriptive information for reporting purposes. As the Module is defined as the smallest executable component typically more than one type of Module is used, for instance ETL programs and Operating Scripts.
-OMD_NEXT_RUN_INDICATOR	The Next Run Indicator table contains descriptive attributes about the Next Run Indicator codes that OMD uses during the ETL process.
-OMD_PARAMETER	The Parameter table provides the option to define parameters that can be queried by custom code in the ETL process. This can include (but not limited to!) flags (Initial Load Y/N) or tracking date ranges for moving loading windows into the Presentation Layer.
-OMD_PROCESSING_INDICATOR	The Processing Indicator table contains descriptive attributes about the Processing Indicator codes that OMD uses during the ETL process.
-OMD_RECORD_SOURCE	The Record Source table contains abbreviations and descriptions of the source systems that interface to the Data Warehouse. Depending on the Staging Layer design decisions the Record Source Code is resolved to the ID during the Integration Layer ETL, or the ID is hard-coded in the Staging Area. Either way, the Record Source provides the option to load datasets from different systems that may contain similar information (i.e. the same keys) with different meaning. 
-OMD_SEVERITY	Severity is an optional descriptive attribute that can be used to classify the level of Errors defined in the OMD Bitmap Error table. It can be used for reporting purposes and to select (a certain quality of) data into the Presentation Layer.
-OMD_SOURCE_CONTROL	The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
-
+OMD_DATA_STORE	| The Data Store table contains descriptive information of data stores that are read from or loaded by the ETL process. The ‘Allow Truncate Indicator’ attribute can be used in custom Stored Procedures to prevent accidental truncation of tables (safety catch).
+OMD_DATA_STORE_COLUMN |	The Data Store Column table (optional) contains the names of columns (attributes) for each Data Store. This metadata is used in a variety of ways to support reporting and automation.
+OMD_DATA_STORE_COLUMN_MAPPING	| The Data Store Column Mapping table contains the source to target column mapping between the data store columns (attributes) in a Module.
+OMD_DATA_STORE_FILE	| The Data Store File contains additional descriptive information about data stores that are of a flat file format (e.g. xml file, flat file, etc). It contains information such as the file name, file extension and file location.
+OMD_DATA_STORE_OLEDB	| The Data Store File contains additional descriptive information about data stores that are database tables. It contains information such as the connection name, schema name and table name.
+OMD_DATA_STORE_TYPE	| The Data Store Type table contains optional descriptive information: the type of data stores, such as flat file or table.
+OMD_ERROR_BITMAP	| The Error Bitmap table contains the master list of possible errors. One or more errors from this list may be detected and logged as an Error Bitmap in the target tables. A bitwise join will enable this bitmap to relate back to the various errors as defined in this table.
+OMD_ERROR_TYPE	| The Error Type table contains descriptive information about types of events or errors for reporting purposes. By default all errors are associated with the Error Bitmap but additional errors and error types can be added.
+OMD_EVENT_LOG	| The Event Log table is a generic logging table which is used to track and record events that happen during ETL execution. The Event Log table can contain informative details (i.e. ‘Batch Instance was created’) or information related to issues or errors provided by the ETL platform. 
+OMD_EVENT_TYPE	| The Event Type table contains descriptive information about types of events or errors for reporting purposes, such as OMD process logs, environment related issues, and custom defined errors or ETL process errors.
+OMD_EXECUTION_STATUS	| The Execution Status table contains descriptive attributes about the Execution Status codes that OMD uses during the ETL process. 
+OMD_FREQUENCY	| The Frequency table contains descriptive information about the frequency codes of a Batch run.
+OMD_LAYER	| The Layer table contains the list of Layers as defined in the ETL Framework Outline Architecture. Unlike the Areas this information is not queried by OMD during Module execution and is purely descriptive for use in reporting. The Layer is the higher level classification of ETL processes in the ETL Framework. 
+OMD_MODULE	| The Module table contains the unique list of Modules as registered in OMD. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
+OMD_MODULE_DATA_STORE |	The Module Data Store table contains the relationships between Modules and the Data Stores used in the Modules. For instance the target (mandatory) and source (optional) for each Module. 
+OMD_MODULE_INSTANCE	| At runtime, OMD generates a new Module Instance ID for the Module execution. This information is stored in this table along with ETL process statistics. The Module Instance table is the driving table for process control and recovery as it contain information about the status and results of the Module run. The generated Module Instance ID is stored in the target tables for audit trail purposes. It also contains additional runtime details including the number of rows read (selected), updated, inserted, deleted, updated, discarded or rejected.
+OMD_MODULE_PARAMETER	| The Module Parameter table creates a relationship between specific parameters and the Modules for which they are applicable. It is best practice to ‘register’ the Modules that require certain parameters in their processing using this table. 
+OMD_MODULE_TYPE	| The Module Type table contains optional descriptive information for reporting purposes. As the Module is defined as the smallest executable component typically more than one type of Module is used, for instance ETL programs and Operating Scripts.
+OMD_NEXT_RUN_INDICATOR | The Next Run Indicator table contains descriptive attributes about the Next Run Indicator codes that OMD uses during the ETL process.
+OMD_PARAMETER	| The Parameter table provides the option to define parameters that can be queried by custom code in the ETL process. This can include (but not limited to!) flags (Initial Load Y/N) or tracking date ranges for moving loading windows into the Presentation Layer.
+OMD_PROCESSING_INDICATOR | The Processing Indicator table contains descriptive attributes about the Processing Indicator codes that OMD uses during the ETL process.
+OMD_RECORD_SOURCE	| The Record Source table contains abbreviations and descriptions of the source systems that interface to the Data Warehouse. Depending on the Staging Layer design decisions the Record Source Code is resolved to the ID during the Integration Layer ETL, or the ID is hard-coded in the Staging Area. Either way, the Record Source provides the option to load datasets from different systems that may contain similar information (i.e. the same keys) with different meaning. 
+OMD_SEVERITY	| Severity is an optional descriptive attribute that can be used to classify the level of Errors defined in the OMD Bitmap Error table. It can be used for reporting purposes and to select (a certain quality of) data into the Presentation Layer.
+OMD_SOURCE_CONTROL |	The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
  
 ## OMD events
 In order to provide a common, reusable means of interacting with the OMD repository the framework includes a number of processes which collectively serve as the logic tier. The implementation of these events varies depending on the ETL software used in the various projects. This information is captured using Implementation Patterns, documenting how these concepts can be implemented using specific software. The following events, or functions, are defined as part of the OMD Framework:
@@ -169,7 +167,8 @@ Ultimately, the correct calling of the OMD events is orchestrated from the ETL p
  
 This process is displayed in the following diagram:
  
-<img src="Images/Direct_Documentation_Figure7_Module_Execution.svg" alt="Module flow">
+<img src="Images/Direct_Documentation_Figure7_Module_Execution.png" alt="Module flow">
+
 
 ### Module level integration
 Every Module needs to access the OMD repository using the defined OMD events. The integration on Module level ensures that every single ETL process is logged correctly and is able to use the available parameters. Modules that do not use this OMD integration risk the integrity of the Data Warehouse. By design, if any issues arise when accessing the OMD or using the events the ETL logic (ETL mapping) will not start. To allow for reprocessing the OMD metadata is queried as well, ensuring that every Module can be run at any time without corrupting information.
@@ -182,8 +181,9 @@ The following process is followed:
 *	After the Module Instance has been completed successfully, the OMD Module Success event is called
 *	If, at any stage, an error is encountered in the Module Instance the OMD Module Failure event is called
  
-<img src="Images/Direct_Documentation_Figure8_Batch_Execution.svg" alt="Batch flow">
+<img src="Images/Direct_Documentation_Figure8_Batch_Execution.png" alt="Batch flow">
  
+ 
 ## OMD registration
 It is essential that any new ETL object (Batch, Module, Data Store and Parameter) and the relationship have to be added to the static tables of OMD before execution.  This is going to be later on part of the standard procedure during development as more and more batch and modules are created.  
 As these new objects are tested and then moved from one environment to another, the same details should be populated in the OMD static tables except for the environment details.
@@ -242,7 +242,7 @@ Depending on the configuration and design of the Data Warehouse, a Module can be
 
 ### Module – Parameter Relationship registration
 
-The Module registration in OMD is done by adding a record in the OMD_MODULE_PARAMETER table with the following details:
+The Module registration is done by adding a record in the OMD_MODULE_PARAMETER table with the following details:
 *	MODULE_ID; this is a foreign key from OMD_MODULE table to unique identify a Module. 
 *	PARAMETER_ID; this is a foreign key from OMD_PARAMETER table to unique identify a Parameter.
 
