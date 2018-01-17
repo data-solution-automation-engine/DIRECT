@@ -18,7 +18,7 @@ This metadata model document covers the design and specifications for the Operat
 * Housekeeping functions
 
 ## Positioning of DIRECT
-The position of the Staging Layer in the overall architecture is:
+The position of the control and execution framework in the overall architecture is:
  
 ![Positioning](Images/Direct_Documentation_Figure1_Positioning.png)
  
@@ -32,6 +32,7 @@ At the core of the framework is a logical model for describing units of work. Al
 In order to simplify the association of logical units of work and their physical counterparts the physical component model also conforms to a simple two level hierarchy.
 * A Batch equates to an ETL workflow object and only an ETL workflow object. 
 * A Module can be an ETL process (Mapping, Package), an Operating System shell script or a SQL script (procedure call).
+
 The following diagram illustrates the logical and physical models for units of work:
  
 <img src="Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
@@ -41,16 +42,19 @@ The sequencing and submission of OMD work units is controlled by two different t
 
 In this way it is not possible for a Batch to initiate a Module other than those defined within it nor is it possible for a Module to invoke a Module other than those within its own Batch. Batches are initiated only by the completion of another Batch and only at the direction of the scheduling software.
 
-Modules are initiated only through the completion of another Module within the same Batch and are not scheduled directly in the scheduling tool. The following figure illustrates the end-to-end orchestration structure for Batches and their Modules:
+Modules are initiated only through the completion of another Module within the same Batch and are not scheduled directly in the scheduling tool. 
+
+The following figure illustrates the end-to-end orchestration structure for Batches and their Modules:
 
 <img src="Images/Direct_Documentation_Figure3_Orchestration.png" alt="Orchestration">
- 
+
 ## Instantiation
 The OMD repository is required to record the execution status and history of the defined ETL processes as and when they are invoked. Dedicated data entities are provided for the recording of work unit executions or instances:
 *	Each execution of a Batch results in a Batch Instance.
 *	Each execution of a Module results in a Module Instance.
 
 Each instance created is assigned a unique identifier used to tag its output and so allow the system and its users to identify the effects of a discrete component execution. If a Batch or Module is run more than once (due to restarting or re-running) a new instance record is created in order to provide full execution history.
+
 The following figure describes how a static Batch/Module definition creates run-time instances of itself.
  
 <img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation">
@@ -58,7 +62,7 @@ The following figure describes how a static Batch/Module definition creates run-
 ## Parameters
 The OMD model provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
 
-## Global logical model
+## Logical model
 The concepts and principles described so far in this document form the basis of the OMD data model. The OMD data entities required to describe the OMD core concepts are described by the following Entity Relationship model:
  
 <img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model">
@@ -75,20 +79,20 @@ There is a range of technologies and tools involved in the invocation and tracki
 The following diagram illustrates the layers and technologies involved in this process:
  
 <img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution">
- 
+
 ## Rollback and re-processing
 When processing errors occur, relevant information is recorded in the OMD repository by the OMD Framework. This information is used to properly recover from ETL loading errors and set the Data Warehouse back into the original state prior to the occurrence of the error. This can be configured to work at both Batch and Module level. 
 
 By default a Batch will roll back the data from all Modules that have been run as part of the specific Batch. A Module is always configured to recover if errors are detected in previous runs. This information is presented to the OMD Events as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This is in line with the overall ETL requirements as defined in Design Pattern 003 – Generic – ETL requirements. This specifies that ETL should be able to be rerun and recovery failed attempts.
 
 The following is a high level overview of the reprocessing strategy. These actions are implemented as part of the Batch and Module Evaluation events (described in the next section):
-* **Staging** Area; the target table is truncated. This essentially is a redundant step because the Staging Area is truncated by the Module Instance but the step is added for consistency reasons and to be on the safe side for reprocessing
-*	**Staging Area**; if the OMD Source Control table is implemented this information is corrected by deleting the entries that were inserted by the failed Module Instances
-*	History Staging Area; all records that have been inserted by the failed Module Instances are deleted. Due to the default (mandatory) structure of the History Area tables only the delete statement is sufficient
-*	Integration Area; rollback varies depending on the type of model but rollback usually is a combination of inserts and deletes depending on the types of tables in the Data Warehouse (in turn dependant on the data modelling technique). An example of recovery using Data Vault is added below:
-**	Hub table: deletion of all records inserted by the Module Instance.
-**	Link table: deletion of all records inserted by the Module Instance.
-**	Satellite table: deletion of all records inserted based on the Insert Module Instance ID attribute. Also included is an update of all records to set these to be the active record again (repair timelines) using the Update Module Instance ID information
+* ** Staging Area ** ; the target table is truncated. This essentially is a redundant step because the Staging Area is truncated by the Module Instance but the step is added for consistency reasons and to be on the safe side for reprocessing
+*	** Staging Area ** ; if the OMD Source Control table is implemented this information is corrected by deleting the entries that were inserted by the failed Module Instances
+*	** Persistent Staging Area ** ; all records that have been inserted by the failed Module Instances are deleted. Due to the default (mandatory) structure of the History Area tables only the delete statement is sufficient
+*	** Integration Layer ** ; rollback varies depending on the type of model but rollback usually is a combination of inserts and deletes depending on the types of tables in the Data Warehouse (in turn dependant on the data modelling technique). An example of recovery using Data Vault is added below:
+ * Hub table: deletion of all records inserted by the Module Instance. 
+ *	Link table: deletion of all records inserted by the Module Instance.
+ *	Satellite table: deletion of all records inserted based on the Insert Module Instance ID attribute. Also included is an update of all records to set these to be the active record again (repair timelines) using the Update Module Instance ID information
 
 The Interpretation Area, Helper Area and Reporting Structure Area typically use a strategy similar to the ones used on the previous steps but can be custom defined to suit the (reporting) purpose. Custom rollback approaches are documented in Implementation Patterns for the corresponding purpose.
  
@@ -133,7 +137,7 @@ OMD_PROCESSING_INDICATOR | The Processing Indicator table contains descriptive a
 OMD_RECORD_SOURCE	| The Record Source table contains abbreviations and descriptions of the source systems that interface to the Data Warehouse. Depending on the Staging Layer design decisions the Record Source Code is resolved to the ID during the Integration Layer ETL, or the ID is hard-coded in the Staging Area. Either way, the Record Source provides the option to load datasets from different systems that may contain similar information (i.e. the same keys) with different meaning. 
 OMD_SEVERITY	| Severity is an optional descriptive attribute that can be used to classify the level of Errors defined in the OMD Bitmap Error table. It can be used for reporting purposes and to select (a certain quality of) data into the Presentation Layer.
 OMD_SOURCE_CONTROL |	The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
- 
+
 ## Events
 In order to provide a common, reusable means of interacting with the OMD repository the framework includes a number of processes which collectively serve as the logic tier. The implementation of these events varies depending on the ETL software used in the various projects. This information is captured using Implementation Patterns, documenting how these concepts can be implemented using specific software. The following events, or functions, are defined as part of the OMD Framework:
 *	OMD Create Batch Instance; initiates a new Batch Instance for the existing Batch. This creates a new Batch Instance ID, related to the Batch
@@ -149,9 +153,8 @@ In order to provide a common, reusable means of interacting with the OMD reposit
 *	OMD Module Abort; aborts the Module Instance processing due to inconsistencies in the OMD Repository
 *	OMD Module Skip; this event skips the current processing of the Module Instance. This is recorded in OMD for the Module Instance, but no physical ETL processing (logic) will be executed
 *	OMD Write Event; this event or function is used to access the OMD_EVENT_LOG table for status updates
-
  
-## OMD event integration
+## Event integration
 Not all OMD Event Handling logic can be captured in generic events and ETL processes themselves also have some OMD integration requirements in order to successfully run within the OMD Framework. The technical implementation can vary between ETL software but is different on Batch and Module level.
 
 ### Batch Level Integration
@@ -165,9 +168,8 @@ Ultimately, the correct calling of the OMD events is orchestrated from the ETL p
 *	If, at any stage, an error is encountered in either the Batch Instance or any of the Module Instances associated with the Batch Instance the OMD Batch Failure event is called
  
 This process is displayed in the following diagram:
- 
-<img src="Images/Direct_Documentation_Figure_7_Module_Execution.png" alt="Module flow">
 
+<img src="Images/Direct_Documentation_Figure8_Batch_Execution.png" alt="Batch flow">
 
 ### Module level integration
 Every Module needs to access the OMD repository using the defined OMD events. The integration on Module level ensures that every single ETL process is logged correctly and is able to use the available parameters. Modules that do not use this OMD integration risk the integrity of the Data Warehouse. By design, if any issues arise when accessing the OMD or using the events the ETL logic (ETL mapping) will not start. To allow for reprocessing the OMD metadata is queried as well, ensuring that every Module can be run at any time without corrupting information.
@@ -180,10 +182,9 @@ The following process is followed:
 *	After the Module Instance has been completed successfully, the OMD Module Success event is called
 *	If, at any stage, an error is encountered in the Module Instance the OMD Module Failure event is called
  
-<img src="Images/Direct_Documentation_Figure_8_Batch_Execution.png" alt="Batch flow">
- 
+<img src="Images/Direct_Documentation_Figure7_Module_Execution.png" alt="Module flow"> 
  
-## OMD registration
+## Registration
 It is essential that any new ETL object (Batch, Module, Data Store and Parameter) and the relationship have to be added to the static tables of OMD before execution.  This is going to be later on part of the standard procedure during development as more and more batch and modules are created.  
 As these new objects are tested and then moved from one environment to another, the same details should be populated in the OMD static tables except for the environment details.
 
