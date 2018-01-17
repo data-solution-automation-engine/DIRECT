@@ -57,7 +57,7 @@ Each instance created is assigned a unique identifier used to tag its output and
 
 The following figure describes how a static Batch/Module definition creates run-time instances of itself.
  
-<img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation">
+<img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation" width="75%" height="75%">
 
 ## Parameters
 The framework provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
@@ -65,7 +65,7 @@ The framework provides for the definition of parameters and their association wi
 ## Logical model
 The concepts and principles described so far in this document form the basis of the DIRECT data model. The  data entities required to describe the core concepts are described by the following Entity Relationship model:
  
-<img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model">
+<img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model" width="75%" height="75%">
 
 ## Execution layers
 There is a range of technologies and tools involved in the invocation and tracking of modular work units. Logical control is passed between the layers as follows:
@@ -78,7 +78,7 @@ There is a range of technologies and tools involved in the invocation and tracki
 
 The following diagram illustrates the layers and technologies involved in this process:
  
-<img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution">
+<img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution" width="50%" height="50%">
 
 ## Rollback and re-processing
 When processing errors occur, relevant information is recorded in the repository by the framework. This information is used to properly recover from ETL loading errors and set the Data Warehouse back into the original state prior to the occurrence of the error. This can be configured to work at both Batch and Module level. 
@@ -119,7 +119,7 @@ ERROR_BITMAP	| The Error Bitmap table contains the master list of possible error
 ERROR_TYPE	| The Error Type table contains descriptive information about types of events or errors for reporting purposes. By default all errors are associated with the Error Bitmap but additional errors and error types can be added.
 EVENT_LOG	| The Event Log table is a generic logging table which is used to track and record events that happen during ETL execution. The Event Log table can contain informative details (i.e. ‘Batch Instance was created’) or information related to issues or errors provided by the ETL platform. 
 EVENT_TYPE	| The Event Type table contains descriptive information about types of events or errors for reporting purposes, such as process logs, environment related issues, and custom defined errors or ETL process errors.
-EXECUTION_STATUS	| The Execution Status table contains descriptive attributes about the Execution Status codes that OMD uses during the ETL process. 
+EXECUTION_STATUS	| The Execution Status table contains descriptive attributes about the Execution Status codes that the framework uses during the ETL process. 
 FREQUENCY	| The Frequency table contains descriptive information about the frequency codes of a Batch run.
 LAYER	| The Layer table contains the list of Layers as defined in the ETL Framework Outline Architecture. Unlike the Areas this information is not queried during Module execution and is purely descriptive for use in reporting. The Layer is the higher level classification of ETL processes in the ETL Framework. 
 MODULE	| The Module table contains the unique list of Modules as registered in the framework. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
