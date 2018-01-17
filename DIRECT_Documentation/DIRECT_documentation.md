@@ -43,7 +43,7 @@ In this way it is not possible for a Batch to initiate a Module other than those
 
 Modules are initiated only through the completion of another Module within the same Batch and are not scheduled directly in the scheduling tool. The following figure illustrates the end-to-end orchestration structure for Batches and their Modules:
 
-Figure 3: Orchestration
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure3_Orchestration.png" alt="Orchestration">
  
 ## Instantiation
 The OMD repository is required to record the execution status and history of the defined ETL processes as and when they are invoked. Dedicated data entities are provided for the recording of work unit executions or instances:
@@ -53,7 +53,7 @@ The OMD repository is required to record the execution status and history of the
 Each instance created is assigned a unique identifier used to tag its output and so allow the system and its users to identify the effects of a discrete component execution. If a Batch or Module is run more than once (due to restarting or re-running) a new instance record is created in order to provide full execution history.
 The following figure describes how a static Batch/Module definition creates run-time instances of itself.
  
-Figure 4: Batch and Module instances
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure4_Instantiation" alt="Instantiation">
 
 ## Parameters
 The OMD model provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
@@ -61,7 +61,7 @@ The OMD model provides for the definition of parameters and their association wi
 ## Global logical model
 The concepts and principles described so far in this document form the basis of the OMD data model. The OMD data entities required to describe the OMD core concepts are described by the following Entity Relationship model:
  
-Figure 5: OMD logical model
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model">
 
 ## Execution layers
 There is a range of technologies and tools involved in the invocation and tracking of OMD work units. Logical control is passed between the layers as follows:
@@ -73,9 +73,8 @@ There is a range of technologies and tools involved in the invocation and tracki
 1. The scheduling job is complete and free to invoke the next job in the plan.
 
 The following diagram illustrates the layers and technologies involved in this process:
-
  
-Figure 6: Process Execution
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution">
  
 ## Rollback and re-processing
 When processing errors occur, relevant information is recorded in the OMD repository by the OMD Framework. This information is used to properly recover from ETL loading errors and set the Data Warehouse back into the original state prior to the occurrence of the error. This can be configured to work at both Batch and Module level. 
@@ -102,10 +101,6 @@ The physical implementation of the OMD framework requires the development of com
 ## OMD repository database
 The complete data model for the Operational Metadata Framework is managed using Embarcadero ER/Studio. This data model contains all involved entities, attributes and their descriptions.  Specific DDL for a variety of database can be generated from this model along with constraints and table comments for the descriptions. The model also contains content for the various tables including (reference) values for the Layers, Areas and code tables such as Frequency and Severity.
  
-Figure 7: OMD Repository physical model
-
-The following table explains the purpose of each of the tables shown in the above diagram:
-
 Table	Description
 OMD_AREA	The Area table contains the list of Areas as defined in the ETL Framework Outline Architecture. This information is queried by OMD during Module execution to prepare rollback information if required. The Area is the most detailed classification of ETL processes in the ETL Framework. By defining the Area and specific settings on Module level (through naming conventions) the OMD rollback queries can be created dynamically.
 OMD_BATCH	The Batch table contains the unique list of Batches as registered in OMD. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys. 
@@ -174,7 +169,7 @@ Ultimately, the correct calling of the OMD events is orchestrated from the ETL p
  
 This process is displayed in the following diagram:
  
-Figure 8: Batch ETL integration with the OMD Framework
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure7_Module_Execution.svg" alt="Module flow">
 
 ### Module level integration
 Every Module needs to access the OMD repository using the defined OMD events. The integration on Module level ensures that every single ETL process is logged correctly and is able to use the available parameters. Modules that do not use this OMD integration risk the integrity of the Data Warehouse. By design, if any issues arise when accessing the OMD or using the events the ETL logic (ETL mapping) will not start. To allow for reprocessing the OMD metadata is queried as well, ensuring that every Module can be run at any time without corrupting information.
@@ -187,8 +182,7 @@ The following process is followed:
 *	After the Module Instance has been completed successfully, the OMD Module Success event is called
 *	If, at any stage, an error is encountered in the Module Instance the OMD Module Failure event is called
  
-Figure 9: Module level OMD integration
-
+<img src="/DIRECT_Documentation/Images/Direct_Documentation_Figure8_Batch_Execution.svg" alt="Batch flow">
  
 ## OMD registration
 It is essential that any new ETL object (Batch, Module, Data Store and Parameter) and the relationship have to be added to the static tables of OMD before execution.  This is going to be later on part of the standard procedure during development as more and more batch and modules are created.  
