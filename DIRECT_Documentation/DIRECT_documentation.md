@@ -53,7 +53,7 @@ The OMD repository is required to record the execution status and history of the
 Each instance created is assigned a unique identifier used to tag its output and so allow the system and its users to identify the effects of a discrete component execution. If a Batch or Module is run more than once (due to restarting or re-running) a new instance record is created in order to provide full execution history.
 The following figure describes how a static Batch/Module definition creates run-time instances of itself.
  
-<img src="Images/Direct_Documentation_Figure4_Instantiation" alt="Instantiation">
+<img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation">
 
 ## Parameters
 The OMD model provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
@@ -98,18 +98,17 @@ The physical implementation of the OMD framework requires the development of com
 1. The OMD events; the scripts and functions representing the framework logic.
 1. Housekeeping and support elements.
 
-## OMD repository database
+## Repository database
 The complete data model for the Operational Metadata Framework is managed using Embarcadero ER/Studio. This data model contains all involved entities, attributes and their descriptions.  Specific DDL for a variety of database can be generated from this model along with constraints and table comments for the descriptions. The model also contains content for the various tables including (reference) values for the Layers, Areas and code tables such as Frequency and Severity.
  
 Table | Description
-- | -
+----- | -----
 OMD_AREA	| The Area table contains the list of Areas as defined in the ETL Framework Outline Architecture. This information is queried by OMD during Module execution to prepare rollback information if required. The Area is the most detailed classification of ETL processes in the ETL Framework. By defining the Area and specific settings on Module level (through naming conventions) the OMD rollback queries can be created dynamically.
 OMD_BATCH	| The Batch table contains the unique list of Batches as registered in OMD. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys. 
 OMD_BATCH_INSTANCE	| At runtime, OMD generates a new Batch Instance ID for the Batch execution. This information is stored in this table along with ETL process statistics. The Batch Instance table is the driving table for process control and recovery as it contain information about the status and results of the Batch run.
 OMD_BATCH_MODULE |	The Batch Module table contains the relationships between batches and modules. It is a many-to-many relationship, i.e. one Batch can contain multiple Modules, and one Module could be utilised by multiple Batches
 OMD_DATA_AUDIT	| The Data Audit table provides a location for custom functionality to perform sanity checks and/or housekeeping on specific data store. These processes should be run separately from the main ETL processes and can be configured to perform a range of supporting functionality such as clean-ups and reconciliation.
 OMD_DATA_AUDIT_TYPE |	The Data Audit Type table was added to allow for a classification of Data Store Audits, and to provide additional handling and descriptive information about these housekeeping processes
-
 OMD_DATA_STORE	| The Data Store table contains descriptive information of data stores that are read from or loaded by the ETL process. The ‘Allow Truncate Indicator’ attribute can be used in custom Stored Procedures to prevent accidental truncation of tables (safety catch).
 OMD_DATA_STORE_COLUMN |	The Data Store Column table (optional) contains the names of columns (attributes) for each Data Store. This metadata is used in a variety of ways to support reporting and automation.
 OMD_DATA_STORE_COLUMN_MAPPING	| The Data Store Column Mapping table contains the source to target column mapping between the data store columns (attributes) in a Module.
@@ -135,7 +134,7 @@ OMD_RECORD_SOURCE	| The Record Source table contains abbreviations and descripti
 OMD_SEVERITY	| Severity is an optional descriptive attribute that can be used to classify the level of Errors defined in the OMD Bitmap Error table. It can be used for reporting purposes and to select (a certain quality of) data into the Presentation Layer.
 OMD_SOURCE_CONTROL |	The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
  
-## OMD events
+## Events
 In order to provide a common, reusable means of interacting with the OMD repository the framework includes a number of processes which collectively serve as the logic tier. The implementation of these events varies depending on the ETL software used in the various projects. This information is captured using Implementation Patterns, documenting how these concepts can be implemented using specific software. The following events, or functions, are defined as part of the OMD Framework:
 *	OMD Create Batch Instance; initiates a new Batch Instance for the existing Batch. This creates a new Batch Instance ID, related to the Batch
 *	OMD Batch Evaluation (‘Batch Eval’); handles OMD sanity checks, exception handling and recovery for the Batch Instance
@@ -167,7 +166,7 @@ Ultimately, the correct calling of the OMD events is orchestrated from the ETL p
  
 This process is displayed in the following diagram:
  
-<img src="Images/Direct_Documentation_Figure7_Module_Execution.png" alt="Module flow">
+<img src="Images/Direct_Documentation_Figure_7_Module_Execution.png" alt="Module flow">
 
 
 ### Module level integration
@@ -181,7 +180,7 @@ The following process is followed:
 *	After the Module Instance has been completed successfully, the OMD Module Success event is called
 *	If, at any stage, an error is encountered in the Module Instance the OMD Module Failure event is called
  
-<img src="Images/Direct_Documentation_Figure8_Batch_Execution.png" alt="Batch flow">
+<img src="Images/Direct_Documentation_Figure_8_Batch_Execution.png" alt="Batch flow">
  
  
 ## OMD registration
@@ -218,7 +217,7 @@ The Data Store registration in OMD is done by adding a record in the OMD_DATA_ST
 Depending on the type of a Data Store, additional information such as the file location can be stored in OMD_DATA_STORE_FILE and/or OMD_DATA_STORE_OLEDB.
  
 ### Parameter registration
-The Parameter registration in OMD is done by adding a record in the OMD_PARAMETER table with the following details:
+The Parameter registration is done by adding a record in the OMD_PARAMETER table with the following details:
 *	PARAMETER_ID; this is a system generated surrogate ID that is used to unique identify a Parameter. 
 *	PARAMETER_KEY_CODE; this is the name of the Parameter.
 *	PARAMETER_VALUE_CODE; this is the value of the Parameter
