@@ -6,7 +6,7 @@
 
 ### Intent
 
-This Design Pattern describes the design decisions and considerations that support the implementation of the Operational MetaData (OMD) framework. The pattern is related to the A150 - Metadata Model top-level document and its purpose is to define the OMD related processes in more detail.
+This Design Pattern describes the design decisions and considerations that support the implementation of the Operational MetaData (OMD) framework. The pattern is related to the A150 - Metadata Model top-level document and its purpose is to define the related processes in more detail.
 
 ### Positioning
 
@@ -46,15 +46,15 @@ This pattern is applicable for all ETL processes that are run under the ETL Fram
 
 ### Structure
 
-OMD defines Modules as small (atomic) ETL processes and Batches as a combination or series of Modules to be run in coherence. The OMD framework defines how these concepts integrate with and impact each other. To manage these processes both the OMD Batch- and Module Instance tables maintain a set of three operational code fields which together govern the way the metadata layer executes and directs the ETL flow.
+OMD defines Modules as small (atomic) ETL processes and Batches as a combination or series of Modules to be run in coherence. The OMD framework defines how these concepts integrate with and impact each other. To manage these processes both the Batch and Module Instance tables maintain a set of three operational code fields which together govern the way the metadata layer executes and directs the ETL flow.
 
 These codes or flags are:
 
 * Execution Status Code; monitors the outcomes of the ETL process.
-* Processing Indicator; provides the mechanism for internal OMD process control.
+* Processing Indicator; provides the mechanism for internal process control.
 * Next Run Indicator; provides information about how the ETL should operate on the next run, based on current information.
 
-Both Batch Instances (signifying one single execution of an ETL workflow) and Module Instances (signifying one single execution of an ETL process) use these flags in the same manner. During the OMD events, and in particular during the Module and Batch Evaluation event, the framework performs various checks to verify the data in the OMD subsystem.
+Both Batch Instances (signifying one single execution of an ETL workflow) and Module Instances (signifying one single execution of an ETL process) use these flags in the same manner. During the captured events, and in particular during the Module and Batch Evaluation event, the framework performs various checks to verify the data in the OMD subsystem.
 
 These checks are:
 
@@ -77,22 +77,22 @@ The detailed code purpose is defined in the following table:
 | E | Executing | The Instance is currently running (executing). This is only visible while the ETL process is actually running. As soon as it is completed this code is updated with one of the possible values below.
 | S | Succeeded | The Instance is no longer running, having completed its processing successfully. |
 | F | Failed | The Instance is no longer running, but failed during its processing.
-| A | Aborted | An Abort is a 'soft' failure which will not result in an error in the ETL layer but which should be investigated nonetheless as it is a result of incorrect configuration. There are two main cases that lead to an Abort event:<ol><li>The Instance in question was executed but another Instance of the same Batch or Module was already running. The same logical unit of processing can never run more than once at the same time to avoid data contentions. If this situation is detected the OMD will stop (abort) the second process before any data is processed</li><li>The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in OMD in the Batch/Module relationship (OMD_BATCH_MODULE).</li></ol>
+| A | Aborted | An Abort is a 'soft' failure which will not result in an error in the ETL layer but which should be investigated nonetheless as it is a result of incorrect configuration. There are two main cases that lead to an Abort event:<ol><li>The Instance in question was executed but another Instance of the same Batch or Module was already running. The same logical unit of processing can never run more than once at the same time to avoid data contentions. If this situation is detected then processing will stop (abort) the second process before any data is processed</li><li>The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship (OMD_BATCH_MODULE).</li></ol>
 | C | Cancelled / Skipped | This exception indicates that the Instance in question was executed, but that the OMD determined that it was not necessary to run the ETL process. There are three main causes for this:<ol><li>Administrator override: it is possible for the ETL environment's owners to force a scheduled run not to occur. This override enables human intervention without breaking the ETL schedule. The Instance will start, but detect the 'Cancel' override and stop without having done anything, effectively 'skipping' this ETL process in question (once). This "Cancel" override option exists both for whole Batches and for single Modules within Batches.  The 'Cancel' override itself is set through the Next Run Indicator. Use with caution.</li><li>The "Inactive Indicator' is set on individual Module / Batch Level or the Module/Batch relationship. For instance, a Module can be disabled (Inactive Indicator set to 'Y') in general, or for a specific Batch. When the Instance is started it will be Cancelled/Skipped.</li><li>The Instance has already run. This can happen if:<ol type="a"><li>Modules that were run successfully in an otherwise failed Batch Instance are rerun when the failed Batch is restarted. There are situations where the parent Batch has previously failed, but within that failed Batch Instance the Module completed its instance successfully. In that case, it is not necessary to re-run the Module again when the Batch is restarted. The OMD will automatically detect this and 'skip' all successfully completed Modules in the second iteration of the Batch.</li><li>Batches are rerun within their frequency interval setting.</li></ol></li></ol>
 
 ---
 
 ### Processing Indicator
 
-Whereas the Execution Status Code reports on the Instance, the Processing Indicator directs the actions of the Instance. Because there are a number of modular components across different technologies (for instance Oracle uses stored procedures to control the OMD process while software such as Informatica Powercenter can execute mappings and workflows), this indicator is used to share processing directions between them.
+Whereas the Execution Status Code reports on the Instance, the Processing Indicator directs the actions of the Instance. Because there are a number of modular components across different technologies (for instance Oracle uses stored procedures to control its processing, while software such as Informatica Powercenter can execute mappings and workflows), this indicator is used to share processing directions between them.
 
-The Processing Indicator is the outcome of the OMD Module (or Batch) Evaluation Event as defined in the high level document 'A150 - Metadata Model'. This is an evaluation process that runs before the execution of Instances and the Processing Indicator is the information that OMD provides based on the evaluation steps. Similar to the Execution Status Code this is a 'read only' attribute that does not require manual intervention at any point in time.
+The Processing Indicator is the outcome of the Module (or Batch) Evaluation Event as defined in the high level document 'A150 - Metadata Model'. This is an evaluation process that runs before the execution of Instances and the Processing Indicator is the information that OMD provides based on the evaluation steps. Similar to the Execution Status Code this is a 'read only' attribute that does not require manual intervention at any point in time.
 
 | Code | Process Value | Description
 | ---- | ------------- | -----------
-| P| Proceed | The Instance can continue on to the next step of the processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the OMD pre-processing has been completed the "P" value is the flag that is required to initiate the main ETL process.
-| A | Abort | This exception case indicates that the Instance in question was executed, but that another Instance of the same Batch or Module was already running (see also the equivalent execution status code for more detail). This is one of the sanity checks performed by OMD before the regular ETL (Module and Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The OMD process will use the Processing Indicator "A" to trigger the Module/Batch "Abort" event which sets the Execution Status Code to "A", ending the process gracefully.
-| C | Cancel / skip | That the OMD evaluation process has determined that it is not necessary to run this ETL process (see also the equivalent execution status code for more detail). As with the Abort, if the process indicator is Cancel then all further processing should stop after the Execution Status Code has been updated to "C".
+| P| Proceed | The Instance can continue on to the next step of the processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the pre-processing has been completed the "P" value is the flag that is required to initiate the main ETL process.
+| A | Abort | This exception case indicates that the Instance in question was executed, but that another Instance of the same Batch or Module was already running (see also the equivalent execution status code for more detail). This is one of the sanity checks performed before the regular ETL (Module and Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The process will use the Processing Indicator "A" to trigger the Module/Batch "Abort" event which sets the Execution Status Code to "A", ending the process gracefully.
+| C | Cancel / skip | That the evaluation process has determined that it is not necessary to run this ETL process (see also the equivalent execution status code for more detail). As with the Abort, if the process indicator is Cancel then all further processing should stop after the Execution Status Code has been updated to "C".
 | R | Rollback | The indicator for rollback is only set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Processing Indicator will be set to 'P' again to enable the continuation of the ETL.
 
 ---
@@ -101,19 +101,19 @@ The Processing Indicator is the outcome of the OMD Module (or Batch) Evaluation 
 
 As documented in the previous section the Processing Indicator directs the actions of the Instance while it is active. In contrast to this the Next Run Indicator is used to pass processing directions between instances of the same entity (Module or Batch).
 
-The primary function of this code field is to direct the OMD rollback functionality; if an Instance fails then the Next Run Indicator will be set to "Rollback", which means that the next time the same process is called it will first remove any (potentially) bad data inserted in the target table.
+The primary function of this code field is to direct the rollback functionality; if an Instance fails then the Next Run Indicator will be set to "Rollback", which means that the next time the same process is called it will first remove any (potentially) bad data inserted in the target table.
 
 In most cases the Next Run Indicator is driven by OMD but where the Execution Status Code and Processing Indicator are 'read only' attributes the Next Run Indicator can actually be overwritten by Administrators making it a 'read/write' attribute.
 
 | Code | Process Value | Description
 | ---- | ------------- | -----------
 | R | Rollback | When a current (running) Instance fails the Next Run Indicator for that Instance is updated to 'R' to signal the next run to initiate a rollback procedure. At the same time, the Execution Status Code for the current Instance will be set to 'F'.<br/><br/>Administrators can also change the Next Run Indicator value for an Instance to 'R' if they want to force a rollback when the next run commences.
-| P | Proceed | The Proceed value 'P' will direct the next run of the Batch/Module to continue processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the OMD rollback has been completed the "P" value is the flag that is required to initiate the main ETL process.
+| P | Proceed | The Proceed value 'P' will direct the next run of the Batch/Module to continue processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the rollback has been completed the "P" value is the flag that is required to initiate the main ETL process.
 | C | Cancel / skip | Administrators can manually set this code to for the Next Run Indicator (i.e. this will not be automatically set by the OMD controls) to force a one-off skip of the Instance.
 
 ---
 
-### OMD Processing
+### OMD Batch Processing
 
 This section details what actions the OMD framework performs upon running a Batch. A summary is provided in the following diagram:
 
@@ -130,7 +130,7 @@ The conceptual OMD events are documented in their context in the 'A150 - Metadat
     <li>Processing Indicator as 'A' (Abort).</li><li>Next Run Indicator as 'P' (Proceed).</li>
     <li>Start Date/Time as the Batch Instance Start Date.</li></ol>
 
-1. These values will be changed depending on how the rest of the OMD housekeeping proceeds. The 'A' code for the Processing indicator acts as a safety net for the unlikely event that OMD fails. In other words the approach is to abort (soft error) the load until the OMD Batch evaluation is completed correctly. The Processing Indicator will be updated as part of the Batch Evaluation event
+1. These values will be changed depending on how the rest of the OMD housekeeping proceeds. The 'A' code for the Processing indicator acts as a safety net for the unlikely event that OMD fails. In other words the approach is to abort (soft error) the load until the Batch evaluation is completed correctly. The Processing Indicator will be updated as part of the Batch Evaluation event
 
 1. Conceptually, as part of the Batch Create Instance Event, the new Instance ID is generated. The Batch Instance ID must be retrieved for further processing. The query to identify the Instance ID is as follows:
 
@@ -184,7 +184,7 @@ The process is as follows:
     <ol type="a"><li>After all Modules have been completed without any issues the Batch Success event will update the Batch Instance to set the (Batch) Execution Status Code to 'S' (success), the (Batch) Next Run Indicator as 'P' and the current date/time as the End Date/Time.  This indicates that the Batch has been completed successfully and can be run normally next time. For Modules 'no issues' in this context means that Modules have received anything but the Execution Status 'F'.</li>
     <li>If a failure is detected at any time during this process the Batch Failure event is initiated. This event sets the (Batch) Execution Status Code to 'F' which is used to drive rollbacks on Module level the next time the Batch is initiated. Any meaningful information will be logged to the OMD_EVENT_LOG table.</li></ol>
 
-### OMD Processing2
+### OMD Module Processing
 
 This section details what actions the OMD framework performs upon running a Module. A summary of this process step is displayed in the following diagram:
 
@@ -202,7 +202,7 @@ The conceptual OMD events are documented in their context in the 'A150 - Metadat
     1. Next Run Indicator as 'P' (Proceed).
     1. The Start Date Time will be set as the Module Instance Start Date Time as set in step 1
 
-1. This is an insert into the OMD_MODULE_INSTANCE table. The 'A' code for the Processing indicator acts as a safety net for the unlikely event that OMD fails while pre-processing. In other words the approach is to abort (soft error) the load until the OMD Module evaluation is completed correctly. The Processing Indicator will be updated as part of the OMD Module Evaluation event.
+1. This is an insert into the OMD_MODULE_INSTANCE table. The 'A' code for the Processing indicator acts as a safety net for the unlikely event that OMD fails while pre-processing. In other words the approach is to abort (soft error) the load until the Module evaluation is completed correctly. The Processing Indicator will be updated as part of the Module Evaluation event.
 
 1. It must be possible to run Modules (mappings) individually (i.e. without a parent Batch):
 
@@ -223,11 +223,11 @@ The conceptual OMD events are documented in their context in the 'A150 - Metadat
       AND BATCH_INSTANCE_ID= <the inherited Batch Instance ID or 0 (zero)>
     ```
 
-1. The Module ID, (Module) Execution Status Code and Batch Instance ID are required since Modules can be potentially be executed in parallel from different Batches and it is required that OMD is able to select the correct running Instance. In this scenario the OMD Module Evaluation event will 'Abort' all Instances after the first of the parallel Instances based on the Module Instance ID value (which is a sequenced attribute).
+1. The Module ID, (Module) Execution Status Code and Batch Instance ID are required since Modules can be potentially be executed in parallel from different Batches and it is required that OMD is able to select the correct running Instance. In this scenario the Module Evaluation event will 'Abort' all Instances after the first of the parallel Instances based on the Module Instance ID value (which is a sequenced attribute).
 
 1. In other words; the earliest instance will be allowed to continue to run, but all others will abort.
 
-1. Evaluate the current Module Instance (Module Evaluation event). This event performs the sanity checks and housekeeping for the OMD framework on Module level. It is the most complex part of the OMD pre-processing.
+1. Evaluate the current Module Instance (Module Evaluation event). This event performs the sanity checks and housekeeping for the OMD framework on Module level. It is the most complex part of the pre-processing.
 
 The following diagram highlights the evaluation actions:
 
@@ -239,7 +239,7 @@ The process is as follows:
 
 1. This value in of the Processing Indicator will trigger an update of the OMD_MODULE_INSTANCE table to set the Execution Status Code to 'A' for the current Instance and avoid executing of the regular ETL logic
 
-1. Validate Batch Execution.  OMD will query the Batch information to validate if the Module was registered properly (i.e. contains an entry in the Batch/Module relationship table) when instantiated from a Batch. This check also takes into account the value of the Inactive Indicator on Batch/Module level
+1. Validate Batch Execution. OMD will query the Batch information to validate if the Module was registered properly (i.e. contains an entry in the Batch/Module relationship table) when instantiated from a Batch. This check also takes into account the value of the Inactive Indicator on Batch/Module level
 
 1. If this value is set to 'Y' the current Instance will be skipped as this indicates the Module is disabled for the particular Batch
 
