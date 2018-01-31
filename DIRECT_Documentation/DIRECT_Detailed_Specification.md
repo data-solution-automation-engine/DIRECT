@@ -1,6 +1,6 @@
 ﻿<link rel="stylesheet" href="style.css" type="text/css">
 
-# Operational Metadata Detailed Design
+# DIRECT Detailed Specification
 
 ## Introduction
 
