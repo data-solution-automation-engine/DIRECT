@@ -1396,14 +1396,14 @@ namespace OMD_Manager
                     initialConfigurationFile.AppendLine("/* ETL Metadata Management Configuration Settings */");
                     initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
                     initialConfigurationFile.AppendLine(@"targetPath|C:\Files\TestOutput\");
-                    initialConfigurationFile.AppendLine(@"connectionStringGenerationMetadata|Provider=SQLNCLI11;Server=.;Initial Catalog=WS01_EDW_900_Metadata;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"GenerationMetaDataDatabaseName|WS01_EDW_900_Metadata");
-                    initialConfigurationFile.AppendLine(@"connectionStringDirect|Provider=SQLNCLI11;Server=.;Initial Catalog=WS01_EDW_900_ETL_Control_Metadata;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"DirectDatabaseName|WS01_EDW_900_ETL_Control_Metadata");
-                    initialConfigurationFile.AppendLine(@"connectionStringSTG|Provider=SQLNCLI11;Server=.;Initial Catalog=WS01_EDW_100_Staging_Area;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"STGDatabaseName|WS01_EDW_100_Staging_Area");
-                    initialConfigurationFile.AppendLine(@"connectionStringPSA|Provider=SQLNCLI11;Server=.;Initial Catalog=WS01_EDW_150_History_Area;Integrated Security=SSPI");
-                    initialConfigurationFile.AppendLine(@"PSADatabaseName|WS01_EDW_150_History_Area");                
+                    initialConfigurationFile.AppendLine(@"connectionStringGenerationMetadata|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_900_Metadata;User ID=sa; Password=K3kobus2");
+                    initialConfigurationFile.AppendLine(@"GenerationMetaDataDatabaseName|EDW_900_Metadata");
+                    initialConfigurationFile.AppendLine(@"connectionStringDirect|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_900_Metadata; User ID=sa; Password=K3kobus2");
+                    initialConfigurationFile.AppendLine(@"DirectDatabaseName|EDW_900_Metadata");
+                    initialConfigurationFile.AppendLine(@"connectionStringSTG|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_100_Staging_Area;User ID=sa; Password=K3kobus2");
+                    initialConfigurationFile.AppendLine(@"STGDatabaseName|EDW_100_Staging_Area");
+                    initialConfigurationFile.AppendLine(@"connectionStringPSA|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_150_Persistent_Staging_Area;User ID=sa; Password=K3kobus2");
+                    initialConfigurationFile.AppendLine(@"PSADatabaseName|EDW_150_Persistent_Staging_Area");                
                     initialConfigurationFile.AppendLine("/* End of file */");
 
                     using (var outfile = new StreamWriter(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
