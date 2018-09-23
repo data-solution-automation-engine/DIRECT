@@ -1,4 +1,4 @@
-﻿<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="stylesheet" href="style.css" type="text/css">
 
 # DIRECT Detailed Specification
 
@@ -90,7 +90,7 @@ The Processing Indicator is the outcome of the Module (or Batch) Evaluation Even
 
 | Code | Process Value | Description
 | ---- | ------------- | -----------
-| P| Proceed | The Instance can continue on to the next step of the processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the pre-processing has been completed the "P" value is the flag that is required to initiate the main ETL process.
+| P | Proceed | The Instance can continue on to the next step of the processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to "P". After the pre-processing has been completed the "P" value is the flag that is required to initiate the main ETL process.
 | A | Abort | This exception case indicates that the Instance in question was executed, but that another Instance of the same Batch or Module was already running (see also the equivalent execution status code for more detail). This is one of the sanity checks performed before the regular ETL (Module and Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The process will use the Processing Indicator "A" to trigger the Module/Batch "Abort" event which sets the Execution Status Code to "A", ending the process gracefully.
 | C | Cancel / skip | That the evaluation process has determined that it is not necessary to run this ETL process (see also the equivalent execution status code for more detail). As with the Abort, if the process indicator is Cancel then all further processing should stop after the Execution Status Code has been updated to "C".
 | R | Rollback | The indicator for rollback is only set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Processing Indicator will be set to 'P' again to enable the continuation of the ETL.
