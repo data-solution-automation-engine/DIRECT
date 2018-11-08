@@ -1,6 +1,6 @@
 /* 
 	DIRECT process control default data 
-    https://github.com/RoelantVos/DIRECT/
+  https://github.com/RoelantVos/DIRECT/
 */
 
 --USE [<sample source database name>]
@@ -31,7 +31,7 @@
 -- Version
 INSERT INTO [VERSION]
 ([VERSION_ID],[COMMENTS] ,[RELEASE_DATE] )
-VALUES ('1.5','Stable','2018-02-04')
+VALUES ('Revision 12 - https://app.sqldbm.com/SQLServer/Share/wkTlhWhD3t1CbEDjp4xLEkGFrngIE8md_DYjF4jNYw0','Stable','2018-02-04')
 
 -- Layer
 INSERT LAYER 
