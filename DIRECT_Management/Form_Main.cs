@@ -68,7 +68,7 @@ namespace OMD_Manager
                 var metadataDatabaseName = textBoxGenerationMetadataDatabaseName;
 
                 insertIntoStatement.AppendLine("/* Run the following in ETL control framework database */");
-                insertIntoStatement.AppendLine("USE ["+metadataDatabaseName+"];");
+                insertIntoStatement.AppendLine("USE ["+textBoxDirectDatabase.Text+"];");
                 insertIntoStatement.AppendLine();
 
                 // Add the initial delete statements
@@ -187,10 +187,10 @@ namespace OMD_Manager
                         {
                             insertIntoStatement.AppendLine("IF NOT EXISTS (SELECT MODULE_CODE FROM OMD_MODULE WHERE MODULE_CODE='m_100_" + stagingTableName + "')");
                         }
-                        insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
+                        insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE], [MODULE_CODE], [MODULE_DESCRIPTION], [MODULE_TYPE_CODE], [FREQUENCY_CODE])");
                         insertIntoStatement.AppendLine("VALUES ('STG','m_100_" + stagingTableName +
                                                        "','Source to Staging ETL for " +
-                                                       stagingTableName + "', 'SSIS')");
+                                                       stagingTableName + "', 'SSIS', 'Queue')");
                     }
                 }
                 else
@@ -230,10 +230,10 @@ namespace OMD_Manager
                             insertIntoStatement.AppendLine("IF NOT EXISTS (SELECT MODULE_CODE FROM OMD_MODULE WHERE MODULE_CODE='m_150_H" + stagingTableName + "')");
                         }
                         insertIntoStatement.AppendLine(
-                            "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
+                            "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE],[FREQUENCY_CODE])");
                         insertIntoStatement.AppendLine("VALUES ('HSTG','m_150_H" + stagingTableName +
                                                        "','Staging to History Staging ETL for H" + stagingTableName +
-                                                       "', 'SSIS')");
+                                                       "', 'SSIS', 'Queue')");
                     }
                 }
                 else
@@ -352,10 +352,10 @@ namespace OMD_Manager
                                     insertIntoStatement.AppendLine("IF NOT EXISTS (SELECT MODULE_CODE FROM OMD_MODULE WHERE MODULE_CODE = 'm_200_" + intTable + "_With_Driving_Key')");
                                 }
                                 insertIntoStatement.AppendLine(
-                                    "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
+                                    "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE],[FREQUENCY_CODE])");
                                 insertIntoStatement.AppendLine("VALUES ('INT','m_200_" + intTable +
                                                                "_With_Driving_Key','Driving-key based Link Satellite table sourced from " +
-                                                               targetTableName + "', 'SSIS')");
+                                                               targetTableName + "', 'SSIS', 'Queue')");
                             }
                             else //Normal LSATs
                             {
@@ -366,10 +366,10 @@ namespace OMD_Manager
                                                                    "')");
                                 }
                                 insertIntoStatement.AppendLine(
-                                    "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
+                                    "INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE],[FREQUENCY_CODE])");
                                 insertIntoStatement.AppendLine("VALUES ('INT','m_200_" + intTable + "_" + targetTableName +
                                                                "','Driving-key based Link Satellite table sourced from " +
-                                                               targetTableName + "', 'SSIS')");
+                                                               targetTableName + "', 'SSIS', 'Queue')");
                             }
                         }
                         else
@@ -379,9 +379,9 @@ namespace OMD_Manager
                                 insertIntoStatement.AppendLine("IF NOT EXISTS (SELECT MODULE_CODE FROM OMD_MODULE WHERE MODULE_CODE='m_200_" + intTable + "_" +
                                                                targetTableName + "')");
                             }
-                            insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
+                            insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE],[FREQUENCY_CODE])");
                             insertIntoStatement.AppendLine("VALUES ('INT','m_200_" + intTable + "_" + targetTableName +
-                                                           "','Integration Layer ETL sourced from " + targetTableName + "', 'SSIS')");
+                                                           "','Integration Layer ETL sourced from " + targetTableName + "', 'SSIS','Queue')");
                         }
                         insertIntoStatement.AppendLine();
                     }
@@ -444,8 +444,8 @@ namespace OMD_Manager
                             insertIntoStatement.AppendLine("IF NOT EXISTS (SELECT MODULE_CODE FROM OMD_MODULE WHERE MODULE_CODE='m_200_" + intTableName + "_END_DATES')");
                         }
 
-                        insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE])");
-                        insertIntoStatement.AppendLine("VALUES ('INT','m_200_" + intTableName + "_END_DATES','End-dating logic for the table " + intTableName + "', 'SSIS')");
+                        insertIntoStatement.AppendLine("INSERT INTO [OMD_MODULE] ([AREA_CODE],[MODULE_CODE],[MODULE_DESCRIPTION],[MODULE_TYPE_CODE],[FREQUENCY_CODE])");
+                        insertIntoStatement.AppendLine("VALUES ('INT','m_200_" + intTableName + "_END_DATES','End-dating logic for the table " + intTableName + "', 'SSIS', 'Queue')");
                         insertIntoStatement.AppendLine();
                     }
                 }
@@ -522,7 +522,7 @@ namespace OMD_Manager
                 }
 
                 insertIntoStatement.AppendLine("INSERT INTO [OMD_BATCH] ([FREQUENCY_CODE],[BATCH_CODE],[BATCH_DESCRIPTION])");
-                insertIntoStatement.AppendLine("VALUES ('Continuous','b_EDW_STG_INT_" + stagingBatchName + "','Source to Integration Area processing for " + stagingBatchName + "')");
+                insertIntoStatement.AppendLine("VALUES ('Queue','b_EDW_STG_INT_" + stagingBatchName + "','Source to Integration Area processing for " + stagingBatchName + "')");
                 insertIntoStatement.AppendLine();
             }
         }
@@ -1399,7 +1399,7 @@ namespace OMD_Manager
                     initialConfigurationFile.AppendLine(@"connectionStringGenerationMetadata|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_900_Metadata;User ID=sa; Password=K3kobus2");
                     initialConfigurationFile.AppendLine(@"GenerationMetaDataDatabaseName|EDW_900_Metadata");
                     initialConfigurationFile.AppendLine(@"connectionStringDirect|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_900_Metadata; User ID=sa; Password=K3kobus2");
-                    initialConfigurationFile.AppendLine(@"DirectDatabaseName|EDW_900_Metadata");
+                    initialConfigurationFile.AppendLine(@"DirectDatabaseName|EDW_900_OMD_Framework");
                     initialConfigurationFile.AppendLine(@"connectionStringSTG|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_100_Staging_Area;User ID=sa; Password=K3kobus2");
                     initialConfigurationFile.AppendLine(@"STGDatabaseName|EDW_100_Staging_Area");
                     initialConfigurationFile.AppendLine(@"connectionStringPSA|Provider=SQLNCLI11;Server=.;Initial Catalog=EDW_150_Persistent_Staging_Area;User ID=sa; Password=K3kobus2");

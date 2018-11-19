@@ -137,8 +137,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="DIRECT_Management_1_TemporaryKey.pfx" />
-    <None Include="DIRECT_Management_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
