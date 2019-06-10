@@ -1,0 +1,34 @@
+<Events>
+  <Event Name="OnError" ConstraintMode="Parallel" EventType="OnError">
+    <Tasks>
+      <Container Name="OnError Event" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+        <Tasks>
+          <ExecuteSQL Name="EST - Set V_EVENT_TYPE_CODE" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+            <Annotations>
+              <Annotation AnnotationType="Description">Use the correct Event Type Code for Internal SSIS errors (2).</Annotation>
+            </Annotations>
+            <DirectInput>SELECT '2' AS V_EVENT_TYPE_CODE</DirectInput>
+            <Results>
+              <Result Name="V_EVENT_TYPE_CODE" VariableName="User.V_EVENT_TYPE_CODE" />
+            </Results>
+          </ExecuteSQL>
+          <ExecutePackage Name="EPT - Module Failure" IsolationLevel="ReadCommitted">
+            <ExternalProjectPackage Package="Module_Failure.dtsx" />
+            <ParameterBindings>
+              <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+              <ParameterBinding Name="V_ERROR_CODE" VariableName="System.ErrorCode" />
+              <ParameterBinding Name="V_ERROR_DESCRIPTION" VariableName="System.ErrorDescription" />
+              <ParameterBinding Name="V_EVENT_TYPE_CODE" VariableName="User.V_EVENT_TYPE_CODE" />
+              <ParameterBinding Name="V_MODULE_INSTANCE_ID" VariableName="User.V_MODULE_INSTANCE_ID" />
+            </ParameterBindings>
+            <PrecedenceConstraints>
+              <Inputs>
+                <Input OutputPathName="EST - Set V_EVENT_TYPE_CODE.Output" EvaluationOperation="Constraint" />
+              </Inputs>
+            </PrecedenceConstraints>
+          </ExecutePackage>
+        </Tasks>
+      </Container>
+    </Tasks>
+  </Event>
+</Events>

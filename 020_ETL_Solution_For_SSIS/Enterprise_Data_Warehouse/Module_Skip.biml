@@ -1,0 +1,35 @@
+
+    <Package Name="Module_Skip" Language="None">
+      <Variables>
+        <Variable Name="V_MODULE_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_MODULE_INSTANCE_ID">@[$Package::V_MODULE_INSTANCE_ID]</Variable>
+      </Variables>
+      
+      <Annotations>
+          <Annotation AnnotationType="Description">Determine if the module needs to be skipped for the current run; creating an new module instance ID but without executing the package (logic). 
+          This can only be manually updated in the Module Instance Table and does not occur often.
+          The step sets the Execution Status Code to 'C' (cancelled / skipped) and the Next Run Indicator to 'P' indicating it can be run the next time.
+          </Annotation>
+      </Annotations>      
+      
+      <Tasks>
+        <Container Name="Module Skip">
+          <Annotations>
+            <Annotation AnnotationType="Description">Module Skip (Cancel)</Annotation>
+          </Annotations>
+          <Tasks>
+            <ExecuteSQL Name="EST - Update the Module Instance for Skipping - Cancellation" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <DirectInput>UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='C', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE MODULE_INSTANCE_ID=?</DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+      </Tasks>
+      <Parameters>
+        <Parameter Name="V_MODULE_INSTANCE_ID" DataType="Int32">0</Parameter>
+      </Parameters>
+    </Package>

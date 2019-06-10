@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DTS:Executable DTS:CreationDate="06/10/2019 17:48:57" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAUBRI006619" DTS:CreatorName="rvos" DTS:Description="Determine if the module needs to be skipped for the current run; creating an new module instance ID but without executing the package (logic). &#xA;          This can only be manually updated in the Module Instance Table and does not occur often.&#xA;          The step sets the Execution Status Code to 'C' (cancelled / skipped) and the Next Run Indicator to 'P' indicating it can be run the next time." DTS:DTSID="{704AC05C-0071-44B5-A5AD-6C8D0BD51583}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Module_Skip" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{27F83031-5521-4594-9528-5F6ACAA65B8D}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{EBB9C89A-B050-42B1-98AF-1E1F73A97553}" DTS:ObjectName="V_MODULE_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{485CDAFE-4F0A-44EC-A4DC-A614DA451205}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Module Skip (Cancel)" DTS:DTSID="{D745306C-F0F2-4BBD-90BF-FB48C563D096}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Module Skip" DTS:refId="Package\Module Skip">
+      <DTS:Executables>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{26C82F9E-BD16-41B6-966B-FFA2436AC4FF}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update the Module Instance for Skipping - Cancellation" DTS:refId="Package\Module Skip\EST - Update the Module Instance for Skipping - Cancellation" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='C', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE MODULE_INSTANCE_ID=?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:Configurations>
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{AF40955A-4780-4366-8380-10017FF1EF4B}" DTS:ObjectName="V_MODULE_INSTANCE_ID" />
+  </DTS:Configurations>
+</DTS:Executable>

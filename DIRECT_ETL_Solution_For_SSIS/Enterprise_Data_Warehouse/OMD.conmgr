@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="OMD" DTS:DTSID="{6A486C3B-A2C0-4338-8929-A965D2C201EB}" DTS:refId="Package.ConnectionManagers[OMD]" DTS:CreationName="OLEDB">
-  <DTS:ObjectData>
-    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11.1;server=BISERVER;initial catalog=EDW_900_OMD_Framework;user id=sa">
-      <DTS:Password DTS:Name="Password" Sensitive="1"></DTS:Password>
-    </DTS:ConnectionManager>
-  </DTS:ObjectData>
-  <DTS:PropertyExpression DTS:Name="Password">"K3kobus2"</DTS:PropertyExpression>
-</DTS:ConnectionManager>

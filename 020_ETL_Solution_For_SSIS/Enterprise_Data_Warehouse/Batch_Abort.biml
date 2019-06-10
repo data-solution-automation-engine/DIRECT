@@ -1,0 +1,38 @@
+
+    <Package Name="Batch_Abort">
+      <Variables>
+        <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_ID">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
+      </Variables>
+      
+      <Annotations>
+        <Annotation AnnotationType="Description">Update the information to record the abort of a Batch Instance. This is done by:
+            - Setting the Execution Status Code to 'A'
+            - Setting the Next_Run_Flag to 'E'
+            - Setting the End_Datetime for the package run to the system datetime (now)
+        </Annotation>
+      </Annotations>      
+
+      <Tasks>
+        <Container Name="Batch Abort">
+            
+          <Annotations>
+            <Annotation AnnotationType="Description">Batch Abort</Annotation>
+          </Annotations>
+          
+          <Tasks>
+            <ExecuteSQL Name="EST - Update the Batch Instance for Abort" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <DirectInput>UPDATE BATCH_INSTANCE SET EXECUTION_STATUS_CODE='A', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  BATCH_INSTANCE_ID=?</DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+      </Tasks>
+      <Parameters>
+        <Parameter Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Parameter>
+      </Parameters>
+    </Package>

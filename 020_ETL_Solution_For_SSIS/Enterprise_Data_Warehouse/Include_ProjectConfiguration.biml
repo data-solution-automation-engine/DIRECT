@@ -1,0 +1,16 @@
+<#  
+// RootConfiguration BIML to store all default paths in one file
+// THE ROOT PATH NEEDS TO BE LOCALISED / CHANGED FOR EVERY ENVIRONMENT AS DEVELOPERS WORK IN DIFFERENT DIRECTORIES
+
+string ProjectName = @"DataWarehouse";
+// Reference to Trunk and not to branche !!
+string PathRoot = @"C:\Files\DIRECT\020_ETL_Solution_For_SSIS\";
+string PathRootProject = PathRoot + ProjectName + @"\";
+string PathReferences = PathRoot + @"000_References\";
+string PathBimlLogfiles = PathRoot + @"900_Logfiles\";
+string PathDefaultLanding = @"C:\";
+string PathDefaultLandingArchive = @"Archive\";
+string PathDefaultExportArchive = @"Archive\";
+string PathDefaultExport = @"C:\Export\";
+string rootDirectory = PathRoot;
+#>

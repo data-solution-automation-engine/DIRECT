@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DTS:Executable DTS:CreationDate="06/10/2019 17:48:57" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAUBRI006619" DTS:CreatorName="rvos" DTS:Description="Update the information to record the abort of a Module Instance. This is done by&#xA;          Setting the Execution Status Code to 'A'&#xA;          Setting the Next_Run_Flag to 'E'&#xA;          Setting the End_Datetime for the package run to the system datetime (now)" DTS:DTSID="{205A82C9-913B-4817-BEAE-B1A8C176F27A}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Module_Abort" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{AEE5A20B-A016-4BD1-B877-343436E172F9}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{431AA261-19D7-4ACD-949A-61D8CEEDC25F}" DTS:ObjectName="V_MODULE_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E2057DEB-2CDE-40CA-8AD4-F2224D25C147}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Module Abort" DTS:DTSID="{C7D4AEF5-67BA-4409-8F35-559A43D8ABA8}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Module Abort" DTS:refId="Package\Module Abort">
+      <DTS:Executables>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{2F68AFA9-B19A-4639-9635-FA4E8C5312D8}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update the Module Instance for Abort" DTS:refId="Package\Module Abort\EST - Update the Module Instance for Abort" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='A', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID=?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:Configurations>
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{3BE5FBC9-4A74-4D92-8246-65EABECB494D}" DTS:ObjectName="V_MODULE_INSTANCE_ID" />
+  </DTS:Configurations>
+</DTS:Executable>

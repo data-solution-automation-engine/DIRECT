@@ -1,0 +1,25 @@
+<Events>
+  <Event Name="OnPostExecute" ConstraintMode="Parallel" EventType="OnPostExecute">
+    <Tasks>
+      <Container Name="Complete Processing" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+        <Tasks>
+          <ExecutePackage Name="EPT - Module Success" IsolationLevel="ReadCommitted">
+            <ExternalProjectPackage Package="Module_Success.dtsx" />
+            <ParameterBindings>
+              <ParameterBinding Name="V_AREA_CODE" VariableName="User.V_AREA_CODE" />
+              <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+              <ParameterBinding Name="V_MODULE_ERROR_CODE" VariableName="User.V_MODULE_ERROR_CODE" />
+              <ParameterBinding Name="V_MODULE_INSTANCE_ID" VariableName="User.V_MODULE_INSTANCE_ID" />
+              <ParameterBinding Name="V_ROW_COUNT_DELETED" VariableName="User.V_ROW_COUNT_DELETED" />
+              <ParameterBinding Name="V_ROW_COUNT_DISCARDED" VariableName="User.V_ROW_COUNT_DISCARDED" />
+              <ParameterBinding Name="V_ROW_COUNT_INPUT" VariableName="User.V_ROW_COUNT_INPUT" />
+              <ParameterBinding Name="V_ROW_COUNT_INSERTED" VariableName="User.V_ROW_COUNT_INSERTED" />
+              <ParameterBinding Name="V_ROW_COUNT_REJECTED" VariableName="User.V_ROW_COUNT_REJECTED" />
+              <ParameterBinding Name="V_ROW_COUNT_UPDATED" VariableName="User.V_ROW_COUNT_UPDATED" />
+            </ParameterBindings>
+          </ExecutePackage>
+        </Tasks>
+      </Container>
+    </Tasks>
+  </Event>
+</Events>

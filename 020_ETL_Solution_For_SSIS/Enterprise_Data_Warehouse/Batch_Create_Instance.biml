@@ -1,0 +1,58 @@
+
+
+    <Package Name="Batch_Create_Instance">
+      <Variables>
+        <Variable Name="V_BATCH_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_ID">@[$Package::V_BATCH_ID]</Variable>
+        <Variable Name="V_BATCH_INSTANCE_START_DATETIME" DataType="DateTime" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_START_DATETIME">@[$Package::V_BATCH_INSTANCE_START_DATETIME]</Variable>
+        <Variable Name="V_PACKAGE_EXECUTION_GUID" DataType="String" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="ExecutionInstanceGUID">@[$Package::V_PACKAGE_EXECUTION_GUID]</Variable>
+      </Variables>
+      
+      <Annotations>
+        <Annotation AnnotationType="Description">Instantiate a Batch into a new Batch Instance.</Annotation>
+      </Annotations>      
+
+      <Tasks>
+        <Container Name="Batch Create Instance">
+            
+          <Annotations>
+            <Annotation AnnotationType="Description">Create Batch Instance</Annotation>
+          </Annotations>
+          
+          <Tasks>
+            <ExecuteSQL Name="EST - Create new Batch Instance" FailPackageOnFailure="true" Id="ed95d76a-1108-4751-8043-02cfea745c91" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">This script task inherits the Batch parameters from the parent package and executes SQL to create a new Batch Instance ID.</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_BATCH_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="1" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" Length="-1" DataType="Date" />
+                <Parameter Name="2" VariableName="System.ExecutionInstanceGUID" Length="-1" DataType="AnsiString" />
+              </Parameters>
+              <DirectInput>
+                    INSERT INTO BATCH_INSTANCE (
+                    BATCH_ID,  
+                    START_DATETIME, 
+                    EXECUTION_STATUS_CODE, 
+                    NEXT_RUN_INDICATOR, 
+                    PROCESSING_INDICATOR,
+                    BATCH_EXECUTION_SYSTEM_ID)
+                    VALUES(
+                    ?,
+                    ?,
+                    'E', 
+                    'P',
+                    'A',
+                    ?
+                    )
+                </DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+      </Tasks>
+      <Parameters>
+          <Parameter Name="V_BATCH_ID" DataType="Int32">0</Parameter>
+          <Parameter Name="V_BATCH_INSTANCE_START_DATETIME" DataType="DateTime">2/11/2014 9:36:16 AM</Parameter>
+		  <Parameter Name="V_PACKAGE_EXECUTION_GUID" DataType="String"></Parameter>
+      </Parameters>
+    </Package>
+

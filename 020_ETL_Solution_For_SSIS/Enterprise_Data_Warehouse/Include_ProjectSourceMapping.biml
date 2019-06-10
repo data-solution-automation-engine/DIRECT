@@ -1,0 +1,30 @@
+<#
+if (sourceSystemName=="Dimelo")
+	{
+		SourceSystemPrefix = "DML";	
+	}	
+    else if (sourceSystemName=="MDS")
+	{
+		SourceSystemPrefix = "MDS";	
+	}
+    else if (sourceSystemName=="CYS")
+	{
+		SourceSystemPrefix = "CYS";	
+	}
+	else if (sourceSystemName=="EDM")
+	{
+		SourceSystemPrefix = "EDM";	
+	}
+	else if	(sourceSystemName=="NLDW")
+	{
+	    SourceSystemPrefix = "NLDW";	
+	}
+	else if	(sourceSystemName=="CM3")
+	{
+	    SourceSystemPrefix = "CM3";	
+	}	
+	else
+	{
+		SourceSystemPrefix = "Error";
+	}	
+#>	

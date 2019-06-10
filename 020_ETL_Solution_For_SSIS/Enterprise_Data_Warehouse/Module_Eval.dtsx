@@ -1,0 +1,646 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DTS:Executable DTS:CreationDate="06/10/2019 17:48:57" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAUBRI006619" DTS:CreatorName="rvos" DTS:Description="Evaluate the processing of a Module Instance." DTS:DTSID="{F652CB79-84E0-4D31-A8C3-C10C71521039}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Module_Eval" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{D6F5A172-62B5-4EF3-BFA3-AAE8540D6599}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{766AD329-1E32-42AE-A479-80F8A4F457D6}" DTS:ObjectName="V_AREA_CODE" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{3EB9104C-9E90-4B4A-976E-E7BB0DB6785A}" DTS:ObjectName="V_BATCH_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{55903EB1-14CD-41D5-87DA-88432B01C1CA}" DTS:ObjectName="V_BATCH_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{AC5A816B-788E-45A7-AC53-1CFC2B7122B0}" DTS:ObjectName="V_MODULE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{114B2B5F-4320-48C5-9751-96E50CF9EB75}" DTS:ObjectName="V_MODULE_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="7" DTS:Description="" DTS:DTSID="{810F3952-2103-43D7-9952-31DA3BD8A479}" DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="7" DTS:Name="ParameterValue">2/11/2014 9:25:08 AM</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{6BE1B281-400B-4F2B-8233-97E8C87AA485}" DTS:ObjectName="V_TABLE_CODE" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{5A7D60F7-9D04-4024-8F6A-7F022B8BF785}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_AREA_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_AREA_CODE">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{2554C315-6AA0-4F67-98F3-73CAE8A62A41}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{FB9B5F27-7FF3-4F13-B1AC-9E9F5E72C7F5}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{96535AC9-931E-41A0-888B-9172655B68A0}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_BATCH_VALIDATION">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{AC2EC55F-EDAE-4ED5-AA6C-266B7ED096CE}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{D8AD3ACA-1118-4460-8319-7700C38C5EB9}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_LAST_BATCH_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{1445DC61-DED6-4D07-A603-13E491BC1FCD}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_LAST_END_DATETIME">
+      <DTS:VariableValue DTS:DataType="7">01/25/2011 14:39:32</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E46855A1-2B6B-493C-A796-FA911142C734}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_LAST_EXECUTION_STATUS_CODE">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{6E47E87F-711A-4E2B-9BCD-7992D125F8D3}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_LAST_MODULE_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{3DB69C03-85C9-49B7-852F-4B8FB8A76289}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_LAST_MODULE_INSTANCE_ID_LIST">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{6FC51A2F-4F81-476B-BFF5-0B99853D0042}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_LAST_NEXT_RUN_INDICATOR">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E11987D1-642F-465F-B573-9713A13EB464}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_LAST_START_DATETIME">
+      <DTS:VariableValue DTS:DataType="7">01/25/2011 14:39:12</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E6F8C36B-6720-45ED-A779-0A6DCA330727}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_MODULE_ACTIVE_INSTANCE_CONTROL">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{3D4E5743-E22F-4577-A34E-53323F5A6C4F}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_HISTORY">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{A4C6961F-8A97-4B49-9F85-D248626AC4D9}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{7055B43E-08D7-4201-A41F-EE0F8F9A0B05}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{2CF32BD4-30AC-4D56-9A9D-58E727E2553B}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_INSTANCE_START_DATETIME]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME">
+      <DTS:VariableValue DTS:DataType="7">02/11/2014 09:25:08</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{1D8F37FC-A65C-4E8F-AAB4-78CD338A1D9E}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_RUN_DATE">
+      <DTS:VariableValue DTS:DataType="7">01/27/2011 17:06:42</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{DCC17192-F4E2-4D0B-AB06-610D08619518}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_SQL_ROLLBACK_HSTG">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{423EEB2B-35C8-4AD3-99D2-93E401232B72}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_SQL_ROLLBACK_INT_Delete">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{29ECF98A-2F0D-4B2D-8E2E-C6FEC512AD3A}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_SQL_ROLLBACK_INT_Update">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{368E09A7-9864-44B3-B747-0618C37739E8}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_SQL_ROLLBACK_STG">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{A06B282F-293D-44BC-A151-B67E8F8DA77A}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_SQL_ROLLBACK_STG_SOURCE_CONTROL">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{63D83BD9-2302-4D44-8BC9-28AEEF7F6BEB}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_TABLE_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_TABLE_CODE">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Module Evaluation" DTS:DTSID="{80FF3F02-980D-4F19-9F95-3AC61E74F406}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Module Eval" DTS:refId="Package\Module Eval">
+      <DTS:Variables>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{E6014E20-4AE5-4F40-9E7F-FFFEB2E3FFB0}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_CONNECTION_STRING_HELPER">
+          <DTS:VariableValue DTS:DataType="8" />
+        </DTS:Variable>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{9EE80E74-4C71-4E87-8E34-B7CACDF1272D}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_CONNECTION_STRING_INTPR">
+          <DTS:VariableValue DTS:DataType="8" />
+        </DTS:Variable>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{B06060D5-FC78-45D5-8DFF-B8FB0C4F19BF}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_CONNECTION_STRING_PRES">
+          <DTS:VariableValue DTS:DataType="8" />
+        </DTS:Variable>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{AF8599BD-9037-4F2F-BEEE-7634E2383015}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_INACTIVE_INDICATOR_MODULE_LEVEL">
+          <DTS:VariableValue DTS:DataType="8" />
+        </DTS:Variable>
+      </DTS:Variables>
+      <DTS:Executables>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Multiple active instances indicate corruption in the repository" DTS:DTSID="{D460402F-5AF5-4818-87B6-F4AF4929025B}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:FailPackageOnFailure="True" DTS:LocaleID="-1" DTS:ObjectName="EST - Check for multiple active Module Instances" DTS:refId="Package\Module Eval\EST - Check for multiple active Module Instances" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:ResultType="ResultSetType_SingleRow" SQLTask:SqlStatementSource="&#xA;                    SELECT&#xA;                     CASE &#xA;                      WHEN ActiveInstancesCount IS NULL THEN 'Process'&#xA;                      WHEN ActiveInstancesCount IS NOT NULL AND MinimumInstance= ? THEN 'Process'&#xA;                      ELSE 'Abort'&#xA;                     END AS ModuleActiveInstanceControl&#xA;                    FROM &#xA;                    (&#xA;                       SELECT MODULE_ID, MIN(MODULE_INSTANCE_ID) as MinimumInstance&#xA;                       FROM MODULE_INSTANCE&#xA;                       WHERE EXECUTION_STATUS_CODE = 'E' &#xA;                         AND MODULE_ID = ? &#xA;                       GROUP BY MODULE_ID&#xA;                      -- Check for the lowest instance of the Module Instances since the process must continue if it's the first of the started instances for the particular Module.&#xA;                    ) MininumInstance&#xA;                    LEFT OUTER JOIN&#xA;                    (&#xA;                       SELECT MODULE_ID, COUNT(*) as ActiveInstancesCount &#xA;                       FROM MODULE_INSTANCE&#xA;                       WHERE EXECUTION_STATUS_CODE = 'E' &#xA;                         AND MODULE_ID = ?&#xA;                         AND MODULE_INSTANCE_ID &lt;&gt; ?&#xA;                       GROUP BY MODULE_ID&#xA;                       -- Check if there are no additional running instances other than the current Module Instance&#xA;                    )  ActiveInstances ON ActiveInstances.MODULE_ID=MininumInstance.MODULE_ID&#xA;               " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="3" SQLTask:ParameterSize="-1" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_MODULE_ACTIVE_INSTANCE_CONTROL" SQLTask:ResultName="ModuleActiveInstanceControl" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="The default value for the Processing Indicator is 'A' so the action to update the Processing Indicator is effectively redundant, but kept here in the Module Evaluation as a safety check." DTS:DTSID="{555B78E5-B6C4-4B64-B25C-8C6F7948682C}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Set the Processing Indicator to signal Abort of the run" DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE set PROCESSING_INDICATOR = 'A' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="In case the Module is called from a parent Batch this task verifies if the administration is done properly and if the Module is disabled as part of the Batch configuration (BATCH_MODULE)." DTS:DTSID="{901855B6-650A-425D-8CCF-8213B027504E}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Validate Batch processing" DTS:refId="Package\Module Eval\EST - Validate Batch processing" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:ResultType="ResultSetType_SingleRow" SQLTask:SqlStatementSource="&#xA;                    SELECT &#xA;                     Min(INACTIVE_INDICATOR) as INACTIVE_INDICATOR,&#xA;                     CASE&#xA;                      WHEN Min(BATCH_ID) IS NULL THEN 'Incorrect'&#xA;                      ELSE 'Correct'&#xA;                     END as BATCH_VALIDATION&#xA;                     -- The Batch validation is used to Abort a run if the BATCH_MODULE table is not used correctly&#xA;                     -- In this scenario you expect a record to be returned if the Module is run from a Batch (i.e. there's a valid Batch Instance).&#xA;                    FROM (&#xA;                    SELECT BATCH_ID, MODULE_ID, INACTIVE_INDICATOR&#xA;                    FROM BATCH_MODULE&#xA;                    WHERE BATCH_ID= ? AND MODULE_ID = ?&#xA;                    UNION ALL -- return if there is nothing, to give at least a result for SSIS&#xA;                    SELECT null, null, null&#xA;                    ) sub&#xA;     " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL" SQLTask:ResultName="INACTIVE_INDICATOR" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_BATCH_VALIDATION" SQLTask:ResultName="BATCH_VALIDATION" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="This task retrieves the execution information from the last time the same Module was run, to understand if any reprocessing is required." DTS:DTSID="{36C4AF3E-8087-4484-BEEC-9F6F7A4D5250}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Get the details of the previous Module Instance" DTS:refId="Package\Module Eval\EST - Get the details of the previous Module Instance" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:ResultType="ResultSetType_SingleRow" SQLTask:SqlStatementSource="&#xA;                    DECLARE @MODULE_ID INT = ?&#xA;                    DECLARE @BATCH_ID INT = ? -- zero 0 if it is not executed by a batch&#xA;                    &#xA;                    SELECT &#xA;                             IsNull(Max(LastBatchInstanceID),-1)              AS 'LastBatchInstanceID'&#xA;                             ,IsNull(Max(LastModuleInstanceID),-1)            AS 'LastModuleInstanceID'&#xA;                             ,IsNull(Max(LastStartDateTime),'1900-01-01')     AS 'LastStartTime'&#xA;                             ,Max(LastEndDateTime)                            AS 'LastEndTime'&#xA;                             ,IsNull(Max(LastExecutionStatus),'I')            AS 'LastExecutionStatus'&#xA;                             ,IsNull(Max(LastNextRunIndicator),'P')           AS 'LastNextExecutionFlag'&#xA;                             ,ISNULL(Max(LastModuleInstanceIDList),'-1')      AS 'LastModuleInstanceIDList'&#xA;                             ,(SELECT INACTIVE_INDICATOR FROM MODULE WHERE MODULE_ID = @MODULE_ID) AS InactiveIndicator&#xA;                    FROM&#xA;                    (&#xA;                            (&#xA;                        &#xA;                       SELECT &#xA;                                        A.BATCH_INSTANCE_ID        AS 'LastBatchInstanceID', &#xA;                                        A.MODULE_INSTANCE_ID       AS 'LastModuleInstanceID', &#xA;                                        A.START_DATETIME           AS 'LastStartDateTime',&#xA;                                        A.END_DATETIME             AS 'LastEndDateTime',&#xA;                                        A.EXECUTION_STATUS_CODE    AS 'LastExecutionStatus', &#xA;                                        A.NEXT_RUN_INDICATOR       AS 'LastNextRunIndicator',&#xA;                                        (SELECT Cast(&#xA;                                      '(' + &#xA;                             STUFF&#xA;                             (&#xA;                                                           (&#xA;                                 Select ',' + CAST(MODULE_INSTANCE_ID AS VARCHAR(20))&#xA;                                 From  MODULE_INSTANCE MI&#xA;                                       LEFT JOIN BATCH_INSTANCE BI&#xA;                                 ON MI.BATCH_INSTANCE_ID = BI.BATCH_INSTANCE_ID&#xA;                                 Where MI.MODULE_ID = @MODULE_ID&#xA;                                       AND ISNULL(BI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;                                 AND MI.MODULE_INSTANCE_ID &gt;&#xA;                                 (&#xA;                                 -- Find the last successful module run/batch run depending on if it is executed by a batch or not&#xA;                                 SELECT ISNULL(MAX(MODULE_INSTANCE_ID),0) &#xA;                                      FROM MODULE_INSTANCE SUB_MI&#xA;                                     LEFT JOIN BATCH_INSTANCE SUB_BI&#xA;                                     ON SUB_MI.BATCH_INSTANCE_ID = SUB_BI.BATCH_INSTANCE_ID&#xA;                                     WHERE SUB_MI.MODULE_ID=@MODULE_ID                      &#xA;                                     AND ISNULL(SUB_BI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;                                     AND &#xA;                                     (&#xA;                                       (&#xA;                                        --last successful module run without a batch&#xA;                                     @BATCH_ID = 0&#xA;                                     AND SUB_MI.EXECUTION_STATUS_CODE='S' &#xA;                                     AND SUB_MI.NEXT_RUN_INDICATOR = 'P'&#xA;                                    )&#xA;                                    OR&#xA;                                    (&#xA;                                       --last successful batch run&#xA;                                     @BATCH_ID &lt;&gt; 0&#xA;                                     AND SUB_BI.EXECUTION_STATUS_CODE='S' &#xA;                                    ) &#xA;                                     )&#xA;                                 )&#xA;                                AND MI.EXECUTION_STATUS_CODE&lt;&gt;'E'&#xA;                                FOR XML PATH ('')  -- convert list module id to single variable&#xA;                                )&#xA;                                ,1,1,''&#xA;                                                      ) &#xA;                              + ')' as varchar(500)&#xA;                             )&#xA;                         ) AS 'LastModuleInstanceIDList'&#xA;                    &#xA;                                  FROM MODULE_INSTANCE A&#xA;                    &#xA;                                 WHERE A.MODULE_INSTANCE_ID = &#xA;                                       (&#xA;                                            (&#xA;                            select max(MODULE_INSTANCE_ID) &#xA;                                                from MODULE_INSTANCE WMI&#xA;                                LEFT JOIN BATCH_INSTANCE WBI&#xA;                             ON WMI.BATCH_INSTANCE_ID = WBI.BATCH_INSTANCE_ID&#xA;                                               where WMI.MODULE_ID = @MODULE_ID &#xA;                                   AND WMI.EXECUTION_STATUS_CODE &lt;&gt; 'E'&#xA;                             AND ISNULL(WBI.BATCH_ID, 0) = @BATCH_ID --only instance from the same batch / 0&#xA;                          )                &#xA;                                       )&#xA;                           )&#xA;                           &#xA;                        UNION ALL -- return if there is nothing, to give at least a result for SSIS&#xA;                           &#xA;                        SELECT Null, Null, Null, Null, Null, Null,Null&#xA;                    ) as sub1&#xA;     " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_BATCH_INSTANCE_ID" SQLTask:ResultName="0" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_MODULE_INSTANCE_ID" SQLTask:ResultName="1" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_START_DATETIME" SQLTask:ResultName="2" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_END_DATETIME" SQLTask:ResultName="3" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_EXECUTION_STATUS_CODE" SQLTask:ResultName="4" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_NEXT_RUN_INDICATOR" SQLTask:ResultName="5" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_LAST_MODULE_INSTANCE_ID_LIST" SQLTask:ResultName="6" />
+              <SQLTask:ResultBinding SQLTask:DtsVariableName="User::V_INACTIVE_INDICATOR_MODULE_LEVEL" SQLTask:ResultName="7" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="The Module Instance is skipped ('Cancelled') if the module was started from a Batch, but isn't registered as such. Also, if either the Module Inactive Indicator or the Batch/Module level Inactive Indicator are set to 'Y'." DTS:DTSID="{7D42717B-6766-4C53-AB1D-1D89DC899C56}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Set the Processing Indicator to Skip this run" DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to Skip this run" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE set PROCESSING_INDICATOR = 'C'  WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Flag the execution of the Module as OK to proceed (Processing Indicator = 'P')." DTS:DTSID="{7889895D-2030-42E1-8DEB-5EA78AF5D326}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Set the Processing Indicator to Proceed" DTS:refId="Package\Module Eval\EST - Set the Processing Indicator to Proceed" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{0BF841A7-FE8D-42F1-A7E6-99344C069FA6}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Correct Source Control" DTS:refId="Package\Module Eval\EST - Correct Source Control" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_STG_SOURCE_CONTROL" SQLTask:SqlStmtSourceType="Variable" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{F6CF2EB8-67E3-444F-82CB-5344D80C58CF}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Re-process HSTG" DTS:refId="Package\Module Eval\EST - Re-process HSTG" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="HSTG" SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_HSTG" SQLTask:SqlStmtSourceType="Variable" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{DD392473-0E3F-47AA-8CF8-2A69998939B9}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Re-process INT Delete" DTS:refId="Package\Module Eval\EST - Re-process INT Delete" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="INT" SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_INT_Delete" SQLTask:SqlStmtSourceType="Variable" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{C214E500-6A61-40AA-ABC6-896A54E984E0}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Re-process INT Update" DTS:refId="Package\Module Eval\EST - Re-process INT Update" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="INT" SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_INT_Update" SQLTask:SqlStmtSourceType="Variable" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{27743B45-81FD-4D5C-9454-411FD90716F9}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Re-process STG" DTS:refId="Package\Module Eval\EST - Re-process STG" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="STG" SQLTask:SqlStatementSource="User::V_SQL_ROLLBACK_STG" SQLTask:SqlStmtSourceType="Variable" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{9B38C05B-7F9A-4AC5-B8A3-EBFFDF4AB1C3}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Set Processing Indicator to Recovery" DTS:refId="Package\Module Eval\EST - Set Processing Indicator to Recovery" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE set PROCESSING_INDICATOR = 'R'  WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{3506CC69-410B-4E6A-9640-6C614110548F}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Set the current Processing Indicator to Proceed" DTS:refId="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ScriptTask" DTS:Description="This task prepares the dynamic SQL statements that are required for various rollback processes." DTS:DTSID="{EB57F0C6-0227-464F-8539-EEF2B9F06CB8}" DTS:ExecutableType="Microsoft.ScriptTask" DTS:LocaleID="-1" DTS:ObjectName="SCT - Prepare Dynamic SQL statements" DTS:refId="Package\Module Eval\SCT - Prepare Dynamic SQL statements">
+          <DTS:ObjectData>
+            <ScriptProject Language="CSharp" Name="sp_bdd72cb15f70465d868bc4ac7472a22f" ReadOnlyVariables="User::V_TABLE_CODE,User::V_LAST_MODULE_INSTANCE_ID_LIST" ReadWriteVariables="User::V_SQL_ROLLBACK_INT_Delete,User::V_SQL_ROLLBACK_INT_Update,User::V_SQL_ROLLBACK_INT_STG,User::V_SQL_ROLLBACK_INT_STG_SOURCE_CONTROL,User::V_SQL_ROLLBACK_INT_HSTG" VSTAMajorVersion="3" VSTAMinorVersion="0">
+              <BinaryItem Name="\bin\release\sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.dll">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c291cmNlcwBSZXNvdXJjZU1hbmFnZXIAcmVzb3VyY2VNYW4AU3lzdGVtLkdsb2JhbGl6YXRpb24AQ3VsdHVyZUluZm8AcmVzb3VyY2VDdWx0dXJlAGdldF9SZXNvdXJjZU1hbmFnZXIAZ2V0X0N1bHR1cmUAc2V0X0N1bHR1cmUAQ3VsdHVyZQB2YWx1ZQBTeXN0ZW0uUmVmbGVjdGlvbgBBc3NlbWJseVRpdGxlQXR0cmlidXRlAEFzc2VtYmx5RGVzY3JpcHRpb25BdHRyaWJ1dGUAQXNzZW1ibHlDb25maWd1cmF0aW9uQXR0cmlidXRlAEFzc2VtYmx5Q29tcGFueUF0dHJpYnV0ZQBBc3NlbWJseVByb2R1Y3RBdHRyaWJ1dGUAQXNzZW1ibHlDb3B5cmlnaHRBdHRyaWJ1dGUAQXNzZW1ibHlUcmFkZW1hcmtBdHRyaWJ1dGUAQXNzZW1ibHlDdWx0dXJlQXR0cmlidXRlAEFzc2VtYmx5VmVyc2lvbkF0dHJpYnV0ZQBTeXN0ZW0uUnVudGltZS5Db21waWxlclNlcnZpY2VzAENvbXBpbGF0aW9uUmVsYXhhdGlvbnNBdHRyaWJ1dGUAUnVudGltZUNvbXBhdGliaWxpdHlBdHRyaWJ1dGUAc3BfYmRkNzJjYjE1ZjcwNDY1ZDg2OGJjNGFjNzQ3MmEyMmYuY3Nwcm9qAFNTSVNTY3JpcHRUYXNrRW50cnlQb2ludEF0dHJpYnV0ZQBTY3JpcHRPYmplY3RNb2RlbABnZXRfRHRzAE1pY3Jvc29mdC5TcWxTZXJ2ZXIuTWFuYWdlZERUUwBNaWNyb3NvZnQuU3FsU2VydmVyLkR0cy5SdW50aW1lAFZhcmlhYmxlcwBnZXRfVmFyaWFibGVzAFZhcmlhYmxlAGdldF9JdGVtAGdldF9WYWx1ZQBUb1N0cmluZwBTdHJpbmcAQ29uY2F0AHNldF9WYWx1ZQBzZXRfVGFza1Jlc3VsdABDb21waWxlckdlbmVyYXRlZEF0dHJpYnV0ZQAuY2N0b3IAU3lzdGVtLkNvZGVEb20uQ29tcGlsZXIAR2VuZXJhdGVkQ29kZUF0dHJpYnV0ZQBTeXN0ZW0uRGlhZ25vc3RpY3MARGVidWdnZXJOb25Vc2VyQ29kZUF0dHJpYnV0ZQBUeXBlAFJ1bnRpbWVU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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAADAAAAPAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
+              <ProjectItem Encoding="UTF8" Name="ScriptMain.cs"><![CDATA[
+        using System;
+        using System.Data;
+        using Microsoft.SqlServer.Dts.Runtime;
+        using System.Windows.Forms;
+
+        namespace ST_787c56676e9b4c8caf26dcb5758f89f7
+        {
+            [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+            public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+            {
+                public void Main()
+                {
+                    // STG Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_STG"].Value = "TRUNCATE TABLE " + Dts.Variables["V_TABLE_CODE"].Value.ToString();
+                    Dts.Variables["V_SQL_ROLLBACK_STG_SOURCE_CONTROL"].Value = "DELETE FROM SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();                   
+        
+                    // HSTG Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_HSTG"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();            
+        
+                    // INT Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_INT_Delete"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+        
+                    // INT Update SQL    
+                    Dts.Variables["V_SQL_ROLLBACK_INT_Update"].Value = "UPDATE [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] SET EXPIRY_DATETIME = '9999-12-31', CURRENT_RECORD_INDICATOR = 'Y' WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+                            
+                    Dts.TaskResult = (int)ScriptResults.Success;
+                }
+    
+                enum ScriptResults
+                {
+                    Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+                    Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+                };
+            }
+        }
+      ]]></ProjectItem>
+              <ProjectItem Encoding="UTF8" Name="Properties\AssemblyInfo.cs"><![CDATA[
+        using System.Reflection;
+        using System.Runtime.CompilerServices;
+
+        [assembly: AssemblyTitle("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyDescription("")]
+        [assembly: AssemblyConfiguration("")]
+        [assembly: AssemblyCompany("")]
+        [assembly: AssemblyProduct("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyCopyright("")]
+        [assembly: AssemblyTrademark("")]
+        [assembly: AssemblyCulture("")]
+        [assembly: AssemblyVersion("1.0.*")]
+      ]]></ProjectItem>
+              <ProjectItem Encoding="UTF8" Name="Properties\Settings.settings"><![CDATA[<?xml version="1.0" encoding="iso-8859-1"?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"  >
+    <Profiles>
+        <Profile Name="(Default)" />
+    </Profiles>
+    <Settings /></SettingsFile>
+]]></ProjectItem>
+              <ProjectItem Encoding="UTF8" Name="Properties\Settings.Designer.cs"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Settings.get_Default():sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Settings")]
+
+namespace sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties
+{
+
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+
+        public static Settings Default
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+
+    }
+}]]></ProjectItem>
+              <ProjectItem Encoding="UTF8" Name="Properties\Resources.resx"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string" />
+                            <xsd:attribute name="name" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    </root>
+]]></ProjectItem>
+              <ProjectItem Encoding="UTF8" Name="Properties\Resources.Designer.cs"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Resources.get_ResourceManager():System.Resources.ResourceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Resources.get_Culture():System.Globalization.CultureInfo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Resources.set_Culture(System.Globalization.CultureInfo):Void")]
+
+namespace sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties {
+    using System;
+
+
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    internal class Resources
+    {
+
+        private static global::System.Resources.ResourceManager resourceMan;
+
+        private static global::System.Globalization.CultureInfo resourceCulture;
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get {
+                if ((resourceMan == null))
+                {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("sp_bdd72cb15f70465d868bc4ac7472a22f.csproj.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+
+    }
+}]]></ProjectItem>
+              <ProjectItem Encoding="UTF16LE" Name="sp_bdd72cb15f70465d868bc4ac7472a22f.csproj"><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+	    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <OutputType>Library</OutputType>
+        <RootNamespace>sp_bdd72cb15f70465d868bc4ac7472a22f.csproj</RootNamespace>
+        <AssemblyName>sp_bdd72cb15f70465d868bc4ac7472a22f.csproj</AssemblyName>
+        <ProjectGuid>{C792B577-3187-41B4-A778-35BF1292DEDE}</ProjectGuid>
+		        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+        <TargetFrameworkProfile></TargetFrameworkProfile>				        <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <NoStandardLibraries>false</NoStandardLibraries>
+		    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		        <DebugSymbols>true</DebugSymbols>
+        <Optimize>false</Optimize>
+        <OutputPath>.\bin\Debug\</OutputPath>
+        <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <WarningLevel>4</WarningLevel>
+		    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		        <DebugSymbols>false</DebugSymbols>
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Release\</OutputPath>
+        <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+        <DefineConstants>TRACE</DefineConstants>
+        <WarningLevel>4</WarningLevel>
+		    </PropertyGroup>
+    <PropertyGroup>
+        <PreBuildEvent>
+        </PreBuildEvent>
+        <PostBuildEvent>
+        </PostBuildEvent>
+    </PropertyGroup>
+    <ItemGroup>
+                <Reference Include="System" />
+                <Reference Include="System.Data" />
+                <Reference Include="System.Windows.Forms" />
+                <Reference Include="System.Xml" />
+                <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+                <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+            </ItemGroup>
+	    <ItemGroup>
+        <Folder Include="Resources\" />
+        <AppDesigner Include="Properties\" />
+        <EmbeddedResource Include="Properties\Resources.resx">
+						<Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			        </EmbeddedResource>
+        <Compile Include="Properties\Resources.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+		        <None Include="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+        <Compile Include="Properties\Settings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+        </Compile>
+
+				<Compile Include="ScriptMain.cs">
+			<SubType>Code</SubType>
+		</Compile>
+				<Compile Include="Properties\AssemblyInfo.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		
+		
+		
+		
+		    </ItemGroup>
+		<!-- Include the build rules for a C# project.-->
+    <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+		<!-- This section defines VSTA properties that describe the host-changable project properties. -->
+    <ProjectExtensions>
+        <VisualStudio>
+            <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+                <ProjectProperties HostName="VSTAHostName" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\9.0\InstallDir#\devenv.exe" />
+                <Host Name="SSIS_ScriptTask" />
+                <ProjectClient>
+                    <HostIdentifier>SSIS_ST120</HostIdentifier>
+                </ProjectClient>
+            </FlavorProperties>
+        </VisualStudio>
+    </ProjectExtensions>
+</Project>
+]]></ProjectItem>
+              <ProjectItem Encoding="UTF16LE" Name="Project"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="4.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:ProjectId>{889e4e7a-58b9-49ca-98e8-d500e8a78cf9}</msb:ProjectId>
+		<msb:NoContent>Reference;Import;Folder</msb:NoContent>
+		<msb:Language>msBuild</msb:Language>
+		<msb:DisplayName>sp_bdd72cb15f70465d868bc4ac7472a22f</msb:DisplayName>
+		<msb:CodeName>sp_bdd72cb15f70465d868bc4ac7472a22f</msb:CodeName>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+				<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+				<msb:File Include="Properties\Resources.Designer.cs"/>
+				<msb:File Include="Properties\AssemblyInfo.cs"/>
+				<msb:File Include="ScriptMain.cs"/>
+								<msb:File Include="Properties\Settings.settings"/>
+						<msb:Project Include="sp_bdd72cb15f70465d868bc4ac7472a22f.csproj"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+            </ScriptProject>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{FFED7EC0-1098-4479-83E5-F17C7BCD9882}" DTS:EvalOp="3" DTS:Expression="@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Incorrect&quot;" DTS:From="Package\Module Eval\EST - Validate Batch processing" DTS:ObjectName="Constraint 15" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 15]" DTS:To="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{EDE30D03-B651-43FA-AF51-705B06089601}" DTS:EvalOp="3" DTS:Expression="@V_MODULE_ACTIVE_INSTANCE_CONTROL == &quot;Abort&quot;" DTS:From="Package\Module Eval\EST - Check for multiple active Module Instances" DTS:ObjectName="Constraint" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint]" DTS:To="Package\Module Eval\EST - Set the Processing Indicator to signal Abort of the run" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{38962E6F-C19D-4990-B22C-920511685D63}" DTS:EvalOp="3" DTS:Expression="@V_MODULE_ACTIVE_INSTANCE_CONTROL == &quot;Process&quot;" DTS:From="Package\Module Eval\EST - Check for multiple active Module Instances" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 1" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 1]" DTS:To="Package\Module Eval\EST - Validate Batch processing" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{291CB3FC-D6C9-4C32-895E-19CCA8498823}" DTS:EvalOp="3" DTS:Expression="@V_BATCH_INSTANCE_ID == 0 || (@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Correct&quot; &amp;&amp; @V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL != &quot;Y&quot;)" DTS:From="Package\Module Eval\EST - Validate Batch processing" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 16" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 16]" DTS:To="Package\Module Eval\EST - Get the details of the previous Module Instance" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{DED50B78-6737-4131-BBB4-4C28C8C0A2FE}" DTS:EvalOp="3" DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR == &quot;C&quot; || @V_INACTIVE_INDICATOR_MODULE_LEVEL == &quot;Y&quot;" DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance" DTS:ObjectName="Constraint 4" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 4]" DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Skip this run" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{540A4635-B0E8-4846-B4DB-53F8A6AB3D78}" DTS:EvalOp="3" DTS:Expression="@V_BATCH_INSTANCE_ID != 0 &amp;&amp; @V_BATCH_VALIDATION == &quot;Correct&quot; &amp;&amp; @V_INACTIVE_INDICATOR_BATCH_MODULE_LEVEL == &quot;Y&quot;" DTS:From="Package\Module Eval\EST - Validate Batch processing" DTS:ObjectName="Constraint 17" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 17]" DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Skip this run" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{11DE9BD3-67A4-4D4F-949C-1DA512519BBB}" DTS:EvalOp="3" DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR == &quot;P&quot; &amp;&amp; @V_INACTIVE_INDICATOR_MODULE_LEVEL != &quot;Y&quot;" DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 3" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 3]" DTS:To="Package\Module Eval\EST - Set the Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{505B1C4A-1D1E-4F37-B90F-EC0AA39ABD8F}" DTS:From="Package\Module Eval\EST - Re-process STG" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 8" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 8]" DTS:To="Package\Module Eval\EST - Correct Source Control" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{B00C4E64-CB70-4C49-B42E-9B6863FB422A}" DTS:EvalOp="3" DTS:Expression="@V_AREA_CODE == &quot;HSTG&quot;" DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 10" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 10]" DTS:To="Package\Module Eval\EST - Re-process HSTG" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{278A5567-E018-4511-8EF2-682B1622B9CB}" DTS:EvalOp="3" DTS:Expression="@V_AREA_CODE == &quot;INT&quot;" DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 13" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 13]" DTS:To="Package\Module Eval\EST - Re-process INT Delete" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{6395A66B-3616-4D26-920F-976F628090D2}" DTS:EvalOp="3" DTS:Expression="(SUBSTRING(@V_TABLE_CODE,1,3) == &quot;SAT&quot;) || (SUBSTRING(@V_TABLE_CODE,1,8) ==&quot;LSAT&quot;)" DTS:From="Package\Module Eval\EST - Re-process INT Delete" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 7" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 7]" DTS:To="Package\Module Eval\EST - Re-process INT Update" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{E30705F2-A9F7-4CA1-82B3-B5382630BC58}" DTS:EvalOp="3" DTS:Expression="@V_AREA_CODE == &quot;STG&quot;" DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 5" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 5]" DTS:To="Package\Module Eval\EST - Re-process STG" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{9F4F21C0-A143-49F9-BB9A-741F05AC0D55}" DTS:From="Package\Module Eval\SCT - Prepare Dynamic SQL statements" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 6" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 6]" DTS:To="Package\Module Eval\EST - Set Processing Indicator to Recovery" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{19B1582F-4237-4311-82EC-5503E5A9FE2F}" DTS:From="Package\Module Eval\EST - Re-process INT Update" DTS:ObjectName="Constraint 9" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 9]" DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{52BDC9DB-6067-4460-9920-171AADDE81D0}" DTS:EvalOp="3" DTS:Expression="@V_AREA_CODE == &quot;REP&quot;" DTS:From="Package\Module Eval\EST - Set Processing Indicator to Recovery" DTS:ObjectName="Constraint 18" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 18]" DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{6FF97840-575C-4944-BB57-976B70552FAA}" DTS:From="Package\Module Eval\EST - Re-process INT Delete" DTS:ObjectName="Constraint 14" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 14]" DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{BA0F9E37-7DB2-47DC-8E5D-0F0D82271FF1}" DTS:From="Package\Module Eval\EST - Correct Source Control" DTS:ObjectName="Constraint 12" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 12]" DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{79B0A106-86F5-4D12-91AC-AD18511BF159}" DTS:From="Package\Module Eval\EST - Re-process HSTG" DTS:ObjectName="Constraint 11" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 11]" DTS:To="Package\Module Eval\EST - Set the current Processing Indicator to Proceed" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{28A8A85A-4D7D-476A-8D04-AA0898688E1E}" DTS:EvalOp="3" DTS:Expression="@V_LAST_NEXT_RUN_INDICATOR  == &quot;R&quot; &amp;&amp; @V_INACTIVE_INDICATOR_MODULE_LEVEL != &quot;Y&quot;" DTS:From="Package\Module Eval\EST - Get the details of the previous Module Instance" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 2" DTS:refId="Package\Module Eval.PrecedenceConstraints[Constraint 2]" DTS:To="Package\Module Eval\SCT - Prepare Dynamic SQL statements" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:Configurations>
+    <DTS:Configuration DTS:ConfigurationString="V_AREA_CODE" DTS:ConfigurationVariable="\Package.Variables[User::V_AREA_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{4AA69908-B8E9-4CBF-9E80-88F968AC61D9}" DTS:ObjectName="V_AREA_CODE" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{1E5B93E2-6C89-4188-B16A-9F3D2A0DB351}" DTS:ObjectName="V_BATCH_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{429DF595-C765-4344-8D45-A1827FEED781}" DTS:ObjectName="V_BATCH_INSTANCE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{8CEB1F57-A9D9-4170-9E95-6F52D5D973EF}" DTS:ObjectName="V_MODULE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{8057F422-0465-499F-92F5-44FDF15CA530}" DTS:ObjectName="V_MODULE_INSTANCE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_INSTANCE_START_DATETIME" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_START_DATETIME].Properties[Value]" DTS:CreationName="" DTS:DTSID="{749F8B43-2A29-4E2F-99D7-8EA6A23FCC67}" DTS:ObjectName="V_MODULE_INSTANCE_START_DATETIME" />
+    <DTS:Configuration DTS:ConfigurationString="V_TABLE_CODE" DTS:ConfigurationVariable="\Package.Variables[User::V_TABLE_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{7B782AC4-64B9-4DCF-9C57-F37EABFCBB35}" DTS:ObjectName="V_TABLE_CODE" />
+  </DTS:Configurations>
+</DTS:Executable>

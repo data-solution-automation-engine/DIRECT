@@ -1,0 +1,65 @@
+<!--<ScriptProjects> -->
+  <ScriptTaskProject Name="Batch Evaluation Rollback Script Task Project" ProjectCoreName="ST_987c56676e9b4c8caf26dcb5758f89f7" VstaMajorVersion="0">
+    <AssemblyReferences>
+      <AssemblyReference AssemblyPath="System" />
+      <AssemblyReference AssemblyPath="System.Data" />
+      <AssemblyReference AssemblyPath="System.Windows.Forms" />
+      <AssemblyReference AssemblyPath="System.Xml" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ManagedDTS.dll" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ScriptTask.dll" />
+    </AssemblyReferences>
+    <Files>
+      <File BuildAction="Compile" Path="ScriptMain.cs">
+        using System;
+        using System.Data;
+        using Microsoft.SqlServer.Dts.Runtime;
+        using System.Windows.Forms;
+
+        namespace ST_987c56676e9b4c8caf26dcb5758f89f7
+        {
+            [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+            public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+            {
+            
+                public void Main()
+                {
+                    Dts.Variables["V_SQL_MODULE_ROLLBACK_FULL"].Value = "UPDATE MODULE_INSTANCE SET NEXT_RUN_INDICATOR = 'R' WHERE BATCH_INSTANCE_ID IN " + Dts.Variables["V_BATCH_ID_LIST"].Value.ToString();
+                    Dts.Variables["V_SQL_MODULE_ROLLBACK_PARTIAL"].Value = "UPDATE MODULE_INSTANCE SET NEXT_RUN_INDICATOR = 'C' WHERE EXECUTION_STATUS_CODE!='F' AND BATCH_INSTANCE_ID IN " + Dts.Variables["V_BATCH_ID_LIST"].Value.ToString();  
+                    Dts.TaskResult = (int)ScriptResults.Success;
+                }
+        
+                enum ScriptResults
+                {
+                    Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+                    Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+                };
+            }
+        }
+      </File>
+      <File BuildAction="Compile" Path="Properties\AssemblyInfo.cs">
+        using System.Reflection;
+        using System.Runtime.CompilerServices;
+
+        [assembly: AssemblyTitle("ST_987c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyDescription("")]
+        [assembly: AssemblyConfiguration("")]
+        [assembly: AssemblyCompany("")]
+        [assembly: AssemblyProduct("ST_987c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyCopyright("")]
+        [assembly: AssemblyTrademark("")]
+        [assembly: AssemblyCulture("")]
+        [assembly: AssemblyVersion("1.0.*")]
+      </File>
+    </Files>
+        
+    <ReadOnlyVariables>
+        <Variable Namespace="User" DataType="String" VariableName="V_BATCH_ID_LIST" />    
+    </ReadOnlyVariables>
+
+    <ReadWriteVariables>
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_MODULE_ROLLBACK_FULL" />
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_MODULE_ROLLBACK_PARTIAL" />
+    </ReadWriteVariables>
+                
+  </ScriptTaskProject>
+<!--</ScriptProjects> -->

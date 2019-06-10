@@ -1,0 +1,11 @@
+
+       <OleDbConnection Name="DIRECT" CreateInProject="true" ConnectionString="<#=connectionStringDIRECT#>">
+       </OleDbConnection>       
+       <OleDbConnection Name="STG" CreateInProject="true" ConnectionString="<#=connectionStringSTG#>">
+       </OleDbConnection>
+       <OleDbConnection Name="HSTG" CreateInProject="true" ConnectionString="<#=connectionStringHSTG#>">
+       </OleDbConnection>
+       <OleDbConnection Name="INT" CreateInProject="true" ConnectionString="<#=connectionStringINT#>">
+       </OleDbConnection>
+       <OleDbConnection Name="PRES" CreateInProject="true" ConnectionString="<#=connectionStringPRES#>">
+       </OleDbConnection>  

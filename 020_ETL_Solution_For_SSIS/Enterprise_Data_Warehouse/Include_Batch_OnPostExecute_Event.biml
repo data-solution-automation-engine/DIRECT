@@ -1,0 +1,14 @@
+<ExecutePackage Name="EPT - Batch Success" IsolationLevel="ReadCommitted">
+  <ExternalProjectPackage Package="Batch_Success.dtsx"/>
+  <ParameterBindings>
+    <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+  </ParameterBindings>
+  <Annotations>
+    <Annotation AnnotationType="Description">Call the Batch Success event (package).</Annotation>
+  </Annotations>
+  <PrecedenceConstraints>
+    <Inputs>
+      <Input OutputPathName="Batch Processing.Output" EvaluationOperation="Constraint" />
+    </Inputs>
+  </PrecedenceConstraints>
+</ExecutePackage>

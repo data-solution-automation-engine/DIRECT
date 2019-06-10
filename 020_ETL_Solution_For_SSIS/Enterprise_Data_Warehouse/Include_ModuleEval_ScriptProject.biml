@@ -1,0 +1,79 @@
+<!--<ScriptProjects> -->
+  <ScriptTaskProject Name="Module Evaluation Script Task Project" ProjectCoreName="ST_787c56676e9b4c8caf26dcb5758f89f7" VstaMajorVersion="0">
+    <AssemblyReferences>
+      <AssemblyReference AssemblyPath="System" />
+      <AssemblyReference AssemblyPath="System.Data" />
+      <AssemblyReference AssemblyPath="System.Windows.Forms" />
+      <AssemblyReference AssemblyPath="System.Xml" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ManagedDTS.dll" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ScriptTask.dll" />
+    </AssemblyReferences>
+    <Files>
+      <File BuildAction="Compile" Path="ScriptMain.cs">
+        using System;
+        using System.Data;
+        using Microsoft.SqlServer.Dts.Runtime;
+        using System.Windows.Forms;
+
+        namespace ST_787c56676e9b4c8caf26dcb5758f89f7
+        {
+            [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+            public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+            {
+                public void Main()
+                {
+                    // STG Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_STG"].Value = "TRUNCATE TABLE " + Dts.Variables["V_TABLE_CODE"].Value.ToString();
+                    Dts.Variables["V_SQL_ROLLBACK_STG_SOURCE_CONTROL"].Value = "DELETE FROM SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();                   
+        
+                    // HSTG Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_HSTG"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();            
+        
+                    // INT Delete SQL
+                    Dts.Variables["V_SQL_ROLLBACK_INT_Delete"].Value = "DELETE FROM [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+        
+                    // INT Update SQL    
+                    Dts.Variables["V_SQL_ROLLBACK_INT_Update"].Value = "UPDATE [" + Dts.Variables["V_TABLE_CODE"].Value.ToString() + "] SET EXPIRY_DATETIME = '9999-12-31', CURRENT_RECORD_INDICATOR = 'Y' WHERE INSERT_MODULE_INSTANCE_ID IN " + Dts.Variables["V_LAST_MODULE_INSTANCE_ID_LIST"].Value.ToString();
+                            
+                    Dts.TaskResult = (int)ScriptResults.Success;
+                }
+    
+                enum ScriptResults
+                {
+                    Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+                    Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+                };
+            }
+        }
+      </File>
+      <File BuildAction="Compile" Path="Properties\AssemblyInfo.cs">
+        using System.Reflection;
+        using System.Runtime.CompilerServices;
+
+        [assembly: AssemblyTitle("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyDescription("")]
+        [assembly: AssemblyConfiguration("")]
+        [assembly: AssemblyCompany("")]
+        [assembly: AssemblyProduct("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyCopyright("")]
+        [assembly: AssemblyTrademark("")]
+        [assembly: AssemblyCulture("")]
+        [assembly: AssemblyVersion("1.0.*")]
+      </File>
+    </Files>
+        
+    <ReadOnlyVariables>
+        <Variable Namespace="User" DataType="String" VariableName="V_TABLE_CODE" />
+        <Variable Namespace="User" DataType="String" VariableName="V_LAST_MODULE_INSTANCE_ID_LIST" />    
+    </ReadOnlyVariables>
+
+    <ReadWriteVariables>
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_ROLLBACK_INT_Delete" />
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_ROLLBACK_INT_Update" />
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_ROLLBACK_INT_STG" />
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_ROLLBACK_INT_STG_SOURCE_CONTROL" />        
+        <Variable Namespace="User" DataType="String" VariableName="V_SQL_ROLLBACK_INT_HSTG" />  
+    </ReadWriteVariables>
+                       
+  </ScriptTaskProject>
+<!--</ScriptProjects> -->

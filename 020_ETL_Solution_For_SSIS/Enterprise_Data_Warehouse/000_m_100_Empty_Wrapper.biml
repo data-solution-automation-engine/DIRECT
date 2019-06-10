@@ -1,0 +1,103 @@
+<!--
+   Pattern: Empty example Biml wrapper for DIRECT
+
+   Purpose:				
+	Explain the hooks into an ETL process
+
+   Comments:
+-->
+
+<#@ include file="Include_ProjectConfiguration.biml" #>	
+<#@ include file="Include_C_References.biml" #>	
+<#@ include file="Include_BIML_Configuration.biml" #>
+	
+<#  
+	// This parameter is meant to identify the Biml pattern, so it can only be applied to source-to-staging ETLs that are administered to use it.
+	// The intent is to prevent packages from being overwritten accidentally.
+
+	var currentDateTime = DateTime.Now;
+
+    string sqlStatementForTablesToImport =  @"SELECT 'EXAMPLE' AS [STAGING_AREA_TABLE_NAME], 'EXAMPLE' AS [SOURCE_TABLE_SYSTEM_NAME], 'EXAMPLE' AS [SOURCE_TABLE_NAME] ";
+
+	string StagingAreaTableName;
+	string SourceTableName;   
+	string sourceSystemName;
+
+	var SourceSQLStatement = new StringBuilder();
+#>
+
+<Biml>
+
+    <ScriptProjects>
+	  <#@ include file="Include_STG_ScriptProject.biml" #>
+	</ScriptProjects>
+	
+	<#@ include file="Include_STG_Connections.biml" #>	
+	
+	<Packages>
+		
+		<#
+
+      
+		DataTable tables = ExternalDataAccess.GetDataTable(connectionStringGEN, sqlStatementForTablesToImport);
+
+		foreach (DataRow row in tables.Rows)
+		{
+
+			// **************************************************************************************
+			// Variables and parameters
+			// **************************************************************************************
+
+			StagingAreaTableName = (string)row["STAGING_AREA_TABLE_NAME"];
+			sourceSystemName = (string)row["SOURCE_TABLE_SYSTEM_NAME"];
+			SourceTableName = (string)row["SOURCE_TABLE_NAME"];			
+			
+		    SourceSystemPrefix = "EXAMPLE";	
+	
+			#>
+		
+			<Package Name="<#=PackagePrefix#>_<#=SourceSystemPrefix#>_<#=SourceTableName.ToUpper()#>" Language="None" LoggingMode="Disabled" ConstraintMode="Parallel">
+
+				<Annotations>
+					<Annotation AnnotationType="Description">Package <#=PackagePrefix#>_<#=SourceSystemPrefix#>_<#=SourceTableName.ToUpper()#> generated at <#=currentDateTime#>.</Annotation>
+				</Annotations>
+		
+				<#@ include file="Include_Parameters.biml" #>	
+				<#@ include file="Include_Variables_STG.biml" #>	
+				<#@ include file="Include_OnError_Event.biml" #>
+			
+				<Tasks>
+		
+					<#@ include file="Include_OnPreExecute_Event.biml" #>	
+
+					<Dataflow Name="DFT - <#=StagingAreaTableName#>" DelayValidation="true" FailPackageOnFailure="true">
+	
+					    <PrecedenceConstraints LogicalType="And">
+					    	<Inputs>
+						    	<Input OutputPathName="SCT - Dummy Placeholder.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;P&quot;" />
+					    	</Inputs>
+				    	</PrecedenceConstraints>	
+			
+						<#@ include file="Include_OnPostExecute_Event.biml" #>
+
+				
+						<Annotations>
+							<Annotation AnnotationType="Description">Data Flow Task which moves data from the source table or file to the Staging Area (STG) table</Annotation>
+						</Annotations>
+				
+						<Transformations>			
+																			
+						</Transformations>
+				
+					</Dataflow>
+				</Tasks>
+		
+			</Package>
+		
+			<#
+		}
+		#>
+	
+	</Packages>
+
+</Biml>

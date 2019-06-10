@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="HSTG" DTS:DTSID="{97FAFCBD-BC0F-45D5-9D9B-3E80679E7334}" DTS:refId="Package.ConnectionManagers[HSTG]" DTS:CreationName="OLEDB">
+  <DTS:ObjectData>
+    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11;server=AUBRIDEBIW02;initial catalog=PDV_RV2;integrated security=SSPI"></DTS:ConnectionManager>
+  </DTS:ObjectData>
+</DTS:ConnectionManager>

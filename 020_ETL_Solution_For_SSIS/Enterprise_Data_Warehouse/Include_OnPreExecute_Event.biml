@@ -1,0 +1,164 @@
+<Script Name="SCT - Dummy Placeholder" LoggingMode="Enabled" IsolationLevel="ReadCommitted">
+  <ScriptTaskProjectReference ScriptTaskProjectName="Script Task Project"/>
+  <Events>
+    <Event Name="OnPreExecute" ConstraintMode="Parallel" EventType="OnPreExecute">
+      <Tasks>
+        <Container Name="Pre-Initialise Event" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecuteSQL Name="EST - Set the Module Instance Start Datetime" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Set the Module Instace Start Datetime as the system datetime (time of running).</Annotation>
+              </Annotations>
+              <DirectInput>SELECT GETDATE() AS MODULE_INSTANCE_START_DATETIME</DirectInput>
+              <Results>
+                <Result Name="MODULE_INSTANCE_START_DATETIME" VariableName="User.V_MODULE_INSTANCE_START_DATETIME" />
+              </Results>
+            </ExecuteSQL>
+            <ExecuteSQL Name="EST - Get Module Information" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Set the Module Instance Start Datetime.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+              <Annotations>
+                <Annotation AnnotationType="Description">Retrieve the Module ID, Table Code and Area Code for the specific Module (package name).</Annotation>
+              </Annotations>
+              <DirectInput>
+                SELECT module.MODULE_ID, AREA_CODE, ISNULL(DATA_STORE_CODE,'None') AS TABLE_CODE
+                FROM MODULE module LEFT OUTER JOIN MODULE_DATA_STORE dst
+                ON module.MODULE_ID=dst.MODULE_ID AND RELATIONSHIP_TYPE='Target'
+                LEFT JOIN DATA_STORE ds
+                ON ds.DATA_STORE_ID=dst.DATA_STORE_ID
+                WHERE MODULE_CODE =?
+              </DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="System.PackageName" Length="-1" DataType="AnsiString" DataTypeCodeOverride="129" />
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_MODULE_ID"/>
+                <Result Name="1" VariableName="User.V_AREA_CODE"/>
+                <Result Name="2" VariableName="User.V_TABLE_CODE"/>
+              </Results>
+            </ExecuteSQL>
+            <ExecutePackage Name="EPT - Create new Module Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Module_Create_Instance.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+                <ParameterBinding Name="V_MODULE_ID" VariableName="User.V_MODULE_ID" />
+                <ParameterBinding Name="V_MODULE_INSTANCE_START_DATETIME" VariableName="User.V_MODULE_INSTANCE_START_DATETIME" />
+                <ParameterBinding Name="V_PACKAGE_EXECUTION_GUID" VariableName="System.ExecutionInstanceGUID" />
+              </ParameterBindings>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Get Module Information.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Module Create Instance event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+
+            <ExecuteSQL Name="EST - Get the Module Instance ID" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Retrieve the newly created Module Instance ID from the repository.</Annotation>
+              </Annotations>
+              <DirectInput>SELECT MODULE_INSTANCE_ID FROM MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE='E' AND MODULE_ID=? AND START_DATETIME=? AND BATCH_INSTANCE_ID=?</DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_MODULE_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="1" VariableName="User.V_MODULE_INSTANCE_START_DATETIME" Length="-1" DataType="DateTime" />
+                <Parameter Name="2" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_MODULE_INSTANCE_ID" />
+              </Results>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EPT - Create new Module Instance.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+            </ExecuteSQL>
+
+            <ExecutePackage Name="EPT - Module Evaluation" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Module_Eval.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_AREA_CODE" VariableName="User.V_AREA_CODE" />
+                <ParameterBinding Name="V_BATCH_ID" VariableName="User.V_BATCH_ID" />
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+                <ParameterBinding Name="V_MODULE_ID" VariableName="User.V_MODULE_ID" />
+                <ParameterBinding Name="V_MODULE_INSTANCE_ID" VariableName="User.V_MODULE_INSTANCE_ID" />
+                <ParameterBinding Name="V_MODULE_INSTANCE_START_DATETIME" VariableName="User.V_MODULE_INSTANCE_START_DATETIME" />
+                <ParameterBinding Name="V_TABLE_CODE" VariableName="User.V_TABLE_CODE" />
+              </ParameterBindings>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Get the Module Instance ID.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Module Evaluation event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+            <ExecuteSQL Name="EST - Get the Processing Indicator for the current Module Instance" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Verify the repository to see if the Module Evaluation has completed succesfully and with what status (Processing Indicator).</Annotation>
+              </Annotations>
+              <DirectInput>SELECT PROCESSING_INDICATOR FROM MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=?</DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_PROCESSING_INDICATOR" />
+              </Results>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EPT - Module Evaluation.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+        <Container Name="Cancel (Skip) Processing" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecutePackage Name="EPT - Skip the current Module Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Module_Skip.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_MODULE_INSTANCE_ID" VariableName="User.V_MODULE_INSTANCE_ID" />
+              </ParameterBindings>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Module Skip event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+          </Tasks>
+          <PrecedenceConstraints LogicalType="Or">
+            <Inputs>
+              <Input OutputPathName="Pre-Initialise Event.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;C&quot;"/>
+            </Inputs>
+          </PrecedenceConstraints>
+        </Container>
+        <Container Name="Abort Processing" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecutePackage Name="EPT - Abort the current Module Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Module_Abort.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_MODULE_INSTANCE_ID" VariableName="User.V_MODULE_INSTANCE_ID" />
+              </ParameterBindings>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Module Abort event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+          </Tasks>
+          <PrecedenceConstraints LogicalType="Or">
+            <Inputs>
+              <Input OutputPathName="Pre-Initialise Event.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;A&quot;"/>
+            </Inputs>
+          </PrecedenceConstraints>
+        </Container>
+      </Tasks>
+    </Event>
+  </Events>
+
+  <Annotations>
+    <Annotation AnnotationType="Description">Dummy placeholder for event handling.</Annotation>
+  </Annotations>
+
+</Script>

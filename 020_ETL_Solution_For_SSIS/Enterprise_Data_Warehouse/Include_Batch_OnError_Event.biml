@@ -1,0 +1,18 @@
+<Events>
+  <Event Name="OnError" ConstraintMode="Parallel" EventType="OnError" IsolationLevel="ReadCommitted">
+    <Tasks>
+      <Container Name="OnError Event" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+        <Tasks>
+          <ExecutePackage Name="EPT - Batch Failure" IsolationLevel="ReadCommitted">
+            <ExternalProjectPackage Package="Batch_Failure.dtsx" />
+            <ParameterBindings>
+              <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+              <ParameterBinding Name="V_ERROR_CODE" VariableName="System.ErrorCode" />
+              <ParameterBinding Name="V_ERROR_DESCRIPTION" VariableName="System.ErrorDescription" />
+            </ParameterBindings>
+          </ExecutePackage>
+        </Tasks>
+      </Container>
+    </Tasks>
+  </Event>
+</Events>

@@ -1,0 +1,35 @@
+    <Package Name="Module_Abort" Language="None">
+      <Variables>
+        <Variable Name="V_MODULE_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_MODULE_INSTANCE_ID">@[$Package::V_MODULE_INSTANCE_ID]</Variable>
+      </Variables>
+      
+      <Annotations>
+          <Annotation AnnotationType="Description">Update the information to record the abort of a Module Instance. This is done by
+          Setting the Execution Status Code to 'A'
+          Setting the Next_Run_Flag to 'E'
+          Setting the End_Datetime for the package run to the system datetime (now)
+          </Annotation>
+      </Annotations>        
+      
+      <Tasks>
+        <Container Name="Module Abort">
+          <Annotations>
+            <Annotation AnnotationType="Description">Module Abort</Annotation>
+          </Annotations>
+          <Tasks>
+            <ExecuteSQL Name="EST - Update the Module Instance for Abort" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <DirectInput>UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='A', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID=?</DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+      </Tasks>
+      <Parameters>
+        <Parameter Name="V_MODULE_INSTANCE_ID" DataType="Int32">0</Parameter>
+      </Parameters>
+    </Package>

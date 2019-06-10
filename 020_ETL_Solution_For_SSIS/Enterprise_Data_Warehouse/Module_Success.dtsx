@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DTS:Executable DTS:CreationDate="06/10/2019 17:48:57" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAUBRI006619" DTS:CreatorName="rvos" DTS:DelayValidation="True" DTS:Description="Update the DIRECT repository to record the succesful completion of a Module.&#xA;          If the Module is an Integration or Presentation Layer Module the completion may be succesful even though there are row level errors. &#xA;          These are still recorded as an error bitmap but the process will not fail." DTS:DTSID="{62F2BDD3-37EB-472D-8B00-86F87CF9FD5A}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Module_Success" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{10EDACB0-09BF-4734-82A1-28B5D1D06DD4}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{AFB61A1D-43EA-4A96-8932-BA9B2C598386}" DTS:ObjectName="V_AREA_CODE" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{38325F0D-4629-42E0-9617-EBF863DFF75F}" DTS:ObjectName="V_BATCH_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{3F71FA86-CEC0-464F-ABF6-6DFF98087701}" DTS:ObjectName="V_MODULE_ERROR_CODE" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{6CCDEBD4-B30E-4AFB-A8DC-5D90DC67395E}" DTS:ObjectName="V_MODULE_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{7BCE7634-6001-404B-929F-5A01012F6A5E}" DTS:ObjectName="V_ROW_COUNT_DELETED" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{9E59197B-7566-4459-A437-A0238239676F}" DTS:ObjectName="V_ROW_COUNT_DISCARDED" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{12F9E9F2-2A8C-4832-87B3-9AE34940FB72}" DTS:ObjectName="V_ROW_COUNT_INPUT" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{EDC79677-1087-4FFC-A3C8-F09DB32395D6}" DTS:ObjectName="V_ROW_COUNT_INSERTED" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{00DE12A1-CFE0-4351-99D3-9892389D3ED8}" DTS:ObjectName="V_ROW_COUNT_REJECTED" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{613E4CF3-0E12-43D0-954C-304F810EBF6B}" DTS:ObjectName="V_ROW_COUNT_UPDATED" DTS:Required="0" DTS:Sensitive="0">
+      <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{FE2FA6B8-3DBA-465F-B6E9-BDCDFE73A415}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_AREA_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_AREA_CODE">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{3B612B9A-C308-4648-A9C0-F8C987E963D8}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{97D4A76D-8B3B-4C1E-B07D-EEF0E44AC5CD}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_ERROR_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_MODULE_ERROR_CODE">
+      <DTS:VariableValue DTS:DataType="8" />
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{B54B1AE0-B64D-462A-90FD-9E025D1079D5}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_MODULE_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_INSTANCE_ID">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E99F392A-7D36-46D2-A945-208FCC1C5E41}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_DELETED]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_DELETED">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{855C5D86-B1AC-430C-BBFD-78517477B0CA}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_DISCARDED]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_DISCARDED">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{8FF2F0B5-F717-4D79-A56B-B80E9E649781}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_INPUT]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_INPUT">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{51233A37-BBCE-4ECE-9BAA-3A5AEDFB57E2}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_INSERTED]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_INSERTED">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{732CD2F2-B64B-487A-864A-55E69BADA8D4}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_REJECTED]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_REJECTED">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{A22021C0-0F73-4C37-BA0F-91C327B46475}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ROW_COUNT_UPDATED]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_ROW_COUNT_UPDATED">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Module Success" DTS:DTSID="{C4F0D59B-D134-4EC9-AD41-72EA0802973B}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Module Success" DTS:refId="Package\Module Success">
+      <DTS:Variables>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{E67FBB72-AD3F-4775-81FF-A9B61D56EFA1}" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_AREA_CODE">
+          <DTS:VariableValue DTS:DataType="8" />
+        </DTS:Variable>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{CB6256E3-961F-44F5-860D-C573C9AA4799}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_MODULE_ERROR_CODE">
+          <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+        </DTS:Variable>
+      </DTS:Variables>
+      <DTS:Executables>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{643F91F9-9E26-42C2-91BD-422FE5AF1FD1}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update record counts for Module instance" DTS:refId="Package\Module Success\EST - Update record counts for Module instance" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;UPDATE MODULE_INSTANCE&#xA;SET&#xA;ROWS_INPUT=?,&#xA;ROWS_INSERTED=?,&#xA;ROWS_UPDATED=?,&#xA;ROWS_DELETED=?,&#xA;ROWS_DISCARDED=?,&#xA;ROWS_REJECTED=?&#xA;WHERE MODULE_INSTANCE_ID=?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_INPUT" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_INSERTED" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_UPDATED" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_DELETED" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="3" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_DISCARDED" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="4" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_ROW_COUNT_REJECTED" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="5" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="6" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{4720165F-8E00-42C2-B5CA-165717C1F67F}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update the Module Instance for Success" DTS:refId="Package\Module Success\EST - Update the Module Instance for Success" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='S', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID = ?" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{1EBF6585-A0F4-4CDA-82F4-094F8CFA7C81}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update the EVENT_LOG" DTS:refId="Package\Module Success\EST - Update the EVENT_LOG" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="INSERT INTO EVENT_LOG (&#xA;BATCH_INSTANCE_ID,&#xA;MODULE_INSTANCE_ID,&#xA;EVENT_DATETIME,&#xA;EVENT_TYPE_CODE,&#xA;EVENT_RETURN_CODE_DETAILS,&#xA;EVENT_DETAIL,&#xA;ERROR_BITMAP)&#xA;VALUES&#xA;(?,?, GETDATE(), 3, NULL, 'A row level, non system error event has occurred. Please use the Error Bitmap on the target table to derive the row-level messages',?)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_MODULE_ERROR_CODE" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{A66A477D-4AE3-4136-AEA1-837116046945}" DTS:Expression="@V_LAYER_CODE == &quot;INT&quot; &amp;&amp; @V_MODULE_ERROR_CDE &gt; 0" DTS:From="Package\Module Success\EST - Update the Module Instance for Success" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 1" DTS:refId="Package\Module Success.PrecedenceConstraints[Constraint 1]" DTS:To="Package\Module Success\EST - Update record counts for Module instance" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{8A1E52AA-37B4-4801-8E93-2C10AAC1D196}" DTS:EvalOp="3" DTS:Expression="@V_MODULE_ERROR_CODE&gt;0" DTS:From="Package\Module Success\EST - Update record counts for Module instance" DTS:LogicalAnd="True" DTS:ObjectName="Constraint" DTS:refId="Package\Module Success.PrecedenceConstraints[Constraint]" DTS:To="Package\Module Success\EST - Update the EVENT_LOG" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:Configurations>
+    <DTS:Configuration DTS:ConfigurationString="V_AREA_CODE" DTS:ConfigurationVariable="\Package.Variables[User::V_AREA_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{FDCB2B1D-AF13-42A0-B3F7-F79661A937D4}" DTS:ObjectName="V_AREA_CODE" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{C9E118BB-F15E-4F79-B62A-884C246D2104}" DTS:ObjectName="V_BATCH_INSTANCE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_ERROR_CODE" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_ERROR_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{1ECECB9C-2872-4C67-A08D-827B6EA0E2A3}" DTS:ObjectName="V_MODULE_ERROR_CODE" />
+    <DTS:Configuration DTS:ConfigurationString="V_MODULE_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_MODULE_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{C2061354-9CFF-4A29-B945-39506893F105}" DTS:ObjectName="V_MODULE_INSTANCE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_DELETED" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_DELETED].Properties[Value]" DTS:CreationName="" DTS:DTSID="{813F4F1F-F886-4015-8FCA-51A791A382BA}" DTS:ObjectName="V_ROW_COUNT_DELETED" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_DISCARDED" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_DISCARDED].Properties[Value]" DTS:CreationName="" DTS:DTSID="{10DA687A-3B22-4088-BB49-1F91CB6414B4}" DTS:ObjectName="V_ROW_COUNT_DISCARDED" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_INPUT" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_INPUT].Properties[Value]" DTS:CreationName="" DTS:DTSID="{E7AAECC9-3C24-4E43-A9AD-D1FBEC00E5BE}" DTS:ObjectName="V_ROW_COUNT_INPUT" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_INSERTED" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_INSERTED].Properties[Value]" DTS:CreationName="" DTS:DTSID="{86836359-3D50-4309-9CEB-66330B00B2BB}" DTS:ObjectName="V_ROW_COUNT_INSERTED" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_REJECTED" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_REJECTED].Properties[Value]" DTS:CreationName="" DTS:DTSID="{F8F81E27-A549-436B-BB1B-68F3F29AB2AD}" DTS:ObjectName="V_ROW_COUNT_REJECTED" />
+    <DTS:Configuration DTS:ConfigurationString="V_ROW_COUNT_UPDATED" DTS:ConfigurationVariable="\Package.Variables[User::V_ROW_COUNT_UPDATED].Properties[Value]" DTS:CreationName="" DTS:DTSID="{E40A2AE9-8194-45AA-856B-CF217F123AF3}" DTS:ObjectName="V_ROW_COUNT_UPDATED" />
+  </DTS:Configurations>
+</DTS:Executable>

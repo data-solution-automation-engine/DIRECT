@@ -1,0 +1,10 @@
+connectionStringSTG|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringHSTG|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringDIRECT|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringGEN|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringINT|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringPRES|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+connectionStringSOURCE|Provider=SQLNCLI11;Server=AUBRIDEBIW02;Initial Catalog=PDV_RV2;Integrated Security=SSPI;
+STGPackagePrefix|m_100_STG
+SourceSystemPrefix|THEDEFAULTISUSED
+SourceSystemPrefixEXAMPLE|EXAMPLE

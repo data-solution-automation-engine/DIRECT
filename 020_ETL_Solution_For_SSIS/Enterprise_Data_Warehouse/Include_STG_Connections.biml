@@ -1,0 +1,7 @@
+<Connections>
+  <Connection Name="GEN" CreateInProject="true" ConnectionString="<#=connectionStringGEN#>"/>
+  <Connection Name="DIRECT" CreateInProject="true" ConnectionString="<#=connectionStringDIRECT#>"/>
+  <Connection Name="STG" CreateInProject="true" ConnectionString="<#=connectionStringSTG#>"/>
+  <Connection Name="HSTG" CreateInProject="true" ConnectionString="<#=connectionStringHSTG#>"/>
+  <Connection Name="SOURCE" CreateInProject="true" ConnectionString="<#=connectionStringSOURCE#>"/>
+</Connections>

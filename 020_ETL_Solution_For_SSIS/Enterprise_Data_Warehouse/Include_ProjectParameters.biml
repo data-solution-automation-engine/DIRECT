@@ -1,0 +1,6 @@
+            <Parameter Name="connectionStringDIRECT"    DataType="String"><#=connectionStringDIRECT#></Parameter>
+            <Parameter Name="connectionStringSTG"       DataType="String"><#=connectionStringSTG#></Parameter>
+            <Parameter Name="connectionStringHSTG"      DataType="String"><#=connectionStringHSTG#></Parameter>
+            <Parameter Name="connectionStringINT"       DataType="String"><#=connectionStringINT#></Parameter>
+            <Parameter Name="connectionStringPRES"      DataType="String"><#=connectionStringPRES#></Parameter>
+			

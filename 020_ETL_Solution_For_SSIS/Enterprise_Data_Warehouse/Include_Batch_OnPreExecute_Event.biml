@@ -1,0 +1,148 @@
+<Script Name="SCT - Dummy Placeholder" LoggingMode="Enabled" IsolationLevel="ReadCommitted">
+  <ScriptTaskProjectReference ScriptTaskProjectName="Script Task Project"  />
+  <Events>
+    <Event Name="OnPreExecute" ConstraintMode="Parallel" EventType="OnPreExecute" IsolationLevel="ReadCommitted">
+      <Tasks>
+
+        <Container Name="Pre-Initialise Event" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecuteSQL Name="EST - Set the Batch Instance Start Datetime" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Log the date/time the Batch Instance has started.</Annotation>
+              </Annotations>
+              <DirectInput>SELECT GETDATE() AS BATCH_INSTANCE_START_DATETIME</DirectInput>
+              <Results>
+                <Result Name="BATCH_INSTANCE_START_DATETIME" VariableName="User.V_BATCH_INSTANCE_START_DATETIME"/>
+              </Results>
+            </ExecuteSQL>
+            <ExecuteSQL Name="EST - Get Batch Information" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Retrieve the Batch ID and Frequency Code for the specific Batch (package name).</Annotation>
+              </Annotations>
+              <DirectInput>SELECT BATCH_ID, FREQUENCY_CODE FROM BATCH WHERE BATCH_CODE = ?</DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="System.PackageName" Length="-1" DataType="AnsiString" DataTypeCodeOverride="129" />
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_BATCH_ID"/>
+                <Result Name="1" VariableName="User.V_FREQUENCY_CODE"/>
+              </Results>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Set the Batch Instance Start Datetime.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+            </ExecuteSQL>
+            <ExecutePackage Name="EPT - Create new Batch Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Batch_Create_Instance.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_BATCH_ID" VariableName="User.V_BATCH_ID" />
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+                <ParameterBinding Name="V_BATCH_INSTANCE_START_DATETIME" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" />
+                <ParameterBinding Name="V_PACKAGE_EXECUTION_GUID" VariableName="System.ExecutionInstanceGUID" />
+              </ParameterBindings>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Get Batch Information.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Batch Create Instance event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+            <ExecuteSQL Name="EST - Get the Batch Instance ID" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Retrieve the newly created Batch Instance ID from the repository.</Annotation>
+              </Annotations>
+              <DirectInput>SELECT BATCH_INSTANCE_ID, PROCESSING_INDICATOR FROM BATCH_INSTANCE WHERE BATCH_ID=? AND START_DATETIME=? AND EXECUTION_STATUS_CODE='E'</DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_BATCH_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="1" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" Length="-1" DataType="DateTime" />                
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_BATCH_INSTANCE_ID" />
+                <Result Name="1" VariableName="User.V_PROCESSING_INDICATOR" />
+              </Results>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EPT - Create new Batch Instance.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+            </ExecuteSQL>
+            <ExecutePackage Name="EPT - Batch Evaluation" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Batch_Eval.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_BATCH_ID" VariableName="User.V_BATCH_ID" />
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+                <ParameterBinding Name="V_BATCH_INSTANCE_START_DATETIME" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" />
+                <ParameterBinding Name="V_FREQUENCY_CODE" VariableName="User.V_FREQUENCY_CODE" />
+              </ParameterBindings>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EST - Get the Batch Instance ID.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Batch Evaluation event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+            <ExecuteSQL Name="EST - Get the Processing Indicator for the current Batch Instance" ConnectionName="DIRECT" ResultSet="SingleRow" IsolationLevel="ReadCommitted">
+              <Annotations>
+                <Annotation AnnotationType="Description">Verify the repository to see if the Batch Evaluation has completed succesfully and with what status (Processing Indicator).</Annotation>
+              </Annotations>
+              <DirectInput>SELECT PROCESSING_INDICATOR FROM BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=?</DirectInput>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <Results>
+                <Result Name="0" VariableName="User.V_PROCESSING_INDICATOR" />
+              </Results>
+              <PrecedenceConstraints>
+                <Inputs>
+                  <Input OutputPathName="EPT - Batch Evaluation.Output" EvaluationOperation="Constraint" />
+                </Inputs>
+              </PrecedenceConstraints>
+            </ExecuteSQL>
+          </Tasks>
+
+        </Container>
+        <Container Name="Cancel (Skip) Processing" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecutePackage Name="EPT - Skip the current Batch Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Batch_Skip.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+              </ParameterBindings>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Batch Skip event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+          </Tasks>
+          <PrecedenceConstraints LogicalType="Or">
+            <Inputs>
+              <Input OutputPathName="Pre-Initialise Event.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;C&quot;"/>
+            </Inputs>
+          </PrecedenceConstraints>
+        </Container>
+        <Container Name="Abort Processing" ConstraintMode="Parallel" IsolationLevel="ReadCommitted">
+          <Tasks>
+            <ExecutePackage Name="EPT - Abort the current Batch Instance" IsolationLevel="ReadCommitted">
+              <ExternalProjectPackage Package="Batch_Abort.dtsx" />
+              <ParameterBindings>
+                <ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+              </ParameterBindings>
+              <Annotations>
+                <Annotation AnnotationType="Description">Call the Batch Abort event (package).</Annotation>
+              </Annotations>
+            </ExecutePackage>
+          </Tasks>
+          <PrecedenceConstraints LogicalType="Or">
+            <Inputs>
+              <Input OutputPathName="Pre-Initialise Event.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;A&quot;"/>
+            </Inputs>
+          </PrecedenceConstraints>
+        </Container>
+      </Tasks>
+    </Event>
+  </Events>
+</Script>

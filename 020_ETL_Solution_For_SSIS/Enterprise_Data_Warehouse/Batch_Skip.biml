@@ -1,0 +1,37 @@
+
+    <Package Name="Batch_Skip" Language="None">
+      <Variables>
+        <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_ID">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
+      </Variables>
+      
+      <Annotations>
+          <Annotation AnnotationType="Description">Determine if the Batch needs to be skipped for the current run; creating an new Batch Instance ID but without executing the package (logic).</Annotation>
+      </Annotations>
+
+      <Tasks>
+        <Container Name="Batch Skip">
+          <Annotations>
+            <Annotation AnnotationType="Description">Batch Skip (Cancel)</Annotation>
+          </Annotations>
+          <Tasks>
+            <ExecuteSQL Name="EST - Update the Batch Instance for Skipping - Cancellation" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
+              </Parameters>
+              <DirectInput>
+                    UPDATE BATCH_INSTANCE SET EXECUTION_STATUS_CODE='C', 
+                    NEXT_RUN_INDICATOR = 'P', 
+                    END_DATETIME=GETDATE()
+                    WHERE BATCH_INSTANCE_ID=?
+			  </DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+        </Container>
+      </Tasks>
+      <Parameters>
+        <Parameter Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Parameter>
+      </Parameters>
+    </Package>

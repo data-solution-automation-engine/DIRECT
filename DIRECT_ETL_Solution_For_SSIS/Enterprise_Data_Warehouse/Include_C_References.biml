@@ -1,8 +1,0 @@
-<#@ template hostspecific="true"#>
-<#@ import namespace="System.Data"#>
-<#@ import namespace="System.IO"#>
-<#@ import namespace="System.Text"#>
-<#@ import namespace="System.Collections.Generic"#>
-
-<#@ assembly name= "C:\_TFS\DIRECT\000_References\System.Windows.Forms.dll" #>
-<#@ import namespace="System.Windows.Forms" #> 

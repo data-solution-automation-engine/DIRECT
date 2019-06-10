@@ -1,0 +1,45 @@
+
+    <Package Name="Module_Create_Instance" Language="None">
+      <Variables>
+        <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_ID">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
+      </Variables>
+      
+      <Annotations>
+          <Annotation AnnotationType="Description">Instantiate a Module into a new Module Instance.</Annotation>
+      </Annotations>        
+            
+      <Tasks>
+        <Container Name="Module Create Instance">
+            
+          <Annotations>
+            <Annotation AnnotationType="Description">Create Instance</Annotation>
+          </Annotations>
+          
+          <Tasks>
+            <ExecuteSQL Name="EST - Insert new record into Module Instance" ConnectionName="DIRECT">
+              <Annotations>
+                <Annotation AnnotationType="Description">This script task inherits the Module parameters from the parent package and executes SQL to create a new Module Instance ID.</Annotation>
+              </Annotations>
+              <Parameters>
+                <Parameter Name="0" VariableName="V_MODULE_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="1" VariableName="V_MODULE_INSTANCE_START_DATETIME" Length="-1" DataType="Date" />
+                <Parameter Name="2" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="3" VariableName="V_PACKAGE_EXECUTION_GUID" Length="-1" DataType="AnsiString" />
+              </Parameters>
+              <DirectInput>
+                INSERT INTO MODULE_INSTANCE 
+                (MODULE_ID, START_DATETIME, EXECUTION_STATUS_CODE, NEXT_RUN_INDICATOR, PROCESSING_INDICATOR, BATCH_INSTANCE_ID, MODULE_EXECUTION_SYSTEM_ID, ROWS_INPUT, ROWS_INSERTED, ROWS_UPDATED, ROWS_DELETED, ROWS_DISCARDED,ROWS_REJECTED) 
+                VALUES(?,Cast(? as datetime),'E','P','A',?,?,0,0,0,0,0,0)
+			  </DirectInput>
+            </ExecuteSQL>
+          </Tasks>
+              
+        </Container>
+      </Tasks>
+      <Parameters>
+        <Parameter Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Parameter>
+        <Parameter Name="V_MODULE_ID" DataType="Int32">0</Parameter>
+        <Parameter Name="V_MODULE_INSTANCE_START_DATETIME" DataType="DateTime">2/11/2014 9:28:42 AM</Parameter>
+        <Parameter Name="V_PACKAGE_EXECUTION_GUID" DataType="String"></Parameter>
+      </Parameters>
+    </Package>

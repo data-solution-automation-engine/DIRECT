@@ -1,0 +1,53 @@
+<!--<ScriptProjects> -->
+  <ScriptTaskProject Name="Script Task Project" ProjectCoreName="ST_787c56676e9b4c8caf26dcb5758f89f7" VstaMajorVersion="0">
+    <AssemblyReferences>
+      <AssemblyReference AssemblyPath="System" />
+      <AssemblyReference AssemblyPath="System.Data" />
+      <AssemblyReference AssemblyPath="System.Windows.Forms" />
+      <AssemblyReference AssemblyPath="System.Xml" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ManagedDTS.dll" />
+      <AssemblyReference AssemblyPath="Microsoft.SqlServer.ScriptTask.dll" />
+    </AssemblyReferences>
+    <Files>
+      <File BuildAction="Compile" Path="ScriptMain.cs">
+        using System;
+        using System.Data;
+        using Microsoft.SqlServer.Dts.Runtime;
+        using System.Windows.Forms;
+
+        namespace ST_787c56676e9b4c8caf26dcb5758f89f7
+        {
+        [Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+        public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+        {
+        public void Main()
+        {
+        // TODO: Add your code here
+        Dts.TaskResult = (int)ScriptResults.Success;
+        }
+
+        enum ScriptResults
+        {
+        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+        }
+        }
+      </File>
+      <File BuildAction="Compile" Path="Properties\AssemblyInfo.cs">
+        using System.Reflection;
+        using System.Runtime.CompilerServices;
+
+        [assembly: AssemblyTitle("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyDescription("")]
+        [assembly: AssemblyConfiguration("")]
+        [assembly: AssemblyCompany("")]
+        [assembly: AssemblyProduct("ST_787c56676e9b4c8caf26dcb5758f89f7")]
+        [assembly: AssemblyCopyright("")]
+        [assembly: AssemblyTrademark("")]
+        [assembly: AssemblyCulture("")]
+        [assembly: AssemblyVersion("1.0.*")]
+      </File>
+    </Files>
+  </ScriptTaskProject>
+<!--</ScriptProjects> -->
