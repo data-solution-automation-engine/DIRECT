@@ -31,17 +31,18 @@
         <SSIS:Packages>
           <SSIS:Package SSIS:Name="Batch_Abort.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Batch_Create_Instance.dtsx" SSIS:EntryPoint="1" />
+          <SSIS:Package SSIS:Name="Batch_Eval.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Batch_Failure.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Batch_Skip.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Batch_Success.dtsx" SSIS:EntryPoint="1" />
-          <SSIS:Package SSIS:Name="Batch_Eval.dtsx" SSIS:EntryPoint="1" />
-          <SSIS:Package SSIS:Name="Module_Failure.dtsx" SSIS:EntryPoint="1" />
-          <SSIS:Package SSIS:Name="Module_Skip.dtsx" SSIS:EntryPoint="1" />
-          <SSIS:Package SSIS:Name="Module_Success.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Module_Abort.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Module_Create_Instance.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="Module_Eval.dtsx" SSIS:EntryPoint="1" />
+          <SSIS:Package SSIS:Name="Module_Failure.dtsx" SSIS:EntryPoint="1" />
+          <SSIS:Package SSIS:Name="Module_Skip.dtsx" SSIS:EntryPoint="1" />
+          <SSIS:Package SSIS:Name="Module_Success.dtsx" SSIS:EntryPoint="1" />
           <SSIS:Package SSIS:Name="m_100_STG_EXAMPLE_EXAMPLE.dtsx" SSIS:EntryPoint="1" />
+          <SSIS:Package SSIS:Name="b_EDW_STG_INT_EXAMPLE.dtsx" SSIS:EntryPoint="1" />
         </SSIS:Packages>
         <SSIS:ConnectionManagers>
           <SSIS:ConnectionManager SSIS:Name="DIRECT.conmgr" />
@@ -62,7 +63,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">server=AUBRIDEBIW02;initial catalog=PDV_RV2;provider=SQLNCLI11;integrated security=SSPI;</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">server=BISERVER;user id=sa;initial catalog=EDW_900_OMD_Framework;provider=SQLNCLI11;</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -77,7 +78,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">PDV_RV2</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">EDW_900_OMD_Framework</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -121,7 +122,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">AUBRIDEBIW02</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">BISERVER</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -136,6 +137,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">sa</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -150,7 +152,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">server=AUBRIDEBIW02;initial catalog=PDV_RV2;provider=SQLNCLI11;integrated security=SSPI;</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">server=BISERVER;user id=sa;initial catalog=EDW_900_OMD_Framework;provider=SQLNCLI11;</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -165,7 +167,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">PDV_RV2</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">EDW_900_OMD_Framework</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -209,7 +211,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">AUBRIDEBIW02</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">BISERVER</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -224,6 +226,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">sa</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -238,7 +241,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">server=AUBRIDEBIW02;initial catalog=PDV_RV2;provider=SQLNCLI11;integrated security=SSPI;</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">server=BISERVER;user id=sa;initial catalog=EDW_900_OMD_Framework;provider=SQLNCLI11;</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -253,7 +256,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">PDV_RV2</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">EDW_900_OMD_Framework</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -297,7 +300,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">AUBRIDEBIW02</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">BISERVER</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -312,6 +315,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">sa</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -326,7 +330,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">server=AUBRIDEBIW02;initial catalog=PDV_RV2;provider=SQLNCLI11;integrated security=SSPI;</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">server=BISERVER;user id=sa;initial catalog=EDW_900_OMD_Framework;provider=SQLNCLI11;</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -341,7 +345,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">PDV_RV2</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">EDW_900_OMD_Framework</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -385,7 +389,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">AUBRIDEBIW02</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">BISERVER</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -400,6 +404,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">sa</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -407,14 +412,14 @@
           <SSIS:PackageInfo>
             <SSIS:PackageMetaData SSIS:Name="Batch_Abort.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{4F57DBCF-D97A-4371-B2B3-F97032D9BC94}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{4CA9AABE-55FB-48D1-8ED8-5C71ABE81464}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Batch_Abort</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{BA354878-9A4D-486A-AFA3-BE6C456B57BE}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{160AB071-17A7-4C7C-B859-955ED79685B0}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Update the information to record the abort of a Batch Instance. This is done by:
             - Setting the Execution Status Code to 'A'
@@ -425,7 +430,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{2FF4DF98-02EF-4229-B8ED-D659942666D2}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{055B7784-2AF9-4AD9-9DC2-9057BE35367B}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -441,14 +446,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Batch_Create_Instance.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{E374E492-4AEB-44FE-BCBA-7CC8B5E30435}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{5E130143-9C2F-49AA-A486-15FF4CCD514A}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Batch_Create_Instance</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{C18AFA7E-6010-4C37-8247-3FB2F8527F9D}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{C161505C-621D-4FEA-A969-DEAA05C58F04}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Instantiate a Batch into a new Batch Instance.</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -456,7 +461,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{55613759-68B7-4BF6-BC1C-586BAA256F2E}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{E09203D6-8311-49DF-918F-B8332898D62E}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -470,7 +475,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_START_DATETIME">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{0661C9DC-79FF-4E43-BE4A-1932DC58C7E9}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{4C8A7A6E-2DA0-43E6-BEA2-C272B0099D25}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -484,7 +489,81 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_PACKAGE_EXECUTION_GUID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{8EF1DF68-7023-402E-A0EA-5F5D313D79D8}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{49A2A7FF-0A79-419C-95CF-BDD05B160AAE}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+              </SSIS:Parameters>
+            </SSIS:PackageMetaData>
+            <SSIS:PackageMetaData SSIS:Name="Batch_Eval.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{26D9D2BA-B2AC-4894-A12C-8DAB7E48652B}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">Batch_Eval</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{7397DE06-B2FA-4EC9-9F9A-5F17D1605A8E}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">Evaluate the processing of a Batch Instance.</SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters>
+                <SSIS:Parameter SSIS:Name="V_BATCH_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{4B6A4F34-6D8D-4DA9-B676-32D5A86587E0}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{2691B4BB-2206-4104-A3DA-A4C14D5C14BA}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_START_DATETIME">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{3172A4A1-943B-4F16-B676-90CF83F29AC0}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">2014-02-11T09:34:46</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">16</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_FREQUENCY_CODE">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{34EAF8E6-4F31-458F-854A-9D7141751661}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -501,14 +580,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Batch_Failure.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{EC2D285A-37C4-4823-B19A-72432C67B580}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{0FC614DE-3C11-4F03-BA66-A5921D6832FC}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Batch_Failure</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{BF3967F2-D95C-4DDC-842A-2B33D6C41CB6}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{2046DD0C-E4E6-4998-8D4F-3FEC0845192A}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">This package is executed when the Batch Instance fails due to system errors. The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun / recover) for the Batch Instance ID received from the parent package. It also inserts an SSIS Internal Error to the Event Log.</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -516,7 +595,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{4797A0AF-AA50-4D16-B957-64090EF429AB}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{8E57DDFB-F35E-46ED-949D-11B984DAA875}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -530,7 +609,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_ERROR_CODE">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{2C3F8A35-063A-4347-A49C-11926E2E5B55}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{CC5B7BBB-CB5F-4AE7-A39D-23BECBE885C4}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -544,7 +623,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_ERROR_DESCRIPTION">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{D6D329E1-FC31-4196-8D7B-61439FDBAEEF}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{3EB1EF94-314C-4CB0-9E32-1D15F101B90B}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -561,14 +640,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Batch_Skip.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{D7B0ABEC-E333-45F4-94FF-77CD3608FCBC}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{E14E0628-2784-49A1-AE01-51D1493A42A0}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Batch_Skip</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{A89AFEA7-D199-4D36-BB89-A2BDECC7BEC0}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{5E809D8A-22A4-4E4D-B014-0BC3DB7C5252}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Determine if the Batch needs to be skipped for the current run; creating an new Batch Instance ID but without executing the package (logic).</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -576,7 +655,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{B4D859E9-0ADB-40B8-A29B-7A6C2A72A857}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{34344EA4-2FAD-4632-BC7B-620872D99D6E}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -592,14 +671,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Batch_Success.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{6E35C72E-892A-4A37-B2E9-92B1C12977DE}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{6A6CD0D8-1B30-4641-9164-BADA8ACC701C}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Batch_Success</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{140C7FA2-2ACE-465E-A02A-6E528F99C813}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{CFD90930-05AC-4BAE-8B43-BB031943F2BB}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Update the repository to record the succesful completion of a Batch (Instance).</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -607,366 +686,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{369B9EE7-CC0A-4098-9E6D-2BF983E02D72}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-              </SSIS:Parameters>
-            </SSIS:PackageMetaData>
-            <SSIS:PackageMetaData SSIS:Name="Batch_Eval.dtsx">
-              <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{82875A00-AB54-421D-9E46-45FFFF529A46}</SSIS:Property>
-                <SSIS:Property SSIS:Name="Name">Batch_Eval</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionComments">
-                </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{AEAB610B-B7A4-4E4D-B970-6F313F843B45}</SSIS:Property>
-                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
-                <SSIS:Property SSIS:Name="Description">Evaluate the processing of a Batch Instance.</SSIS:Property>
-                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
-              </SSIS:Properties>
-              <SSIS:Parameters>
-                <SSIS:Parameter SSIS:Name="V_BATCH_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{699DA4C6-99A0-4341-A301-7BB838D46FA8}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{4BDB58B9-A663-4971-ABBA-C1F518E444E9}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_START_DATETIME">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{F9FA01BD-E1AA-4F43-A993-F2F28C556E53}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">2014-02-11T09:34:46</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">16</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_FREQUENCY_CODE">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{DCF55232-6969-41FD-A043-9847B3D1DEE5}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-              </SSIS:Parameters>
-            </SSIS:PackageMetaData>
-            <SSIS:PackageMetaData SSIS:Name="Module_Failure.dtsx">
-              <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{8B0B3803-70C7-45A2-85C9-763E4C2E6BB3}</SSIS:Property>
-                <SSIS:Property SSIS:Name="Name">Module_Failure</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionComments">
-                </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{CE04CEA4-F68F-4605-A1D6-4BF83DA5F9AF}</SSIS:Property>
-                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
-                <SSIS:Property SSIS:Name="Description">This package is executed when the module fails due to system errors. 
-          The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun recover) for the Module Instance ID received from the parent package. 
-          It also inserts an SSIS Internal Error to the Event Log.</SSIS:Property>
-                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
-              </SSIS:Properties>
-              <SSIS:Parameters>
-                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{B4F65BA3-D06C-4807-9A70-B88B2954CBF2}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ERROR_CODE">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{F831DD76-E9D3-4896-8726-B3AD0CFA2BC2}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ERROR_DESCRIPTION">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{72874648-38E2-40E3-A844-4E0BA928FC64}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_EVENT_TYPE_CODE">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{7D069EF2-D259-439F-9DC1-ABBF07B53DD0}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{46019C4D-5B18-4EBB-B305-F3C281462D9F}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-              </SSIS:Parameters>
-            </SSIS:PackageMetaData>
-            <SSIS:PackageMetaData SSIS:Name="Module_Skip.dtsx">
-              <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{704AC05C-0071-44B5-A5AD-6C8D0BD51583}</SSIS:Property>
-                <SSIS:Property SSIS:Name="Name">Module_Skip</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionComments">
-                </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{27F83031-5521-4594-9528-5F6ACAA65B8D}</SSIS:Property>
-                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
-                <SSIS:Property SSIS:Name="Description">Determine if the module needs to be skipped for the current run; creating an new module instance ID but without executing the package (logic). 
-          This can only be manually updated in the Module Instance Table and does not occur often.
-          The step sets the Execution Status Code to 'C' (cancelled / skipped) and the Next Run Indicator to 'P' indicating it can be run the next time.</SSIS:Property>
-                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
-              </SSIS:Properties>
-              <SSIS:Parameters>
-                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{EBB9C89A-B050-42B1-98AF-1E1F73A97553}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-              </SSIS:Parameters>
-            </SSIS:PackageMetaData>
-            <SSIS:PackageMetaData SSIS:Name="Module_Success.dtsx">
-              <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{62F2BDD3-37EB-472D-8B00-86F87CF9FD5A}</SSIS:Property>
-                <SSIS:Property SSIS:Name="Name">Module_Success</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionComments">
-                </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{10EDACB0-09BF-4734-82A1-28B5D1D06DD4}</SSIS:Property>
-                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
-                <SSIS:Property SSIS:Name="Description">Update the DIRECT repository to record the succesful completion of a Module.
-          If the Module is an Integration or Presentation Layer Module the completion may be succesful even though there are row level errors. 
-          These are still recorded as an error bitmap but the process will not fail.</SSIS:Property>
-                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
-              </SSIS:Properties>
-              <SSIS:Parameters>
-                <SSIS:Parameter SSIS:Name="V_AREA_CODE">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{AFB61A1D-43EA-4A96-8932-BA9B2C598386}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{38325F0D-4629-42E0-9617-EBF863DFF75F}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_MODULE_ERROR_CODE">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{3F71FA86-CEC0-464F-ABF6-6DFF98087701}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{6CCDEBD4-B30E-4AFB-A8DC-5D90DC67395E}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_DELETED">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{7BCE7634-6001-404B-929F-5A01012F6A5E}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_DISCARDED">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{9E59197B-7566-4459-A437-A0238239676F}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_INPUT">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{12F9E9F2-2A8C-4832-87B3-9AE34940FB72}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_INSERTED">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{EDC79677-1087-4FFC-A3C8-F09DB32395D6}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_REJECTED">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{00DE12A1-CFE0-4351-99D3-9892389D3ED8}</SSIS:Property>
-                    <SSIS:Property SSIS:Name="CreationName">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="Description">
-                    </SSIS:Property>
-                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
-                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
-                  </SSIS:Properties>
-                </SSIS:Parameter>
-                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_UPDATED">
-                  <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{613E4CF3-0E12-43D0-954C-304F810EBF6B}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{5F4D581F-E58F-4320-ACC6-092828A4E03B}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -982,14 +702,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Module_Abort.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{205A82C9-913B-4817-BEAE-B1A8C176F27A}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{790A3C03-8DCD-4432-A5E0-1B6EF76CF108}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Module_Abort</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{AEE5A20B-A016-4BD1-B877-343436E172F9}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{2A16AACC-4E78-48DD-B37B-B96DBA979845}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Update the information to record the abort of a Module Instance. This is done by
           Setting the Execution Status Code to 'A'
@@ -1000,7 +720,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{431AA261-19D7-4ACD-949A-61D8CEEDC25F}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{2FF4794C-3F20-4E5F-9256-66D6D2053150}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1016,14 +736,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Module_Create_Instance.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{B7941E02-1B24-4D31-A947-CF4F0DDF72F1}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{B589494C-32CB-4679-A6EF-240A76BC04B5}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Module_Create_Instance</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{F39A99F3-6AE4-4B9C-917D-18E682E754D7}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{9CE8B6F5-2D32-4781-BE01-343A85ED9C8A}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Instantiate a Module into a new Module Instance.</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -1031,7 +751,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{CF161F56-3616-4447-BAC7-3449BFB7EAE1}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{55870909-D1D7-4D1C-8717-12BDFFDC8FC0}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1045,7 +765,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_MODULE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{E2E26163-15A8-4B9C-A4DD-808CF4D24AB3}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{80BC9145-5AED-44AF-9236-9AB3C9D3D0C9}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1059,7 +779,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_START_DATETIME">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{F7ADA9B4-E33F-4D8C-BF3E-63C92AC2077B}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{8E389883-872C-4B3F-93B6-434ABAFDD34D}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1073,7 +793,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_PACKAGE_EXECUTION_GUID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{66A0B81F-E934-423A-84F9-5204A45C00BF}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{BC4ECE21-2E19-4ADF-B0C7-F5EB870223DE}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1090,14 +810,14 @@
             </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="Module_Eval.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{F652CB79-84E0-4D31-A8C3-C10C71521039}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{73202A1F-1F26-4848-A5D9-0B6BC566C654}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">Module_Eval</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{D6F5A172-62B5-4EF3-BFA3-AAE8540D6599}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{3D0F36FE-6286-4500-BCDF-880321D8832E}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
                 <SSIS:Property SSIS:Name="Description">Evaluate the processing of a Module Instance.</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
@@ -1105,7 +825,7 @@
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_AREA_CODE">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{766AD329-1E32-42AE-A479-80F8A4F457D6}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{9BC3B381-6E60-4C2A-9F2F-59D133D9A9EC}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1120,7 +840,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_BATCH_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{3EB9104C-9E90-4B4A-976E-E7BB0DB6785A}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{58C1A3BC-481F-4D5C-A931-E45767A8ECA5}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1134,7 +854,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{55903EB1-14CD-41D5-87DA-88432B01C1CA}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{6B5D367D-BAB6-4A34-8E37-B595CADC90C5}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1148,7 +868,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_MODULE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{AC5A816B-788E-45A7-AC53-1CFC2B7122B0}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{B9F46715-9FB2-4CDC-A448-81151E9B4080}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1162,7 +882,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{114B2B5F-4320-48C5-9751-96E50CF9EB75}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{8EC90BD6-6D87-45C2-8473-50F405BE98DC}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1176,7 +896,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_START_DATETIME">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{810F3952-2103-43D7-9952-31DA3BD8A479}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{3067DDF4-A7F0-4C0C-9A69-AB57A632F19C}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1190,7 +910,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_TABLE_CODE">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{6BE1B281-400B-4F2B-8233-97E8C87AA485}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{AFFED128-B612-4448-9832-48D0CC384688}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1205,24 +925,309 @@
                 </SSIS:Parameter>
               </SSIS:Parameters>
             </SSIS:PackageMetaData>
+            <SSIS:PackageMetaData SSIS:Name="Module_Failure.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{9CB2679A-4E13-4FCA-8422-98E031B13E13}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">Module_Failure</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{C084308D-686B-48B5-B905-EA61DE413F5C}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">This package is executed when the module fails due to system errors. 
+          The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun recover) for the Module Instance ID received from the parent package. 
+          It also inserts an SSIS Internal Error to the Event Log.</SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters>
+                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{E2F122B7-C44B-41BB-BD17-DD6F4B774FA7}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ERROR_CODE">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{C18C4BE0-702A-4577-BBCF-ED2434127E75}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ERROR_DESCRIPTION">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{559DAEB0-7046-4C89-838C-0A329588D434}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_EVENT_TYPE_CODE">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{164ADD3E-C937-43C1-BBF7-79708071BD68}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{E7A8E100-A622-44F9-B26D-7D9FB793FA1A}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+              </SSIS:Parameters>
+            </SSIS:PackageMetaData>
+            <SSIS:PackageMetaData SSIS:Name="Module_Skip.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{9EC54394-0B0E-4301-BA3B-7A03C068A284}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">Module_Skip</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{498C5020-0971-4B0C-A7CB-EA4C43FD30ED}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">Determine if the module needs to be skipped for the current run; creating an new module instance ID but without executing the package (logic). 
+          This can only be manually updated in the Module Instance Table and does not occur often.
+          The step sets the Execution Status Code to 'C' (cancelled / skipped) and the Next Run Indicator to 'P' indicating it can be run the next time.</SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters>
+                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{A43DF1A8-8705-4859-A86F-965102CF4375}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+              </SSIS:Parameters>
+            </SSIS:PackageMetaData>
+            <SSIS:PackageMetaData SSIS:Name="Module_Success.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{33A6C916-5AEC-4517-8FE9-D1B00CCD73C9}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">Module_Success</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{1920ED1A-4063-455A-B2EE-32D72B6D0FF1}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">Update the DIRECT repository to record the succesful completion of a Module.
+          If the Module is an Integration or Presentation Layer Module the completion may be succesful even though there are row level errors. 
+          These are still recorded as an error bitmap but the process will not fail.</SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters>
+                <SSIS:Parameter SSIS:Name="V_AREA_CODE">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{584501D0-8017-4568-861D-21BABC3C3D9F}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{E90E7C74-3E19-4855-80B1-EE6262D9725B}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_MODULE_ERROR_CODE">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{0D6BA738-E87F-446C-BB6A-996C903986B8}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_MODULE_INSTANCE_ID">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{51DA7EC2-15EE-4D5A-84C7-5631C68F3BA5}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_DELETED">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{E4DBB672-C729-493F-B451-ACE175935565}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_DISCARDED">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{15E7922A-D39B-406A-9C8C-716E0CE480F1}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_INPUT">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{9AFF20C2-A105-4B51-80E8-83BA85F6FDBE}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_INSERTED">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{C6861956-80F8-4D24-A4BF-77E564B5AF49}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_REJECTED">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{4A9883FF-BF39-42F6-8177-86FDACED3623}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+                <SSIS:Parameter SSIS:Name="V_ROW_COUNT_UPDATED">
+                  <SSIS:Properties>
+                    <SSIS:Property SSIS:Name="ID">{07336856-EE7D-462F-B7B6-15F87D474E10}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="CreationName">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="Description">
+                    </SSIS:Property>
+                    <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="Value">0</SSIS:Property>
+                    <SSIS:Property SSIS:Name="DataType">9</SSIS:Property>
+                  </SSIS:Properties>
+                </SSIS:Parameter>
+              </SSIS:Parameters>
+            </SSIS:PackageMetaData>
             <SSIS:PackageMetaData SSIS:Name="m_100_STG_EXAMPLE_EXAMPLE.dtsx">
               <SSIS:Properties>
-                <SSIS:Property SSIS:Name="ID">{FE63F59E-5C22-4C98-9E3D-47C6BF777CE0}</SSIS:Property>
+                <SSIS:Property SSIS:Name="ID">{E0AE41F3-D918-4367-9A45-763F4CD44608}</SSIS:Property>
                 <SSIS:Property SSIS:Name="Name">m_100_STG_EXAMPLE_EXAMPLE</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="VersionComments">
                 </SSIS:Property>
-                <SSIS:Property SSIS:Name="VersionGUID">{E3292DBE-9027-470E-BC5A-ADA464062195}</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{7C6C99C7-5786-4383-B0E8-5373B362725D}</SSIS:Property>
                 <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
-                <SSIS:Property SSIS:Name="Description">Package m_100_STG_EXAMPLE_EXAMPLE generated at 06/10/2019 17:59:45.</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">Package m_100_STG_EXAMPLE_EXAMPLE generated at 06/12/2019 13:01:20.</SSIS:Property>
                 <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
               </SSIS:Properties>
               <SSIS:Parameters>
                 <SSIS:Parameter SSIS:Name="V_BATCH_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{4BCC5A9D-362F-44B0-81AF-9625697B9A1E}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{AD48C0AF-50BA-4895-BED5-B81F2A6A4012}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1236,7 +1241,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_ID">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{8328C45E-AFBA-4904-A6F9-BFEAB94D2E05}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{6502E571-141C-4F83-B1A4-987482DB3A93}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1250,7 +1255,7 @@
                 </SSIS:Parameter>
                 <SSIS:Parameter SSIS:Name="V_BATCH_INSTANCE_START_DATETIME">
                   <SSIS:Properties>
-                    <SSIS:Property SSIS:Name="ID">{EC462433-09C0-4105-B508-79D076630B40}</SSIS:Property>
+                    <SSIS:Property SSIS:Name="ID">{C3B68DF3-7E46-4AA1-B43C-58CDC8D44A7F}</SSIS:Property>
                     <SSIS:Property SSIS:Name="CreationName">
                     </SSIS:Property>
                     <SSIS:Property SSIS:Name="Description">
@@ -1264,6 +1269,23 @@
                 </SSIS:Parameter>
               </SSIS:Parameters>
             </SSIS:PackageMetaData>
+            <SSIS:PackageMetaData SSIS:Name="b_EDW_STG_INT_EXAMPLE.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{8C37FBDF-E196-499E-AB6A-675E8DAA75B0}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">b_EDW_STG_INT_EXAMPLE</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{FF9A10DE-AB9F-4F85-B2E8-C6FDC8C1941F}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description">
+                </SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">0</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters />
+            </SSIS:PackageMetaData>
           </SSIS:PackageInfo>
         </SSIS:DeploymentInfo>
       </SSIS:Project>
@@ -1272,176 +1294,16 @@
   <ControlFlowParts />
   <Miscellaneous>
     <ProjectItem>
-      <Name>000_b_Batch_Empty_Wrapper.biml</Name>
-      <FullPath>000_b_Batch_Empty_Wrapper.biml</FullPath>
+      <Name>000_Batch_Empty_Wrapper.biml</Name>
+      <FullPath>000_Batch_Empty_Wrapper.biml</FullPath>
     </ProjectItem>
     <ProjectItem>
-      <Name>Batch_Abort.biml</Name>
-      <FullPath>Batch_Abort.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Batch_Create_Instance.biml</Name>
-      <FullPath>Batch_Create_Instance.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Batch_Eval.biml</Name>
-      <FullPath>Batch_Eval.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Batch_Failure.biml</Name>
-      <FullPath>Batch_Failure.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Batch_Skip.biml</Name>
-      <FullPath>Batch_Skip.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Batch_Success.biml</Name>
-      <FullPath>Batch_Success.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_BatchEval_RaiseError_ScriptProject.biml</Name>
-      <FullPath>Include_BatchEval_RaiseError_ScriptProject.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_BatchEval_Rollback_ScriptProject.biml</Name>
-      <FullPath>Include_BatchEval_Rollback_ScriptProject.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_BIML_Configuration.biml</Name>
-      <FullPath>Include_BIML_Configuration.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_C_References.biml</Name>
-      <FullPath>Include_C_References.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Generic_ScriptProject.biml</Name>
-      <FullPath>Include_Generic_ScriptProject.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_HSTG_Connections.biml</Name>
-      <FullPath>Include_HSTG_Connections.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_INT_Connections.biml</Name>
-      <FullPath>Include_INT_Connections.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_ModuleEval_ScriptProject.biml</Name>
-      <FullPath>Include_ModuleEval_ScriptProject.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Batch_OnError_Event.biml</Name>
-      <FullPath>Include_Batch_OnError_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Batch_OnPostExecute_Event.biml</Name>
-      <FullPath>Include_Batch_OnPostExecute_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Batch_OnPreExecute_Event.biml</Name>
-      <FullPath>Include_Batch_OnPreExecute_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_OnError_Event.biml</Name>
-      <FullPath>Include_OnError_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_OnPostExecute_Event.biml</Name>
-      <FullPath>Include_OnPostExecute_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_OnPreExecute_Event.biml</Name>
-      <FullPath>Include_OnPreExecute_Event.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_PackageParameterDefault.biml</Name>
-      <FullPath>Include_PackageParameterDefault.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_PackageVariablesDefault.biml</Name>
-      <FullPath>Include_PackageVariablesDefault.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Parameters.biml</Name>
-      <FullPath>Include_Parameters.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_ProjectConfiguration.biml</Name>
-      <FullPath>Include_ProjectConfiguration.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_ProjectConnections.biml</Name>
-      <FullPath>Include_ProjectConnections.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_ProjectParameters.biml</Name>
-      <FullPath>Include_ProjectParameters.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_ProjectSourceMapping.biml</Name>
-      <FullPath>Include_ProjectSourceMapping.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_STG_Connections.biml</Name>
-      <FullPath>Include_STG_Connections.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_STG_ScriptProject.biml</Name>
-      <FullPath>Include_STG_ScriptProject.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Variables_BATCH.biml</Name>
-      <FullPath>Include_Variables_BATCH.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Variables_HSTG.biml</Name>
-      <FullPath>Include_Variables_HSTG.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Variables_INT.biml</Name>
-      <FullPath>Include_Variables_INT.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Variables_PRES.biml</Name>
-      <FullPath>Include_Variables_PRES.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Include_Variables_STG.biml</Name>
-      <FullPath>Include_Variables_STG.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>000_m_100_Empty_Wrapper.biml</Name>
-      <FullPath>000_m_100_Empty_Wrapper.biml</FullPath>
+      <Name>000_Module_Empty_Wrapper.biml</Name>
+      <FullPath>000_Module_Empty_Wrapper.biml</FullPath>
     </ProjectItem>
     <ProjectItem>
       <Name>Master_Batch_Module.biml</Name>
       <FullPath>Master_Batch_Module.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Abort.biml</Name>
-      <FullPath>Module_Abort.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Create_Instance.biml</Name>
-      <FullPath>Module_Create_Instance.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Eval.biml</Name>
-      <FullPath>Module_Eval.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Failure.biml</Name>
-      <FullPath>Module_Failure.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Skip.biml</Name>
-      <FullPath>Module_Skip.biml</FullPath>
-    </ProjectItem>
-    <ProjectItem>
-      <Name>Module_Success.biml</Name>
-      <FullPath>Module_Success.biml</FullPath>
     </ProjectItem>
   </Miscellaneous>
   <Configurations>

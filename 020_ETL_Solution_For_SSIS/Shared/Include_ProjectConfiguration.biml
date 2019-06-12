@@ -4,7 +4,7 @@
 
 string ProjectName = @"DataWarehouse";
 // Reference to Trunk and not to branche !!
-string PathRoot = @"C:\Files\DIRECT\020_ETL_Solution_For_SSIS\";
+string PathRoot = @"D:\Git_Repositories\DIRECT\020_ETL_Solution_For_SSIS\";
 string PathRootProject = PathRoot + ProjectName + @"\";
 string PathReferences = PathRoot + @"000_References\";
 string PathBimlLogfiles = PathRoot + @"900_Logfiles\";

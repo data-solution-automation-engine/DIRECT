@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="DIRECT" DTS:DTSID="{85794269-7650-45AC-A4DE-65DDF16C1CFF}" DTS:refId="Package.ConnectionManagers[DIRECT]" DTS:CreationName="OLEDB">
   <DTS:ObjectData>
-    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11;server=AUBRIDEBIW02;initial catalog=PDV_RV2;integrated security=SSPI"></DTS:ConnectionManager>
+    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11;server=BISERVER;initial catalog=EDW_900_OMD_Framework;user id=sa">
+      <DTS:Password DTS:Name="Password" Sensitive="1"></DTS:Password>
+    </DTS:ConnectionManager>
   </DTS:ObjectData>
 </DTS:ConnectionManager>

@@ -7,9 +7,9 @@
    Comments:
 -->
 
-<#@ include file="Include_ProjectConfiguration.biml" #>	
-<#@ include file="Include_C_References.biml" #>	
-<#@ include file="Include_BIML_Configuration.biml" #>
+<#@ include file="../Shared/Include_ProjectConfiguration.biml" #>	
+<#@ include file="../Shared/Include_C_References.biml" #>	
+<#@ include file="../Shared/Include_BIML_Configuration.biml" #>
 	
 <#  
 	// This parameter is meant to identify the Biml pattern, so it can only be applied to source-to-staging ETLs that are administered to use it.
@@ -29,10 +29,10 @@
 <Biml>
 
     <ScriptProjects>
-	  <#@ include file="Include_STG_ScriptProject.biml" #>
+	  <#@ include file="../Shared/Include_STG_ScriptProject.biml" #>
 	</ScriptProjects>
 	
-	<#@ include file="Include_STG_Connections.biml" #>	
+	<#@ include file="../Shared/Include_STG_Connections.biml" #>	
 	
 	<Packages>
 		
@@ -62,13 +62,13 @@
 					<Annotation AnnotationType="Description">Package <#=PackagePrefix#>_<#=SourceSystemPrefix#>_<#=SourceTableName.ToUpper()#> generated at <#=currentDateTime#>.</Annotation>
 				</Annotations>
 		
-				<#@ include file="Include_Parameters.biml" #>	
-				<#@ include file="Include_Variables_STG.biml" #>	
-				<#@ include file="Include_OnError_Event.biml" #>
+				<#@ include file="../Shared/Include_Parameters.biml" #>	
+				<#@ include file="../Shared/Include_Variables_Module.biml" #>	
+				<#@ include file="../Shared/Include_OnError_Event.biml" #>
 			
 				<Tasks>
 		
-					<#@ include file="Include_OnPreExecute_Event.biml" #>	
+					<#@ include file="../Shared/Include_OnPreExecute_Event.biml" #>	
 
 					<Dataflow Name="DFT - <#=StagingAreaTableName#>" DelayValidation="true" FailPackageOnFailure="true">
 	
@@ -78,7 +78,7 @@
 					    	</Inputs>
 				    	</PrecedenceConstraints>	
 			
-						<#@ include file="Include_OnPostExecute_Event.biml" #>
+						<#@ include file="../Shared/Include_OnPostExecute_Event.biml" #>
 
 				
 						<Annotations>

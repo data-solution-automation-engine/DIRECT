@@ -6,5 +6,5 @@
 <#@ import namespace="System.Collections.Generic"#>
 
 <!-- Reference to Trunk! and not to branche -->
-<#@ assembly name = "C:\Files\DIRECT\020_ETL_Solution_For_SSIS\Enterprise_Data_Warehouse\000_References\System.Windows.Forms.dll" #>
+<#@ assembly name = "D:\Git_Repositories\DIRECT\020_ETL_Solution_For_SSIS\Enterprise_Data_Warehouse\000_References\System.Windows.Forms.dll" #>
 <#@ import namespace="System.Windows.Forms" #> 

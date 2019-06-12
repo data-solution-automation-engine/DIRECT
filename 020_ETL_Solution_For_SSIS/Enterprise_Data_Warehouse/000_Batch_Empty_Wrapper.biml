@@ -1,0 +1,104 @@
+<!--
+   Purpose:			Base generation template for the Batch package.
+   Comments:		Uses file storage, fully functional.
+   Last update:		Added include files for event handling
+-->
+
+<#@ include file="../Shared/Include_ProjectConfiguration.biml" #>	
+<#@ include file="../Shared/Include_C_References.biml" #>	
+<#@ include file="../Shared/Include_BIML_Configuration.biml" #>
+
+
+<#    
+    string sqlStatementForTablesToImport =  @"SELECT 'EXAMPLE' AS [TABLE_NAME]";
+
+	string currentTableName;
+	string SourceTableName;
+	string HistTableName;
+#>
+
+<Biml xmlns="http://schemas.varigence.com/biml.xsd">
+
+    <ScriptProjects>
+        <#@ include file="../Shared/Include_Generic_ScriptProject.biml" #>	    
+    </ScriptProjects>	
+
+	<Connections>
+		<Connection Name="DIRECT" CreateInProject="true" ConnectionString="<#=connectionStringDIRECT#>"/>
+	</Connections>
+	
+	<Packages>
+		<#
+			DataTable tables = ExternalDataAccess.GetDataTable(connectionStringSTG, sqlStatementForTablesToImport);
+
+			foreach (DataRow row in tables.Rows)
+			{
+				SourceTableName = (string)row["TABLE_NAME"];
+				HistTableName = "H"+SourceTableName;
+		#>
+
+		<Package Name="b_EDW_STG_INT_<#=SourceTableName#>" Language="None" LoggingMode="Disabled" ConstraintMode="Parallel">
+		    
+    		<#@ include file="../Shared/Include_Variables_Batch.biml" #>
+			<#@ include file="../Shared/Include_Batch_OnError_Event.biml" #>
+
+			<Tasks>
+				
+				<#@ include file="../Shared/Include_Batch_OnPreExecute_Event.biml" #>	
+
+				<Container Name="Batch Processing" ConstraintMode="Parallel">
+					<PrecedenceConstraints LogicalType="Or">
+						<Inputs>
+							<Input OutputPathName="SCT - Dummy Placeholder.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_PROCESSING_INDICATOR == &quot;P&quot;"/>
+						</Inputs>
+					</PrecedenceConstraints>
+
+				<Tasks>
+
+					<ExecutePackage Name="EPT - <#=SourceTableName#>">
+						<ExternalProjectPackage Package="<#=SourceTableName#>.dtsx" />
+						<ParameterBindings>
+							<ParameterBinding Name="V_BATCH_ID" VariableName="User.V_BATCH_ID" />
+							<ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+							<ParameterBinding Name="V_BATCH_INSTANCE_START_DATETIME" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" />
+						</ParameterBindings>
+						<Annotations>
+							<Annotation AnnotationType="Description">Staging Area processing.</Annotation>
+						</Annotations>
+					</ExecutePackage>
+
+					<ExecutePackage Name="EPT - <#=HistTableName#>">
+						<ExternalProjectPackage Package="<#=HistTableName#>.dtsx" />
+				
+						<PrecedenceConstraints>
+							<Inputs>
+								<Input OutputPathName="EPT - <#=SourceTableName#>.Output" EvaluationOperation="Constraint" />
+							</Inputs>
+						</PrecedenceConstraints>
+						
+						<ParameterBindings>
+							<ParameterBinding Name="V_BATCH_ID" VariableName="User.V_BATCH_ID" />
+							<ParameterBinding Name="V_BATCH_INSTANCE_ID" VariableName="User.V_BATCH_INSTANCE_ID" />
+							<ParameterBinding Name="V_BATCH_INSTANCE_START_DATETIME" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" />
+						</ParameterBindings>
+						<Annotations>
+							<Annotation AnnotationType="Description">Persistent Staging Area processing.</Annotation>
+						</Annotations>
+					</ExecutePackage>	
+
+				</Tasks>	
+				
+			</Container>
+
+			<#@ include file="../Shared/Include_Batch_OnPostExecute_Event.biml" #>	
+				
+		</Tasks>
+
+	</Package>
+
+	<#
+	   }
+	#>
+
+	</Packages>
+</Biml>

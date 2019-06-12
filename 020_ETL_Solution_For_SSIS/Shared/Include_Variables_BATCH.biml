@@ -1,4 +1,4 @@
-
+<Variables>
   <Variable Name="V_BATCH_ID" DataType="Int32">0</Variable>
   <Variable Name="V_BATCH_ID_LIST" DataType="String"></Variable>
   <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32">0</Variable>
@@ -10,3 +10,4 @@
   <Variable Name="V_NEXT_RUN_INDICATOR" DataType="String"></Variable>
   <Variable Name="V_PACKAGE_PATH_SSIS" DataType="String"></Variable>
   <Variable Name="V_PROCESSING_INDICATOR" DataType="String"></Variable>
+</Variables>
