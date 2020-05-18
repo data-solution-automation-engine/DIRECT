@@ -111,6 +111,7 @@ namespace DIRECT_Manager
             this.openConfigurationFileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -128,7 +129,6 @@ namespace DIRECT_Manager
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTabControl.SuspendLayout();
             this.tabPageBatchModule.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -279,7 +279,6 @@ namespace DIRECT_Manager
             this.button1.TabIndex = 17;
             this.button1.Text = "Refresh Selection";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.ButtonPopulateOmdMetadata);
             // 
             // panel2
             // 
@@ -479,7 +478,6 @@ namespace DIRECT_Manager
             this.buttonGeneratePSA.TabIndex = 3;
             this.buttonGeneratePSA.Text = "Generate";
             this.buttonGeneratePSA.UseVisualStyleBackColor = true;
-            this.buttonGeneratePSA.Click += new System.EventHandler(this.ButtonGenerateOmdMetadata);
             // 
             // tabPageHub
             // 
@@ -1003,7 +1001,7 @@ namespace DIRECT_Manager
             // 
             // openConfigurationFileToolStripMenuItem1
             // 
-            this.openConfigurationFileToolStripMenuItem1.Image = global::DIRECT_Manager.Properties.Resources.OpenFileIcon;
+            this.openConfigurationFileToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.OpenFileIcon;
             this.openConfigurationFileToolStripMenuItem1.Name = "openConfigurationFileToolStripMenuItem1";
             this.openConfigurationFileToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.openConfigurationFileToolStripMenuItem1.Text = "Open Configuration File";
@@ -1011,7 +1009,7 @@ namespace DIRECT_Manager
             // 
             // saveConfigurationFileToolStripMenuItem
             // 
-            this.saveConfigurationFileToolStripMenuItem.Image = global::DIRECT_Manager.Properties.Resources.SaveFile;
+            this.saveConfigurationFileToolStripMenuItem.Image = global::OMD_Manager.Properties.Resources.SaveFile;
             this.saveConfigurationFileToolStripMenuItem.Name = "saveConfigurationFileToolStripMenuItem";
             this.saveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.saveConfigurationFileToolStripMenuItem.Text = "Save Configuration File";
@@ -1019,15 +1017,23 @@ namespace DIRECT_Manager
             // 
             // openOutputDirectoryToolStripMenuItem1
             // 
-            this.openOutputDirectoryToolStripMenuItem1.Image = global::DIRECT_Manager.Properties.Resources.OpenDirectoryIcon;
+            this.openOutputDirectoryToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem1.Name = "openOutputDirectoryToolStripMenuItem1";
             this.openOutputDirectoryToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.openOutputDirectoryToolStripMenuItem1.Text = "Open Output Directory";
             this.openOutputDirectoryToolStripMenuItem1.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem1_Click);
             // 
+            // openConfigurationDirectoryToolStripMenuItem
+            // 
+            this.openConfigurationDirectoryToolStripMenuItem.Image = global::OMD_Manager.Properties.Resources.OpenDirectoryIcon;
+            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem1
             // 
-            this.exitToolStripMenuItem1.Image = global::DIRECT_Manager.Properties.Resources.ExitApplication;
+            this.exitToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
             this.exitToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
             this.exitToolStripMenuItem1.Text = "Exit";
@@ -1045,19 +1051,21 @@ namespace DIRECT_Manager
             // 
             // linksToolStripMenuItem
             // 
+            this.linksToolStripMenuItem.Image = global::OMD_Manager.Properties.Resources.LinkIcon;
             this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
-            this.linksToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.linksToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.linksToolStripMenuItem.Text = "Links";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(104, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // aboutToolStripMenuItem1
             // 
+            this.aboutToolStripMenuItem1.Image = global::OMD_Manager.Properties.Resources.RavosLogo;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem1.Text = "About";
             // 
             // fileToolStripMenuItem
@@ -1152,21 +1160,12 @@ namespace DIRECT_Manager
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Image = global::DIRECT_Manager.Properties.Resources.RavosLogo;
             this.pictureBox1.Location = new System.Drawing.Point(1272, 621);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(111, 110);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
-            // 
-            // openConfigurationDirectoryToolStripMenuItem
-            // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::DIRECT_Manager.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // FormMain
             // 

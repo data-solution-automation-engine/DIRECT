@@ -145,10 +145,10 @@ namespace DIRECT_Manager
                 //Output
                 DebuggingTextbox.Text = insertIntoStatement.ToString();
 
-                if (checkBoxInitial.Checked)
-                {
-                    GenerateInitialMetadata();
-                }
+                //if (checkBoxInitial.Checked)
+                //{
+                //    GenerateInitialMetadata();
+                //}
             } else
             {
                 MessageBox.Show("No Staging Area tables were selected to process...");
@@ -299,10 +299,10 @@ namespace DIRECT_Manager
                     queryIntMetadata.AppendLine("ON satsub.SATELLITE_TABLE_NAME=INTEGRATION_AREA_TABLE");
                     queryIntMetadata.AppendLine("WHERE " + whereClauseStatement);
 
-                    if (checkBoxVerboseDebugging.Checked)
-                    {
-                        DebuggingTextbox.Text = queryIntMetadata.ToString();
-                    }
+                    //if (checkBoxVerboseDebugging.Checked)
+                    //{
+                    //    DebuggingTextbox.Text = queryIntMetadata.ToString();
+                    //}
 
                     var connDirect = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
@@ -410,10 +410,10 @@ namespace DIRECT_Manager
                     queryIntMetadata.AppendLine("AND VERSION_ID=0");
                     queryIntMetadata.AppendLine("AND " + whereClauseStatement);
 
-                    if (checkBoxVerboseDebugging.Checked)
-                    {
-                        DebuggingTextbox.Text = queryIntMetadata.ToString();
-                    }
+                    //if (checkBoxVerboseDebugging.Checked)
+                    //{
+                    //    DebuggingTextbox.Text = queryIntMetadata.ToString();
+                    //}
 
                     var connDirect = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
@@ -486,10 +486,10 @@ namespace DIRECT_Manager
             }
 
 
-            if (checkBoxVerboseDebugging.Checked)
-            {
-                DebuggingTextbox.Text += queryIntMetadata.ToString();
-            }
+            //if (checkBoxVerboseDebugging.Checked)
+            //{
+            //    DebuggingTextbox.Text += queryIntMetadata.ToString();
+            //}
 
             var connDirect = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
@@ -653,10 +653,10 @@ namespace DIRECT_Manager
                     richTextBoxInformation.Text = "No valid selection was made to generate outputs!";
                 }
 
-                if (checkBoxVerboseDebugging.Checked)
-                {
-                    DebuggingTextbox.Text += queryDataStoreMetadata.ToString();
-                }
+                //if (checkBoxVerboseDebugging.Checked)
+                //{
+                //    DebuggingTextbox.Text += queryDataStoreMetadata.ToString();
+                //}
             }
 
 
@@ -796,10 +796,10 @@ namespace DIRECT_Manager
             }
 
 
-            if (checkBoxVerboseDebugging.Checked)
-            {
-                DebuggingTextbox.Text += queryDataStoreMetadata.ToString();
-            }
+            //if (checkBoxVerboseDebugging.Checked)
+            //{
+            //    DebuggingTextbox.Text += queryDataStoreMetadata.ToString();
+            //}
 
             var connDirect = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
@@ -1046,10 +1046,10 @@ namespace DIRECT_Manager
                 queryModuleBatchMetadata.AppendLine(" AND TABLE_TYPE='BASE TABLE' AND TABLE_NAME NOT LIKE '%__LANDING'");
             }
 
-            if (checkBoxVerboseDebugging.Checked)
-            {
-                DebuggingTextbox.Text += queryModuleBatchMetadata.ToString();
-            }
+            //if (checkBoxVerboseDebugging.Checked)
+            //{
+            //    DebuggingTextbox.Text += queryModuleBatchMetadata.ToString();
+            //}
 
             var connDirect = new SqlConnection { ConnectionString = textBoxGenerationMetadataConnection.Text };
 
@@ -1663,10 +1663,10 @@ namespace DIRECT_Manager
                 queryMetadata.AppendLine("ORDER BY STAGING_AREA_TABLE ");
             }
 
-            if (checkBoxVerboseDebugging.Checked)
-            {
-                DebuggingTextbox.Text = queryMetadata.ToString();
-            }
+            //if (checkBoxVerboseDebugging.Checked)
+            //{
+            //    DebuggingTextbox.Text = queryMetadata.ToString();
+            //}
 
             var connDirect = new SqlConnection {ConnectionString = textBoxGenerationMetadataConnection.Text};
 
@@ -1684,16 +1684,19 @@ namespace DIRECT_Manager
             {
                 var tables = GetDataTable(ref connDirect, queryMetadata.ToString());
 
-                if (tables.Rows.Count == 0)
+                if (tables != null)
                 {
-                    richTextBoxInformation.Text =
-                        "There was no metadata available to generate the base (Staging Area) tables. Please check the metadata schema or the database connection.";
-                }
+                    if (tables.Rows.Count == 0)
+                    {
+                        richTextBoxInformation.Text =
+                            "There was no metadata available to generate the base (Staging Area) tables. Please check the metadata schema or the database connection.";
+                    }
 
-                foreach (DataRow row in tables.Rows)
-                {
-                    var targetTableName = (string)row["STAGING_AREA_TABLE"];
-                    checkedListBoxStagingTables.Items.Add(targetTableName);
+                    foreach (DataRow row in tables.Rows)
+                    {
+                        var targetTableName = (string) row["STAGING_AREA_TABLE"];
+                        checkedListBoxStagingTables.Items.Add(targetTableName);
+                    }
                 }
             }
             catch (Exception)
@@ -1731,10 +1734,10 @@ namespace DIRECT_Manager
                 queryMetadata.AppendLine("ORDER BY MODULE_CODE ");
             }
 
-            if (checkBoxVerboseDebugging.Checked)
-            {
-                DebuggingTextbox.Text = queryMetadata.ToString();
-            }
+            //if (checkBoxVerboseDebugging.Checked)
+            //{
+            //    DebuggingTextbox.Text = queryMetadata.ToString();
+            //}
 
             var conn = new SqlConnection();
             if (radioButtonSTG.Checked)
@@ -1759,15 +1762,18 @@ namespace DIRECT_Manager
             {
                 var tables = GetDataTable(ref conn, queryMetadata.ToString());
 
-                if (tables.Rows.Count == 0)
+                if (tables != null)
                 {
-                    richTextBoxInformation.Text =
-                        "There was no metadata available to generate the base tables. Please check the database connection.";
-                }
+                    if (tables.Rows.Count == 0)
+                    {
+                        richTextBoxInformation.Text =
+                            "There was no metadata available to generate the base tables. Please check the database connection.";
+                    }
 
-                foreach (DataRow row in tables.Rows)
-                {                   
-                    checkedListboxReinistalisation.Items.Add((string)row["TABLE_NAME"]);
+                    foreach (DataRow row in tables.Rows)
+                    {
+                        checkedListboxReinistalisation.Items.Add((string) row["TABLE_NAME"]);
+                    }
                 }
             }
             catch (Exception)
@@ -1935,20 +1941,27 @@ namespace DIRECT_Manager
                         conn = generatePSAReinitialisationQuery(truncationDate, sqlStatement, targetDatabaseName, sourceDatabaseName, conn, targetTableName, sourceTableName);
                     }
 
+                
                     int returnValue = 0;
                     if (checkBoxExecuteReinitialisation.Checked)
                     {
-                        try
+                        using (var connectionVersion = new SqlConnection(conn.ConnectionString))
                         {
-                            var server = new Server(new ServerConnection(conn));
-                            returnValue = server.ConnectionContext.ExecuteNonQuery(sqlStatement.ToString())+1;                
-                        }
-                        catch
-                        {
-                            richTextBoxInformation.Text += "The generated query could not be executed against the database. The attempted query was "+sqlStatement+".\r\n";
+                            var commandVersion = new SqlCommand(sqlStatement.ToString(), connectionVersion);
+
+                            try
+                            {
+                                connectionVersion.Open();
+                                commandVersion.ExecuteNonQuery();
+                            }
+                            catch
+                            {
+                                richTextBoxInformation.Text += "The generated query could not be executed against the database. The attempted query was " + sqlStatement + ".\r\n";
+                            }
                         }
                     }
-                    
+
+
                     richTextBoxInformation.Text += " Completed, processed "+returnValue+" row(s).\r\n";
 
                     DebuggingTextbox.Text += sqlStatement.ToString();
