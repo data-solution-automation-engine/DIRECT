@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2050
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "Data_Warehouse", "Enterprise_Data_Warehouse\Data_Warehouse.dtproj", "{0CF7F3E3-9E5D-4769-9284-D91DDD7FD864}"
 EndProject

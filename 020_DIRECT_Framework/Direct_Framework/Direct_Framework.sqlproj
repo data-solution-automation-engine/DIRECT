@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Direct_Framework</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Direct_Framework</RootNamespace>
+    <AssemblyName>Direct_Framework</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <DacDescription>http://roelantvos.com/blog/etl-control-framework-direct/</DacDescription>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Build" />
+    <Folder Include="Functions" />
+    <Folder Include="Scripts" />
+    <Folder Include="Stored Procedures" />
+    <Folder Include="Tables" />
+    <Folder Include="Views" />
+    <Folder Include="Schemas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Functions\GetConsistencyDateTime.sql" />
+    <Build Include="Functions\GetDependency.sql" />
+    <Build Include="Functions\GetLoadWindowDateTimes.sql" />
+    <Build Include="Functions\GetLoadWindowModuleInstance.sql" />
+    <None Include="Scripts\InsertReferenceData.sql" />
+    <Build Include="Tables\omd.AREA.sql" />
+    <Build Include="Tables\omd.BATCH.sql" />
+    <Build Include="Tables\omd.BATCH_INSTANCE.sql" />
+    <Build Include="Tables\omd.BATCH_MODULE.sql" />
+    <Build Include="Tables\omd.EVENT_LOG.sql" />
+    <Build Include="Tables\omd.EVENT_TYPE.sql" />
+    <Build Include="Tables\omd.EXECUTION_STATUS.sql" />
+    <Build Include="Tables\omd.LAYER.sql" />
+    <Build Include="Tables\omd.MODULE.sql" />
+    <Build Include="Tables\omd.MODULE_INSTANCE.sql" />
+    <Build Include="Tables\omd.MODULE_PARAMETER.sql" />
+    <Build Include="Tables\omd.NEXT_RUN_INDICATOR.sql" />
+    <Build Include="Tables\omd.PARAMETER.sql" />
+    <Build Include="Tables\omd.PROCESSING_INDICATOR.sql" />
+    <Build Include="Tables\omd.SOURCE_CONTROL.sql" />
+    <Build Include="Views\omd_reporting.vw_EXECUTION_LOG_BATCH_INSTANCE.sql" />
+    <Build Include="Views\omd_reporting.vw_EXECUTION_EVENT_LOG.sql" />
+    <Build Include="Views\omd_reporting.vw_EXECUTION_LOG_MODULE_INSTANCE.sql" />
+    <None Include="Scripts\Queue_Job_Batch.sql">
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </None>
+    <None Include="Scripts\Queue_Job_Module.sql">
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </None>
+    <Build Include="Schemas\omd.sql" />
+    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </None>
+    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </None>
+    <Build Include="Schemas\omd_processing.sql" />
+    <Build Include="Schemas\omd_reporting.sql" />
+    <None Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
+    <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
+    <None Include="Views\omd_reporting.vw_CURRENT_PROCESSING.sql" />
+    <Build Include="Functions\CalculateChangeKey.sql" />
+    <None Include="Functions\omd_processing.NextModuleInQueue.sql" />
+    <Build Include="Functions\omd_processing.GetDependentTables.sql" />
+    <Build Include="Views\omd_reporting.vw_CUMULATIVE_LOAD_TIME.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_BATCH.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_MODULE.sql" />
+    <Build Include="Views\omd_reporting.vw_COMMON_ERRORS.sql" />
+    <Build Include="Views\omd_reporting.vw_MODULE_FAILURES.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_DISABLED_PROCESSES.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_LONG_RUNNING_PROCESSES.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_BATCHES.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_MODULES.sql" />
+    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_TABLE_CONSISTENCY.sql" />
+    <Build Include="Stored Procedures\usp_Condensing.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Build\Direct_Framework.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="SSISDB">
+      <DefaultValue>SSISDB</DefaultValue>
+      <Value>$(SqlCmdVar__3)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+</Project>

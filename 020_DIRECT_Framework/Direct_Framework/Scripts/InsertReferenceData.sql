@@ -1,4 +1,4 @@
-/*
+ï»¿/*
   Reference data
   DIRECT model revision 21
 */
@@ -65,7 +65,7 @@ from (
           /* NEXT_RUN_INDICATOR, NEXT_RUN_INDICATOR_DESCRIPTION */
     values (N'C', N'Cancelled / skipped. Administrators can manually set this code to for the Next Run Indicator.')
         , (N'P', N'Proceed. The next run of the Batch/Module to set to continue processing.')
-        , (N'R', N'Rollback . Upon failure the Next Run Indicator is updated to ‘R’ to signal a rollback.')
+        , (N'R', N'Rollback . Upon failure the Next Run Indicator is updated to â€˜Râ€™ to signal a rollback.')
     ) as refData(NEXT_RUN_INDICATOR, NEXT_RUN_INDICATOR_DESCRIPTION)
 where not exists (
         select null
