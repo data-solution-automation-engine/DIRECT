@@ -1,4 +1,4 @@
-
+﻿
     <Package Name="Batch_Eval">
         
       <Annotations>
@@ -35,7 +35,7 @@
               
             <ExecuteSQL Name="EST - Check for multiple active Batch Instances" FailPackageOnFailure="true" ConnectionName="DIRECT" ResultSet="SingleRow">
               <Annotations>
-                <Annotation AnnotationType="Description">Multiple active instances indicate corruption in the repository.</Annotation>
+                <Annotation AnnotationType="Description">Multiple active instances indicate corruption in the OMD repository.</Annotation>
               </Annotations>
               
               <Results>
@@ -46,7 +46,7 @@
                 <Parameter Name="1" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
               <DirectInput>
-                    SELECT COUNT(*) as ActiveInstancesCount FROM BATCH_INSTANCE 
+                    SELECT COUNT(*) as ActiveInstancesCount FROM omd.BATCH_INSTANCE 
                     WHERE EXECUTION_STATUS_CODE = 'E' 
                     and BATCH_ID = ? and BATCH_INSTANCE_ID &lt; ?
             </DirectInput>
@@ -72,11 +72,11 @@
               <DirectInput>SELECT Cast('(' + STUFF
                     (
                      (SELECT ',' + CAST(BATCH_INSTANCE_ID AS VARCHAR(20))
-                     FROM BATCH_INSTANCE 
+                     FROM omd.BATCH_INSTANCE 
                      WHERE  BATCH_ID = ?
                      AND (
-                       BATCH_INSTANCE_ID &gt; (SELECT MAX(BATCH_INSTANCE_ID) FROM BATCH_INSTANCE WHERE BATCH_ID = ? AND (EXECUTION_STATUS_CODE='S' AND NEXT_RUN_INDICATOR = 'P'))
-                       OR (SELECT COUNT(BATCH_INSTANCE_ID) FROM BATCH_INSTANCE WHERE BATCH_ID = ? AND (EXECUTION_STATUS_CODE='S' AND NEXT_RUN_INDICATOR = 'P')) = 0
+                       BATCH_INSTANCE_ID &gt; (SELECT MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE WHERE BATCH_ID = ? AND (EXECUTION_STATUS_CODE='S' AND NEXT_RUN_INDICATOR = 'P'))
+                       OR (SELECT COUNT(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE WHERE BATCH_ID = ? AND (EXECUTION_STATUS_CODE='S' AND NEXT_RUN_INDICATOR = 'P')) = 0
                        )
                      AND EXECUTION_STATUS_CODE&lt;&gt;'E'
                      Order By BATCH_INSTANCE_ID 
@@ -105,12 +105,12 @@
               <DirectInput>SELECT DISTINCT ISNULL (
                    (
                     SELECT DISTINCT EXECUTION_STATUS_CODE as EXECUTION_STATUS_CODE 
-                    FROM BATCH_INSTANCE 
+                    FROM omd.BATCH_INSTANCE 
                     WHERE EXECUTION_STATUS_CODE = 'E' 
                       AND BATCH_ID= ?
                     ) 
                     ,'X') AS EXECUTION_STATUS_CODE 
-                FROM BATCH
+                FROM omd.BATCH
                 </DirectInput>
             </ExecuteSQL>
             
@@ -131,7 +131,7 @@
               </Parameters>
                 <DirectInput>
                     SELECT DISTINCT INACTIVE_INDICATOR
-                    FROM BATCH
+                    FROM omd.BATCH
                     WHERE BATCH_ID= ?
                 </DirectInput>
             </ExecuteSQL>
@@ -162,8 +162,8 @@
                      SELECT 
                             NEXT_RUN_INDICATOR, 
                             EXECUTION_STATUS_CODE
-                     FROM BATCH_INSTANCE 
-                     WHERE BATCH_ID =  ? AND END_DATETIME = (select MAX(END_DATETIME) from BATCH_INSTANCE where BATCH_ID = ?)
+                     FROM omd.BATCH_INSTANCE 
+                     WHERE BATCH_ID =  ? AND END_DATETIME = (select MAX(END_DATETIME) from omd.BATCH_INSTANCE where BATCH_ID = ?)
                      )A
                 </DirectInput>
             </ExecuteSQL>
@@ -195,7 +195,7 @@
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
-              <DirectInput>UPDATE BATCH_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE BATCH_INSTANCE_ID = ?</DirectInput>
+              <DirectInput>UPDATE omd.BATCH_INSTANCE set PROCESSING_INDICATOR = 'P' WHERE BATCH_INSTANCE_ID = ?</DirectInput>
             </ExecuteSQL>
             
             
@@ -211,7 +211,7 @@
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
-              <DirectInput>UPDATE BATCH_INSTANCE set PROCESSING_INDICATOR = 'A' WHERE BATCH_INSTANCE_ID = ?</DirectInput>
+              <DirectInput>UPDATE omd.BATCH_INSTANCE set PROCESSING_INDICATOR = 'A' WHERE BATCH_INSTANCE_ID = ?</DirectInput>
             </ExecuteSQL>
             
             
@@ -228,7 +228,7 @@
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
-              <DirectInput>UPDATE BATCH_INSTANCE set PROCESSING_INDICATOR = 'C'  WHERE BATCH_INSTANCE_ID = ?</DirectInput>
+              <DirectInput>UPDATE omd.BATCH_INSTANCE set PROCESSING_INDICATOR = 'C'  WHERE BATCH_INSTANCE_ID = ?</DirectInput>
             </ExecuteSQL>
             
             <ExecuteSQL Name="EST - Skip Modules that have succesfully completed in the failed Batch Instance" FailPackageOnFailure="true" ConnectionName="DIRECT">

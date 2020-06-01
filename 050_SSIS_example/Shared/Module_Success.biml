@@ -1,8 +1,8 @@
-
+﻿
     <Package Name="Module_Success" DelayValidation="true">
         
       <Annotations>
-          <Annotation AnnotationType="Description">Update the DIRECT repository to record the succesful completion of a Module.
+          <Annotation AnnotationType="Description">Update the OMD repository to record the succesful completion of a Module.
           If the Module is an Integration or Presentation Layer Module the completion may be succesful even though there are row level errors. 
           These are still recorded as an error bitmap but the process will not fail.
           </Annotation>
@@ -33,7 +33,7 @@
             <Variable Name="V_MODULE_ERROR_CODE" DataType="Int32">0</Variable>
           </Variables>
           <Tasks>
-            <ExecuteSQL Name="EST - Update record counts for Module instance" ConnectionName="DIRECT">
+            <ExecuteSQL Name="EST - Update record counts in OMD Module" ConnectionName="DIRECT">
               <Annotations>
                 <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
               </Annotations>
@@ -52,7 +52,7 @@
                 <Parameter Name="6" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
               <DirectInput>
-UPDATE MODULE_INSTANCE
+UPDATE omd.MODULE_INSTANCE
 SET
 ROWS_INPUT=?,
 ROWS_INSERTED=?,
@@ -69,15 +69,15 @@ WHERE MODULE_INSTANCE_ID=?</DirectInput>
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
-              <DirectInput>UPDATE MODULE_INSTANCE SET EXECUTION_STATUS_CODE='S', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID = ?</DirectInput>
+              <DirectInput>UPDATE omd.MODULE_INSTANCE SET EXECUTION_STATUS_CODE='S', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID = ?</DirectInput>
             </ExecuteSQL>
-            <ExecuteSQL Name="EST - Update the EVENT_LOG" ConnectionName="DIRECT">
+            <ExecuteSQL Name="EST - Update the omd.EVENT_LOG" ConnectionName="DIRECT">
               <Annotations>
                 <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
               </Annotations>
               <PrecedenceConstraints>
                 <Inputs>
-                  <Input OutputPathName="EST - Update record counts for Module instance.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_MODULE_ERROR_CODE&gt;0" SsisName="Constraint" />
+                  <Input OutputPathName="EST - Update record counts in OMD Module.Output" EvaluationOperation="ExpressionAndConstraint" Expression="@V_MODULE_ERROR_CODE&gt;0" SsisName="Constraint" />
                 </Inputs>
               </PrecedenceConstraints>
               <Parameters>
@@ -85,7 +85,7 @@ WHERE MODULE_INSTANCE_ID=?</DirectInput>
                 <Parameter Name="1" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
                 <Parameter Name="2" VariableName="User.V_MODULE_ERROR_CODE" Length="-1" DataType="Int32" />
               </Parameters>
-              <DirectInput>INSERT INTO EVENT_LOG (
+              <DirectInput>INSERT INTO omd.EVENT_LOG (
 BATCH_INSTANCE_ID,
 MODULE_INSTANCE_ID,
 EVENT_DATETIME,

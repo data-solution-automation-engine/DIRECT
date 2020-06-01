@@ -1,10 +1,10 @@
-
+﻿
     <Package Name="Module_Failure" FailParentOnFailure="true">
         
       <Annotations>
           <Annotation AnnotationType="Description">This package is executed when the module fails due to system errors. 
-          The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun recover) for the Module Instance ID received from the parent package. 
-          It also inserts an SSIS Internal Error to the Event Log.
+          The logic updates the OMD for failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun recover) for the OMD Module Instance ID received from the parent package. 
+          It also inserts an SSIS Internal Error to the OMD Event Log.
           </Annotation>
       </Annotations> 
         
@@ -22,7 +22,7 @@
             <Annotation AnnotationType="Description">Module Failure</Annotation>
           </Annotations>
           <Tasks>
-            <ExecuteSQL Name="EST - Insert error into the Event Log" FailPackageOnFailure="true" ConnectionName="DIRECT">
+            <ExecuteSQL Name="EST - Insert error into the OMD Event Log" FailPackageOnFailure="true" ConnectionName="DIRECT">
               <Annotations>
                 <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
               </Annotations>
@@ -39,7 +39,7 @@
                 <Parameter Name="4" VariableName="User.V_ERROR_DESCRIPTION" Length="-1" DataType="AnsiString" />
               </Parameters>
               <DirectInput>
-INSERT INTO EVENT_LOG
+INSERT INTO omd.EVENT_LOG
 (BATCH_INSTANCE_ID, 
 MODULE_INSTANCE_ID,
 EVENT_DATETIME,
@@ -56,7 +56,7 @@ values(?,?,GetDate(),?,?,?)</DirectInput>
                 <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
               <DirectInput>
-UPDATE MODULE_INSTANCE 
+UPDATE omd.MODULE_INSTANCE 
 set EXECUTION_STATUS_CODE='F', NEXT_RUN_INDICATOR = 'R', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID = ?</DirectInput>
             </ExecuteSQL>
           </Tasks>

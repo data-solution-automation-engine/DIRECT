@@ -24,11 +24,8 @@
                 <Annotation AnnotationType="Description">Retrieve the Module ID, Table Code and Area Code for the specific Module (package name).</Annotation>
               </Annotations>
               <DirectInput>
-                SELECT module.MODULE_ID, AREA_CODE, ISNULL(DATA_STORE_CODE,'None') AS TABLE_CODE
-                FROM MODULE module LEFT OUTER JOIN MODULE_DATA_STORE dst
-                ON module.MODULE_ID=dst.MODULE_ID AND RELATIONSHIP_TYPE='Target'
-                LEFT JOIN DATA_STORE ds
-                ON ds.DATA_STORE_ID=dst.DATA_STORE_ID
+                SELECT module.MODULE_ID, AREA_CODE, ISNULL(DATA_OBJECT_TARGET,'None') AS TABLE_CODE
+                FROM omd.MODULE module
                 WHERE MODULE_CODE =?
               </DirectInput>
               <Parameters>
@@ -62,7 +59,7 @@
               <Annotations>
                 <Annotation AnnotationType="Description">Retrieve the newly created Module Instance ID from the repository.</Annotation>
               </Annotations>
-              <DirectInput>SELECT MODULE_INSTANCE_ID FROM MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE='E' AND MODULE_ID=? AND START_DATETIME=? AND BATCH_INSTANCE_ID=?</DirectInput>
+              <DirectInput>SELECT MODULE_INSTANCE_ID FROM omd.MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE='E' AND MODULE_ID=? AND START_DATETIME=? AND BATCH_INSTANCE_ID=?</DirectInput>
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_MODULE_ID" Length="-1" DataType="Int32" />
                 <Parameter Name="1" VariableName="User.V_MODULE_INSTANCE_START_DATETIME" Length="-1" DataType="DateTime" />
@@ -102,7 +99,7 @@
               <Annotations>
                 <Annotation AnnotationType="Description">Verify the repository to see if the Module Evaluation has completed succesfully and with what status (Processing Indicator).</Annotation>
               </Annotations>
-              <DirectInput>SELECT PROCESSING_INDICATOR FROM MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=?</DirectInput>
+              <DirectInput>SELECT PROCESSING_INDICATOR FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=?</DirectInput>
               <Parameters>
                 <Parameter Name="0" VariableName="User.V_MODULE_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>

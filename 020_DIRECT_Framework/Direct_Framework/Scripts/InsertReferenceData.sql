@@ -139,7 +139,7 @@ set identity_insert omd.MODULE on;
 insert into omd.MODULE (MODULE_ID, MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR)
 select *
 from (
-    values (0, 'Default Module', 'Placeholder value for dummy Module runs', 'ETL', 'N/A', 'N/A', 'Maintenance', 'Continous', 'N')
+    values (0, 'Default Module', 'Placeholder value for dummy Module runs', 'ETL', 'N/A', 'N/A', 'Maintenance', 'Continuous', 'N')
     ) as refData(MODULE_ID, MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPEE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR)
 where not exists (
         select null

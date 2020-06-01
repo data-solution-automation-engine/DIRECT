@@ -24,12 +24,13 @@
                 <Annotation AnnotationType="Description">This script task inherits the Batch parameters from the parent package and executes SQL to create a new Batch Instance ID.</Annotation>
               </Annotations>
               <Parameters>
-                <Parameter Name="0" VariableName="User.V_BATCH_ID" Length="-1" DataType="Int32" />
-                <Parameter Name="1" VariableName="User.V_BATCH_INSTANCE_START_DATETIME" Length="-1" DataType="Date" />
-                <Parameter Name="2" VariableName="System.ExecutionInstanceGUID" Length="-1" DataType="AnsiString" />
-              </Parameters>
+                <Parameter Name="0" VariableName="V_BATCH_ID" Length="-1" DataType="Int32" />
+                <Parameter Name="1" VariableName="V_BATCH_INSTANCE_START_DATETIME" Length="-1" DataType="Date" />
+                <Parameter Name="2" VariableName="V_PACKAGE_EXECUTION_GUID" Length="-1" DataType="AnsiString" />
+              </Parameters>        
+          
               <DirectInput>
-                    INSERT INTO BATCH_INSTANCE (
+                    INSERT INTO omd.BATCH_INSTANCE (
                     BATCH_ID,  
                     START_DATETIME, 
                     EXECUTION_STATUS_CODE, 

@@ -1,56 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DTS:Executable DTS:CreationDate="06/12/2019 13:01:15" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAPTOP-RBS8FBTA" DTS:CreatorName="roela" DTS:Description="This package is executed when the Batch Instance fails due to system errors. The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun / recover) for the Batch Instance ID received from the parent package. It also inserts an SSIS Internal Error to the Event Log." DTS:DTSID="{0FC614DE-3C11-4F03-BA66-A5921D6832FC}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:FailParentOnFailure="True" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Batch_Failure" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{2046DD0C-E4E6-4998-8D4F-3FEC0845192A}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+<DTS:Executable DTS:CreationDate="06/01/2020 20:15:36" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="RULEANT" DTS:CreatorName="roela" DTS:Description="This package is executed when the Batch Instance fails due to system errors. The logic updates the OMD for failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun / recover) for the OMD Batch Instance ID received from the parent package. It also inserts an SSIS Internal Error to the OMD Event Log." DTS:DTSID="{56153337-57E6-4D7E-AE7B-854B3C05EC20}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:FailParentOnFailure="True" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Batch_Failure" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{56559A28-7EDF-478B-A7A1-8BA1BABC7CA1}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
   <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:PackageParameters>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{8E57DDFB-F35E-46ED-949D-11B984DAA875}" DTS:ObjectName="V_BATCH_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{9DAA54DF-059B-4C49-B626-FA7EC5D9FB0C}" DTS:ObjectName="V_BATCH_INSTANCE_ID" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
     </DTS:PackageParameter>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{CC5B7BBB-CB5F-4AE7-A39D-23BECBE885C4}" DTS:ObjectName="V_ERROR_CODE" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{D8761AB3-A1D9-4E5D-BDA4-C674695D0535}" DTS:ObjectName="V_ERROR_CODE" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
     </DTS:PackageParameter>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{3EB1EF94-314C-4CB0-9E32-1D15F101B90B}" DTS:ObjectName="V_ERROR_DESCRIPTION" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{3C64688E-C3C9-4C67-B00A-76FCA0E9E171}" DTS:ObjectName="V_ERROR_DESCRIPTION" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
     </DTS:PackageParameter>
   </DTS:PackageParameters>
   <DTS:Variables>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{7806893B-3F7C-4A0A-B766-45DCA681C6F1}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_ID">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E1BCDF5D-268A-4D53-8B56-EF73AAE7543A}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_ID">
       <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
     </DTS:Variable>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{BE710CA8-4F05-43FE-8674-B7AA76A5A681}" DTS:EvaluateAsExpression="True" DTS:Expression="(DT_WSTR, 32) @[$Package::V_ERROR_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_ERROR_CODE">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{927C173E-51E9-497E-A1F5-4C4E46DC1EB6}" DTS:EvaluateAsExpression="True" DTS:Expression="(DT_WSTR, 32) @[$Package::V_ERROR_CODE]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_ERROR_CODE">
       <DTS:VariableValue DTS:DataType="8">0</DTS:VariableValue>
     </DTS:Variable>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{16625765-6C73-40CC-AD5A-DD029F1463ED}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ERROR_DESCRIPTION]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_ERROR_DESCRIPTION">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{51821FD8-15C3-4627-861F-09C8B1AD6721}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_ERROR_DESCRIPTION]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_ERROR_DESCRIPTION">
       <DTS:VariableValue DTS:DataType="8" />
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
-    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Batch Failure" DTS:DTSID="{6B6EA56D-4C22-44E2-9D2E-7A4A653B55E9}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Batch Failure" DTS:refId="Package\Batch Failure">
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Batch Failure" DTS:DTSID="{2B1BB521-F864-4678-9F75-44B536AD21C5}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Batch Failure" DTS:refId="Package\Batch Failure">
       <DTS:Executables>
-        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{8EFE9B50-9555-4DFB-A579-C5FA6BE555CD}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Insert error into the Event Log" DTS:refId="Package\Batch Failure\EST - Insert error into the Event Log" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{02F71F12-1085-473B-A44E-228E99BF3F40}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Insert error into the OMD Event Log" DTS:refId="Package\Batch Failure\EST - Insert error into the OMD Event Log" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
           <DTS:ObjectData>
-            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;INSERT INTO EVENT_LOG (&#xA;BATCH_INSTANCE_ID,&#xA;MODULE_INSTANCE_ID,&#xA;EVENT_DATETIME,&#xA;EVENT_TYPE_CODE,&#xA;EVENT_RETURN_CODE_DETAILS,&#xA;EVENT_DETAIL,&#xA;ERROR_BITMAP)&#xA;VALUES (&#xA;?,&#xA;0,&#xA;GETDATE(),&#xA;2,&#xA;?,&#xA;?,&#xA;0&#xA;)&#xA;   " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;INSERT INTO omd.EVENT_LOG (&#xA;BATCH_INSTANCE_ID,&#xA;MODULE_INSTANCE_ID,&#xA;EVENT_DATETIME,&#xA;EVENT_TYPE_CODE,&#xA;EVENT_RETURN_CODE_DETAILS,&#xA;EVENT_DETAIL,&#xA;ERROR_BITMAP)&#xA;VALUES (&#xA;?,&#xA;0,&#xA;GETDATE(),&#xA;2,&#xA;?,&#xA;?,&#xA;0&#xA;)&#xA;   " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
               <SQLTask:ParameterBinding SQLTask:DataType="129" SQLTask:DtsVariableName="User::V_ERROR_CODE" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
               <SQLTask:ParameterBinding SQLTask:DataType="129" SQLTask:DtsVariableName="User::V_ERROR_DESCRIPTION" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
-        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{DD77B2D8-D708-43D3-951C-70BA8EE4A4EF}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update Batch Instance for Failure" DTS:refId="Package\Batch Failure\EST - Update Batch Instance for Failure" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+        <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{CF146501-B86F-4F90-B082-BF8EEF313B0F}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="EST - Update Batch Instance for Failure" DTS:refId="Package\Batch Failure\EST - Update Batch Instance for Failure" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
           <DTS:ObjectData>
-            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;UPDATE BATCH_INSTANCE set EXECUTION_STATUS_CODE='F', &#xA;END_DATETIME=GETDATE(),&#xA;NEXT_RUN_INDICATOR='P' WHERE BATCH_INSTANCE_ID=?&#xA;     " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;UPDATE omd.BATCH_INSTANCE set EXECUTION_STATUS_CODE='F', &#xA;END_DATETIME=GETDATE(),&#xA;NEXT_RUN_INDICATOR='P' WHERE BATCH_INSTANCE_ID=?&#xA;     " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
       <DTS:PrecedenceConstraints>
-        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{39D3FC05-8096-4D20-9483-5E281B8B0297}" DTS:From="Package\Batch Failure\EST - Update Batch Instance for Failure" DTS:LogicalAnd="True" DTS:ObjectName="Constraint" DTS:refId="Package\Batch Failure.PrecedenceConstraints[Constraint]" DTS:To="Package\Batch Failure\EST - Insert error into the Event Log" />
+        <DTS:PrecedenceConstraint DTS:CreationName="" DTS:DTSID="{DF1F45C8-E4CF-4D26-BF58-6B4879C7694C}" DTS:From="Package\Batch Failure\EST - Update Batch Instance for Failure" DTS:LogicalAnd="True" DTS:ObjectName="Constraint" DTS:refId="Package\Batch Failure.PrecedenceConstraints[Constraint]" DTS:To="Package\Batch Failure\EST - Insert error into the OMD Event Log" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
   </DTS:Executables>
   <DTS:Configurations>
-    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{26334387-729D-425D-86ED-72D17BB79414}" DTS:ObjectName="V_BATCH_INSTANCE_ID" />
-    <DTS:Configuration DTS:ConfigurationString="ErrorCode" DTS:ConfigurationVariable="\Package.Variables[User::V_ERROR_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{C805D11E-553B-4E45-AFED-467B5F849707}" DTS:ObjectName="V_ERROR_CODE" />
-    <DTS:Configuration DTS:ConfigurationString="ErrorDescription" DTS:ConfigurationVariable="\Package.Variables[User::V_ERROR_DESCRIPTION].Properties[Value]" DTS:CreationName="" DTS:DTSID="{8CA4A281-13DE-46C9-AEB5-D5F91D05A966}" DTS:ObjectName="V_ERROR_DESCRIPTION" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{0E632B36-0774-4455-ACCC-C4EA83243002}" DTS:ObjectName="V_BATCH_INSTANCE_ID" />
+    <DTS:Configuration DTS:ConfigurationString="ErrorCode" DTS:ConfigurationVariable="\Package.Variables[User::V_ERROR_CODE].Properties[Value]" DTS:CreationName="" DTS:DTSID="{66E5BA95-ED34-46AC-B778-D9542ED95A37}" DTS:ObjectName="V_ERROR_CODE" />
+    <DTS:Configuration DTS:ConfigurationString="ErrorDescription" DTS:ConfigurationVariable="\Package.Variables[User::V_ERROR_DESCRIPTION].Properties[Value]" DTS:CreationName="" DTS:DTSID="{BEF6E171-8C50-4E89-880D-B15AC8F18B53}" DTS:ObjectName="V_ERROR_DESCRIPTION" />
   </DTS:Configurations>
 </DTS:Executable>

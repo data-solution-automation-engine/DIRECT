@@ -1,4 +1,4 @@
-
+﻿
     <Package Name="Module_Create_Instance" Language="None">
       <Variables>
         <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_ID">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
@@ -16,7 +16,7 @@
           </Annotations>
           
           <Tasks>
-            <ExecuteSQL Name="EST - Insert new record into Module Instance" ConnectionName="DIRECT">
+            <ExecuteSQL Name="EST - Insert new record into OMD Module Instance" ConnectionName="DIRECT">
               <Annotations>
                 <Annotation AnnotationType="Description">This script task inherits the Module parameters from the parent package and executes SQL to create a new Module Instance ID.</Annotation>
               </Annotations>
@@ -27,7 +27,7 @@
                 <Parameter Name="3" VariableName="V_PACKAGE_EXECUTION_GUID" Length="-1" DataType="AnsiString" />
               </Parameters>
               <DirectInput>
-                INSERT INTO MODULE_INSTANCE 
+                INSERT INTO omd.MODULE_INSTANCE 
                 (MODULE_ID, START_DATETIME, EXECUTION_STATUS_CODE, NEXT_RUN_INDICATOR, PROCESSING_INDICATOR, BATCH_INSTANCE_ID, MODULE_EXECUTION_SYSTEM_ID, ROWS_INPUT, ROWS_INSERTED, ROWS_UPDATED, ROWS_DELETED, ROWS_DISCARDED,ROWS_REJECTED) 
                 VALUES(?,Cast(? as datetime),'E','P','A',?,?,0,0,0,0,0,0)
 			  </DirectInput>

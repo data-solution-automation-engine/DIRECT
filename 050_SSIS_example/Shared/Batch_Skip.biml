@@ -1,4 +1,4 @@
-
+﻿
     <Package Name="Batch_Skip" Language="None">
       <Variables>
         <Variable Name="V_BATCH_INSTANCE_ID" DataType="Int32" EvaluateAsExpression="true" InheritFromPackageParentConfigurationString="V_BATCH_INSTANCE_ID">@[$Package::V_BATCH_INSTANCE_ID]</Variable>
@@ -22,7 +22,7 @@
                 <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
               <DirectInput>
-                    UPDATE BATCH_INSTANCE SET EXECUTION_STATUS_CODE='C', 
+                    UPDATE omd.BATCH_INSTANCE SET EXECUTION_STATUS_CODE='C', 
                     NEXT_RUN_INDICATOR = 'P', 
                     END_DATETIME=GETDATE()
                     WHERE BATCH_INSTANCE_ID=?

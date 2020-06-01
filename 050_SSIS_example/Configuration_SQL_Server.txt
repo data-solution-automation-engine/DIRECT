@@ -1,10 +1,10 @@
-connectionStringSTG|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringHSTG|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringDIRECT|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringGEN|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringINT|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringPRES|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
-connectionStringSOURCE|Provider=SQLNCLI11;Server=BISERVER;Initial Catalog=EDW_900_OMD_Framework;User Id=sa;Password=K3kobus2;
+connectionStringSTG|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringHSTG|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringDIRECT|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringGEN|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringINT|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringPRES|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
+connectionStringSOURCE|Provider=SQLNCLI11;Server=.;Initial Catalog=900_Direct_Framework;Integrated Security = SSPI;
 STGPackagePrefix|m_100_STG
 SourceSystemPrefix|THEDEFAULTISUSED
 SourceSystemPrefixEXAMPLE|EXAMPLE

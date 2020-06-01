@@ -1,4 +1,4 @@
-
+﻿
 
     <Package Name="Batch_Failure" FailParentOnFailure="true">
       <Variables>
@@ -9,7 +9,7 @@
       
       
       <Annotations>
-        <Annotation AnnotationType="Description">This package is executed when the Batch Instance fails due to system errors. The logic updates the repository to report failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun / recover) for the Batch Instance ID received from the parent package. It also inserts an SSIS Internal Error to the Event Log.</Annotation>
+        <Annotation AnnotationType="Description">This package is executed when the Batch Instance fails due to system errors. The logic updates the OMD for failure by setting the Execution Status Code to 'F' (failure) and the Next Run Indicator to 'R' (rerun / recover) for the OMD Batch Instance ID received from the parent package. It also inserts an SSIS Internal Error to the OMD Event Log.</Annotation>
       </Annotations>      
 
       <Tasks>
@@ -20,7 +20,7 @@
           </Annotations>
           
           <Tasks>
-            <ExecuteSQL Name="EST - Insert error into the Event Log" ConnectionName="DIRECT">
+            <ExecuteSQL Name="EST - Insert error into the OMD Event Log" ConnectionName="DIRECT">
               <Annotations>
                 <Annotation AnnotationType="Description">Execute SQL Task</Annotation>
               </Annotations>
@@ -35,7 +35,7 @@
                 <Parameter Name="2" VariableName="User.V_ERROR_DESCRIPTION" Length="-1" DataType="AnsiString" />
               </Parameters>
               <DirectInput>
-INSERT INTO EVENT_LOG (
+INSERT INTO omd.EVENT_LOG (
 BATCH_INSTANCE_ID,
 MODULE_INSTANCE_ID,
 EVENT_DATETIME,
@@ -62,7 +62,7 @@ GETDATE(),
                 <Parameter Name="0" VariableName="User.V_BATCH_INSTANCE_ID" Length="-1" DataType="Int32" />
               </Parameters>
               <DirectInput>
-UPDATE BATCH_INSTANCE set EXECUTION_STATUS_CODE='F', 
+UPDATE omd.BATCH_INSTANCE set EXECUTION_STATUS_CODE='F', 
 END_DATETIME=GETDATE(),
 NEXT_RUN_INDICATOR='P' WHERE BATCH_INSTANCE_ID=?
 			  </DirectInput>

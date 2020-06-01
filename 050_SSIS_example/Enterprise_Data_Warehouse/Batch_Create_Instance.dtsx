@@ -1,37 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DTS:Executable DTS:CreationDate="06/12/2019 13:01:15" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="LAPTOP-RBS8FBTA" DTS:CreatorName="roela" DTS:Description="Instantiate a Batch into a new Batch Instance." DTS:DTSID="{5E130143-9C2F-49AA-A486-15FF4CCD514A}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Batch_Create_Instance" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{C161505C-621D-4FEA-A969-DEAA05C58F04}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
+<DTS:Executable DTS:CreationDate="06/01/2020 20:15:36" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="RULEANT" DTS:CreatorName="roela" DTS:Description="Instantiate a Batch into a new Batch Instance." DTS:DTSID="{972E631F-23C6-444D-A207-A37EACEF26D5}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="" DTS:LocaleID="3081" DTS:ObjectName="Batch_Create_Instance" DTS:ProtectionLevel="0" DTS:refId="Package" DTS:VersionBuild="0" DTS:VersionGUID="{EBE0C4C7-9FB7-49A6-A48D-3C73BF53855B}" DTS:VersionMajor="0" xmlns:DTS="www.microsoft.com/SqlServer/Dts">
   <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:PackageParameters>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{E09203D6-8311-49DF-918F-B8332898D62E}" DTS:ObjectName="V_BATCH_ID" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="3" DTS:Description="" DTS:DTSID="{E6D1338A-A95C-47F3-97F5-D8513203F188}" DTS:ObjectName="V_BATCH_ID" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="3" DTS:Name="ParameterValue">0</DTS:Property>
     </DTS:PackageParameter>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="7" DTS:Description="" DTS:DTSID="{4C8A7A6E-2DA0-43E6-BEA2-C272B0099D25}" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="7" DTS:Description="" DTS:DTSID="{86743EF4-ACBF-4581-AE4D-1DFBA2711079}" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="7" DTS:Name="ParameterValue">2/11/2014 9:36:16 AM</DTS:Property>
     </DTS:PackageParameter>
-    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{49A2A7FF-0A79-419C-95CF-BDD05B160AAE}" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID" DTS:Required="0" DTS:Sensitive="0">
+    <DTS:PackageParameter DTS:CreationName="" DTS:DataType="8" DTS:Description="" DTS:DTSID="{38680422-BF27-4F76-B0FC-B53D6F2935D3}" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID" DTS:Required="0" DTS:Sensitive="0">
       <DTS:Property DTS:DataType="8" DTS:Name="ParameterValue" />
     </DTS:PackageParameter>
   </DTS:PackageParameters>
   <DTS:Variables>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{E02FDB6B-0C2B-49CF-9C8A-0C1343F31AA4}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_ID">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{D4321562-DC49-4ED2-A60F-CDC1E09C6EDD}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_ID]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_ID">
       <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
     </DTS:Variable>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{69C8AD43-001E-419A-AB68-7AF60BAAE886}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_START_DATETIME]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{0AF24E6D-C605-4324-A655-D47DCC2DCCF3}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_BATCH_INSTANCE_START_DATETIME]" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME">
       <DTS:VariableValue DTS:DataType="7">02/11/2014 09:36:16</DTS:VariableValue>
     </DTS:Variable>
-    <DTS:Variable DTS:CreationName="" DTS:DTSID="{9C933048-EE96-4CB5-A17E-FA7E906FAE09}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_PACKAGE_EXECUTION_GUID]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID">
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{14D209C5-DEBE-4D1E-AFFE-1252D20F12E7}" DTS:EvaluateAsExpression="True" DTS:Expression="@[$Package::V_PACKAGE_EXECUTION_GUID]" DTS:IncludeInDebugDump="2345" DTS:Namespace="User" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID">
       <DTS:VariableValue DTS:DataType="8" />
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
-    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Create Batch Instance" DTS:DTSID="{0A077743-D2C4-454C-AD14-F7A590D8D26F}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Batch Create Instance" DTS:refId="Package\Batch Create Instance">
+    <DTS:Executable DTS:CreationName="STOCK:SEQUENCE" DTS:Description="Create Batch Instance" DTS:DTSID="{6223DF26-3DFE-464D-AC73-FA6FC1ED15FD}" DTS:ExecutableType="STOCK:SEQUENCE" DTS:LocaleID="-1" DTS:ObjectName="Batch Create Instance" DTS:refId="Package\Batch Create Instance">
       <DTS:Executables>
         <DTS:Executable DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="This script task inherits the Batch parameters from the parent package and executes SQL to create a new Batch Instance ID." DTS:DTSID="{ED95D76A-1108-4751-8043-02CFEA745C91}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:FailPackageOnFailure="True" DTS:LocaleID="-1" DTS:ObjectName="EST - Create new Batch Instance" DTS:refId="Package\Batch Create Instance\EST - Create new Batch Instance" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
           <DTS:ObjectData>
-            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;                    INSERT INTO BATCH_INSTANCE (&#xA;                    BATCH_ID,  &#xA;                    START_DATETIME, &#xA;                    EXECUTION_STATUS_CODE, &#xA;                    NEXT_RUN_INDICATOR, &#xA;                    PROCESSING_INDICATOR,&#xA;                    BATCH_EXECUTION_SYSTEM_ID)&#xA;                    VALUES(&#xA;                    ?,&#xA;                    ?,&#xA;                    'E', &#xA;                    'P',&#xA;                    'A',&#xA;                    ?&#xA;                    )&#xA;                " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
-              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="User::V_BATCH_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
-              <SQLTask:ParameterBinding SQLTask:DataType="7" SQLTask:DtsVariableName="User::V_BATCH_INSTANCE_START_DATETIME" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
-              <SQLTask:ParameterBinding SQLTask:DataType="129" SQLTask:DtsVariableName="System::ExecutionInstanceGUID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
+            <SQLTask:SqlTaskData SQLTask:Connection="DIRECT" SQLTask:SqlStatementSource="&#xA;                    INSERT INTO omd.BATCH_INSTANCE (&#xA;                    BATCH_ID,  &#xA;                    START_DATETIME, &#xA;                    EXECUTION_STATUS_CODE, &#xA;                    NEXT_RUN_INDICATOR, &#xA;                    PROCESSING_INDICATOR,&#xA;                    BATCH_EXECUTION_SYSTEM_ID)&#xA;                    VALUES(&#xA;                    ?,&#xA;                    ?,&#xA;                    'E', &#xA;                    'P',&#xA;                    'A',&#xA;                    ?&#xA;                    )&#xA;                " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding SQLTask:DataType="3" SQLTask:DtsVariableName="$Package::V_BATCH_ID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="0" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="7" SQLTask:DtsVariableName="$Package::V_BATCH_INSTANCE_START_DATETIME" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="1" SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding SQLTask:DataType="129" SQLTask:DtsVariableName="$Package::V_PACKAGE_EXECUTION_GUID" SQLTask:ParameterDirection="Input" SQLTask:ParameterName="2" SQLTask:ParameterSize="-1" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -39,8 +39,8 @@
     </DTS:Executable>
   </DTS:Executables>
   <DTS:Configurations>
-    <DTS:Configuration DTS:ConfigurationString="V_BATCH_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{1BFC1C81-E85A-4EEE-9C13-948A882FA265}" DTS:ObjectName="V_BATCH_ID" />
-    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_START_DATETIME" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_START_DATETIME].Properties[Value]" DTS:CreationName="" DTS:DTSID="{35363716-6981-4DAB-B15D-19FF5F326B94}" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME" />
-    <DTS:Configuration DTS:ConfigurationString="ExecutionInstanceGUID" DTS:ConfigurationVariable="\Package.Variables[User::V_PACKAGE_EXECUTION_GUID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{74F02029-A23B-4970-ADAD-9262BE85CD09}" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_ID" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_ID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{A95AED18-9D3E-4CC1-B484-C5B6456E858B}" DTS:ObjectName="V_BATCH_ID" />
+    <DTS:Configuration DTS:ConfigurationString="V_BATCH_INSTANCE_START_DATETIME" DTS:ConfigurationVariable="\Package.Variables[User::V_BATCH_INSTANCE_START_DATETIME].Properties[Value]" DTS:CreationName="" DTS:DTSID="{B80A374F-80E0-41D0-91C1-462E4EE1D524}" DTS:ObjectName="V_BATCH_INSTANCE_START_DATETIME" />
+    <DTS:Configuration DTS:ConfigurationString="ExecutionInstanceGUID" DTS:ConfigurationVariable="\Package.Variables[User::V_PACKAGE_EXECUTION_GUID].Properties[Value]" DTS:CreationName="" DTS:DTSID="{CB6B884E-E93E-4DC3-9372-251475B144E8}" DTS:ObjectName="V_PACKAGE_EXECUTION_GUID" />
   </DTS:Configurations>
 </DTS:Executable>

@@ -1,0 +1,78 @@
+<#@ include file="Include_ProjectConfiguration.biml" #>	
+<#@ include file="Include_C_References.biml" #>
+<#@ include file="Include_BIML_Configuration.biml" #>
+
+
+
+<Biml xmlns="http://schemas.varigence.com/biml.xsd">
+
+    <ScriptProjects>
+        <#@ include file="Include_ModuleEval_ScriptProject.biml" #>
+        <#@ include file="Include_BatchEval_RaiseError_ScriptProject.biml" #>        
+        <#@ include file="Include_BatchEval_Rollback_ScriptProject.biml" #>            
+        <#@ include file="Include_Generic_ScriptProject.biml" #>
+        <#@ include file="Include_STG_ScriptProject.biml" #>	            
+    </ScriptProjects>
+
+	<Connections>
+	    <#@ include file="Include_ProjectConnections.biml" #>
+	</Connections>
+
+	<Projects>
+		<PackageProject Name="<#=BuildTargetProjectName#>">
+		    
+		    
+            <Annotations>
+                <Annotation Tag="ProjectParametersPath"><#=PathProjectRoot#>\Project.params</Annotation>
+            </Annotations>		    
+            
+            <Parameters>
+                <#@ include file="Include_ProjectParameters.biml" #>
+            </Parameters>
+            
+            <Packages>
+            
+                <!--
+                  DIRECT packages
+                -->    
+                <Package PackageName="Module_Abort" />
+                <Package PackageName="Module_Create_Instance" />
+                <Package PackageName="Module_Eval" />
+                <Package PackageName="Module_Failure" />
+                <Package PackageName="Module_Skip" />
+                <Package PackageName="Module_Success" />                   
+
+                <Package PackageName="Batch_Abort" />
+                <Package PackageName="Batch_Create_Instance" />
+                <Package PackageName="Batch_Eval" />
+                <Package PackageName="Batch_Failure" />
+                <Package PackageName="Batch_Skip" />
+                <Package PackageName="Batch_Success" />
+
+
+            </Packages>                
+
+		</PackageProject>
+    </Projects>	
+
+    <Packages>
+        <!--
+            DIRECT packages
+        -->        
+        <#@ include file="Module_Abort.biml" #>
+        <#@ include file="Module_Create_Instance.biml" #>
+        <#@ include file="Module_Eval.biml" #>        
+        <#@ include file="Module_Failure.biml" #>
+        <#@ include file="Module_Skip.biml" #>
+        <#@ include file="Module_Success.biml" #>
+        
+        <#@ include file="Batch_Abort.biml" #>
+        <#@ include file="Batch_Create_Instance.biml" #>
+        <#@ include file="Batch_Eval.biml" #>        
+        <#@ include file="Batch_Failure.biml" #>
+        <#@ include file="Batch_Skip.biml" #>
+        <#@ include file="Batch_Success.biml" #>
+       
+    </Packages>
+
+</Biml>
