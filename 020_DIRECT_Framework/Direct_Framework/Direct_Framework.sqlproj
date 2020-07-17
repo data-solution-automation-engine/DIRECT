@@ -69,10 +69,10 @@
     <Folder Include="Schemas" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Functions\GetConsistencyDateTime.sql" />
-    <Build Include="Functions\GetDependency.sql" />
-    <Build Include="Functions\GetLoadWindowDateTimes.sql" />
-    <Build Include="Functions\GetLoadWindowModuleInstance.sql" />
+    <Build Include="Functions\omd.GetConsistencyDateTime.sql" />
+    <Build Include="Functions\omd.GetDependency.sql" />
+    <Build Include="Functions\omd.GetLoadWindowDateTimes.sql" />
+    <Build Include="Functions\omd.GetLoadWindowModuleInstance.sql" />
     <None Include="Scripts\InsertReferenceData.sql" />
     <Build Include="Tables\omd.AREA.sql" />
     <Build Include="Tables\omd.BATCH.sql" />
@@ -99,18 +99,12 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </None>
     <Build Include="Schemas\omd.sql" />
-    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </None>
-    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </None>
     <Build Include="Schemas\omd_processing.sql" />
     <Build Include="Schemas\omd_reporting.sql" />
     <None Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
     <None Include="Views\omd_reporting.vw_CURRENT_PROCESSING.sql" />
-    <Build Include="Functions\CalculateChangeKey.sql" />
+    <Build Include="Functions\omd.CalculateChangeKey.sql" />
     <None Include="Functions\omd_processing.NextModuleInQueue.sql" />
     <Build Include="Functions\omd_processing.GetDependentTables.sql" />
     <Build Include="Views\omd_reporting.vw_CUMULATIVE_LOAD_TIME.sql" />
@@ -123,7 +117,30 @@
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_BATCHES.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_MODULES.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_TABLE_CONSISTENCY.sql" />
-    <Build Include="Stored Procedures\usp_Condensing.sql" />
+    <Build Include="Stored Procedures\omd.TableCondensing.sql" />
+    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </None>
+    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </None>
+    <Build Include="Stored Procedures\omd.CreateModuleInstance.sql" />
+    <Build Include="Stored Procedures\omd.ModuleEvaluation.sql" />
+    <Build Include="Stored Procedures\omd.RunModule.sql" />
+    <Build Include="Stored Procedures\omd.UpdateModuleInstance.sql" />
+    <Build Include="Functions\omd.GetBatchIdByModuleInstanceId.sql" />
+    <Build Include="Functions\omd.GetBatchModuleActiveIndicatorValue.sql" />
+    <Build Include="Functions\omd.GetModuleIdByModuleInstanceId.sql" />
+    <Build Include="Functions\omd.GetModuleIdByName.sql" />
+    <Build Include="Functions\omd.GetPreviousModuleInstanceDetails.sql" />
+    <Build Include="Stored Procedures\omd.BatchEvaluation.sql" />
+    <Build Include="Stored Procedures\omd.CreateBatchInstance.sql" />
+    <Build Include="Stored Procedures\omd.RunBatch.sql" />
+    <Build Include="Stored Procedures\omd.UpdateBatchInstance.sql" />
+    <Build Include="Functions\omd.GetBatchIdByBatchInstanceId.sql" />
+    <Build Include="Functions\omd.GetBatchIdByName.sql" />
+    <Build Include="Functions\omd.GetFailedBatchIdList.sql" />
+    <Build Include="Functions\omd.GetPreviousBatchInstanceDetails.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

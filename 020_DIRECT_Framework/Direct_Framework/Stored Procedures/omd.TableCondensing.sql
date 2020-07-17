@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[usp_Condensing]
+﻿CREATE PROCEDURE [omd].[TableCondensing]
                 @DatabaseName VARCHAR(100),
                 @SchemaName VARCHAR(100),
                 @Table VARCHAR(100)                
@@ -20,10 +20,6 @@ stuff
                                                 WHERE TABLE_NAME = @Table AND TABLE_SCHEMA = @SchemaName
                                 AND COLUMN_NAME NOT IN
                                 (
-                                'CREATED',
-                                'CREATED_BY',
-                                'UPDATED',
-                                'UPDATED_BY',
                                 'OMD_EVENT_DATETIME',
                                 'OMD_INSERT_DATETIME',
                                 'OMD_INSERT_MODULE_INSTANCE_ID',

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[GetLoadWindowModuleInstance] ( @module_code VARCHAR(255), @start_or_end tinyint)
+﻿CREATE FUNCTION [omd].[GetLoadWindowModuleInstance] ( @module_code VARCHAR(255), @start_or_end tinyint)
 RETURNS BIGINT AS 
 BEGIN 
        DECLARE @result BIGINT

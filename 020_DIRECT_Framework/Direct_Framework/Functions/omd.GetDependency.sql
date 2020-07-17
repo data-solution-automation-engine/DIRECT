@@ -1,6 +1,6 @@
 ﻿
 
-CREATE FUNCTION [dbo].[GetDependency] (@SchemaName VARCHAR(128), @Table VARCHAR(128))
+CREATE FUNCTION [omd].[GetDependency] (@SchemaName VARCHAR(128), @Table VARCHAR(128))
 RETURNS VARCHAR(MAX) AS 
 BEGIN 
 

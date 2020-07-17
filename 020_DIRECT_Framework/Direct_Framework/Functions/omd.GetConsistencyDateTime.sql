@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[GetConsistencyDateTime] ( @Table_List VARCHAR(MAX), @MeasurementDate datetime2(7))
+﻿CREATE FUNCTION [omd].[GetConsistencyDateTime] ( @Table_List VARCHAR(MAX), @MeasurementDate datetime2(7))
 RETURNS DATETIME2(7) AS 
 BEGIN 
 
