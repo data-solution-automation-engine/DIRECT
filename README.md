@@ -9,3 +9,5 @@ This repository contains the following:
 * T-SQL hooks
 * Functional specification
 * Support SQL scripts
+
+www.roelantvos.com
