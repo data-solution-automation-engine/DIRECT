@@ -57,6 +57,7 @@ BEGIN
        EXEC [omd].[RunModule]
          @ModuleCode = '',
 	     @Query = '',
+         @BatchInstanceId = @BatchInstanceId,
 		 @Debug = @Debug,
          @QueryResult = @QueryResult OUTPUT;
        PRINT @QueryResult;

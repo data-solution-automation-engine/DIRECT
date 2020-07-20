@@ -1,20 +1,27 @@
 # Introduction of DIRECT
-DIRECT, the Data Integration & Execution Control Tool, is a data integration control and execution metadata model. It is a core and stand-alone component of the Data Integration Framework. Every Extract Transform and Load (ETL) process is linked to this model which provides the orchestration and management capabilities for data integration. ETL in this context is a broad definition covering various related data integration approachess such as ELT (Extract Load, Transform - pushdown into SQL or underlying processing) and LETS (Load-Extract-Transform-Store). ETL in this document essentially covers all processes that 'touch' data.
+DIRECT, the Data Integration & Execution Control Tool, is a data integration control and execution metadata model. It is a core and stand-alone component of the Data Integration Framework. 
 
-The repository essentially captures process information about the ETL and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor ETL processes.
+Every Data Integration / Extract Transform and Load (ETL) process is linked to this model which provides the orchestration and management capabilities for data integration. 
 
-This document references all other architectural documents because the metadata model is an integral part of a fully implemented system. For functionality such as rollback and recovery information about the individual ETL processes including the related layers and areas as defined in the Outline Architecture are retrieved from the repository.
+Data Integration in this context is a broad definition covering various implementation techniques such as ELT (Extract Load, Transform - pushdown into SQL or underlying processing) and LETS (Load-Extract-Transform-Store). 
 
-The objective of the DIRECT Framework is to provide a structured approach to describing and recording ETL processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system. 
+Data Integration in this document essentially covers all processes that 'touch' data.
+
+The DIRECT repository captures Data Integration process information, and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor processes - a fundamental requirement for parallel processing and transaction control.
+
+The objective of the DIRECT Framework is to provide a structured approach to describing and recording Data integration processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system. 
 # Overview
-This document covers the design and specifications for the metadata repository and the integration (events) for data integration processes. The documentation also includes the available (logical) scripted components for controlled execution of ETL within the Enterprise Data Warehouse. The DIRECT framework covers a broad variety of process information, including (but not limited to):
-* What process information will be stored and how
-* How this is integrated into the various defined Layers and Areas
-* Of what entities the metadata model consists
-* The available procedures for managing the Data Warehouse environment
-* Concepts and principles
-* The logic which can be used to control the processes
-* Housekeeping functions
+This document covers the design and specifications for the metadata repository and the integration (events) for data integration processes. 
+
+The documentation also includes the available (logical) scripted components for controlled execution of Data Integration processes. The DIRECT framework covers a broad variety of process information, including (but not limited to):
+
+* What process information will be stored and how.
+* How this is integrated into the various defined Layers and Areas.
+* Of what entities the metadata model consists,
+* The available procedures for managing the data solution.
+* Concepts and principles.
+* The logic which can be used to control the processes.
+* Housekeeping functions.
 
 ## Positioning of DIRECT
 The position of the control and execution framework in the overall architecture is:
@@ -24,19 +31,19 @@ The position of the control and execution framework in the overall architecture 
 # Concepts
 ## Purpose
 
-In general, the process control framework supports the ability to trace back what data has been loaded, when and in what way for every interface. 
+The process control framework supports the ability to trace back what data has been loaded, when and in what way for every interface. 
 
-A single attribute that has been populated in any location of the overall architecture should be auditable - and being able to be traced back to the originating source system.
+Any single data element (e.g. attribute value in a table) should be auditable. It should be possible to track the what processes have been run that has led to the visible result.
 
 This means that the following information must be available:
 
-- When a record was inserted
-- When a record was updated
-- What the source was where the record originated from
-- When the event took place that changed the source data
-- Which process has loaded the data 
-- Within which workflow the data was loaded
-- Which platform the ETL took place
+- When a recordwas inserted.
+- When a record was updated.
+- What the source was where the record originated from.
+- When the event took place that changed the source data.
+- Which process has loaded the data .
+- Within which workflow the data was loaded.
+- Which platform the process took place.
 
 ## Elements of process information
 
@@ -105,7 +112,7 @@ The following is a high level overview of the reprocessing strategy. These actio
 * **Staging Area** ; the target table is truncated. This essentially is a redundant step because the Staging Area is truncated by the Module Instance but the step is added for consistency reasons and to be on the safe side for reprocessing
 *	**Staging Area** ; if the Source Control table is implemented this information is corrected by deleting the entries that were inserted by the failed Module Instances
 *	**Persistent Staging Area** ; all records that have been inserted by the failed Module Instances are deleted. Due to the default (mandatory) structure of the History Area tables only the delete statement is sufficient
-*	**Integration Layer** ; rollback varies depending on the type of model but rollback usually is a combination of inserts and deletes depending on the types of tables in the Data Warehouse (in turn dependant on the data modelling technique). An example of recovery using Data Vault is added below:
+*	**Integration Layer** ; rollback varies depending on the type of model but rollback usually is a combination of inserts and deletes depending on the types of tables in the Data Warehouse (in turn dependent on the data modelling technique). An example of recovery using Data Vault is added below:
     * Hub table: deletion of all records inserted by the Module Instance. 
     *	Link table: deletion of all records inserted by the Module Instance.
     *	Satellite table: deletion of all records inserted based on the Insert Module Instance ID attribute. Also included is an update of all records to set these to be the active record again (repair timelines) using the Update Module Instance ID information
@@ -126,29 +133,17 @@ AREA	| The Area table contains the list of architecture areas as defined in the 
 BATCH	| The Batch table contains the unique list of Batches as registered in the framework. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys. 
 BATCH_INSTANCE	| At runtime, the framework generates a new Batch Instance ID for the Batch execution. This information is stored in this table along with ETL process statistics. The Batch Instance table is the driving table for process control and recovery as it contain information about the status and results of the Batch run.
 BATCH_MODULE |	The Batch Module table contains the relationships between batches and modules. It is a many-to-many relationship, i.e. one Batch can contain multiple Modules, and one Module could be utilised by multiple Batches
-DATA_AUDIT	| The Data Audit table provides a location for custom functionality to perform sanity checks and/or housekeeping on specific data store. These processes should be run separately from the main ETL processes and can be configured to perform a range of supporting functionality such as clean-ups and reconciliation.
-DATA_AUDIT_TYPE |	The Data Audit Type table was added to allow for a classification of Data Store Audits, and to provide additional handling and descriptive information about these housekeeping processes
-DATA_STORE	| The Data Store table contains descriptive information of data stores that are read from or loaded by the ETL process. The ‘Allow Truncate Indicator’ attribute can be used in custom Stored Procedures to prevent accidental truncation of tables (safety catch).
-DATA_STORE_TYPE	| The Data Store Type table contains optional descriptive information: the type of data stores, such as flat file or table.
-ERROR_BITMAP	| The Error Bitmap table contains the master list of possible errors. One or more errors from this list may be detected and logged as an Error Bitmap in the target tables. A bitwise join will enable this bitmap to relate back to the various errors as defined in this table.
-ERROR_TYPE	| The Error Type table contains descriptive information about types of events or errors for reporting purposes. By default all errors are associated with the Error Bitmap but additional errors and error types can be added.
 EVENT_LOG	| The Event Log table is a generic logging table which is used to track and record events that happen during ETL execution. The Event Log table can contain informative details (i.e. ‘Batch Instance was created’) or information related to issues or errors provided by the ETL platform. 
 EVENT_TYPE	| The Event Type table contains descriptive information about types of events or errors for reporting purposes, such as process logs, environment related issues, and custom defined errors or ETL process errors.
 EXECUTION_STATUS	| The Execution Status table contains descriptive attributes about the Execution Status codes that the framework uses during the ETL process. 
-FREQUENCY	| The Frequency table contains descriptive information about the frequency codes of a Batch run.
 LAYER	| The Layer table contains the list of Layers as defined in the ETL Framework Outline Architecture. Unlike the Areas this information is not queried during Module execution and is purely descriptive for use in reporting. The Layer is the higher level classification of ETL processes in the ETL Framework. 
 MODULE	| The Module table contains the unique list of Modules as registered in the framework. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
-MODULE_DATA_STORE |	The Module Data Store table contains the relationships between Modules and the Data Stores used in the Modules. For instance the target (mandatory) and source (optional) for each Module. 
 MODULE_INSTANCE	| At runtime, the framework generates a new Module Instance ID for the Module execution. This information is stored in this table along with ETL process statistics. The Module Instance table is the driving table for process control and recovery as it contain information about the status and results of the Module run. The generated Module Instance ID is stored in the target tables for audit trail purposes. It also contains additional runtime details including the number of rows read (selected), updated, inserted, deleted, updated, discarded or rejected.
 MODULE_PARAMETER	| The Module Parameter table creates a relationship between specific parameters and the Modules for which they are applicable. It is best practice to ‘register’ the Modules that require certain parameters in their processing using this table. 
-MODULE_TYPE	| The Module Type table contains optional descriptive information for reporting purposes. As the Module is defined as the smallest executable component typically more than one type of Module is used, for instance ETL programs and Operating Scripts.
 NEXT_RUN_INDICATOR | The Next Run Indicator table contains descriptive attributes about the Next Run Indicator codes that the framework uses during the ETL process.
 PARAMETER	| The Parameter table provides the option to define parameters that can be queried by custom code in the ETL process. This can include (but not limited to!) flags (Initial Load Y/N) or tracking date ranges for moving loading windows into the Presentation Layer.
 PROCESSING_INDICATOR | The Processing Indicator table contains descriptive attributes about the Processing Indicator codes that the framework uses during the ETL process.
-RECORD_SOURCE	| The Record Source table contains abbreviations and descriptions of the source systems that interface to the Data Warehouse. Depending on the Staging Layer design decisions the Record Source Code is resolved to the ID during the Integration Layer ETL, or the ID is hard-coded in the Staging Area. Either way, the Record Source provides the option to load datasets from different systems that may contain similar information (i.e. the same keys) with different meaning. 
-SEVERITY	| Severity is an optional descriptive attribute that can be used to classify the level of Errors defined in the Bitmap Error table. It can be used for reporting purposes and to select (a certain quality of) data into the Presentation Layer.
 SOURCE_CONTROL |	The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
-VERSION |	Administrative information to record the DIRECT version used.
 
 ## Events
 In order to provide a common, reusable means of interacting with the repository the framework includes a number of processes which collectively serve as the logic tier. The implementation of these events varies depending on the ETL software used in the various projects. This information is captured using Implementation Patterns, documenting how these concepts can be implemented using specific software. The following events, or functions, are defined as part of the framework:

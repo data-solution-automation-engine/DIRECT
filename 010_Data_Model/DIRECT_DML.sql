@@ -25,16 +25,16 @@ where not exists (
 insert into omd.AREA
 select *
 from (
-          /* AREA_CODE, LAYER_CODE, AREA_DESCRIPTION */
-    values (N'HELPER', N'Presentation', N'The Helper Area')
-         , (N'PSA', N'Staging', N'The Persistent Staging Area')
-         , (N'INT', N'Integration', N'The Integration Area')
-         , (N'INTPR', N'Integration', N'The Interpretation Area')
-         , (N'PRES', N'Presentation', N'The Presentation Area')
-         , (N'STG', N'Staging', N'The Staging Area of the Staging Layer')
-         , (N'SYNC', N'Staging', N'Syncronising of the production History Area of the Staging Layer for build and test')
-         , (N'Maintenance', N'Maintenance', N'Internal Data Solution')
-    ) as refData(AREA_CODE, LAYER_CODE, AREA_DESCRIPTION)
+          /* AREA_CODE, AREA_DESCRIPTION, LAYER_CODE */
+    values 
+	      (N'HELPER', N'The Helper Area', N'Presentation')
+        , (N'PSA', N'The Persistent Staging Area', N'Staging')
+        , (N'INT', N'The Integration Area', N'Integration')
+        , (N'INTPR', N'The Interpretation Area', N'Integration')
+        , (N'PRES', N'The Presentation Area', N'Presentation')
+        , (N'STG',  N'The Staging Area of the Staging Layer', N'Staging')
+        , (N'Maintenance', N'Internal Data Solution', N'Maintenance')
+    ) as refData(AREA_CODE, AREA_DESCRIPTION, LAYER_CODE)
 where not exists (
         select null
         from omd.AREA

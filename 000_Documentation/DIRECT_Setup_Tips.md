@@ -1,7 +1,3 @@
-Can be used as dacpac file.
-
-
-
 ## Using Direct as a database project reference
 
 If required, Direct can be installed in each database project as a reference, which means the Direct content will be installed in the hosting database when published.

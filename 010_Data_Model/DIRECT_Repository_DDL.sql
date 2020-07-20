@@ -3,10 +3,6 @@
   Generated from SQL DBM (www.sqldbm.com)
 */
 
-
--- ****************** SqlDBM: Microsoft SQL Server ******************
--- ******************************************************************
-
 DROP TABLE IF EXISTS [omd].[SOURCE_CONTROL];
 GO
 
@@ -66,98 +62,9 @@ GO
 DROP TABLE IF EXISTS [omd].[BATCH];
 GO
 
-
-
-DROP SCHEMA IF EXISTS [db_accessadmin];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_backupoperator];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_datareader];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_datawriter];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_ddladmin];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_denydatareader];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_denydatawriter];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_owner];
-GO
-
-
-DROP SCHEMA IF EXISTS [db_securityadmin];
-GO
-
-
-DROP SCHEMA IF EXISTS [dbo];
-GO
-
-
-DROP SCHEMA IF EXISTS [guest];
-GO
-
-
 DROP SCHEMA IF EXISTS [omd];
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_accessadmin')
-EXEC ('CREATE SCHEMA [db_accessadmin]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_backupoperator')
-EXEC ('CREATE SCHEMA [db_backupoperator]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_datareader')
-EXEC ('CREATE SCHEMA [db_datareader]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_datawriter')
-EXEC ('CREATE SCHEMA [db_datawriter]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_ddladmin')
-EXEC ('CREATE SCHEMA [db_ddladmin]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_denydatareader')
-EXEC ('CREATE SCHEMA [db_denydatareader]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_denydatawriter')
-EXEC ('CREATE SCHEMA [db_denydatawriter]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_owner')
-EXEC ('CREATE SCHEMA [db_owner]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='db_securityadmin')
-EXEC ('CREATE SCHEMA [db_securityadmin]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='dbo')
-EXEC ('CREATE SCHEMA [dbo]');
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='guest')
-EXEC ('CREATE SCHEMA [guest]');
-GO
 
 IF NOT EXISTS (SELECT * FROM sys.schemas s WHERE s.name='omd')
 EXEC ('CREATE SCHEMA [omd]');
@@ -180,12 +87,6 @@ CREATE TABLE [omd].[PROCESSING_INDICATOR]
 GO
 
 
-
-
-
-
-
-
 -- ************************************** [omd].[PARAMETER]
 
 IF NOT EXISTS (SELECT * FROM sys.tables t join sys.schemas s ON (t.schema_id = s.schema_id) WHERE s.name='omd' and t.name='PARAMETER')
@@ -203,12 +104,6 @@ CREATE TABLE [omd].[PARAMETER]
 GO
 
 
-
-
-
-
-
-
 -- ************************************** [omd].[NEXT_RUN_INDICATOR]
 
 IF NOT EXISTS (SELECT * FROM sys.tables t join sys.schemas s ON (t.schema_id = s.schema_id) WHERE s.name='omd' and t.name='NEXT_RUN_INDICATOR')
@@ -223,12 +118,6 @@ CREATE TABLE [omd].[NEXT_RUN_INDICATOR]
 GO
 
 
-
-
-
-
-
-
 -- ************************************** [omd].[LAYER]
 
 IF NOT EXISTS (SELECT * FROM sys.tables t join sys.schemas s ON (t.schema_id = s.schema_id) WHERE s.name='omd' and t.name='LAYER')
@@ -241,11 +130,6 @@ CREATE TABLE [omd].[LAYER]
  CONSTRAINT [PK_LAYER] PRIMARY KEY CLUSTERED ([LAYER_CODE] ASC)
 );
 GO
-
-
-
-
-
 
 
 
@@ -264,11 +148,6 @@ GO
 
 
 
-
-
-
-
-
 -- ************************************** [omd].[EVENT_TYPE]
 
 IF NOT EXISTS (SELECT * FROM sys.tables t join sys.schemas s ON (t.schema_id = s.schema_id) WHERE s.name='omd' and t.name='EVENT_TYPE')
@@ -281,11 +160,6 @@ CREATE TABLE [omd].[EVENT_TYPE]
  CONSTRAINT [PK_EVENT_TYPE] PRIMARY KEY CLUSTERED ([EVENT_TYPE_CODE] ASC)
 );
 GO
-
-
-
-
-
 
 
 
@@ -305,11 +179,6 @@ CREATE TABLE [omd].[BATCH]
  CONSTRAINT [IX_BATCH] UNIQUE NONCLUSTERED ([BATCH_CODE] ASC)
 );
 GO
-
-
-
-
-
 
 
 
@@ -364,11 +233,6 @@ CREATE NONCLUSTERED INDEX [FK_BATCH_INSTANCE_PROCESSING_INDICATOR] ON [omd].[BAT
  )
 
 GO
-
-
-
-
-
 
 
 -- ************************************** [omd].[AREA]

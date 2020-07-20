@@ -26,6 +26,7 @@ CREATE PROCEDURE omd.RunModule
 	-- Add the parameters for the stored procedure here
 	@ModuleCode VARCHAR(255),
 	@Query VARCHAR(MAX),
+    @BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
 	@QueryResult VARCHAR(10) = NULL OUTPUT
 AS
@@ -36,6 +37,7 @@ BEGIN
   EXEC [omd].[CreateModuleInstance]
     @ModuleCode = @ModuleCode,
     @Debug = @Debug,
+    @BatchInstanceId = @BatchInstanceId, -- The Batch Instance Id, if the Module is run from a Batch.
     @ModuleInstanceId = @ModuleInstanceId OUTPUT;
   
   -- Module Evaluation
