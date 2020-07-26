@@ -11,19 +11,19 @@ The DIRECT repository captures Data Integration process information, and is an i
 
 The objective of the DIRECT Framework is to provide a structured approach to describing and recording Data integration processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system. 
 # Overview
-This document covers the design and specifications for the metadata repository and the integration (events) for data integration processes. 
+This document covers the design and specifications for the DIRECT metadata repository and the integration (events) for data integration processes. 
 
-The documentation also includes the available (logical) scripted components for controlled execution of Data Integration processes. The DIRECT framework covers a broad variety of process information, including (but not limited to):
+The DIRECT framework covers a broad variety of process details, including (but not limited to):
 
 * What process information will be stored and how.
-* How this is integrated into the various defined Layers and Areas.
+* How a process is integrated into the various defined Layers and Areas.
 * Of what entities the metadata model consists,
 * The available procedures for managing the data solution.
 * Concepts and principles.
 * The logic which can be used to control the processes.
 * Housekeeping functions.
+* Reporting.
 
-## Positioning of DIRECT
 The position of the control and execution framework in the overall architecture is:
 
 ![Positioning](Images/Direct_Documentation_Figure1_Positioning.png)
@@ -31,13 +31,13 @@ The position of the control and execution framework in the overall architecture 
 # Concepts
 ## Purpose
 
-The process control framework supports the ability to trace back what data has been loaded, when and in what way for every interface. 
+The process control framework supports the ability to trace back what data has been loaded, when and in what way for every individual data integration process. 
 
 Any single data element (e.g. attribute value in a table) should be auditable. It should be possible to track the what processes have been run that has led to the visible result.
 
 This means that the following information must be available:
 
-- When a recordwas inserted.
+- When a record was inserted.
 - When a record was updated.
 - What the source was where the record originated from.
 - When the event took place that changed the source data.
@@ -104,9 +104,17 @@ The following diagram illustrates the layers and technologies involved in this p
 <img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution" width="50%" height="50%">
 
 ## Rollback and re-processing
-When processing errors occur, relevant information is recorded in the repository by the framework. This information is used to properly recover from ETL loading errors and set the Data Warehouse back into the original state prior to the occurrence of the error. This can be configured to work at both Batch and Module level. 
+When processing errors occur (a data integration process fails), relevant information about the failure is recorded in the repository by the framework. This information can be used to recover from data loading errors and set the data solution back into the original state prior to the occurrence of the error. 
 
-By default a Batch will roll back the data from all Modules that have been run as part of the specific Batch. A Module is always configured to recover if errors are detected in previous runs. This information is presented to the events as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This specifies that ETL should be able to be rerun and recovery failed attempts.
+This 'rollback' can be configured at both Batch and Module level. 
+
+By default, a Module is configured to check if there are earlier erroneous runs upon execution. If this is the case, for example when the previous Module Instance for the Module has an Execution Status Code set to 'F', the running Module Instance will roll back any data associated with these earlier erroneous instances. 
+
+Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance.
+
+This process can be overridden by setting the Processing Indicator of the Batch Instance to 'R' (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
+
+At runtime, information about earlier failed instances is presented as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This specifies that ETL should be able to be rerun and recovery failed attempts.
 
 The following is a high level overview of the reprocessing strategy. These actions are implemented as part of the Batch and Module Evaluation events (described in the next section):
 * **Staging Area** ; the target table is truncated. This essentially is a redundant step because the Staging Area is truncated by the Module Instance but the step is added for consistency reasons and to be on the safe side for reprocessing
