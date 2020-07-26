@@ -112,7 +112,7 @@ By default, a Module is configured to check if there are earlier erroneous runs 
 
 Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance.
 
-This process can be overridden by setting the Processing Indicator of the Batch Instance to 'R' (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
+This process can be overridden by setting the Next Run Indicator of the Batch Instance to 'R' (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
 
 At runtime, information about earlier failed instances is presented as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This specifies that ETL should be able to be rerun and recovery failed attempts.
 
