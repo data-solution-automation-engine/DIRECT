@@ -108,9 +108,9 @@ When processing errors occur (a data integration process fails), relevant inform
 
 This 'rollback' can be configured at both Batch and Module level. 
 
-By default, a Module is configured to check if there are earlier erroneous runs upon execution. If this is the case, for example when the previous Module Instance for the Module has an Execution Status Code set to 'F', the running Module Instance will roll back any data associated with these earlier erroneous instances. 
+By default, a Module is configured to check if there are earlier erroneous runs upon execution. If this is the case, for example when the previous Module Instance for the Module has an Execution Status Code set to 'F', the *running* Module Instance will roll back any data associated with these earlier erroneous instances. 
 
-Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance.
+Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance(s).
 
 This process can be overridden by setting the Next Run Indicator of the Batch Instance to 'R' (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
 
