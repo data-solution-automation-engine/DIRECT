@@ -20,7 +20,7 @@ Usage:
 		@LoadWindowEndDateTime datetime2(7)
 
   EXEC	[omd].[CreateLoadWindow]
-		@ModuleInstanceId = <>,
+		@ModuleInstanceId = '',
 		@Debug = N'Y',
 		@LoadWindowStartDateTime = @LoadWindowStartDateTime OUTPUT,
 		@LoadWindowEndDateTime = @LoadWindowEndDateTime OUTPUT
@@ -32,7 +32,13 @@ Usage:
   -- Local variables (Module Id and source Data Object)
   DECLARE @ModuleId INT = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
   DECLARE @TableCode VARCHAR(255); 
-  SELECT @TableCode = DATA_OBJECT_TARGET FROM omd.MODULE WHERE MODULE_ID = @ModuleId; 
+  SELECT @TableCode = DATA_OBJECT_SOURCE FROM omd.MODULE WHERE MODULE_ID = @ModuleId; 
+
+  IF @Debug = 'Y'
+    BEGIN
+      PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the following Module Id was found in omd.MODULE: '+CONVERT(VARCHAR(10),@ModuleId)+'.';
+	  PRINT 'For Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' the Source Data Object is '+@TableCode+'.';
+	END
 
   DECLARE @PreviousModuleInstanceOutcome VARCHAR(MAX);
   DECLARE @SqlStatement VARCHAR(MAX);
@@ -41,11 +47,7 @@ Usage:
   IF @ModuleId = NULL OR @ModuleId = 0 
     THROW 50000,'The Module Id could not be retrieved based on the Module Instance Id.',1
 
-  IF @Debug = 'Y'
-    BEGIN
-      PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the following Module Id was found in omd.MODULE: '+CONVERT(VARCHAR(10),@ModuleId)+'.';
-	  PRINT 'For Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' the Source Data Object is '+@TableCode+'.';
-	END
+
 
   SELECT @PreviousModuleInstanceOutcome =
       COALESCE 
@@ -56,7 +58,7 @@ Usage:
          FROM omd.MODULE_INSTANCE main
          WHERE
              main.MODULE_ID = @ModuleId
-         AND main.MODULE_INSTANCE_ID <> @ModuleInstanceId
+         AND main.MODULE_INSTANCE_ID != @ModuleInstanceId
          ORDER BY main.MODULE_INSTANCE_ID DESC
 	    )
        , 'S') -- If there is no Module Instance Id, the process will resolve to succeeded.
@@ -68,7 +70,7 @@ Usage:
   IF @PreviousModuleInstanceOutcome = 'R'
     BEGIN
       IF @Debug = 'Y'
-        PRINT 'The previous Module Instance was a failure, so no new load window is set until this is resolved <end of procedure>.';
+        PRINT 'The previous Module Instance was a failure, so no new load window is set until this is resolved - end of procedure.';
 	  GOTO EndOfProcedure
     END
   ELSE
