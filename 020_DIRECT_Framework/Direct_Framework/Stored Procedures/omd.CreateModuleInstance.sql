@@ -16,7 +16,7 @@ Usage:
 */
 
 CREATE PROCEDURE omd.CreateModuleInstance
-	@ModuleCode VARCHAR(255), -- The name of the module, as identified in the MODULE_CODE attribute in the MODULE table.
+	@ModuleCode VARCHAR(255), -- The name of the Module, as identified in the MODULE_CODE attribute in the MODULE table.
 	@Debug VARCHAR(1) = 'N',
 	@ExecutionRuntimeId VARCHAR(255) = 'N/A',
 	@BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
