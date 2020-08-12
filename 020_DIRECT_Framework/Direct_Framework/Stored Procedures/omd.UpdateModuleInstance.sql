@@ -16,6 +16,8 @@ Usage:
 CREATE PROCEDURE [omd].[UpdateModuleInstance]
 	@ModuleInstanceId INT,
 	@EventCode VARCHAR(10) = 'None',
+	@RowCountSelect INT  = 0,
+	@RowCountInsert INT  = 0,
 	@Debug VARCHAR(1) = 'Y'
 AS
 
@@ -56,9 +58,9 @@ BEGIN
 	BEGIN
 	  BEGIN TRY
 	    IF @Debug='Y'
-	      PRINT 'Setting Module Instance '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' to '+@EventCode+'.';
+	      PRINT 'Setting Module Instance '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' to '+@EventCode+' and row count '+CONVERT(VARCHAR(10),@RowCountInsert)+'.';
 
-		UPDATE omd.MODULE_INSTANCE SET EXECUTION_STATUS_CODE = 'S', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE() WHERE  MODULE_INSTANCE_ID = @ModuleInstanceId
+		UPDATE omd.MODULE_INSTANCE SET EXECUTION_STATUS_CODE = 'S', NEXT_RUN_INDICATOR = 'P', END_DATETIME=GETDATE(), ROWS_INPUT = @RowCountSelect, ROWS_INSERTED = @RowCountInsert WHERE  MODULE_INSTANCE_ID = @ModuleInstanceId
 	  END TRY
 	  BEGIN CATCH
 		THROW
