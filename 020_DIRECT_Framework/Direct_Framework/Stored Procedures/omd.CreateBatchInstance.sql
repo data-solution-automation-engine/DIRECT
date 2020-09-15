@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 Process: Create Batch Instance
 Input: 
   - Batch Code
@@ -16,7 +15,7 @@ Usage:
 */
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
-	@BatchCode VARCHAR(255), -- The name of the module, as identified in the BATCH_CODE attribute in the BATCH table.
+	@BatchCode VARCHAR(255), -- The name of the Batch, as identified in the BATCH_CODE attribute in the BATCH table.
 	@Debug VARCHAR(1) = 'N',
 	@ExecutionRuntimeId VARCHAR(255) = 'N/A',
 	@BatchInstanceId INT = NULL OUTPUT

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [omd].[GetLoadWindowDateTimes] ( @module_code VARCHAR(255), @start_or_end tinyint)
+﻿CREATE FUNCTION [omd].[GetLoadWindowDateTimes] ( @ModuleId INT, @start_or_end tinyint)
 RETURNS DATETIME2(7) AS 
 BEGIN 
        DECLARE @result DATETIME2(7)
@@ -15,7 +15,7 @@ BEGIN
                  ROW_NUMBER() OVER (PARTITION BY MODULE_ID ORDER BY INSERT_DATETIME DESC) AS ROW_NR 
               FROM omd.SOURCE_CONTROL sct
               JOIN omd.MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
-              WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE=@module_code)
+              WHERE MODULE_ID = @ModuleId
               ) ranksub
               WHERE ROW_NR=1
        END
@@ -31,10 +31,9 @@ BEGIN
                  ROW_NUMBER() OVER (PARTITION BY MODULE_ID ORDER BY INSERT_DATETIME DESC) AS ROW_NR 
               FROM omd.SOURCE_CONTROL sct
               JOIN omd.MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
-              WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE = @module_code)
+              WHERE MODULE_ID = @ModuleId
               ) ranksub
               WHERE ROW_NR=1
        END
        return @result
 END
- 

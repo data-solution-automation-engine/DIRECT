@@ -141,6 +141,8 @@
     <Build Include="Functions\omd.GetBatchIdByName.sql" />
     <Build Include="Functions\omd.GetFailedBatchIdList.sql" />
     <Build Include="Functions\omd.GetPreviousBatchInstanceDetails.sql" />
+    <Build Include="Stored Procedures\omd.CreateLoadWindow.sql" />
+    <Build Include="Functions\GetModuleAreaByModuleId.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
