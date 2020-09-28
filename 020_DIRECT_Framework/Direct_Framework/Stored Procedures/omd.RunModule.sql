@@ -81,6 +81,16 @@ BEGIN
         @EventCode = 'Failure';
 	  
 	  SET @QueryResult = 'Failure';
+
+	   -- Logging
+	   DECLARE @EventDetail VARCHAR(4000) = ERROR_MESSAGE(),
+               @EventReturnCode int = ERROR_NUMBER();
+
+	  EXEC [omd].[InsertIntoEventLog]
+	    @ModuleInstanceId = @ModuleInstanceId,
+		@EventDetail = @EventDetail,
+		@EventReturnCode = @EventReturnCode;
+
 	  THROW
     END CATCH
   ELSE
