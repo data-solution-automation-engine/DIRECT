@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [omd].[GetLoadWindowModuleInstance] ( @module_code VARCHAR(255), @start_or_end tinyint)
+﻿CREATE FUNCTION [omd].[GetLoadWindowModuleInstance] (@ModuleId INT, @start_or_end tinyint)
 RETURNS BIGINT AS 
 BEGIN 
        DECLARE @result BIGINT
@@ -15,7 +15,7 @@ BEGIN
                  ROW_NUMBER() OVER (PARTITION BY MODULE_ID ORDER BY INSERT_DATETIME DESC) AS ROW_NR 
               FROM omd.SOURCE_CONTROL sct
               JOIN omd.MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
-              WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE module WHERE module.MODULE_CODE=@module_code)
+              WHERE MODULE_ID = @ModuleId
               ) ranksub
               WHERE ROW_NR=1
        END
@@ -31,7 +31,7 @@ BEGIN
                    ROW_NUMBER() OVER (PARTITION BY modinst.MODULE_ID ORDER BY sct.INSERT_DATETIME DESC) AS ROW_NR 
                  FROM omd.SOURCE_CONTROL sct
                  JOIN omd.MODULE_INSTANCE modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
-                 WHERE MODULE_ID=(SELECT MODULE_ID FROM omd.MODULE module WHERE module.MODULE_CODE = @module_code)
+                 WHERE MODULE_ID = @ModuleId
               ) ranksub
               WHERE ROW_NR=1
        END
