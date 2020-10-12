@@ -8,7 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -67,6 +67,7 @@
     <Folder Include="Tables" />
     <Folder Include="Views" />
     <Folder Include="Schemas" />
+    <Folder Include="Reference_Databases" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Functions\omd.GetConsistencyDateTime.sql" />
@@ -101,7 +102,7 @@
     <Build Include="Schemas\omd.sql" />
     <Build Include="Schemas\omd_processing.sql" />
     <Build Include="Schemas\omd_reporting.sql" />
-    <None Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
+    <Build Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
     <None Include="Views\omd_reporting.vw_CURRENT_PROCESSING.sql" />
     <Build Include="Functions\omd.CalculateChangeKey.sql" />
@@ -118,12 +119,12 @@
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_MODULES.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_TABLE_CONSISTENCY.sql" />
     <Build Include="Stored Procedures\omd.TableCondensing.sql" />
-    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
+    <Build Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
-    </None>
-    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
+    </Build>
+    <Build Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
-    </None>
+    </Build>
     <Build Include="Stored Procedures\omd.CreateModuleInstance.sql" />
     <Build Include="Stored Procedures\omd.ModuleEvaluation.sql" />
     <Build Include="Stored Procedures\omd.RunModule.sql" />
@@ -142,7 +143,7 @@
     <Build Include="Functions\omd.GetFailedBatchIdList.sql" />
     <Build Include="Functions\omd.GetPreviousBatchInstanceDetails.sql" />
     <Build Include="Stored Procedures\omd.CreateLoadWindow.sql" />
-    <Build Include="Functions\GetModuleAreaByModuleId.sql" />
+    <Build Include="Functions\omd.GetModuleAreaByModuleId.sql" />
     <Build Include="Stored Procedures\omd.InsertIntoEventLog.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -152,8 +153,18 @@
     <None Include="Build\Direct_Framework.publish.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
-      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
+    <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+    <ArtifactReference Include="Reference_Databases\SSISDB.dacpac">
+      <HintPath>Reference_Databases\SSISDB.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseSqlCmdVariable>SSISDB</DatabaseSqlCmdVariable>
+    </ArtifactReference>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
@@ -161,7 +172,7 @@
   <ItemGroup>
     <SqlCmdVariable Include="SSISDB">
       <DefaultValue>SSISDB</DefaultValue>
-      <Value>$(SqlCmdVar__3)</Value>
+      <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
   </ItemGroup>
 </Project>

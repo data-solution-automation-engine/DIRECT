@@ -15,7 +15,7 @@ Usage:
     PRINT @ModuleInstanceId;
 */
 
-CREATE PROCEDURE omd.CreateModuleInstance
+CREATE PROCEDURE [omd].[CreateModuleInstance]
 	@ModuleCode VARCHAR(255), -- The name of the Module, as identified in the MODULE_CODE attribute in the MODULE table.
 	@Debug VARCHAR(1) = 'N',
 	@ExecutionRuntimeId VARCHAR(255) = 'N/A',
@@ -24,8 +24,20 @@ CREATE PROCEDURE omd.CreateModuleInstance
 AS
 BEGIN
 
+  DECLARE @EventDetail VARCHAR(4000);
+  DECLARE @EventReturnCode INT;
+
   DECLARE @ModuleId INT;
   SELECT @ModuleId = omd.GetModuleIdByName(@ModuleCode);
+
+  -- Exception handling
+  -- The Module Id cannot be NULL
+  IF @ModuleId IS NULL
+  BEGIN
+    SET @EventDetail = 'The Module Id was not found for Module Code '''+@ModuleCode+'''';  
+    EXEC [omd].[InsertIntoEventLog]
+  	  @EventDetail = @EventDetail;
+  END
 
   IF @Debug = 'Y'
     PRINT 'For Module Code '+@ModuleCode+' the following Module Id was found in omd.MODULE: '+CONVERT(VARCHAR(10),@ModuleId);
@@ -71,6 +83,16 @@ BEGIN
 
   END TRY
   BEGIN CATCH
+
+  	 -- Logging
+	SET @EventDetail = ERROR_MESSAGE();
+    SET @EventReturnCode = ERROR_NUMBER();
+
+    EXEC [omd].[InsertIntoEventLog]
+	  @ModuleInstanceId = @ModuleInstanceId,
+      @EventDetail = @EventDetail,
+	  @EventReturnCode = @EventReturnCode;
+
 	THROW
   END CATCH
   

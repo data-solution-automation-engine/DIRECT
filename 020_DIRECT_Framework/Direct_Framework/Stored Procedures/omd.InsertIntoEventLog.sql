@@ -20,7 +20,7 @@ Usage:
 */
 
 CREATE PROCEDURE [omd].[InsertIntoEventLog]
-	@ModuleInstanceId INT,
+	@ModuleInstanceId INT = 0,
 	@EventDetail VARCHAR(4000),
 	@BatchInstanceId INT = 0,
 	@EventDateTime DATETIME = NULL,
@@ -55,7 +55,7 @@ BEGIN
 	 )
      VALUES
      (
-	   @ModuleInstanceId,
+	   COALESCE(@ModuleInstanceId,0),
 	   @BatchInstanceId,
 	   @EventTypeCode,
 	   @EventDateTime,

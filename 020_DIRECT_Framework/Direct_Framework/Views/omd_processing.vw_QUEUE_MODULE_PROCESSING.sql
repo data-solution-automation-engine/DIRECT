@@ -35,4 +35,4 @@ FROM (
 	) as sq
 WHERE BY_DATA_STORE = 1
 	AND EXECUTION_STATUS_CODE != 'E'
-	AND NOT EXISTS (SELECT package_name FROM SSISDB.[catalog].executions jobs WHERE end_time IS NULL and jobs.package_name = MODULE_CODE + '.dtsx' COLLATE DATABASE_DEFAULT)
+	AND NOT EXISTS (SELECT package_name FROM [$(SSISDB)].[catalog].executions jobs WHERE end_time IS NULL and jobs.package_name = MODULE_CODE + '.dtsx' COLLATE DATABASE_DEFAULT)
