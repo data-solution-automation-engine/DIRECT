@@ -84,31 +84,33 @@ Usage:
   IF @ModuleId = NULL OR @ModuleId = 0 
     THROW 50000,'The Module Id could not be retrieved based on the Module Instance Id.',1
 
-  SELECT @PreviousModuleInstanceOutcome =
-      COALESCE 
-      (
-        (
-		 SELECT TOP 1
-          NEXT_RUN_INDICATOR
-         FROM omd.MODULE_INSTANCE main
-         WHERE
-             main.MODULE_ID = @ModuleId
-         AND main.MODULE_INSTANCE_ID != @ModuleInstanceId
-         ORDER BY main.MODULE_INSTANCE_ID DESC
-	    )
-       , 'S') -- If there is no Module Instance Id, the process will resolve to succeeded.
+  --SELECT @PreviousModuleInstanceOutcome =
+  --    COALESCE 
+  --    (
+  --      (
+		-- SELECT TOP 1
+  --        NEXT_RUN_INDICATOR
+  --       FROM omd.MODULE_INSTANCE main
+  --       WHERE
+  --           main.MODULE_ID = @ModuleId
+  --       AND main.MODULE_INSTANCE_ID != @ModuleInstanceId
+  --       ORDER BY main.MODULE_INSTANCE_ID DESC
+	 --   )
+  --     , 'S') -- If there is no Module Instance Id, the process will resolve to succeeded.
+
+  -- NOTE 2020-10-20, removed check for previous failed instances to set loadwindow as the loadwindow is removed upon rerunning a failed
 
   IF @Debug = 'Y'
       PRINT 'The previous Module Instance Id was evaluated as: '+@PreviousModuleInstanceOutcome+'.';
 
   -- If the most recent run prior to the active Instance Id (now) is not failed, continue.
-  IF @PreviousModuleInstanceOutcome = 'R'
-    BEGIN
-      IF @Debug = 'Y'
-        PRINT 'The previous Module Instance was a failure, so no new load window is set until this is resolved - end of procedure.';
-	  GOTO EndOfProcedure
-    END
-  ELSE
+  --IF @PreviousModuleInstanceOutcome = 'R'
+  --  BEGIN
+  --    IF @Debug = 'Y'
+  --      PRINT 'The previous Module Instance was a failure, so no new load window is set until this is resolved - end of procedure.';
+	 -- GOTO EndOfProcedure
+  --  END
+  --ELSE
   BEGIN
     BEGIN TRY     
     
@@ -134,10 +136,11 @@ Usage:
            WHERE B.MODULE_ID = '+CONVERT(VARCHAR(10),@ModuleId)+'
          ) -- Maps to INTERVAL_START_DATETIME which is the last datetime of the previous window.
        , (
-           SELECT COALESCE(MAX(LOAD_DATETIME),''1900-01-01'')
+           SELECT COALESCE(MAX(omd_load_ts),''1900-01-01'')
            FROM '+@TableCode+' sdo
-           JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
-           WHERE modinst.EXECUTION_STATUS_CODE=''S''
+           --JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
+           --WHERE modinst.EXECUTION_STATUS_CODE=''S''
+		   --RV 2020-09-01 commented out because PSA tables are not integrated with load windows / OMD yet.
          ) -- Maps to INTERVAL_END_DATETIME
        ,NULL --INTERVAL_START_IDENTIFIER
        ,NULL --INTERVAL_END_IDENTIFIER
@@ -169,8 +172,8 @@ Usage:
        , (
            SELECT COALESCE(MAX('+@LoadWindowIdentifierAttributeName+'),''0'')
            FROM '+@TableCode+' sdo
-           JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
-           WHERE modinst.EXECUTION_STATUS_CODE=''S''
+           --JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
+           --WHERE modinst.EXECUTION_STATUS_CODE=''S''
          ) -- Maps to INTERVAL_END_IDENTIFIER
       )'
     
@@ -201,6 +204,3 @@ Usage:
     EndOfProcedure:
    -- End label
 END
-GO
-
-
