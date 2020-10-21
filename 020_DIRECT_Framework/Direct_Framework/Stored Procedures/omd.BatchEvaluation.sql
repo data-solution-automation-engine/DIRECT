@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 Process: Batch Evaluation
 Purpose: Checks if the Batch Instance is able to proceed, based on the state of all Batch Instances related to the particular Batch.
 Input: 
@@ -15,7 +14,7 @@ Usage:
     PRINT @ProcessIndicator;
 */
 
-CREATE   PROCEDURE [omd].[BatchEvaluation]
+CREATE PROCEDURE [omd].[BatchEvaluation]
 	@BatchInstanceId INT, -- The Batch Instance Id
 	@Debug VARCHAR(1) = 'N',
 	@ProcessIndicator VARCHAR(10) = NULL OUTPUT
@@ -301,7 +300,7 @@ BEGIN
      BEGIN TRY
        PRINT 'Batch Instance Id '+CONVERT(VARCHAR(10),@BatchInstanceId)+' was processed';
        PRINT 'The result (processing indicator) is '+@ProcessIndicator;  
-       PRINT CHAR(13)+'-- Completed.';
+       PRINT CHAR(13)+'-- Batch Evaluation completed.';
 	 END TRY
 	 BEGIN CATCH
 	   THROW
