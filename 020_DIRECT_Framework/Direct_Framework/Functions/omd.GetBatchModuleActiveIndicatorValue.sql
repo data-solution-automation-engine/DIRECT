@@ -1,6 +1,4 @@
-﻿
-
-CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
+﻿CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
 (
 	@ModuleId INT,
 	@BatchId INT
@@ -28,7 +26,7 @@ BEGIN
         WHERE BATCH_ID = @BatchId AND MODULE_ID = @ModuleId
       	UNION
       	-- Return if there is nothing, to give at least a result row for further processing
-        SELECT null
+        SELECT 'N/A'
       ) sub
 	)
 
