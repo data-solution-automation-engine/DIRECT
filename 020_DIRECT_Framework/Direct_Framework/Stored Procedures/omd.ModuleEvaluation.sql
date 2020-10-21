@@ -21,12 +21,14 @@ CREATE PROCEDURE [omd].[ModuleEvaluation]
 AS
 BEGIN
   SET NOCOUNT ON;
+  DECLARE @EventDetail VARCHAR(4000);
+  DECLARE @EventReturnCode INT;
 
   DECLARE @ModuleId INT;
   DECLARE @BatchId INT;
   DECLARE @MinimumActiveModuleInstance INT;
   DECLARE @ActiveModuleInstanceCount INT;
-  DECLARE @BatchModuleInactiveIndicator VARCHAR(1);
+  DECLARE @BatchModuleInactiveIndicator VARCHAR(3);
 
   IF @Debug = 'Y'
     PRINT '-- Beginning of Module Evaluation for Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId);
@@ -102,6 +104,7 @@ BEGIN
   */
 
   SELECT @BatchId = omd.GetBatchIdByModuleInstanceId(@ModuleInstanceId);
+
   IF @Debug='Y'
     PRINT CHAR(13)+'-- Start of Batch / Module relationship evalation step.';
 	PRINT 'The Batch Id found is '+CONVERT(VARCHAR(10),@BatchId);
@@ -114,11 +117,15 @@ BEGIN
 
 	  GOTO RollBackEvaluation -- Go to the next process step after this section.
     END
-  ELSE -- Batch Id has a value, so the Module was run from a Batch.
+  ELSE -- Batch Id has a value, so the Module was run from a Batch and we need to check if the Module is active for the Batch.
     BEGIN
+
+	  IF @Debug='Y'
+        PRINT 'The Module Instance was  started from a Batch (Id: '+CONVERT(VARCHAR(10),@BatchId)+'), so processing will evaluate if the Batch/Module registration is correct.';
+
 	  -- The Module Instance was started by a Batch, so we must check if the Module is allowed to run.
-	  SELECT @BatchModuleInactiveIndicator = omd.[GetBatchModuleActiveIndicatorValue](@BatchId,@ModuleId)
-	  
+	  SELECT @BatchModuleInactiveIndicator= omd.[GetBatchModuleActiveIndicatorValue](@BatchId,@ModuleId)	  
+
 	  IF @Debug='Y'
 		PRINT 'The Batch / Module inactive flag value is '+@BatchModuleInactiveIndicator;
 
@@ -138,29 +145,40 @@ BEGIN
 
 		SET @ProcessIndicator = 'Cancel';
 	    GOTO EndOfProcedure
+		-- End
       END
 
-	  IF (@BatchModuleInactiveIndicator = NULL) -- Abort
-      BEGIN
-	  	IF @Debug='Y'
-		  PRINT 'The Module Instance will be aborted.';
+	  IF (@BatchModuleInactiveIndicator = 'N/A') -- Abort
+        BEGIN
+	  	  IF @Debug='Y'
+		    PRINT 'The Module Instance will be aborted.';
 
-	    -- If the inactive indicator at Batch/Module level is NULL then there is an error in the framework registration / setup.
-	    -- In this case, the Module must be aborted. The module was attempted to be run form a Batch it is not registered for).
+	      -- If the inactive indicator at Batch/Module level is NULL then there is an error in the framework registration / setup.
+	      -- In this case, the Module must be aborted. The module was attempted to be run form a Batch it is not registered for).
 	  
-	    -- Call the Abort event.
-	    EXEC [omd].[UpdateModuleInstance]
-		  @ModuleInstanceId = @ModuleInstanceId,
-		  @EventCode = N'Abort',
-		  @Debug = @Debug
+	      -- Call the Abort event.
+	      EXEC [omd].[UpdateModuleInstance]
+		    @ModuleInstanceId = @ModuleInstanceId,
+		    @EventCode = N'Abort',
+		    @Debug = @Debug
 
-		SET @ProcessIndicator = 'Abort';
-	    GOTO EndOfProcedure
-      END
+          SET @ProcessIndicator = 'Abort';
+	      GOTO EndOfProcedure
+	      -- End
+        END
+	  ELSE -- Continue with regular processing
+	    GOTO RollBackEvaluation
 
 	  -- The procedure should not be able to end in this part.
-	  RAISERROR('Incorrect Module Evaluation path encountered.',1,1)
+	  -- Logging and exception handling
+	  SET @EventDetail = 'Incorrect Module Evaluation path encountered during BatchModuleEvaluation step.'
 
+	  EXEC [omd].[InsertIntoEventLog]
+	    @ModuleInstanceId = @ModuleInstanceId,
+		@EventDetail = @EventDetail;
+		
+      GOTO ModuleFailure
+	   --THROW 50000,@EventDetail,1;	   
 	END
 
 
@@ -285,7 +303,12 @@ BEGIN
 		  IF @Debug='Y'
 		  PRINT 'Rollback.';
 
-		  SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE ETL_INSERT_RUN_ID IN '+@ModuleInstanceIdList;
+		  DECLARE @LocalAreaCode VARCHAR(255) = (SELECT omd.GetModuleAreaByModuleId(@ModuleId));
+
+		  IF @LocalAreaCode = 'INT'
+		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
+		  ELSE
+		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE MODULE_INSTANCE_ID IN '+@ModuleInstanceIdList;
 
 		  IF @Debug='Y'
 		    PRINT 'Rollback SQL statement is: '+@SqlStatement;
@@ -340,6 +363,7 @@ BEGIN
   END CATCH
   -- All branches completed
 
+  ModuleFailure:
   -- The procedure should not be able to end in this part.
   -- Module Failure
   EXEC [omd].[UpdateModuleInstance]
@@ -347,8 +371,6 @@ BEGIN
     @Debug = @Debug,
     @EventCode = 'Failure';
   SET @ProcessIndicator = 'Failure';
-
-  RAISERROR('Incorrect Module Evaluation path encountered (post-rollback).',1,1)
 
   /*
     Region: end of processing, final step.
@@ -362,10 +384,21 @@ BEGIN
      BEGIN TRY
        PRINT 'Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' was processed';
        PRINT 'The result (processing indicator) is '+@ProcessIndicator;  
-       PRINT CHAR(13)+'-- Completed.';
+       PRINT CHAR(13)+'-- Module Evaluation completed.';
 	 END TRY
 	 BEGIN CATCH
+
+	    -- Logging and exception handling
+	    SET @EventDetail = ERROR_MESSAGE();
+        SET @EventReturnCode = ERROR_NUMBER();
+
+	    EXEC [omd].[InsertIntoEventLog]
+	      @ModuleInstanceId = @ModuleInstanceId,
+		  @EventDetail = @EventDetail,
+		  @EventReturnCode = @EventReturnCode;
+
 	   THROW
+
 	 END CATCH
   END
 END
