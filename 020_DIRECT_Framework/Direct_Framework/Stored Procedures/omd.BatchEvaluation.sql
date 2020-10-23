@@ -23,6 +23,9 @@ AS
 BEGIN
   SET NOCOUNT ON;
 
+  DECLARE @EventDetail VARCHAR(4000);
+  DECLARE @EventReturnCode INT;
+
   DECLARE @BatchId INT;
   DECLARE @ActiveInstanceCount INT;
 
@@ -230,12 +233,23 @@ BEGIN
 
      END TRY
 	 BEGIN CATCH
-		-- Module Failure
+
+		-- Batch Failure
        EXEC [omd].[UpdateBatchInstance]
 	      @BatchInstanceId = @BatchInstanceId,
 		  @Debug = @Debug,
 		  @EventCode = 'Failure';
 	    SET @ProcessIndicator = 'Failure';
+
+  	    -- Logging
+	   SET @EventDetail = ERROR_MESSAGE();
+	   SET @EventReturnCode = ERROR_NUMBER();
+	   
+	   EXEC [omd].[InsertIntoEventLog]
+	     @BatchInstanceId = @BatchInstanceId,
+	     @EventDetail = @EventDetail,
+	     @EventReturnCode = @EventReturnCode;
+
 	   THROW
 	 END CATCH
   END
@@ -253,7 +267,7 @@ BEGIN
 
         -- After rollback is completed, the process is allowed to continue.
         IF @Debug='Y'
-          PRINT 'The Module Instance will be set to proceed';
+          PRINT 'The Batch Instance will be set to proceed';
 
 	    EXEC [omd].[UpdateBatchInstance]
 	      @BatchInstanceId = @BatchInstanceId,
@@ -265,12 +279,22 @@ BEGIN
 
      END TRY
 	 BEGIN CATCH
-		-- Module Failure
+		-- Batch Failure
        EXEC [omd].[UpdateBatchInstance]
 	      @BatchInstanceId = @BatchInstanceId,
 		  @Debug = @Debug,
 		  @EventCode = 'Failure';
 	    SET @ProcessIndicator = 'Failure';
+
+  	    -- Logging
+	   SET @EventDetail = ERROR_MESSAGE();
+	   SET @EventReturnCode = ERROR_NUMBER();
+	   
+	   EXEC [omd].[InsertIntoEventLog]
+	     @BatchInstanceId = @BatchInstanceId,
+	     @EventDetail = @EventDetail,
+	     @EventReturnCode = @EventReturnCode;
+
 	   THROW
 	 END CATCH
   END
@@ -303,6 +327,16 @@ BEGIN
        PRINT CHAR(13)+'-- Batch Evaluation completed.';
 	 END TRY
 	 BEGIN CATCH
+
+	   -- Logging
+	   SET @EventDetail = ERROR_MESSAGE();
+	   SET @EventReturnCode = ERROR_NUMBER();
+	   
+	   EXEC [omd].[InsertIntoEventLog]
+	     @BatchInstanceId = @BatchInstanceId,
+	     @EventDetail = @EventDetail,
+	     @EventReturnCode = @EventReturnCode;
+
 	   THROW
 	 END CATCH
   END

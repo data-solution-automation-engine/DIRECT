@@ -56,7 +56,7 @@ BEGIN
      VALUES
      (
 	   COALESCE(@ModuleInstanceId,0),
-	   @BatchInstanceId,
+	   COALESCE(@BatchInstanceId,0),
 	   @EventTypeCode,
 	   @EventDateTime,
 	   @EventReturnCode,

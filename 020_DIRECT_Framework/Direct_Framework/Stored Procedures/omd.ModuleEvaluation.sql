@@ -305,9 +305,9 @@ BEGIN
 
 		  DECLARE @LocalAreaCode VARCHAR(255) = (SELECT omd.GetModuleAreaByModuleId(@ModuleId));
 
-		  IF @LocalAreaCode = 'INT'
-		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
-		  ELSE
+		  --IF @LocalAreaCode = 'INT'
+		    --SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
+		  --ELSE
 		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE MODULE_INSTANCE_ID IN '+@ModuleInstanceIdList;
 
 		  IF @Debug='Y'

@@ -197,6 +197,16 @@ Usage:
 
     END TRY 
     BEGIN CATCH
+
+      -- Logging
+	   SET @EventDetail = ERROR_MESSAGE();
+	   SET @EventReturnCode = ERROR_NUMBER();
+	   
+	   EXEC [omd].[InsertIntoEventLog]
+	     @ModuleInstanceId = @ModuleInstanceId,
+	     @EventDetail = @EventDetail,
+	     @EventReturnCode = @EventReturnCode;
+
       THROW
     END CATCH  
   END
