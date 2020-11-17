@@ -21,6 +21,8 @@ CREATE PROCEDURE [omd].[ModuleEvaluation]
 AS
 BEGIN
   SET NOCOUNT ON;
+  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
+
   DECLARE @EventDetail VARCHAR(4000);
   DECLARE @EventReturnCode INT;
 
@@ -359,13 +361,23 @@ BEGIN
       @Debug = @Debug,
       @EventCode = 'Failure';
 	SET @ProcessIndicator = 'Failure';
+
+	-- Logging and exception handling
+	SET @EventDetail = 'Failure during rollack process in Module Evaluation, with error: '+ERROR_MESSAGE();
+    SET @EventReturnCode = ERROR_NUMBER();
+
+	EXEC [omd].[InsertIntoEventLog]
+	  @ModuleInstanceId = @ModuleInstanceId,
+	  @EventDetail = @EventDetail,
+	  @EventReturnCode = @EventReturnCode;
+
     THROW
   END CATCH
   -- All branches completed
 
   ModuleFailure:
-  -- The procedure should not be able to end in this part.
-  -- Module Failure
+  -- The procedure should not be able to end in this part, so this is just to be sure there is a failure reported when this happens.
+    -- Module Failure
   EXEC [omd].[UpdateModuleInstance]
     @ModuleInstanceId = @ModuleInstanceId,
     @Debug = @Debug,
