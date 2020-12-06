@@ -72,8 +72,8 @@
   <ItemGroup>
     <Build Include="Functions\omd.GetConsistencyDateTime.sql" />
     <Build Include="Functions\omd.GetDependency.sql" />
-    <Build Include="Functions\omd.GetLoadWindowDateTimes.sql" />
-    <Build Include="Functions\omd.GetLoadWindowModuleInstance.sql" />
+    <Build Include="Functions\omd.GetModuleLoadWindowDateTime.sql" />
+    <Build Include="Functions\omd.GetModuleLoadWindowIdentifier.sql" />
     <None Include="Scripts\InsertReferenceData.sql" />
     <Build Include="Tables\omd.AREA.sql" />
     <Build Include="Tables\omd.BATCH.sql" />
