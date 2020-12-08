@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [omd].[omd.GetModuleLoadWindowDateTime] ( @ModuleId INT, @start_or_end tinyint)
+﻿CREATE FUNCTION [omd].[GetModuleLoadWindowDateTime] ( @ModuleId INT, @start_or_end tinyint)
 RETURNS DATETIME2(7) AS 
 BEGIN 
        DECLARE @result DATETIME2(7)
