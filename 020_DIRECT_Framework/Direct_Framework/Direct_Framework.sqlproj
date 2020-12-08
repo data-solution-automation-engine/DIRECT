@@ -106,7 +106,7 @@
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
     <None Include="Views\omd_reporting.vw_CURRENT_PROCESSING.sql" />
     <Build Include="Functions\omd.CalculateChangeKey.sql" />
-    <None Include="Functions\omd_processing.NextModuleInQueue.sql" />
+    <Build Include="Functions\omd_processing.NextModuleInQueue.sql" />
     <Build Include="Functions\omd_processing.GetDependentTables.sql" />
     <Build Include="Views\omd_reporting.vw_CUMULATIVE_LOAD_TIME.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_BATCH.sql" />

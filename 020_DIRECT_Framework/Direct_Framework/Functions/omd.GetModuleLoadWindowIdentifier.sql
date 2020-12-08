@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [omd].[GetLoadWindowModuleInstance] (@ModuleId INT, @start_or_end tinyint)
+﻿CREATE FUNCTION [omd].[GetModuleLoadWindowIdentifier] (@ModuleId INT, @start_or_end tinyint)
 RETURNS BIGINT AS 
 BEGIN 
        DECLARE @result BIGINT
