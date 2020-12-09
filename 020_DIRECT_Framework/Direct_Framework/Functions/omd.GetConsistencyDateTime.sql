@@ -2,11 +2,13 @@
 RETURNS DATETIME2(7) AS 
 BEGIN 
 
--- Input variables
+-- Input variables, for debugging only and commented out
 --DECLARE @MeasurementDate DATETIME2(7) = GETDATE();
 --DECLARE @Table_List VARCHAR(MAX) ='';
+
 -- Output variables
 DECLARE @Output DATETIME2(7);
+
 -- Local variables
 DECLARE @EligibleWindowsCount int = 0;
 DECLARE @MaxDateTime DATETIME2(7);
@@ -29,10 +31,12 @@ AS
 , table_names
 AS     
 (
-SELECT DISTINCT DATA_STORE_CODE = substring(@Table_List, starting_position, CASE WHEN end_position = 0 
-																				   THEN len(@Table_List)
-																				   ELSE end_position - starting_position 
-																				 END) 
+SELECT DISTINCT DATA_STORE_CODE = substring(@Table_List, 
+											starting_position, 
+											CASE WHEN end_position = 0 
+												 THEN len(@Table_List)
+												 ELSE end_position - starting_position 
+											END) 
 FROM cteSplits
 ),
 ---- Calculate the output now the individual tables are available
@@ -43,6 +47,8 @@ FROM (
 	SELECT
 		   sct.MODULE_INSTANCE_ID,
 		   modinst.MODULE_ID,
+		   module.MODULE_CODE,
+		   module.DATA_OBJECT_TARGET,
 		   modinst.EXECUTION_STATUS_CODE,
 		   sct.INTERVAL_START_DATETIME,
 		   sct.INTERVAL_END_DATETIME,
@@ -54,42 +60,41 @@ FROM (
 	FROM omd.MODULE_INSTANCE modinst
 	JOIN omd.SOURCE_CONTROL sct ON modinst.MODULE_INSTANCE_ID = sct.MODULE_INSTANCE_ID
 	JOIN omd.MODULE module ON modinst.MODULE_ID = module.MODULE_ID
+	JOIN -- Only join modules that relate to the intended target tables.
+	  (                   
+		SELECT MODULE_ID
+		FROM omd.MODULE
+		INNER JOIN table_names ON LTRIM(table_names.DATA_STORE_CODE) = omd.MODULE.DATA_OBJECT_TARGET
+	  ) module_tables
+	  ON modinst.MODULE_ID = module_tables.MODULE_ID
 	WHERE 1=1
 	  AND module.INACTIVE_INDICATOR='N'
 	  AND modinst.EXECUTION_STATUS_CODE = 'S'
 	  AND sct.INTERVAL_END_DATETIME <= @MeasurementDate
-	 -- AND modinst.MODULE_ID IN
-	 -- (                   
-		--SELECT omd.MODULE_DATA_STORE.MODULE_ID
-		--FROM dbo.OMD_DATA_STORE
-		--	INNER JOIN table_names ON LTRIM(table_names.DATA_STORE_CODE) = OMD_DATA_STORE.DATA_STORE_CODE
-		--	INNER JOIN dbo.OMD_MODULE_DATA_STORE ON OMD_MODULE_DATA_STORE.DATA_STORE_ID = OMD_DATA_STORE.DATA_STORE_ID
-	 --  )
 	) sub
 	WHERE ROW_ORDER=1
-), ELIGIBLE_WINDOWS AS
+)
+, ELIGIBLE_WINDOWS AS
 (
 	SELECT 
 		SUM(CHANGE_DELTA_INDICATOR) AS ELIGIBILITY_COUNT, 
+		(SELECT COUNT (DISTINCT DATA_OBJECT_TARGET) FROM ConsistencyCTE) AS MODULE_TABLE_COUNT,
 		MAX(INTERVAL_END_DATETIME) AS MAX_END_DATETIME,
-		MAX(MODULE_INSTANCE_ID) AS MAX_MODULE_INSTANCE_ID		
+		MAX(MODULE_INSTANCE_ID) AS MAX_MODULE_INSTANCE_ID,
+		(SELECT COUNT(*) FROM table_names) AS TABLE_COUNT
 	FROM ConsistencyCTE
 )
-SELECT @Output = 
-	MIN
+SELECT 
+     @Output = MIN
 	(CASE 
-		WHEN ELIGIBILITY_COUNT = 0 THEN MAX_END_DATETIME
-		WHEN ELIGIBILITY_COUNT != 0 AND CHANGE_DELTA_INDICATOR = 1 THEN INTERVAL_END_DATETIME
+	    WHEN MODULE_TABLE_COUNT < TABLE_COUNT THEN NULL -- Not all tables have been hit with records yet, only relevant when starting from scratch / drop everything.
+		WHEN ELIGIBILITY_COUNT = 0 THEN MAX_END_DATETIME -- If the eligibility count is 0 then MAX(INTERVAL_END_DATETIME), because there are no changes at all to be detected.
+		WHEN ELIGIBILITY_COUNT != 0 AND CHANGE_DELTA_INDICATOR = 1 THEN INTERVAL_END_DATETIME-- If the eligbility count != 0 then remove all rows where START_DATETIME=END_DATETIME and select the MIN(INTERVAL_END_DATETIME) from this result
 	END)
-	--MIN(CASE 
-	--	WHEN ELIGIBILITY_COUNT = 0 THEN MAX_MODULE_INSTANCE_ID
-	--	WHEN ELIGIBILITY_COUNT != 0 AND CHANGE_DELTA_INDICATOR = 1 THEN MODULE_INSTANCE_ID
-	--END) AS CONSISTENCY_MODULE_INSTANCE_ID
 FROM ConsistencyCTE 
 CROSS JOIN ELIGIBLE_WINDOWS
--- If the eligibility count is 0 then MAX(INTERVAL_END_DATETIME)
--- If the eligbility count != 0 then remove all rows where START_DATETIME=END_DATETIME and select the MIN(INTERVAL_END_DATETIME) from this result
 
 
 RETURN @Output;
+
 END;
