@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [omd].[CreateLoadWindow]
-    @ModuleInstanceId INT, -- The currently running Module Instance Id
-	@LoadWindowParameter VARCHAR(10) = 'datetime', -- Can be datetime or identifier, datetime being the default
-	@LoadWindowIdentifierAttributeName VARCHAR(255) = 'N/A', -- Required for identifier handling
-	@Debug VARCHAR(1) = 'N',
-	@LoadWindowStartDateTime DATETIME2(7) = NULL OUTPUT,
-    @LoadWindowEndDateTime DATETIME2(7) = NULL OUTPUT,
-    @LoadWindowStartIdentifier NUMERIC(10) = NULL OUTPUT,
-    @LoadWindowEndIdentifier NUMERIC(10) = NULL OUTPUT
+  @ModuleInstanceId INT, -- The currently running Module Instance Id
+  @LoadWindowParameter VARCHAR(10) = 'datetime', -- Can be datetime or identifier, datetime being the default
+  @LoadWindowAttributeName VARCHAR(255) = 'LOAD_DATETIME', -- Name of the attribute used to determine the load window
+  @Debug VARCHAR(1) = 'N',
+  @LoadWindowStartDateTime DATETIME2(7) = NULL OUTPUT,
+  @LoadWindowEndDateTime DATETIME2(7) = NULL OUTPUT,
+  @LoadWindowStartIdentifier NUMERIC(10) = NULL OUTPUT,
+  @LoadWindowEndIdentifier NUMERIC(10) = NULL OUTPUT
 AS
 BEGIN
 
@@ -27,6 +27,7 @@ Usage:
   EXEC	[omd].[CreateLoadWindow]
 		@ModuleInstanceId = '',
 		@LoadWindowParameter = 'datetime',
+		@LoadWindowAttributeName = 'LOAD_DATETIME',
 		@Debug = N'Y',
 		@LoadWindowStartDateTime = @LoadWindowStartDateTime OUTPUT,
 		@LoadWindowEndDateTime = @LoadWindowEndDateTime OUTPUT
@@ -58,7 +59,7 @@ Usage:
 	  THROW 50000,@EventDetail,1;
     END
 
-  IF @LoadWindowParameter IN ('identifier') AND @LoadWindowIdentifierAttributeName = 'N/A'
+  IF @LoadWindowParameter IN ('identifier') AND @LoadWindowAttributeName = 'N/A'
     BEGIN
 	  SET @EventDetail = 'Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' was called using Load Window Paramter '+@LoadWindowParameter+' but does not have an attribute specified.';  
       EXEC [omd].[InsertIntoEventLog]
@@ -99,6 +100,7 @@ Usage:
   --     , 'S') -- If there is no Module Instance Id, the process will resolve to succeeded.
 
   -- NOTE 2020-10-20, removed check for previous failed instances to set loadwindow as the loadwindow is removed upon rerunning a failed
+  -- This is part of the rollback process in Module Evaluation.
 
   IF @Debug = 'Y'
       PRINT 'The previous Module Instance Id was evaluated as: '+@PreviousModuleInstanceOutcome+'.';
@@ -136,11 +138,10 @@ Usage:
            WHERE B.MODULE_ID = '+CONVERT(VARCHAR(10),@ModuleId)+'
          ) -- Maps to INTERVAL_START_DATETIME which is the last datetime of the previous window.
        , (
-           SELECT COALESCE(MAX(omd_load_ts),''1900-01-01'')
+           SELECT COALESCE(MAX('+@LoadWindowAttributeName+'),''1900-01-01'')
            FROM '+@TableCode+' sdo
-           --JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
-           --WHERE modinst.EXECUTION_STATUS_CODE=''S''
-		   --RV 2020-09-01 commented out because PSA tables are not integrated with load windows / OMD yet.
+           JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
+           WHERE modinst.EXECUTION_STATUS_CODE=''S''
          ) -- Maps to INTERVAL_END_DATETIME
        ,NULL --INTERVAL_START_IDENTIFIER
        ,NULL --INTERVAL_END_IDENTIFIER
@@ -170,7 +171,7 @@ Usage:
            WHERE B.MODULE_ID = '+CONVERT(VARCHAR(10),@ModuleId)+'
          ) -- Maps to INTERVAL_START_IDENTIFIER
        , (
-           SELECT COALESCE(MAX('+@LoadWindowIdentifierAttributeName+'),''0'')
+           SELECT COALESCE(MAX('+@LoadWindowAttributeName+'),''0'')
            FROM '+@TableCode+' sdo
            --JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id=modinst.MODULE_INSTANCE_ID
            --WHERE modinst.EXECUTION_STATUS_CODE=''S''
