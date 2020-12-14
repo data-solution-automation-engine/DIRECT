@@ -46,10 +46,10 @@ from    (
                             when 9 then 'Completed'
                             end, 'package execution not found') as SSIS_execution_status,
                 executions.start_time
-            from SSISDB.[catalog].executions
-                inner join omd.ENVIRONMENT
-                    on ENVIRONMENT.FOLDER_NAME collate database_default = executions.folder_name
-                    and ENVIRONMENT.PROJECT_NAME collate database_default = executions.project_name
+            from [$(SSISDB)].[catalog].executions
+                --inner join omd.ENVIRONMENT
+                --    on ENVIRONMENT.FOLDER_NAME collate database_default = executions.folder_name
+                --    and ENVIRONMENT.PROJECT_NAME collate database_default = executions.project_name
             where executions.end_time is null
             ) check_ssis
         on check_ssis.MODULE_CODE = check_omd.MODULE_CODE;

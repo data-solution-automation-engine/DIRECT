@@ -42,7 +42,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Continuo
                                 @os_run_priority=0, @subsystem=N'TSQL', 
                                 @command=N'CREATE PROCEDURE #runningJobs @NUM_JOBS int OUTPUT   AS 
 (      
- SELECT @NUM_JOBS = (SELECT COUNT(*) FROM [900_Direct_Framework].dbo.OMD_MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE=''E'')
+ SELECT @NUM_JOBS = (SELECT COUNT(*) FROM [900_Direct_Framework].omd.MODULE_INSTANCE WHERE EXECUTION_STATUS_CODE=''E'')
 )
 GO
 --Only execute the queue order when the number of executing ETLs is smaller than the maximum concurrency parameters
@@ -84,7 +84,7 @@ BEGIN
        
        (   -- Select the Module that hasn''t run the longest (oldest age) 
                  SELECT *
-                 FROM [900_Direct_Framework].[dbo].[vw_QUEUE_MODULE_PROCESSING]
+                 FROM [900_Direct_Framework].[omd_processing].[vw_QUEUE_MODULE_PROCESSING]
           ) ETL_QUERY
            ORDER BY END_DATETIME ASC
        
@@ -101,7 +101,7 @@ BEGIN
        END TRY
                    BEGIN CATCH
                       SET @JOBNAME = SUBSTRING(@JOBNAME,1,LEN(@JOBNAME)-5)
-                                  SET @SQL_STRING = N''UPDATE [900_Direct_Framework].dbo.OMD_MODULE SET INACTIVE_INDICATOR=''''Y'''' WHERE MODULE_CODE=''''''+@JOBNAME+''''''''
+                                  SET @SQL_STRING = N''UPDATE [900_Direct_Framework].omd.MODULE SET INACTIVE_INDICATOR=''''Y'''' WHERE MODULE_CODE=''''''+@JOBNAME+''''''''
                                   SET @PRINT_MSG = ''ERROR EXECUTING JOB: ''+@JOBNAME+''.dtsx. DEACTIVATE QUERY: ''+@SQL_STRING+''''
                                   RAISERROR (@PRINT_MSG, 0, 1) WITH NOWAIT
                                   EXECUTE sp_executesql @SQL_STRING
@@ -112,7 +112,7 @@ BEGIN
 END
 DROP PROCEDURE #runningJobs', 
                                 @database_name=N'master', 
-                                @output_file_name=N'D:\Logs\Test_Job_Lbm_Master', 
+                                @output_file_name=N'D:\Logs\Job_Master', 
                                 @flags=2
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
 EXEC @ReturnCode = msdb.dbo.sp_update_job @job_id = @jobId, @start_step_id = 1
@@ -126,4 +126,3 @@ QuitWithRollback:
 EndSave:
 
 GO
-

@@ -19,5 +19,5 @@ WHERE batch.BATCH_ID<>0
 AND batch.INACTIVE_INDICATOR='N'
 AND batch.FREQUENCY_CODE='Queue'
 AND (MOST_RECENT_EXECUTION_BATCH_ID IS NOT NULL OR MOST_RECENT_EXECUTION_BATCH_ID=0)
-AND NOT EXISTS (SELECT null FROM SSISDB.catalog.executions WHERE executions.end_time IS NULL and executions.package_name = batch.BATCH_CODE + '.dtsx' COLLATE DATABASE_DEFAULT)
+AND NOT EXISTS (SELECT null FROM [$(SSISDB)].[catalog].executions WHERE executions.end_time IS NULL and executions.package_name = batch.BATCH_CODE + '.dtsx' COLLATE DATABASE_DEFAULT)
 AND COALESCE(EXECUTION_STATUS_CODE,'S')!='E';

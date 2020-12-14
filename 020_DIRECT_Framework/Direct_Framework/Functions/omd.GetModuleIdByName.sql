@@ -19,8 +19,6 @@ BEGIN
 	  WHERE MODULE_CODE = @ModuleCode
 	)
 
-	SET @ModuleId = COALESCE(@ModuleId,0)
-
 	-- Return the result of the function
 	RETURN @ModuleId
 END

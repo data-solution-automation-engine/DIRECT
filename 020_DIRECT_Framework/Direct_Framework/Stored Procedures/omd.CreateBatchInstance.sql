@@ -22,6 +22,9 @@ CREATE PROCEDURE [omd].[CreateBatchInstance]
 AS
 BEGIN
 
+  DECLARE @EventDetail VARCHAR(4000);
+  DECLARE @EventReturnCode INT;
+
   DECLARE @BatchId INT;
   SELECT @BatchId = omd.GetBatchIdByName(@BatchCode);
 
@@ -57,6 +60,16 @@ BEGIN
 
   END TRY
   BEGIN CATCH
+
+    -- Logging
+	SET @EventDetail = ERROR_MESSAGE();
+	SET @EventReturnCode = ERROR_NUMBER();
+	   
+	EXEC [omd].[InsertIntoEventLog]
+	  @BatchInstanceId = @BatchInstanceId,
+	  @EventDetail = @EventDetail,
+	  @EventReturnCode = @EventReturnCode;
+
 	THROW
   END CATCH
   

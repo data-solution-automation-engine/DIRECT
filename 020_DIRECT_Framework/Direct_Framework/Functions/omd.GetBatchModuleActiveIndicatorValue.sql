@@ -1,11 +1,9 @@
-﻿
-
-CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
+﻿CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
 (
-	@ModuleId INT,
-	@BatchId INT
+	@BatchId INT,
+	@ModuleId INT
 )
-RETURNS VARCHAR(1) AS
+RETURNS VARCHAR(3) AS
 
 -- =============================================
 -- Function: Get the Batch/Module active/inactive flag.
@@ -15,7 +13,7 @@ RETURNS VARCHAR(1) AS
 BEGIN
 	-- Declare ouput variable
 
-	DECLARE @InactiveIndicator VARCHAR(1)
+	DECLARE @InactiveIndicator VARCHAR(3)
 	
 	SET @InactiveIndicator = 
 	(
@@ -28,7 +26,7 @@ BEGIN
         WHERE BATCH_ID = @BatchId AND MODULE_ID = @ModuleId
       	UNION
       	-- Return if there is nothing, to give at least a result row for further processing
-        SELECT null
+        SELECT 'N/A'
       ) sub
 	)
 
