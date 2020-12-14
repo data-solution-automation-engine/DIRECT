@@ -70,7 +70,6 @@
     <Folder Include="Reference_Databases" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Functions\omd.GetConsistencyDateTime.sql" />
     <Build Include="Functions\omd.GetDependency.sql" />
     <Build Include="Functions\omd.GetModuleLoadWindowDateTime.sql" />
     <Build Include="Functions\omd.GetModuleLoadWindowIdentifier.sql" />
@@ -145,6 +144,7 @@
     <Build Include="Stored Procedures\omd.CreateLoadWindow.sql" />
     <Build Include="Functions\omd.GetModuleAreaByModuleId.sql" />
     <Build Include="Stored Procedures\omd.InsertIntoEventLog.sql" />
+    <Build Include="Stored Procedures\omd.GetConsistencyDateTime.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

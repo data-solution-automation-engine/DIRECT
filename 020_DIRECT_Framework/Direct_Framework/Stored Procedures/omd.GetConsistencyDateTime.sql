@@ -316,8 +316,12 @@ BEGIN
 		  SET @localSqlStatement = 'SELECT @localSourceMaxDateTime=COALESCE(MAX(LOAD_DATETIME),''1900-01-01'')' +
 		                           'FROM '+@localDataObjectSource+' sdo '+
 								   'JOIN omd.MODULE_INSTANCE modinst ON sdo.module_instance_id=modinst.MODULE_INSTANCE_ID '+
-                                   'WHERE modinst.EXECUTION_STATUS_CODE=''S'' ' +
+                                   'WHERE 1=1 '+
+								   '--AND modinst.EXECUTION_STATUS_CODE=''S'' ' +
 								   'AND LOAD_DATETIME <= '''+CONVERT(VARCHAR(100),@MeasurementDateTime)+''''
+
+		  -- Commented out EXECUTION_STATUS_CODE line because uncommitted rows should also be evaluated to prevent gaps in the load windows.
+		  -- Otherwise, status changes made to 'S' later on may be left out of the selection.
 
 	      IF @Debug = 'Y'
             PRINT @localSqlStatement;
