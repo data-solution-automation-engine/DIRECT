@@ -186,14 +186,14 @@ Usage:
 	  -- Retrieve values for return
 	  IF @LoadWindowParameter = 'datetime'
 	    BEGIN
-	      SELECT @LoadWindowStartDateTime = [omd].[GetLoadWindowDateTimes](@ModuleId,1);
-	      SELECT @LoadWindowEndDateTime = [omd].[GetLoadWindowDateTimes](@ModuleId,2);
+	      SELECT @LoadWindowStartDateTime = [omd].[GetModuleLoadWindowDateTime](@ModuleId,1);
+	      SELECT @LoadWindowEndDateTime = [omd].[GetModuleLoadWindowDateTime](@ModuleId,2);
 		END
 
 	  IF @LoadWindowParameter = 'identifier'
 	    BEGIN
-	      SELECT @LoadWindowStartIdentifier = [omd].[GetLoadWindowModuleInstance](@ModuleId,1);
-	      SELECT @LoadWindowEndIdentifier = [omd].[GetLoadWindowModuleInstance](@ModuleId,2);
+	      SELECT @LoadWindowStartIdentifier = [omd].[GetModuleLoadWindowIdentifier](@ModuleId,1);
+	      SELECT @LoadWindowEndIdentifier = [omd].[GetModuleLoadWindowIdentifier](@ModuleId,2);
 		END
 
     END TRY 

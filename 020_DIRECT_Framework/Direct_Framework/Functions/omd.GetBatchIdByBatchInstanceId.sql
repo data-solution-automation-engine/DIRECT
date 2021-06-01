@@ -16,7 +16,7 @@ BEGIN
 
 	DECLARE @BatchId INT = 
 	(
-	  SELECT DISTINCT BatchInstance.Batch_ID
+	  SELECT DISTINCT BatchInstance.BATCH_ID
 	  FROM omd.BATCH_INSTANCE BatchInstance
 	  WHERE BatchInstance.BATCH_INSTANCE_ID = @BatchInstanceId
 	)

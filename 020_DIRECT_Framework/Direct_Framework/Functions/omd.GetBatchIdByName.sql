@@ -15,7 +15,7 @@ BEGIN
 
 	DECLARE @BatchId INT = 
 	(
-	  SELECT batch.Batch_ID
+	  SELECT batch.BATCH_ID
 	  FROM omd.BATCH batch 
 	  WHERE BATCH_CODE = @BatchCode
 	)
