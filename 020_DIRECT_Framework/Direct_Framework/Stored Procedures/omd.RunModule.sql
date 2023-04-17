@@ -38,6 +38,7 @@ BEGIN
   DECLARE @ModuleInstanceId INT
   EXEC [omd].[CreateModuleInstance]
     @ModuleCode = @ModuleCode,
+    @Query = @Query,
     @Debug = @Debug,
     @BatchInstanceId = @BatchInstanceId, -- The Batch Instance Id, if the Module is run from a Batch.
     @ModuleInstanceId = @ModuleInstanceId OUTPUT;

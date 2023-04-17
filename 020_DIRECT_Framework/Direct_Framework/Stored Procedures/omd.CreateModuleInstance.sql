@@ -17,6 +17,7 @@ Usage:
 
 CREATE PROCEDURE [omd].[CreateModuleInstance]
 	@ModuleCode VARCHAR(255), -- The name of the Module, as identified in the MODULE_CODE attribute in the MODULE table.
+    @Query VARCHAR(MAX), -- The query that was passed down from the Module, for reference
 	@Debug VARCHAR(1) = 'N',
 	@ExecutionRuntimeId VARCHAR(255) = 'N/A',
 	@BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
@@ -57,12 +58,13 @@ BEGIN
       ROWS_UPDATED, 
       ROWS_DELETED, 
       ROWS_DISCARDED,
-      ROWS_REJECTED
+      ROWS_REJECTED,
+      EXECUTED_CODE
     ) 
     VALUES
     (
       @ModuleId,			-- Module ID
-      SYSDATETIME(), -- Start Datetime
+      SYSDATETIME(),		-- Start Datetime
       'E',					-- Execution Status Code
       'P',					-- Next Run Indicator
       'A',					-- Processing Indicator
@@ -73,7 +75,8 @@ BEGIN
       0,
       0,
       0,
-      0
+      0,
+      @Query
     );
 
 	SET @ModuleInstanceId = SCOPE_IDENTITY();
