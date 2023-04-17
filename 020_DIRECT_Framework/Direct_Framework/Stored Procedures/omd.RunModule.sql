@@ -1,6 +1,6 @@
 ﻿/*
 Process: Run Module
-Purpose: Executes an ETL process / query in a DIRECT wrapper.
+Purpose: Executes a data logistics process / query in a DIRECT wrapper.
 Input: 
   - Module Code
   - Query (statement to execute)
@@ -19,13 +19,15 @@ Usage:
 
     EXEC [omd].[RunModule]
       @ModuleCode = '<>',
+      @Debug = 'Y'
 	  @Query = '<>';
+
 */
 
 CREATE PROCEDURE omd.RunModule
 	-- Add the parameters for the stored procedure here
 	@ModuleCode VARCHAR(255),
-	@Query VARCHAR(MAX),
+	@Query VARCHAR(MAX), -- An input query, which can be custom or calling a procedure
     @BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
 	@QueryResult VARCHAR(10) = NULL OUTPUT
@@ -57,6 +59,10 @@ BEGIN
 	  */
 
       EXEC(@Query);
+
+      /*
+	    Wrap up
+	  */
 
       IF @Debug = 'Y'
         PRINT 'Success pathway';
