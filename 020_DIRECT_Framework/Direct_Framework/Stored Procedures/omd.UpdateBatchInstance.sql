@@ -17,7 +17,7 @@ Usage:
 CREATE PROCEDURE [omd].[UpdateBatchInstance]
 	@BatchInstanceId INT,
 	@EventCode VARCHAR(10) = 'None',
-	@Debug VARCHAR(1) = 'Y'
+	@Debug VARCHAR(1) = 'N'
 AS
 
 BEGIN	

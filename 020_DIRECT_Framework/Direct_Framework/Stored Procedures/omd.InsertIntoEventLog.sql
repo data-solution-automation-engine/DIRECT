@@ -27,7 +27,7 @@ CREATE PROCEDURE [omd].[InsertIntoEventLog]
 	@EventTypeCode VARCHAR(10) = '2',
 	@EventReturnCode VARCHAR(1000) = 'N/A',
 	@ErrorBitmap NUMERIC(20,0) = 0,
-	@Debug VARCHAR(1) = 'Y'
+	@Debug VARCHAR(1) = 'N'
 AS
 
 BEGIN

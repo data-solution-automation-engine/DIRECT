@@ -18,7 +18,7 @@ CREATE PROCEDURE [omd].[UpdateModuleInstance]
 	@EventCode VARCHAR(10) = 'None',
 	@RowCountSelect INT  = 0,
 	@RowCountInsert INT  = 0,
-	@Debug VARCHAR(1) = 'Y'
+	@Debug VARCHAR(1) = 'N'
 AS
 
 BEGIN	

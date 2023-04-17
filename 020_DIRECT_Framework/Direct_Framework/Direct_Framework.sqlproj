@@ -145,6 +145,7 @@
     <Build Include="Functions\omd.GetModuleAreaByModuleId.sql" />
     <Build Include="Stored Procedures\omd.InsertIntoEventLog.sql" />
     <Build Include="Stored Procedures\omd.GetConsistencyDateTime.sql" />
+    <Build Include="Stored Procedures\omd.RegisterModule.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
