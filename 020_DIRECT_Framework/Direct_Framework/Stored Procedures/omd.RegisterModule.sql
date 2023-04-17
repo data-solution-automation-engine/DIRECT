@@ -4,7 +4,7 @@ Purpose: Creates (registers) a new Module, if it doesn't yet exist by name (Modu
 Input: 
   - Module Code
   - Area Code
-  - Debug flag Y/N (default to N)
+  - Debug flag Y/N (defaults to N)
 Returns:
   - Default Stored Procudure return code (no specific output)
 Usage:
@@ -14,15 +14,18 @@ Usage:
 		,@ModuleAreaCode = 'Maintenance'
 		-- Non mandatory
 		,@ModuleDescription = 'Data logistics Example'
-		,@Debug VARCHAR(1) = 'Y'
+		,@Debug = 'Y'
+		-- Output
+		,@ModuleId = @ModuleId OUTPUT;
+	PRINT 'The Module Id is: '+CONVERT(VARCHAR(10),@ModuleId)+'.';
 */
 
 CREATE PROCEDURE [omd].[RegisterModule]
 	@ModuleCode VARCHAR(255), -- Mandatory
 	@ModuleDescription VARCHAR(MAX),
 	@ModuleType VARCHAR(255) = 'SQL',
-	@ModuleSourceDataObject VARCHAR(255) = 'N/A',
-	@ModuleTargetDataObject VARCHAR(255) = 'N/A',
+	@ModuleSourceDataObject VARCHAR(255) = 'NA',
+	@ModuleTargetDataObject VARCHAR(255) = 'NA',
 	@ModuleAreaCode VARCHAR(255), -- Mandatory
 	@ModuleFrequency VARCHAR(255) = 'Continuous', -- Be able to run at any time by default
 	@ModuleInactiveIndicator CHAR(1) = 'N',
@@ -58,11 +61,11 @@ BEGIN
 	IF @Debug = 'Y'
 	BEGIN 
 		IF @ModuleId IS NOT NULL
-			PRINT 'A new Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' has been created for Module Code: '+@ModuleCode;
+			PRINT 'A new Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' has been created for Module Code: '+@ModuleCode+'''.';
 		ELSE
 			BEGIN
-				SELECT @ModuleId = module_id FROM [omd].[MODULE] WHERE module_code = @ModuleCode;
-				PRINT 'The module '''+@ModuleCode+''' already exists in [omd].[MODULE] with Module Id '''+CONVERT(VARCHAR(10),@ModuleId)+'''.';
+				SELECT @ModuleId = MODULE_ID FROM [omd].[MODULE] WHERE MODULE_CODE = @ModuleCode;
+				PRINT 'The Module '''+@ModuleCode+''' already exists in [omd].[MODULE] with Module Id '''+CONVERT(VARCHAR(10),@ModuleId)+'''.';
 				PRINT 'SELECT * FROM [omd].[MODULE] where [MODULE_CODE] = '''+@ModuleCode+'''.';
 			END
 	END
