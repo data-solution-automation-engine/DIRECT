@@ -6,12 +6,13 @@ Input:
   - Area Code
   - Debug flag Y/N (defaults to N)
 Returns:
-  - Default Stored Procudure return code (no specific output)
+  - Module Id
 Usage:
 	DECLARE @ModuleId INT
 	EXEC [omd].[RegisterModule]
 		 @ModuleCode = 'MyNewModule'
 		,@ModuleAreaCode = 'Maintenance'
+		,@Exectuable = 'SELECT GETDATE()'
 		-- Non mandatory
 		,@ModuleDescription = 'Data logistics Example'
 		,@Debug = 'Y'
@@ -30,6 +31,7 @@ CREATE PROCEDURE [omd].[RegisterModule]
 	@ModuleFrequency VARCHAR(255) = 'Continuous', -- Be able to run at any time by default
 	@ModuleInactiveIndicator CHAR(1) = 'N',
 	@Debug VARCHAR(1) = 'N',
+	@Executable VARCHAR(MAX), -- Mandatory
 	@ModuleId INT = NULL OUTPUT -- Return the Module Id as output
 AS
 
@@ -39,12 +41,12 @@ BEGIN
 	  Module Registration.
 	*/
 	BEGIN TRY
-		INSERT INTO [omd].MODULE (MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR)
+		INSERT INTO [omd].MODULE (MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR, [EXECUTABLE])
 		SELECT *
 		FROM 
 		(
-		  VALUES (@ModuleCode, @ModuleDescription, @ModuleType, @ModuleSourceDataObject, @ModuleTargetDataObject,@ModuleAreaCode, @ModuleFrequency, @ModuleInactiveIndicator)    
-		) AS refData( MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR)
+		  VALUES (@ModuleCode, @ModuleDescription, @ModuleType, @ModuleSourceDataObject, @ModuleTargetDataObject,@ModuleAreaCode, @ModuleFrequency, @ModuleInactiveIndicator, @Executable)
+		) AS refData( MODULE_CODE, MODULE_DESCRIPTION, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, INACTIVE_INDICATOR, [EXECUTABLE])
 		WHERE NOT EXISTS 
 		(
 		  SELECT NULL

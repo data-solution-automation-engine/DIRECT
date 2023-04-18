@@ -6,7 +6,7 @@ Input:
   - Area Code
   - Debug flag Y/N (defaults to N)
 Returns:
-  - Default Stored Procudure return code (no specific output)
+  - Batch Id
 Usage:
 	DECLARE @BatchId INT
 	EXEC [omd].[RegisterBatch]
@@ -34,7 +34,7 @@ BEGIN
 	  Batch Registration.
 	*/
 	BEGIN TRY
-		INSERT INTO [omd].Batch (BATCH_CODE, BATCH_DESCRIPTION, FREQUENCY_CODE, INACTIVE_INDICATOR)
+		INSERT INTO [omd].[BATCH] (BATCH_CODE, BATCH_DESCRIPTION, FREQUENCY_CODE, INACTIVE_INDICATOR)
 		SELECT *
 		FROM 
 		(

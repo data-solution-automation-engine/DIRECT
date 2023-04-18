@@ -27,12 +27,29 @@ Usage:
 CREATE PROCEDURE omd.RunModule
 	-- Add the parameters for the stored procedure here
 	@ModuleCode VARCHAR(255),
-	@Query VARCHAR(MAX), -- An input query, which can be custom or calling a procedure
+	@Query VARCHAR(MAX) = NULL, -- An input query, which can be custom or calling a procedure. This will override the executable defined for the Module
     @BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
 	@QueryResult VARCHAR(10) = NULL OUTPUT
 AS
 BEGIN
+
+  IF @Debug = 'Y'
+	PRINT 'Start of the RunModule process.';
+
+  -- Retrieve the code to execute, if not overridden by providing the @query parameter.
+  IF @Query IS NULL
+    BEGIN
+        SELECT @Query = [EXECUTABLE] FROM [omd].[MODULE] WHERE MODULE_CODE = @ModuleCode;
+
+        IF @Debug = 'Y'
+            PRINT 'The executable code retrieved is: '''+@Query+'''.';
+    END
+  ELSE
+    BEGIN
+        IF @Debug = 'Y'
+            PRINT 'A code override has been provided: '''+@Query+'''.';
+    END
 
   -- Create Module Instance
   DECLARE @ModuleInstanceId INT

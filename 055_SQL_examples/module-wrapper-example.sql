@@ -63,7 +63,7 @@ BEGIN
 
   EXEC [omd].[RunModule]
     @ModuleCode = @ModuleCode,
-	@Debug = 'N',
+	@Debug = 'Y',
 	@Query = 'SELECT GETDATE()'
 
 END

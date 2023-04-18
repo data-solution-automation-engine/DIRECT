@@ -147,6 +147,7 @@
     <Build Include="Stored Procedures\omd.GetConsistencyDateTime.sql" />
     <Build Include="Stored Procedures\omd.RegisterModule.sql" />
     <Build Include="Stored Procedures\omd.RegisterBatch.sql" />
+    <Build Include="Stored Procedures\omd.AddModuleToBatch.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
