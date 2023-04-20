@@ -101,11 +101,11 @@
     <Build Include="Schemas\omd.sql" />
     <Build Include="Schemas\omd_processing.sql" />
     <Build Include="Schemas\omd_reporting.sql" />
-    <Build Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
+    <None Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
     <None Include="Views\omd_reporting.vw_CURRENT_PROCESSING.sql" />
     <Build Include="Functions\omd.CalculateChangeKey.sql" />
-    <Build Include="Functions\omd_processing.NextModuleInQueue.sql" />
+    <None Include="Functions\omd_processing.NextModuleInQueue.sql" />
     <Build Include="Functions\omd_processing.GetDependentTables.sql" />
     <Build Include="Views\omd_reporting.vw_CUMULATIVE_LOAD_TIME.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_BATCH.sql" />
@@ -118,12 +118,12 @@
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_MODULES.sql" />
     <Build Include="Views\omd_reporting.vw_EXCEPTIONS_TABLE_CONSISTENCY.sql" />
     <Build Include="Stored Procedures\omd.TableCondensing.sql" />
-    <Build Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
+    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
+    </None>
+    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
+    </None>
     <Build Include="Stored Procedures\omd.CreateModuleInstance.sql" />
     <Build Include="Stored Procedures\omd.ModuleEvaluation.sql" />
     <Build Include="Stored Procedures\omd.RunModule.sql" />
@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Build\Direct_Framework.publish.xml" />
+    <None Include="Direct_Framework.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="Reference_Databases\SSISDB.dacpac">

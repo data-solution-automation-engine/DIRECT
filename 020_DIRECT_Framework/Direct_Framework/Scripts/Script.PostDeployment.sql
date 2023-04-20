@@ -11,5 +11,6 @@ Post-Deployment Script Template
 */
 
 :r .\InsertReferenceData.sql
-:r .\Queue_Job_Batch.sql
-:r .\Queue_Job_Module.sql
+--Local or manage-instance deploymenty only
+--:r .\Queue_Job_Batch.sql
+--:r .\Queue_Job_Module.sql
