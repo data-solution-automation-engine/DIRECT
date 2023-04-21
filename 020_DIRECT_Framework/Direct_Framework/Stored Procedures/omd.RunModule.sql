@@ -30,6 +30,7 @@ CREATE PROCEDURE omd.RunModule
 	@Query VARCHAR(MAX) = NULL, -- An input query, which can be custom or calling a procedure. This will override the executable defined for the Module
     @BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
+    @ModuleInstanceId BIGINT = NULL OUTPUT,
 	@QueryResult VARCHAR(10) = NULL OUTPUT
 AS
 BEGIN
@@ -52,7 +53,6 @@ BEGIN
     END
 
   -- Create Module Instance
-  DECLARE @ModuleInstanceId INT
   EXEC [omd].[CreateModuleInstance]
     @ModuleCode = @ModuleCode,
     @Query = @Query,
