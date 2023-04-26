@@ -148,6 +148,7 @@
     <Build Include="Stored Procedures\omd.RegisterModule.sql" />
     <Build Include="Stored Procedures\omd.RegisterBatch.sql" />
     <Build Include="Stored Procedures\omd.AddModuleToBatch.sql" />
+    <None Include="Stored Procedures\omd.EndDating.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

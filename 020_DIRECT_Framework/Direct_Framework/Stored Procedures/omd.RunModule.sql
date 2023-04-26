@@ -76,6 +76,10 @@ BEGIN
 	    Main ETL block
 	  */
 
+      -- Replace placeholder variable(s)
+      SET @Query = REPLACE(@Query,'@ModuleInstanceId', @ModuleInstanceId)
+
+      -- Run the code
       EXEC(@Query);
 
       /*
