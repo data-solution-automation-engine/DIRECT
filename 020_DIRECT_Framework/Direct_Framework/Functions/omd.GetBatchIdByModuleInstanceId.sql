@@ -22,7 +22,7 @@ BEGIN
 	  WHERE moduleInstance.MODULE_INSTANCE_ID = @ModuleInstanceId
 	)
 
-	SET @BatchId = COALESCE(@BatchId,0)
+	-- SET @BatchId = COALESCE(@BatchId,0)    -- << line removed to catch NULL for incorrect @ModuleInstanceId
 
 	-- Return the result of the function
 	RETURN @BatchId

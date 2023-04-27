@@ -21,7 +21,7 @@ BEGIN
 	  WHERE BatchInstance.BATCH_INSTANCE_ID = @BatchInstanceId
 	)
 
-	SET @BatchId = COALESCE(@BatchId,0)
+	-- SET @BatchId = COALESCE(@BatchId,0)    -- << line removed to catch NULL for incorrect @BatchInstanceId
 
 	-- Return the result of the function
 	RETURN @BatchId

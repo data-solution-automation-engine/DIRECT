@@ -43,6 +43,15 @@ Usage:
   -- Local variables (Module Id and source Data Object)
   DECLARE @ModuleId INT = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
 
+  -- Exception handling
+  -- The Module Id cannot be NULL
+  IF @ModuleId IS NULL
+  BEGIN
+    SET @EventDetail = 'The Module Id was not found for Module Instance Id '''+@ModuleInstanceId+'''';  
+    EXEC [omd].[InsertIntoEventLog]
+  	  @EventDetail = @EventDetail;
+  END
+
   IF @Debug = 'Y'
     BEGIN
       PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the Load Window Parameter is '+@LoadWindowParameter+'.';

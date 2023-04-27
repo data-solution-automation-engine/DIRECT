@@ -37,6 +37,15 @@ BEGIN
 
   SELECT @ModuleId = omd.GetModuleIdByModuleInstanceId(@ModuleInstanceId);
 
+  -- Exception handling
+  -- The Module Id cannot be NULL
+  IF @ModuleId IS NULL
+  BEGIN
+    SET @EventDetail = 'The Module Id was not found for Module Instance Id '''+@ModuleInstanceId+'''';  
+    EXEC [omd].[InsertIntoEventLog]
+  	  @EventDetail = @EventDetail;
+  END
+
   IF @Debug = 'Y'
     PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' was found in omd.MODULE.';
 
@@ -106,6 +115,15 @@ BEGIN
   */
 
   SELECT @BatchId = omd.GetBatchIdByModuleInstanceId(@ModuleInstanceId);
+
+  -- Exception handling
+  -- The Batch Id cannot be NULL
+  IF @BatchId IS NULL
+  BEGIN
+    SET @EventDetail = 'The Batch Id was not found for Module Instance Id '''+@ModelInstanceId+'''';  
+    EXEC [omd].[InsertIntoEventLog]
+  	  @EventDetail = @EventDetail;
+  END
 
   IF @Debug='Y'
     PRINT CHAR(13)+'-- Start of Batch / Module relationship evalation step.';
