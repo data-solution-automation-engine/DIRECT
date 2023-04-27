@@ -20,7 +20,7 @@ BEGIN
 	  WHERE BATCH_CODE = @BatchCode
 	)
 
-	SET @BatchId = COALESCE(@BatchId,0)
+	-- SET @BatchId = COALESCE(@BatchId,0)    -- << line removed to catch NULL for incorrect @BatchCode
 
 	-- Return the result of the function
 	RETURN @BatchId

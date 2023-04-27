@@ -20,7 +20,7 @@ BEGIN
 	  WHERE moduleInstance.MODULE_INSTANCE_ID = @ModuleInstanceId
 	)
 
-	SET @ModuleId = COALESCE(@ModuleId,0)
+	-- SET @ModuleId = COALESCE(@ModuleId,0)    -- << line removed to catch NULL for incorrect @ModuleInstanceId
 
 	-- Return the result of the function
 	RETURN @ModuleId

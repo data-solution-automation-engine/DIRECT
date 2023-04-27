@@ -12,7 +12,7 @@ Usage:
 	EXEC [omd].[RegisterModule]
 		 @ModuleCode = 'MyNewModule'
 		,@ModuleAreaCode = 'Maintenance'
-		,@Exectuable = 'SELECT GETDATE()'
+		,@Executable = 'SELECT GETDATE()'
 		-- Non mandatory
 		,@ModuleDescription = 'Data logistics Example'
 		,@Debug = 'Y'

@@ -34,6 +34,15 @@ BEGIN
 
   SELECT @BatchId = omd.GetBatchIdByBatchInstanceId(@BatchInstanceId);
 
+  -- Exception handling
+  -- The Batch Id cannot be NULL
+  IF @BatchId IS NULL
+  BEGIN
+    SET @EventDetail = 'The Batch Id was not found for Batch Instance Id '''+@BatchInstanceId+'''';  
+    EXEC [omd].[InsertIntoEventLog]
+  	  @EventDetail = @EventDetail;
+  END
+
   IF @Debug = 'Y'
     PRINT 'For Batch Instance Id '+CONVERT(VARCHAR(10),@BatchInstanceId)+' the Batch Id '+CONVERT(VARCHAR(10),@BatchId)+' was found in omd.BATCH.';
 
