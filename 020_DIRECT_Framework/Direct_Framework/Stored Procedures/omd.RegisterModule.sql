@@ -23,7 +23,7 @@ Usage:
 
 CREATE PROCEDURE [omd].[RegisterModule]
 	@ModuleCode VARCHAR(255), -- Mandatory
-	@ModuleDescription VARCHAR(MAX),
+	@ModuleDescription VARCHAR(MAX) = '',
 	@ModuleType VARCHAR(255) = 'SQL',
 	@ModuleSourceDataObject VARCHAR(255) = 'NA',
 	@ModuleTargetDataObject VARCHAR(255) = 'NA',
@@ -36,6 +36,8 @@ CREATE PROCEDURE [omd].[RegisterModule]
 AS
 
 BEGIN
+    IF @Debug = 'Y' 
+		PRINT 'Registering Module for '+@ModuleCode+'.';
 
 	/* 
 	  Module Registration.
@@ -60,15 +62,74 @@ BEGIN
 
 	SET @ModuleId = SCOPE_IDENTITY();
 
-	IF @Debug = 'Y'
-	BEGIN 
-		IF @ModuleId IS NOT NULL
-			PRINT 'A new Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' has been created for Module Code: '+@ModuleCode+'''.';
-		ELSE
-			BEGIN
-				SELECT @ModuleId = MODULE_ID FROM [omd].[MODULE] WHERE MODULE_CODE = @ModuleCode;
-				PRINT 'The Module '''+@ModuleCode+''' already exists in [omd].[MODULE] with Module Id '''+CONVERT(VARCHAR(10),@ModuleId)+'''.';
-				PRINT 'SELECT * FROM [omd].[MODULE] where [MODULE_CODE] = '''+@ModuleCode+'''.';
-			END
-	END
+
+	IF @ModuleId IS NOT NULL
+		BEGIN
+			IF @Debug = 'Y'
+				PRINT 'A new Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' has been created for Module Code: '+@ModuleCode+'''.';
+		END
+	ELSE
+		BEGIN
+			-- Get the Module Id
+			SELECT @ModuleId = MODULE_ID FROM [omd].[MODULE] WHERE MODULE_CODE = @ModuleCode;
+
+			IF @Debug = 'Y'
+				BEGIN
+					PRINT 'The Module '''+@ModuleCode+''' already exists in [omd].[MODULE] with Module Id '''+CONVERT(VARCHAR(10),@ModuleId)+'''.';
+					PRINT 'SELECT * FROM [omd].[MODULE] where [MODULE_CODE] = '''+@ModuleCode+'''.';
+				END
+
+			-- Evaluate the incoming values to see if the Module requires to be updated.
+		    DECLARE @NewChecksum BINARY(20) = HASHBYTES('SHA1', 
+												@ModuleDescription+'!'+
+												@ModuleType+'!'+
+												@ModuleSourceDataObject+'!'+
+												@ModuleTargetDataObject+'!'+
+												@ModuleAreaCode+'!'+
+												@ModuleFrequency+'!'+
+												@Executable);
+
+			IF @Debug = 'Y'
+				PRINT 'The incoming module checksum is '+CONVERT(VARCHAR(40),@NewChecksum)+'.';
+
+			-- Evaluate the existing values to see if the Module requires to be updated.
+			DECLARE @ExistingChecksum BINARY(20);
+			SELECT @ExistingChecksum = HASHBYTES('SHA1', 
+												COALESCE([MODULE_DESCRIPTION],'N/A')+'!'+
+												COALESCE([MODULE_TYPE],'N/A')+'!'+
+												COALESCE([DATA_OBJECT_SOURCE],'N/A')+'!'+
+												COALESCE([DATA_OBJECT_TARGET],'N/A')+'!'+
+												COALESCE([AREA_CODE],'N/A')+'!'+
+												COALESCE([FREQUENCY_CODE],'N/A')+'!'+
+												COALESCE([EXECUTABLE],'N/A'))
+									   FROM [omd].[MODULE] WHERE [MODULE_CODE] = @ModuleCode;
+
+			IF @Debug = 'Y'
+				PRINT 'The previous/existing module checksum is '+CONVERT(VARCHAR(40),@ExistingChecksum)+'.';
+
+			-- Update the existing Module with new values, if they are different.
+			IF @NewChecksum != @ExistingChecksum
+				BEGIN TRY
+					IF @Debug = 'Y'
+						PRINT concat('The checksums are different, and module ''', @ModuleCode, ''' with Module Id '''+CONVERT(VARCHAR(10),@ModuleId)+''' will be updated.');		
+
+					UPDATE [omd].[MODULE] SET
+						[MODULE_DESCRIPTION] = @ModuleDescription,
+						[MODULE_TYPE] = @ModuleType,
+						[DATA_OBJECT_SOURCE] = @ModuleSourceDataObject,
+						[DATA_OBJECT_TARGET] = @ModuleTargetDataObject,
+						[AREA_CODE] = @ModuleAreaCode,
+						[FREQUENCY_CODE] = @ModuleFrequency,
+						[EXECUTABLE] = @Executable
+					WHERE [MODULE_ID] = @ModuleId;
+
+					IF @Debug = 'Y'
+						PRINT concat('The module ''', @ModuleCode, ''' has been updated.');		
+				END TRY
+				BEGIN CATCH
+					IF @Debug = 'Y'
+						PRINT concat('Error. The update for module ''', @ModuleCode, ''' failed.');
+					THROW
+				END CATCH
+		END
 END
