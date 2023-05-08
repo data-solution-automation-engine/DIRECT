@@ -120,7 +120,7 @@ BEGIN
   -- The Batch Id cannot be NULL
   IF @BatchId IS NULL
   BEGIN
-    SET @EventDetail = 'The Batch Id was not found for Module Instance Id '''+@ModelInstanceId+'''';  
+    SET @EventDetail = 'The Batch Id was not found for Module Instance Id '''+@ModuleInstanceId+'''';  
     EXEC [omd].[InsertIntoEventLog]
   	  @EventDetail = @EventDetail;
   END
