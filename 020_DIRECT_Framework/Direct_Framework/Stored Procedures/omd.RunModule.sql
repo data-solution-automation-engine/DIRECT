@@ -30,6 +30,7 @@ CREATE PROCEDURE omd.RunModule
 	@Query VARCHAR(MAX) = NULL, -- An input query, which can be custom or calling a procedure. This will override the executable defined for the Module
     @BatchInstanceId INT = 0, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
+    @ModuleInstanceIdColumnName VARCHAR(255) = 'MODULE_INSTANCE_ID', -- Used to override if certain solutions have other columns names as audit trail id/ module instance id.
     @ModuleInstanceId BIGINT = NULL OUTPUT,
 	@QueryResult VARCHAR(10) = NULL OUTPUT
 AS
@@ -65,6 +66,7 @@ BEGIN
   EXEC [omd].[ModuleEvaluation]
     @ModuleInstanceId = @ModuleInstanceId,
     @Debug = @Debug,
+    @ModuleInstanceIdColumnName = @ModuleInstanceIdColumnName,
     @ProcessIndicator = @ProcessIndicator OUTPUT;
 
     IF @Debug = 'Y'

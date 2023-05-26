@@ -17,6 +17,7 @@ Usage:
 CREATE PROCEDURE [omd].[ModuleEvaluation]
 	@ModuleInstanceId INT, -- The Batch Instance Id, if the Module is run from a Batch.
 	@Debug VARCHAR(1) = 'N',
+	@ModuleInstanceIdColumnName VARCHAR(255) = 'MODULE_INSTANCE_ID',
 	@ProcessIndicator VARCHAR(10) = NULL OUTPUT
 AS
 BEGIN
@@ -328,7 +329,7 @@ BEGIN
 		  --IF @LocalAreaCode = 'INT'
 		    --SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
 		  --ELSE
-		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE MODULE_INSTANCE_ID IN '+@ModuleInstanceIdList;
+		    SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE '+@ModuleInstanceIdColumnName+' IN '+@ModuleInstanceIdList;
 
 		  IF @Debug='Y'
 		    PRINT 'Rollback SQL statement is: '+@SqlStatement;
