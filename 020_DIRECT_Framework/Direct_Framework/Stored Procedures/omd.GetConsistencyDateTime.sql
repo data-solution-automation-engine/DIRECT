@@ -298,12 +298,12 @@ BEGIN
 
 	  IF @Debug = 'Y'
         BEGIN
-          PRINT CHAR(13)+'Working on '+@localDataObjectSource+' with change for logical group change indicator '+@localChangeForLogicalGroup+' an local load window end datetime '+CONVERT(VARCHAR(20),@LocalIntervalEndDatetime);
+          PRINT CHAR(13)+'Working on '+@localDataObjectSource+' with change for logical group change indicator '+@localChangeForLogicalGroup+' an local load window end datetime '+CONVERT(VARCHAR(20),@localIntervalEndDatetime);
 	    END
   
       IF @localChangeForLogicalGroup = 'Y'
 	    BEGIN
-		   INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'N',  @LocalIntervalEndDatetime) 
+		   INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'N',  @localIntervalEndDatetime) 
 
 		   IF @Debug = 'Y'
              PRINT 'There is a change related to this logical group, so the miminum value will be saved for comparison with the other logical groups.';
@@ -333,7 +333,7 @@ BEGIN
 
 		  IF @localSourceMaxDateTime <= @localIntervalEndDatetime -- This table/mapping is up to date, and the results are not necessary to be considered.
 		    BEGIN
-			  INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'Y',  @LocalIntervalEndDatetime) 
+			  INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'Y',  @localIntervalEndDatetime) 
 
 			  IF @Debug = 'Y'
 			  BEGIN
@@ -344,7 +344,7 @@ BEGIN
 			END
 		  ELSE -- E.g. the values in the source are exceeding the load windows for the target
 		    BEGIN
-			  INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'N',  @LocalIntervalEndDatetime) 
+			  INSERT INTO @ConsistencyDateTimeTable VALUES (@localDataObjectSource, 'N',  @localIntervalEndDatetime) 
 			  IF @Debug = 'Y'
 			    PRINT 'The high water mark (localSourceMaxDateTime) higher than the load window. There is a lag that needs to be managed.';
 			END	  
