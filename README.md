@@ -1,4 +1,5 @@
 # DIRECT
+
 Data Integration Run-time Execution Control Tool
 
 This repository contains the following:
@@ -10,4 +11,7 @@ This repository contains the following:
 * Functional specification
 * Support SQL scripts
 
-www.roelantvos.com
+## Learn more
+
+* GitHub information:  [https://github.com/data-solution-automation-engine](https://github.com/data-solution-automation-engine)
+* More information: [www.roelantvos.com](www.roelantvos.com)
