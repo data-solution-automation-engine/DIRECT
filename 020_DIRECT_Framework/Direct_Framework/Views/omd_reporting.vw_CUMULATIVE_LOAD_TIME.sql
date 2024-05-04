@@ -19,7 +19,7 @@ as  (
                   , max(SOURCE_CONTROL.MODULE_INSTANCE_ID) as MODULE_INSTANCE_ID
                 from omd.SOURCE_CONTROL
                 inner join omd.MODULE_INSTANCE on omd.MODULE_INSTANCE.MODULE_INSTANCE_ID = omd.SOURCE_CONTROL.MODULE_INSTANCE_ID
-                where omd.SOURCE_CONTROL.INTERVAL_START_DATETIME = '1900-01-01 00:00:00.0000000'
+                where omd.SOURCE_CONTROL.START_VALUE = '1900-01-01 00:00:00.0000000'
                 group by MODULE_INSTANCE.MODULE_ID
                 ) last_reloaded
             on last_reloaded.MODULE_ID = MODULE_INSTANCE.MODULE_ID
