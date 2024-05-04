@@ -12,15 +12,15 @@
 --NOT FINISHED YET
 
 DECLARE
-  @DataObjectName VARCHAR(MAX) = 'PSA_PROFILER_CUSTOMER_PERSONAL'
- ,@DataObjectSchema VARCHAR(MAX) = 'dbo'
- ,@KeyArray VARCHAR(MAX) = 'CustomerId, Yolo'
- ,@ModuleInstanceId INT = 0
- ,@CurrentRecordIndicatorColumnName VARCHAR(50) = 'CURRENT_RECORD_INDICATOR'
- ,@InscriptionRecordIdColumnName VARCHAR(50) = 'INSCRIPTION_RECORD_ID'
- ,@EffectiveDateColumnName VARCHAR(50) = 'INSCRIPTION_TIMESTAMP'
- ,@ExpiryDateColumnName VARCHAR(50) = 'INSCRIPTION_BEFORE_TIMESTAMP'
- ,@DirectUpdateModuleInstanceIdColumnName VARCHAR(50) = 'MODULE_INSTANCE_UPDATE_ID'
+	 @DataObjectName VARCHAR(MAX) = 'PSA_PROFILER_CUSTOMER_PERSONAL'
+	,@DataObjectSchema VARCHAR(MAX) = 'dbo'
+	,@KeyArray VARCHAR(MAX) = 'CustomerId, Yolo'
+	,@ModuleInstanceId INT = 0
+	,@CurrentRecordIndicatorColumnName VARCHAR(50) = 'CURRENT_RECORD_INDICATOR'
+	,@InscriptionRecordIdColumnName VARCHAR(50) = 'INSCRIPTION_RECORD_ID'
+	,@EffectiveDateColumnName VARCHAR(50) = 'INSCRIPTION_TIMESTAMP'
+	,@ExpiryDateColumnName VARCHAR(50) = 'INSCRIPTION_BEFORE_TIMESTAMP'
+	,@DirectUpdateModuleInstanceIdColumnName VARCHAR(50) = 'MODULE_INSTANCE_UPDATE_ID'
 
 -- The resulting query
 DECLARE @Query AS VARCHAR(MAX);
@@ -57,8 +57,8 @@ WHERE NOT EXISTS
 (
 	/* Find all the records where they are not the most recent, but still have current_record_indicator=''Y'' */
 	SELECT 
-	   sub.'+@KeySelectStatement+'
-	  ,sub.'+@EffectiveDateColumnName+'
+		 sub.'+@KeySelectStatement+'
+		,sub.'+@EffectiveDateColumnName+'
 	FROM '+@DataObjectSchema+'.'+@DataObjectName+' sub
 	JOIN 
 	(
@@ -95,8 +95,3 @@ WHERE NOT EXISTS
 	*/
 
 END
-
-
-
-
-
