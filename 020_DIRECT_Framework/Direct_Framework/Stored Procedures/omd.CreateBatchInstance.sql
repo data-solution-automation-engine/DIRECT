@@ -7,11 +7,11 @@ Input:
 Returns:
   - Batch Instance Id
 Usage:
-    DECLARE @BatchInstanceId INT
-    EXEC [omd].[CreateBatchInstance]
-      @BatchCode = N'<Batch Code / Name>',
-      @BatchInstanceId = @BatchInstanceId OUTPUT;
-    PRINT @BatchInstanceId;
+	DECLARE @BatchInstanceId INT
+	EXEC [omd].[CreateBatchInstance]
+	  @BatchCode = N'<Batch Code / Name>',
+	  @BatchInstanceId = @BatchInstanceId OUTPUT;
+	PRINT @BatchInstanceId;
 */
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
@@ -32,45 +32,45 @@ BEGIN
   -- The Batch Id cannot be NULL
   IF @BatchId IS NULL
   BEGIN
-    SET @EventDetail = 'The Batch Id was not found for Batch Code '''+@BatchCode+'''';  
-    EXEC [omd].[InsertIntoEventLog]
-  	  @EventDetail = @EventDetail;
+	SET @EventDetail = 'The Batch Id was not found for Batch Code '''+@BatchCode+'''';  
+	EXEC [omd].[InsertIntoEventLog]
+	  @EventDetail = @EventDetail;
   END
 
   IF @Debug = 'Y'
-    PRINT 'For Batch Code '+@BatchCode+' the following Batch Id was found in omd.BATCH: '+CONVERT(VARCHAR(10),@BatchId);
+	PRINT 'For Batch Code '+@BatchCode+' the following Batch Id was found in omd.BATCH: '+CONVERT(VARCHAR(10),@BatchId);
 
   BEGIN TRY
 
-    INSERT INTO omd.BATCH_INSTANCE 
+	INSERT INTO omd.BATCH_INSTANCE 
 	(
-      BATCH_ID,  
-      START_DATETIME, 
-      EXECUTION_STATUS_CODE, 
-      NEXT_RUN_INDICATOR, 
-      PROCESSING_INDICATOR,
-      BATCH_EXECUTION_SYSTEM_ID
+	  BATCH_ID,  
+	  START_DATETIME, 
+	  EXECUTION_STATUS_CODE, 
+	  NEXT_RUN_INDICATOR, 
+	  PROCESSING_INDICATOR,
+	  BATCH_EXECUTION_SYSTEM_ID
 	)
-    VALUES
+	VALUES
 	(
-      @BatchId,
-      SYSDATETIME(),        -- Start Datetime
-      'E',					-- Execution Status Code
-      'P',					-- Next Run Indicator
-      'A',					-- Processing Indicator
-      @ExecutionRuntimeId
-    )
-                
+	  @BatchId,
+	  SYSDATETIME(),        -- Start Datetime
+	  'E',					-- Execution Status Code
+	  'P',					-- Next Run Indicator
+	  'A',					-- Processing Indicator
+	  @ExecutionRuntimeId
+	)
+				
 
 	SET @BatchInstanceId = SCOPE_IDENTITY();
 
 	IF @Debug = 'Y'
-      PRINT 'A new Batch Instance Id '+CONVERT(VARCHAR(10),@BatchInstanceId)+' has been created for Batch Code: '+@BatchCode;
+	  PRINT 'A new Batch Instance Id '+CONVERT(VARCHAR(10),@BatchInstanceId)+' has been created for Batch Code: '+@BatchCode;
 
   END TRY
   BEGIN CATCH
 
-    -- Logging
+	-- Logging
 	SET @EventDetail = ERROR_MESSAGE();
 	SET @EventReturnCode = ERROR_NUMBER();
 	   

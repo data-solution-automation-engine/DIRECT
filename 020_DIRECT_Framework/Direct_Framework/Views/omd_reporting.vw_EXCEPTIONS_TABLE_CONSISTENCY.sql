@@ -7,12 +7,12 @@ SELECT
                 a.TABLE_NAME,
                 b.COLUMN_NAME,
                 b.ORDINAL_POSITION
-FROM INFORMATION_SCHEMA.TABLES a 
-JOIN  INFORMATION_SCHEMA.COLUMNS b ON a.TABLE_NAME=b.TABLE_NAME
-WHERE TABLE_TYPE='BASE TABLE' AND a.TABLE_SCHEMA <> 'omd'
+FROM INFORMATION_SCHEMA.TABLES a
+JOIN  INFORMATION_SCHEMA.COLUMNS b ON a.TABLE_NAME = b.TABLE_NAME
+WHERE TABLE_TYPE = 'BASE TABLE' AND a.TABLE_SCHEMA <> 'omd'
 ), Attribute_Detection AS
 (
-SELECT 
+SELECT
                 TABLE_CATALOG,
                 TABLE_NAME,
                 TABLE_SCHEMA,
@@ -30,7 +30,7 @@ SELECT
 FROM TableCheckCTE
 ), SingleRowAttributeEvaluation AS
 (
-SELECT 
+SELECT
                 TABLE_CATALOG, 
                 TABLE_NAME, 
                 TABLE_SCHEMA,
@@ -44,7 +44,7 @@ SELECT
                 SUM(HAS_OMD_CURRENT_RECORD_INDICATOR) AS HAS_OMD_CURRENT_RECORD_INDICATOR,
                 SUM(HAS_OMD_CHANGE_DATETIME) AS HAS_OMD_CHANGE_DATETIME,
                 SUM(HAS_OMD_CHANGE_KEY) AS HAS_OMD_CHANGE_KEY
-FROM Attribute_Detection 
+FROM Attribute_Detection
 GROUP BY
                 TABLE_CATALOG,
                 TABLE_NAME,
@@ -52,8 +52,8 @@ GROUP BY
 ), ErrorEvaluation AS
 (
 SELECT
-                TABLE_CATALOG, 
-                TABLE_NAME, 
+                TABLE_CATALOG,
+                TABLE_NAME,
                 TABLE_SCHEMA,
                 CASE WHEN HAS_OMD_INSERT_MODULE_INSTANCE_ID = 0 THEN 'No change date/time attribute is defined.' ELSE '' END AS ERROR_OMD_INSERT_MODULE_INSTANCE_ID,
                 CASE WHEN HAS_OMD_INSERT_DATETIME = 0 THEN 'No insert datetime attribute is defined.' ELSE '' END AS ERROR_OMD_INSERT_DATETIME,
@@ -65,16 +65,16 @@ SELECT
                 CASE WHEN HAS_OMD_CURRENT_RECORD_INDICATOR = 0 THEN 'No current record indicator attribute is defined.' ELSE '' END AS ERROR_CURRENT_RECORD_INDICATOR,
                 CASE WHEN HAS_OMD_CHANGE_DATETIME = 0 THEN 'No change date/time attribute is defined.' ELSE '' END AS ERROR_OMD_CHANGE_DATETIME,
                 CASE WHEN HAS_OMD_CHANGE_KEY = 0 THEN 'No change key attribute is defined.' ELSE '' END AS ERROR_OMD_CHANGE_KEY
-                                
+
 FROM SingleRowAttributeEvaluation
 ), SingleErrorEvaluation AS
 (
 SELECT 
-                TABLE_CATALOG, 
-                TABLE_NAME, 
+                TABLE_CATALOG,
+                TABLE_NAME,
                 TABLE_SCHEMA,
                 LTRIM(RTRIM(
-                                ERROR_OMD_INSERT_MODULE_INSTANCE_ID + ' ' + 
+                                ERROR_OMD_INSERT_MODULE_INSTANCE_ID + ' ' +
                                 ERROR_OMD_INSERT_DATETIME + ' ' +
                                 ERROR_OMD_EVENT_DATETIME + ' ' +
                                 ERROR_OMD_RECORD_SOURCE + ' ' +
@@ -83,7 +83,7 @@ SELECT
                                 ERROR_HASH_FULL_RECORD + ' ' +
                                 ERROR_CURRENT_RECORD_INDICATOR + ' ' +
                                 ERROR_OMD_CHANGE_KEY + ' ' + 
-                                ERROR_OMD_CHANGE_DATETIME + ' ' 
+                                ERROR_OMD_CHANGE_DATETIME + ' '
                 )) AS ERROR_TOTAL
 FROM ErrorEvaluation
 )

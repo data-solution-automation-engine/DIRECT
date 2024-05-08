@@ -29,7 +29,7 @@ Usage:
 		@EndValue = @EndValue OUTPUT
 
   SELECT 
-        @StartValue as N'@StartValue',
+		@StartValue as N'@StartValue',
 		@EndValue as N'@EndValue'
 */
 
@@ -41,12 +41,12 @@ Usage:
 
   -- Exception handling
   IF @ModuleId IS NULL
-    -- The Module Id cannot be NULL
+	-- The Module Id cannot be NULL
 	BEGIN
-      SET @EventDetail = 'The Module Id was not found for Module Instance Id '''+CONVERT(VARCHAR(10),@ModuleInstanceId)+'''';
-      EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
+	  SET @EventDetail = 'The Module Id was not found for Module Instance Id '''+CONVERT(VARCHAR(10),@ModuleInstanceId)+'''';
+	  EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
 
-      THROW 50000,@EventDetail,1;
+	  THROW 50000,@EventDetail,1;
 	END
 
   -- Figure out what the source is.
@@ -55,30 +55,30 @@ Usage:
 
   IF @Debug = 'Y'
 	BEGIN
-      PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the following Module Id was found in omd.MODULE: '+CONVERT(VARCHAR(10),@ModuleId)+'.';
+	  PRINT 'For Module Instance Id '+CONVERT(VARCHAR(10),@ModuleInstanceId)+' the following Module Id was found in omd.MODULE: '+CONVERT(VARCHAR(10),@ModuleId)+'.';
 	  PRINT 'For Module Id '+CONVERT(VARCHAR(10),@ModuleId)+' the Source Data Object is '+@SourceDataObject+'.';
 	END
 
   -- Exception handling
   IF @ModuleId = NULL OR @ModuleId = 0 
-    THROW 50000,'The Module Id could not be retrieved based on the Module Instance Id.',1
+	THROW 50000,'The Module Id could not be retrieved based on the Module Instance Id.',1
 
   BEGIN TRY
-  	-- Parse the start value as input, or revert to default.
+	-- Parse the start value as input, or revert to default.
 	DECLARE @StartValueSql VARCHAR(MAX);
-    BEGIN
+	BEGIN
 		IF @StartValue IS NOT NULL
 			BEGIN
 				IF @Debug='Y'
 					BEGIN
 						PRINT 'A load window start value was provided: '+CONVERT(VARCHAR(100),@StartValue);
-                    END
-                    
-                    SET @StartValueSql = ''''+CONVERT(VARCHAR(100),@StartValue)+'''';
-            END
-        ELSE
-            BEGIN
-                SET @StartValueSql = 
+					END
+					
+					SET @StartValueSql = ''''+CONVERT(VARCHAR(100),@StartValue)+'''';
+			END
+		ELSE
+			BEGIN
+				SET @StartValueSql = 
 'SELECT
 	END_VALUE AS NEW_START_VALUE
 FROM 
@@ -93,85 +93,85 @@ FROM
 WHERE RN=1';
 
 				IF @Debug='Y'
-                    BEGIN
-                        PRINT 'No load window start value was provided, so the most recent value will be retrieved from the source control table for the source data object.';
-                        PRINT 'The following code will be used to determin the start value: '+@StartValueSql;
-                    END
-            END
+					BEGIN
+						PRINT 'No load window start value was provided, so the most recent value will be retrieved from the source control table for the source data object.';
+						PRINT 'The following code will be used to determin the start value: '+@StartValueSql;
+					END
+			END
 	END
 
 	-- Parse the end value as input, or revert to default.
 	DECLARE @EndValueSql VARCHAR(MAX);
-    BEGIN
+	BEGIN
 		IF @EndValue IS NOT NULL
 			BEGIN
 				IF @Debug='Y'
 					BEGIN
 						PRINT 'A load window end value was provided: '+CONVERT(VARCHAR(100),@EndValue);
-                    END
-                    
-                    SET @EndValueSql = ''''+CONVERT(VARCHAR(100),@EndValue)+'''';
-            END
-        ELSE
-            BEGIN
-                SET @EndValueSql = 
+					END
+					
+					SET @EndValueSql = ''''+CONVERT(VARCHAR(100),@EndValue)+'''';
+			END
+		ELSE
+			BEGIN
+				SET @EndValueSql = 
 'SELECT COALESCE(MAX('+@LoadWindowAttributeName+'),''1900-01-01'') AS END_VALUE
 FROM '+@SourceDataObject+' sdo
 JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id = modinst.MODULE_INSTANCE_ID
 WHERE modinst.EXECUTION_STATUS_CODE=''S''';
 
 				IF @Debug='Y'
-                    BEGIN
-                        PRINT 'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.';
-                        PRINT 'The following code will be used to determin the end value: '+@EndValueSql;
-                    END
-            END
+					BEGIN
+						PRINT 'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.';
+						PRINT 'The following code will be used to determin the end value: '+@EndValueSql;
+					END
+			END
 	END
 	
 	DECLARE @SqlStatement VARCHAR(MAX);
 	SET @SqlStatement = '
-          INSERT INTO omd.[SOURCE_CONTROL]
-          (
+		  INSERT INTO omd.[SOURCE_CONTROL]
+		  (
 			 [MODULE_ID]
-            ,[MODULE_INSTANCE_ID]
-            ,[INSERT_DATETIME]
-            ,[START_VALUE]
-            ,[END_VALUE]
-          )
-          VALUES
-          (
-             '+CONVERT(VARCHAR(10),@ModuleId)+'
+			,[MODULE_INSTANCE_ID]
+			,[INSERT_DATETIME]
+			,[START_VALUE]
+			,[END_VALUE]
+		  )
+		  VALUES
+		  (
+			 '+CONVERT(VARCHAR(10),@ModuleId)+'
 			,'+CONVERT(VARCHAR(10),@ModuleInstanceId)+'
-            ,SYSDATETIME()
-            ,(  
+			,SYSDATETIME()
+			,(  
 			   '+@StartValueSql+'
-             ) -- Interval Start Value
-           , (
-               '+@EndValueSql+'
-             ) -- Interval End Value
-          )'
+			 ) -- Interval Start Value
+		   , (
+			   '+@EndValueSql+'
+			 ) -- Interval End Value
+		  )'
 
 	IF @Debug='Y'
-      PRINT 'Load Window SQL statement is: '+@SqlStatement;      
+	  PRINT 'Load Window SQL statement is: '+@SqlStatement;      
 
-    EXEC (@SqlStatement);
-    
+	EXEC (@SqlStatement);
+	
 	-- Retrieve values for return.
 	SELECT @StartValue = [omd].[GetModuleLoadWindowValue](@ModuleId,1);
 	SELECT @EndValue = [omd].[GetModuleLoadWindowValue](@ModuleId,2);
 
   END TRY 
   BEGIN CATCH
-      -- Logging
+	  -- Logging
 	   SET @EventDetail = ERROR_MESSAGE();
 	   SET @EventReturnCode = ERROR_NUMBER();
 	   
 	   EXEC [omd].[InsertIntoEventLog]
-	     @ModuleInstanceId = @ModuleInstanceId,
-	     @EventDetail = @EventDetail,
-	     @EventReturnCode = @EventReturnCode;
+		 @ModuleInstanceId = @ModuleInstanceId,
+		 @EventDetail = @EventDetail,
+		 @EventReturnCode = @EventReturnCode;
 
-      THROW
+	  THROW
   END CATCH
 
   EndOfProcedure:

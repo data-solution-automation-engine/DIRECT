@@ -10,7 +10,7 @@ Returns:
 Usage:
 	DECLARE @BatchId INT
 	EXEC [omd].[AddModuleToBatch]
-	     @ModuleCode = 'MyNewModule'
+		 @ModuleCode = 'MyNewModule'
 		,@BatchCode = 'MyNewBatch'
 		-- Non mandatory
 		,@Debug = 'Y'
@@ -45,7 +45,7 @@ BEGIN
 	END
 	END TRY
 	BEGIN CATCH
-	    THROW 50000,'Incorrect Module Code specified.',1
+		THROW 50000,'Incorrect Module Code specified.',1
 	END CATCH
 
 	-- Find the Batch Id
@@ -64,7 +64,7 @@ BEGIN
 	END
 	END TRY
 	BEGIN CATCH
-	    THROW 50000,'Incorrect Batch Code specified.',1
+		THROW 50000,'Incorrect Batch Code specified.',1
 	END CATCH
 
 
@@ -101,7 +101,7 @@ BEGIN
 
 	EndOfProcedureFailure:
 
-    IF @Debug = 'Y'
+	IF @Debug = 'Y'
 		BEGIN
 			PRINT CHAR(13)+'-- Batch/Module addition process encountered errors.';	
 			GOTO EndOfProcedure
@@ -109,7 +109,7 @@ BEGIN
 
 	EndOfProcedureSuccess:
 
-    IF @Debug = 'Y'
+	IF @Debug = 'Y'
 		BEGIN
 			PRINT CHAR(13)+'-- Batch/Module addition process completed succesfully.';	
 			GOTO EndOfProcedure
