@@ -82,8 +82,11 @@ BEGIN
       SET @Query = REPLACE(@Query,'@ModuleInstanceId', @ModuleInstanceId)
 
       -- Run the code
+	  DECLARE @RowCount NUMERIC(38)
       EXEC(@Query);
+	  SET @RowCount = @@ROWCOUNT;
 
+	  IF @Debug = 'Y' PRINT 'The returned row count is ' +CONVERT(VARCHAR(10),@RowCount)
       /*
 	    Wrap up
 	  */
@@ -94,6 +97,7 @@ BEGIN
       -- Module Success
       EXEC [omd].[UpdateModuleInstance]
         @ModuleInstanceId = @ModuleInstanceId,
+		@RowCountInsert = @RowCount,
         @Debug = @Debug,
         @EventCode = 'Success'
 
@@ -107,6 +111,7 @@ BEGIN
       -- Module Failure
       EXEC [omd].[UpdateModuleInstance]
         @ModuleInstanceId = @ModuleInstanceId,
+		@RowCountInsert = @RowCount,
         @Debug = @Debug,
         @EventCode = 'Failure';
 	  
