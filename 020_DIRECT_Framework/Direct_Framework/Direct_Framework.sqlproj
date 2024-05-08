@@ -62,7 +62,6 @@
   <ItemGroup>
     <Folder Include="Functions" />
     <Folder Include="Properties" />
-    <Folder Include="Reference_Databases" />
     <Folder Include="Schemas" />
     <Folder Include="Scripts" />
     <Folder Include="Stored Procedures" />
@@ -132,12 +131,12 @@
     <Build Include="Views\omd_reporting.vw_MODULE_FAILURES.sql" />
     <None Include="Functions\omd_processing.NextModuleInQueue.sql" />
     <None Include="Scripts\InsertReferenceData.sql" />
-    <None Include="Scripts\Queue_Job_Batch.sql"/>
-    <None Include="Scripts\Queue_Job_Module.sql"/>
+    <None Include="Scripts\Queue_Job_Batch.sql" />
+    <None Include="Scripts\Queue_Job_Module.sql" />
     <None Include="Stored Procedures\omd.EndDating.sql" />
     <None Include="Views\omd_processing.vw_CURRENT_PROCESSING.sql" />
-    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql"/>
-    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql"/>
+    <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql" />
+    <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql" />
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -153,11 +152,6 @@
       <HintPath>..\Reference_Databases\bin\Debug\msdb.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseSqlCmdVariable>msdb</DatabaseSqlCmdVariable>
-    </ArtifactReference>
-    <ArtifactReference Include="Reference_Databases\SSISDB.dacpac">
-      <HintPath>Reference_Databases\SSISDB.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-      <DatabaseSqlCmdVariable>SSISDB</DatabaseSqlCmdVariable>
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
