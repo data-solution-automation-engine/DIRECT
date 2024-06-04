@@ -289,7 +289,7 @@ BEGIN
     Region: execution of rollback.
   */
 
-  CallRollback:
+	CallRollback:
   
   IF @Debug='Y'
 	PRINT CHAR(13)+'-- Start of rollback evaluation process step.';
@@ -326,6 +326,8 @@ BEGIN
 
 		  DECLARE @LocalAreaCode VARCHAR(255) = (SELECT omd.GetModuleAreaByModuleId(@ModuleId));
 
+		  IF @TableCode <> 'NA'
+		  BEGIN
 		  --IF @LocalAreaCode = 'INT'
 		    --SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
 		  --ELSE
@@ -342,7 +344,13 @@ BEGIN
 		    PRINT 'Source Control Rollback SQL statement is: '+@SqlStatement;
 
 		  EXEC (@SqlStatement);
-
+		  END
+		  ELSE
+		  BEGIN
+		  	IF @Debug='Y'
+				PRINT 'No rollback is required for '+@TableCode;
+		  END
+			
 		  -- Not implemented expiry date reset. Insert only!
 		  --UPDATE <Table Code> SET EXPIRY_DATETIME = '9999-12-31', CURRENT_RECORD_INDICATOR = 'Y' WHERE MODULE_INSTANCE_ID IN <List>;
 
