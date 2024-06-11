@@ -67,6 +67,7 @@
     <Folder Include="Stored Procedures" />
     <Folder Include="Tables" />
     <Folder Include="Views" />
+    <Folder Include="Dacpac" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Functions\omd_processing.GetDependentTables.sql" />
