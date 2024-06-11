@@ -139,6 +139,7 @@
     <None Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql" />
     <None Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql" />
     <None Include="Views\omd_reporting.vw_QUEUE_PROGRESS.sql" />
+    <Build Include="Dacpac\Direct_Framework.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -168,5 +169,8 @@
       <DefaultValue>SSISDB</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dacpac\Direct_Framework.dacpac" />
   </ItemGroup>
 </Project>
