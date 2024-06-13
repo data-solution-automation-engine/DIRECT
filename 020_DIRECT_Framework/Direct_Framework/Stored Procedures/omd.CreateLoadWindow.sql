@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [omd].[CreateLoadWindow]
   @ModuleInstanceId INT, -- The currently involved Module Instance Id
   @LoadWindowAttributeName VARCHAR(255) = 'INSCRIPTION_TIMESTAMP', -- Name of the attribute used to determine the load window
+  @ModuleInstanceIdColumnName VARCHAR(255) = 'MODULE_INSTANCE_ID',
   @Debug CHAR(1) = 'N',
   @StartValue VARCHAR(MAX) = NULL OUTPUT, -- Can be datetime or identifier, datetime, whatever...
   @EndValue VARCHAR(MAX) = NULL OUTPUT
@@ -23,7 +24,6 @@ Usage:
 
   EXEC	[omd].[CreateLoadWindow]
 		@ModuleInstanceId = '',
-		@LoadWindowAttributeName = 'LOAD_DATETIME',
 		@Debug = N'Y',
 		@StartValue = @StartValue OUTPUT,
 		@EndValue = @EndValue OUTPUT
@@ -32,6 +32,11 @@ Usage:
 		@StartValue as N'@StartValue',
 		@EndValue as N'@EndValue'
 */
+
+  IF @Debug = 'Y'
+	BEGIN
+	  PRINT 'Start of the Create Load Window process (omd.CreateLoadWindow).'
+	END
 
   DECLARE @EventDetail VARCHAR(4000);
   DECLARE @EventReturnCode INT;
@@ -80,7 +85,7 @@ Usage:
 			BEGIN
 				SET @StartValueSql = 
 'SELECT
-	END_VALUE AS NEW_START_VALUE
+	MAX(END_VALUE) AS NEW_START_VALUE
 FROM 
 (
 	SELECT 
@@ -89,13 +94,16 @@ FROM
 	FROM omd.SOURCE_CONTROL A
 	JOIN omd.MODULE_INSTANCE B ON (A.MODULE_INSTANCE_ID = B.MODULE_INSTANCE_ID)
 	WHERE B.MODULE_ID = '+CONVERT(VARCHAR(10),@ModuleId)+'
+	-- Default value
+	UNION 
+	SELECT 1,''1900-01-01''
 ) sub
 WHERE RN=1';
 
 				IF @Debug='Y'
 					BEGIN
 						PRINT 'No load window start value was provided, so the most recent value will be retrieved from the source control table for the source data object.';
-						PRINT 'The following code will be used to determin the start value: '+@StartValueSql;
+						PRINT 'The following code will be used to determin the start value: '+CHAR(13)+@StartValueSql;
 					END
 			END
 	END
@@ -117,13 +125,13 @@ WHERE RN=1';
 				SET @EndValueSql = 
 'SELECT COALESCE(MAX('+@LoadWindowAttributeName+'),''1900-01-01'') AS END_VALUE
 FROM '+@SourceDataObject+' sdo
-JOIN omd.MODULE_INSTANCE modinst ON sdo.omd_module_instance_id = modinst.MODULE_INSTANCE_ID
+JOIN omd.MODULE_INSTANCE modinst ON sdo.'+@ModuleInstanceIdColumnName+' = modinst.MODULE_INSTANCE_ID
 WHERE modinst.EXECUTION_STATUS_CODE=''S''';
 
 				IF @Debug='Y'
 					BEGIN
 						PRINT 'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.';
-						PRINT 'The following code will be used to determin the end value: '+@EndValueSql;
+						PRINT 'The following code will be used to determin the end value: '+CHAR(13)+@EndValueSql;
 					END
 			END
 	END
@@ -152,7 +160,7 @@ WHERE modinst.EXECUTION_STATUS_CODE=''S''';
 		  )'
 
 	IF @Debug='Y'
-	  PRINT 'Load Window SQL statement is: '+@SqlStatement;      
+	  PRINT 'Load Window SQL statement is: '+@SqlStatement;
 
 	EXEC (@SqlStatement);
 	

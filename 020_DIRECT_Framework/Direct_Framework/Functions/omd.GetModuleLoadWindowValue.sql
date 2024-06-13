@@ -2,12 +2,12 @@
 RETURNS DATETIME2(7) AS 
 BEGIN 
     /*
-        The GetModuleLoadWindowDateTime retrieves the start or end value as currently available in the source control table.
+        The GetModuleLoadWindowValue retrieves the start or end value as currently available in the source control table.
         The from part of the load window can be selected by providing the parameter value 1, and 2 is for the closing of the window - the end datetime.
 
         Example usage:
 
-        DECLARE @START_VALUE DATETIME2(7) = [omd].[GetModuleLoadWindowDateTime]((SELECT MODULE_ID FROM [omd].MODULE WHERE MODULE_CODE='<module>'), 1)
+        DECLARE @START_VALUE DATETIME2(7) = [omd].[GetModuleLoadWindowValue]((SELECT MODULE_ID FROM [omd].MODULE WHERE MODULE_CODE='<module>'), 1)
         PRINT @START_VALUE
 
         Load windows can be created via omd.CreateLoadWindow.
