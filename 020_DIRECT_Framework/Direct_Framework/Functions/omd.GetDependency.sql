@@ -1,27 +1,54 @@
-﻿CREATE FUNCTION [omd].[GetDependency] (@SchemaName VARCHAR(128), @Table VARCHAR(128))
+﻿CREATE FUNCTION [dbo].[GetDependency] (@SchemaName VARCHAR(128), @Table VARCHAR(128), @UseFullyQualifiedName CHAR(1) = 'Y')
 RETURNS VARCHAR(MAX) AS 
+
 BEGIN 
+
+/* Debug
+DECLARE @SchemaName VARCHAR(256) = 'vdw'
+DECLARE @Table VARCHAR(256) = 'DIM_CUSTOMER'
+*/
 
 DECLARE @Output VARCHAR(MAX)
 
-SELECT @Output =
-''''+
-stuff
-(
-	(
-		SELECT DISTINCT ', ' + referenced_entity_name
-		FROM sys.sql_expression_dependencies  t2
-		WHERE referencing_id = OBJECT_ID(N''+@SchemaName+'.'+@Table+'')
-		FOR XML PATH('')
-	),
-	1,
-	1,
-	''
-)
-+ ''''
+IF @UseFullyQualifiedName = 'Y'
+	BEGIN
+		SELECT @Output =
+		''''+
+		stuff
+		(
+			(
+				SELECT DISTINCT ', ' + '[' + referenced_database_name+'].'+ '[' + referenced_schema_name+'].'  + '[' + referenced_entity_name + ']'
+				FROM sys.sql_expression_dependencies  t2
+				WHERE referencing_id = OBJECT_ID(N''+@SchemaName+'.'+@Table+'')
+				FOR XML PATH('')
+			),
+			1,
+			1,
+			''
+		)
+		+ ''''
+	END
+ELSE
+	BEGIN
+		SELECT @Output =
+		''''+
+		stuff
+		(
+			(
+				SELECT DISTINCT ', ' + referenced_entity_name
+				FROM sys.sql_expression_dependencies  t2
+				WHERE referencing_id = OBJECT_ID(N''+@SchemaName+'.'+@Table+'')
+				FOR XML PATH('')
+			),
+			1,
+			1,
+			''
+		)
+		+ ''''
+	END
+
 SELECT @Output = LTRIM(RTRIM(@Output));
 
 RETURN @Output;
 
 END
-
