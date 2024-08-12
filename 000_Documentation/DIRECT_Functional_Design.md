@@ -126,7 +126,7 @@ By default, a Module is configured to check if there are earlier erroneous runs 
 
 Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance(s).
 
-This process can be overridden by setting the Next Run Indicator of the Batch Instance to `R` (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
+This process can be overridden by setting the Next Run Status of the Batch Instance to `R` (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
 
 At runtime, information about earlier failed instances is presented as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This specifies that ETL should be able to be rerun and recovery failed attempts.
 
@@ -167,7 +167,7 @@ LAYER | The Layer table contains the list of Layers as defined in the ETL Framew
 MODULE | The Module table contains the unique list of Modules as registered in the framework. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
 MODULE_INSTANCE | At runtime, the framework generates a new Module Instance ID for the Module execution. This information is stored in this table along with ETL process statistics. The Module Instance table is the driving table for process control and recovery as it contain information about the status and results of the Module run. The generated Module Instance ID is stored in the target tables for audit trail purposes. It also contains additional runtime details including the number of rows read (selected), updated, inserted, deleted, updated, discarded or rejected.
 MODULE_PARAMETER | The Module Parameter table creates a relationship between specific parameters and the Modules for which they are applicable. It is best practice to ‘register’ the Modules that require certain parameters in their processing using this table.
-NEXT_RUN_INDICATOR | The Next Run Indicator table contains descriptive attributes about the Next Run Indicator codes that the framework uses during the ETL process.
+NEXT_RUN_INDICATOR | The Next Run Status table contains descriptive attributes about the Next Run Status codes that the framework uses during the ETL process.
 PARAMETER | The Parameter table provides the option to define parameters that can be queried by custom code in the ETL process. This can include (but not limited to!) flags (Initial Load Y/N) or tracking date ranges for moving loading windows into the Presentation Layer.
 PROCESSING_INDICATOR | The Processing Indicator table contains descriptive attributes about the Processing Indicator codes that the framework uses during the ETL process.
 SOURCE_CONTROL | The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
@@ -198,7 +198,7 @@ These codes or flags are:
 
 * Execution Status Code; monitors the outcomes of the ETL process.
 * Processing Indicator; provides the mechanism for internal process control.
-* Next Run Indicator; provides information about how the ETL should operate on the next run, based on current information.
+* Next Run Status; provides information about how the ETL should operate on the next run, based on current information.
 
 Both Batch Instances (signifying one single execution of an ETL workflow) and Module Instances (signifying one single execution of an ETL process) use these flags in the same manner. During the captured events, and in particular during the Module and Batch Evaluation event, the framework performs various checks to verify the data in the process control subsystem.
 
@@ -216,44 +216,42 @@ After proper testing and deployment all runs should complete successfully (Execu
 
 <img src="./Images/Direct_Documentation_Figure9.png" alt="Figure 2" width="100%">
 
-The detailed code purpose is defined in the following table
+The detailed code purpose is defined in the following table:
 
 | Code | Description                                                  |
 | ---- | ------------------------------------------------------------ |
 | Executing | The instance is currently running (executing). This is only visible while the process is actually running. As soon as it is completed this code will be updated to one of the end-state execution codes. |
-| Success | The instance is no longer running after successful completion of the process. |
+| Succeeded | The instance is no longer running after successful completion of the process. |
 | Failed    | The instance is no longer running after completing with failures. |
 | Aborted   | An abort is an attempted execution which led to the instance unable to start. Abort means that the process did not run, but was supposed to. This is typically the result of incorrect configuration or race conditions in the orchestration. The most common reasons for an abort is that another instance of the same Batch or Module is already running. The same logical unit of processing can never run more than once at the same time to maintain data consistency. If this situation is detected the second process will abort before any data is processed.<br /><br />The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship. |
 | Cancelled | The cancelled (skipped) status code indicates that the instance was attempted to be executed, but that the control framework found that it was not necessary to run the process. <br /><br />This can be due to Modules or Batches being disabled in the framework using the 'active indicator'. Disabling processes can be done at Batch, Batch/Module and Module level.<br /><br />Another common scenario is that, when Batches are restarted, earlier successful Modules in that Batch will not be reprocessed. These Module Instances will be skipped / cancelled until the full Batch has completed successfully. This is to prevents data loss. |
 
-### Processing Indicator
+### Internal Processing Status
 
-The Processing Indicator directs the actions of the instance, what the instance is allowed to do next.
+The Internal Processing Status codes direct the internal actions of the instance e.g., what the instance is allowed to do next.
 
-Because there are a number of components which may be applied across different technologies, this indicator is used to share processing directions between them. For example Oracle uses stored procedures to control its processing, while software such as Informatica Powercenter can execute mappings and workflows.
+Because there may be a number of components which may be applied across different technologies, this indicator can be used to share processing directions between them.
 
-The Processing Indicator is the outcome of the Module (or Batch) Evaluation Event. This is an evaluation process that runs before the execution of Instances and the Processing Indicator is the information that the control framework provides based on the evaluation steps.
+The Internal Processing Status is the outcome of the Module (or Batch) Evaluation Event. This is an evaluation process that runs before the execution of Instances and the Internal Processing Status is the information that the control framework provides based on the evaluation steps.
 
-Similar to the Execution Status Code this is a 'read only' attribute.
+| Code | Description                                                  |
+| ---- | ------------------------------------------------------------ |
+| Proceed | The instance can continue on to the next processing. This is the default internal processing value; each process step will evaluate the Internal Process Status code and continue only if it is set to `Proceed`. After the pre-processing has been completed the `Proceed` value is the flag that is required to initiate the main process. |
+| Abort | This exception case indicates that the instance in question was executed, but that another instance of the same Batch or Module is already running (see also the equivalent Execution Status Code for additional detail). This is one of the checks performed before the regular process (Module and/or Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The process will use the Internal Processing Status `Abort` to trigger the Module/Batch `Abort` event which sets the Execution Status Code to `Cancelled`, ending the process gracefully. |
+| Cancel | The instance evaluation has determined that it is not necessary to run this process (see also the equivalent Execution Status Code for additional detail). As with Abort, if the Internal Process Status code is `Cancel` then all further processing should stop after the Execution Status Code has also been updated to `Cancel`. |
+| Rollback | The `Rollback` code is only temporarily set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Internal Processing Status will be set to `Proceed` again to enable the continuation of the process. |
 
-| Code | Value    | Description                                                  |
-| ---- | -------- | ------------------------------------------------------------ |
-| P    | Proceed  | The Instance can continue on to the next step of the processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to `P`. After the pre-processing has been completed the `P` value is the flag that is required to initiate the main ETL process. |
-| A    | Abort    | This exception case indicates that the Instance in question was executed, but that another Instance of the same Batch or Module was already running (see also the equivalent execution status code for more detail). This is one of the sanity checks performed before the regular ETL (Module and Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The process will use the Processing Indicator `A` to trigger the Module/Batch 'Abort' event which sets the Execution Status Code to `C`, ending the process gracefully. |
-| C    | Cancel   | That the evaluation process has determined that it is not necessary to run this ETL process (see also the equivalent execution status code for more detail). As with the Abort, if the process indicator is Cancel then all further processing should stop after the Execution Status Code has been updated to `C` |
-| R    | Rollback | The indicator for rollback is only set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Processing Indicator will be set to `P` again to enable the continuation of the ETL. |
+### Next Run Status
 
-### Next Run Indicator
+The Next Run Status codes are used for internal management of the framework. They are used to pass processing directions between instances of the same entity (e.g,Module or Batch).
 
-The Next Run Indicator is used to pass processing directions between instances of the same entity (Module or Batch).
+The primary function of the Next Run Status codes is to direct the rollback functionality; if an instance fails then the Next Run Status will be set to 'Rollback', which means that an event can be called to remove inserted data directly, or as part of a next instance execution.
 
-The primary function of this code field is to direct the rollback functionality; if an instance fails then the Next Run Indicator will be set to 'Rollback', which means that an event can be called to remove inserted data directly, or as part of a next instance execution.
-
-| Code | Value    | Description                                                  |
-| ---- | -------- | ------------------------------------------------------------ |
-| R    | Rollback | When a current (running) Instance fails the Next Run Indicator for that Instance is updated to `R` to signal the next run to initiate a rollback procedure. At the same time, the Execution Status Code for the current Instance will be set to `F`.<br /><br />Administrators can change the Next Run Indicator value for an Instance to `R` if they want to force a rollback when the next run commences. |
-| P    | Proceed  | The Proceed value `P` will direct the next run of the Batch/Module to continue processing. This is the default processing indicator value; each process step will evaluate the Process Indicator and continue only if it was set to `P`. After the rollback has been completed the `P` value is the flag that is required to initiate the main ETL process. |
-| C    | Cancel   | Administrators can manually set this code to for the Next Run Indicator (i.e. this will not be automatically set by the DIRECT controls) to force a one-off skip of the Instance. |
+| Code | Description                                                  |
+| ---- | ------------------------------------------------------------ |
+| Rollback | When a current (running) Instance fails the Next Run Status for that Instance is updated to `Rollback` to signal the next run to initiate a rollback procedure. At the same time, the Execution Status Code for the current Instance will be set to `Failed`.<br /><br />Administrators can manually change the Next Run Status value for an Instance to `Rollback` if they want to force a rollback when the next run starts. |
+| Proceed  | The `Proceed` code will direct the next run of the Batch/Module to continue processing. This is the default value. Each process step will evaluate the Internal Process Status code and continue only if it was set to `Proceed`. After the rollback has been completed the `Proceed` value is the code that is required to initiate the main process. |
+| Cancel   | Administrators can manually set this code to for the Next Run Status (i.e. this will not be automatically set by the DIRECT controls) to force a one-off skip of the instance. |
 
 ## Event integration
 
@@ -287,7 +285,7 @@ The DIRECT Batch-level events are documented at a more detailed level below:
 
    * Execution Status Code as 'E' (Executing)
    * Processing Indicator as `A` (Abort)
-   * Next Run Indicator as `P` (Proceed)
+   * Next Run Status as `P` (Proceed)
    * Start Date/Time as the Batch Instance Start Date
 
 1. These values will be changed depending on how the rest of the DIRECT housekeeping proceeds. The `A` code for the Processing indicator acts as a safety net for the unlikely event that the DIRECT subsystem fails. In other words the approach is to abort (soft error) the load until the Batch evaluation is completed correctly. The Processing Indicator will be updated as part of the Batch Evaluation event
@@ -325,26 +323,26 @@ The process is as follows:
 
 1. Verify the Inactive Indicator. Only the Batch level indicator requires to be checked. If the Inactive Indicator is set to `Y` the running Instance will be skipped.
 
-1. Retrieve previous Instance details. The Next Run Indicator and the Execution Status Code set by the previous Instance sets the behavior for the running one. The following scenarios are possible:
+1. Retrieve previous Instance details. The Next Run Status and the Execution Status Code set by the previous Instance sets the behaviour for the running one. The following scenarios are possible:
 
-   * If the previous (Batch) Next Run Indicator indicates `C` (Cancel / Skip) this means that the Batch was manually set to inactive for the single run and the Processing Indicator for the current Instance will be set to `C`. This will be further handled by the Batch Skip Event which will close the Instance and set the Execution Status Code to `C` as well during this process.
+   * If the previous (Batch) Next Run Status indicates `C` (Cancel / Skip) this means that the Batch was manually set to inactive for the single run and the Processing Indicator for the current Instance will be set to `C`. This will be further handled by the Batch Skip Event which will close the Instance and set the Execution Status Code to `C` as well during this process.
    * If the previous (Batch) Execution Status Code is `F` this means the previous Batch has failed and the rollback process is initiated
 
-1. Rollback. The default rollback mechanism skips Modules that have successfully completed in a Batch Instance that ultimately failed. This way, no ETL is reprocessed without there being a reason for it. However, the administrator can set the Next Run Indicator manually to `R` to force a full rollback for all Modules associated with the Batch.
+1. Rollback. The default rollback mechanism skips Modules that have successfully completed in a Batch Instance that ultimately failed. This way, no ETL is reprocessed without there being a reason for it. However, the administrator can set the Next Run Status manually to `R` to force a full rollback for all Modules associated with the Batch.
 
-   * If the previous (Batch) Next Run Indicator indicates `R` the rollback process is performed on all Modules (regardless of the Module's Next Run Indicator). Rollback is then executed further on the Module level through the Module Evaluation. This is implemented by overriding the individual Module Instances for recovery (Next Run Indicator  = `R` on Module level).
-   * If the previous (Batch) Next Run Indicator indicates `P` the Modules that were completed successfully are set to be skipped the next time the Batch runs. This is implemented by overriding the Next Run Indicator on Module level to `C` which is further handled by the Module Evaluation.
+   * If the previous (Batch) Next Run Status indicates `R` the rollback process is performed on all Modules (regardless of the Module's Next Run Status). Rollback is then executed further on the Module level through the Module Evaluation. This is implemented by overriding the individual Module Instances for recovery (Next Run Status  = `R` on Module level).
+   * If the previous (Batch) Next Run Status indicates `P` the Modules that were completed successfully are set to be skipped the next time the Batch runs. This is implemented by overriding the Next Run Status on Module level to `C` which is further handled by the Module Evaluation.
 
 1. After the rollback process, or in the case there were no previous failures, the Evaluation is completed and the Processing Indicator is set to `P`. This is the safety catch for the Modules to start. The Modules are individually executed in the order as directed by the Batch
 
    * If at this point the Processing Indicator is `C` (as determined during Batch Evaluation, the Batch will be skipped (Batch Skip/Cancel event)).  
-   Similar to the above, in this scenario multiple runs have been detected and one of the running workflows (the current one) is aborted but there is no reason not to restart normally next time, so the Next Run Indicator is set to `P`.
+   Similar to the above, in this scenario multiple runs have been detected and one of the running workflows (the current one) is aborted but there is no reason not to restart normally next time, so the Next Run Status is set to `P`.
    * Similarly, if the Processing Indicator is `A` the Batch will be aborted (Batch Abort event).
    * As mentioned, if the Processing Indicator is `P` the subsequent sessions (Modules) will start. No Modules are allowed to start unless this indicator equals `P`.
 
 1. Post-processing. The following scenarios are possible:
 
-   * After all Modules have been completed without any issues the Batch Success event will update the Batch Instance to set the (Batch) Execution Status Code to `S` (success), the (Batch) Next Run Indicator as `P` and the current date/time as the End Date/Time.  
+   * After all Modules have been completed without any issues the Batch Success event will update the Batch Instance to set the (Batch) Execution Status Code to `S` (success), the (Batch) Next Run Status as `P` and the current date/time as the End Date/Time.  
    This indicates that the Batch has been completed successfully and can be run normally next time. For Modules 'no issues' in this context means that Modules have received anything but the Execution Status `F`.
    * If a failure is detected at any time during this process the Batch Failure event is initiated. This event sets the (Batch) Execution Status Code to `F` which is used to drive rollbacks on Module level the next time the Batch is initiated.  
     Any meaningful information will be logged to the EVENT_LOG table.
@@ -377,7 +375,7 @@ The Module level events are detailed below:
 
    1. Execution Status Code as `E` (Executing).
    1. Processing Indicator as `A` (Abort).
-   1. Next Run Indicator as `P` (Proceed).
+   1. Next Run Status as `P` (Proceed).
    1. The Start Date Time will be set as the Module Instance Start Date Time as set in step 1
 
 1. This is an insert into the MODULE_INSTANCE table.  
@@ -427,17 +425,17 @@ The process is as follows:
 
 1. If this value is set to `Y` the current Instance will be skipped as this indicates the Module is disabled for the particular Batch
 
-1. Retrieve Previous Instance details. If allowed to continue the Module Evaluation then checks if the previous run(s) have failed or not. It will select the Next Run Indicator value from the previous Module Instance to direct the internal processing. If a failure is detected (the status of the previous instance Next Run Indicator is `R`) this step will create an array of all Module Instances from the last logged successful run to the most recent (failed) run
+1. Retrieve Previous Instance details. If allowed to continue the Module Evaluation then checks if the previous run(s) have failed or not. It will select the Next Run Status value from the previous Module Instance to direct the internal processing. If a failure is detected (the status of the previous instance Next Run Status is `R`) this step will create an array of all Module Instances from the last logged successful run to the most recent (failed) run
 
 1. This effectively selects multiple failed runs for rollback from the point where the run was last successful. This array of (failed) Module Instances will ultimately be used as the 'IN' clause of the Rollback SQL
 
 1. Based on the result of this check the following scenarios are possible:
 
-   * If the previous (Module) Next Run Indicator is `C` (skip / cancel) the run will be finished before the actual ETL starts. This can happen if:
-     * The system administrator has labelled this Module to be disabled for this run by manually setting the Next Run Indicator value to `C` in the Module Instance.
+   * If the previous (Module) Next Run Status is `C` (skip / cancel) the run will be finished before the actual ETL starts. This can happen if:
+     * The system administrator has labelled this Module to be disabled for this run by manually setting the Next Run Status value to `C` in the Module Instance.
      * The previous Batch failed but the specific Module (Instance) was run successfully in that particular Batch and is skipped when the Batch is run again (rollback on Batch level)
 
-   * If the previous Module Next Run Indicator is `R` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Processing Indicator is set to `P` and processing will continue as usual.
+   * If the previous Module Next Run Status is `R` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Processing Indicator is set to `P` and processing will continue as usual.
 
 1. The Module Evaluation effectively returns the Processing Indicator for the current Module Instance. The next step for the processing is to interpret this indicator for the current Module Instance to either stop or continue the processing
 
@@ -451,10 +449,10 @@ The process is as follows:
 
 1. The following scenarios are possible:
 
-    * If the (Module) Processing Indicator is `C` the Module Instance is updated with the Execution Status Code set to `C`, the Next Run Indicator as `P` and the current date/time as the End Date/Time. This is the Module Skip event.
-    * If the Processing Indicator is `A` the Module Instance is updated with the Execution Status Code set to `A`, the Next Run Indicator as `P` and the current date/time as the End Date/Time. This is the Module Abort event.
-    * If the Processing Indicator is `P` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `S` (success), the Next Run Indicator as `P` and the current date/time as the End Date/Time. As a separate step the record counts are updated in the MODULE_INSTANCE table.
-    * If a failure is detected at any time during the process (i.e. either Module start or end process), the Module Failure event is initiated. This event sets the Execution Status Code to `F` and the Next Run Indicator to `R` for the current Instance.  Any meaningful information will be logged to the EVENT_LOG table.
+    * If the (Module) Processing Indicator is `C` the Module Instance is updated with the Execution Status Code set to `C`, the Next Run Status as `P` and the current date/time as the End Date/Time. This is the Module Skip event.
+    * If the Processing Indicator is `A` the Module Instance is updated with the Execution Status Code set to `A`, the Next Run Status as `P` and the current date/time as the End Date/Time. This is the Module Abort event.
+    * If the Processing Indicator is `P` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `S` (success), the Next Run Status as `P` and the current date/time as the End Date/Time. As a separate step the record counts are updated in the MODULE_INSTANCE table.
+    * If a failure is detected at any time during the process (i.e. either Module start or end process), the Module Failure event is initiated. This event sets the Execution Status Code to `F` and the Next Run Status to `R` for the current Instance.  Any meaningful information will be logged to the EVENT_LOG table.
 
 ### Rollback processes
 
