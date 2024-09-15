@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="DIRECT" DTS:DTSID="{85794269-7650-45AC-A4DE-65DDF16C1CFF}" DTS:refId="Package.ConnectionManagers[DIRECT]" DTS:CreationName="OLEDB">
-  <DTS:ObjectData>
-    <DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ConnectionString="provider=SQLNCLI11;server=.;initial catalog=900_Direct_Framework;integrated security=SSPI"></DTS:ConnectionManager>
-  </DTS:ObjectData>
-</DTS:ConnectionManager>
