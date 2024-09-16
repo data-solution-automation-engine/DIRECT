@@ -20,9 +20,8 @@
  *   - Frequency Code
  *   - Active Indicator
  *   - Batch Description
-
+ *
  * Output variables:
- *   - Batch Details (JSON of all BATCH columns)
  *   - Success Indicator (Y/N)
  *   - Message Log
  *
@@ -108,9 +107,6 @@ BEGIN TRY
   IF EXISTS (SELECT 1 FROM @Results)
   BEGIN
       SET @SuccessIndicator = 'Y';
-
-      SELECT @BatchDetails = JSON_QUERY((SELECT * FROM @Results FOR JSON PATH, WITHOUT_ARRAY_WRAPPER));
-
       SET @LogMessage = 'Batch with Code ''' + @BatchCode + ''' was found.'
       SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Batch Found', @LogMessage, @MessageLog)
 

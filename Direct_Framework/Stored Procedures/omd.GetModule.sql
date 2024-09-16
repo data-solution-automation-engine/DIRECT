@@ -18,18 +18,16 @@
  * Outputs as resultset 0:
  *   - Module Id
  *   - Module Code
- *   - Module Area Code
- *   - Executable
- *   - Module Description
  *   - Module Type
- *   - Module Source DataObject
- *   - Module Target DataObject
- *   - Module Frequency
- *   - Module Active Indicator
+ *   - Data Object Source
+ *   - Data Object Target
+ *   - Area Code
+ *   - Frequency Code
+ *   - Active Indicator
+ *   - Module Description
+ *   - Executable
  *
  * Output variables:
- *   - Module Details (JSON of all MODULE columns)
- *   - Executable (JSON of EXECUTABLE column contents)
  *   - Success Indicator (Y/N)
  *   - Message Log
  *
@@ -50,8 +48,6 @@ CREATE PROCEDURE [omd].[GetModule]
   -- Optional parameters
   @Debug                    CHAR(1)         = 'N',
   -- Output parameters
-  @ModuleDetails            NVARCHAR(MAX)   = NULL  OUTPUT,
-  @ModuleExecutable         NVARCHAR(MAX)   = NULL  OUTPUT,
   @SuccessIndicator         CHAR(1)         = 'N'   OUTPUT,
   @MessageLog               NVARCHAR(MAX)   = NULL  OUTPUT
 )
@@ -123,26 +119,6 @@ BEGIN TRY
   IF EXISTS (SELECT 1 FROM @Results)
   BEGIN
     SET @SuccessIndicator = 'Y';
-
-    SELECT @ModuleDetails =
-    JSON_QUERY((
-      SELECT
-        [MODULE_ID],
-        [MODULE_CODE],
-        [MODULE_TYPE],
-        [DATA_OBJECT_SOURCE],
-        [DATA_OBJECT_TARGET],
-        [AREA_CODE],
-        [FREQUENCY_CODE],
-        [ACTIVE_INDICATOR],
-        [MODULE_DESCRIPTION],
-        JSON_QUERY([EXECUTABLE]) AS [EXECUTABLE]
-      FROM @Results
-      FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-    ));
-
-    SELECT @ModuleExecutable = JSON_QUERY([EXECUTABLE]) FROM @Results FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;
-
     SET @LogMessage = 'Module with Code ''' + @ModuleCode + ''' was found.'
     SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Module Found', @LogMessage, @MessageLog)
 
