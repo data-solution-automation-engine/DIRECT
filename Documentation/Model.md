@@ -1,4 +1,6 @@
-# Direct Framework ERD Page
+# Direct Framework Physical Model
+
+This section contains the DIRECT physical model in MermaidChart format. The contents below can be rendered or pasted in the online editor (https://www.mermaidchart.com/).
 
 ```mermaid
 ---

@@ -1,41 +1,18 @@
 # Introduction of DIRECT
 
-DIRECT, the Data Integration & Execution Control Tool, is a data integration control and execution metadata model. It is a core and stand-alone component of the Data Integration Framework.
+DIRECT, the Data Integration & Execution Control Tool, is a metadata model for controlling and executing data integration processes ('processes'). A robust data logistics control framework is essential for many data solutions, and DIRECT can serve as such a framework.
 
-Every Data Integration / Extract Transform and Load (ETL) process is linked to this model which provides the orchestration and management capabilities for data integration.
+Every data logistics process, such as data integration or Extract, Transform, and Load (ETL), can be registered in the DIRECT framework. DIRECT provides orchestration and management capabilities for data integration, ensuring smooth execution and control.
 
-Data Integration in this context is a broad definition covering various implementation techniques such as ELT (Extract Load, Transform - push-down into SQL or underlying processing) and LETS (Load-Extract-Transform-Store).
+DIRECT features a database repository where each data logistics process is registered, and every runtime execution is tracked. This repository serves as a valuable source of information on platform performance, usage trends, and platform growth in terms of both time and size. At its core, DIRECT focuses on defining and orchestrating processes, while also offering advanced features like continuous and parallel processing, as well as transaction control.
 
-Data Integration in this document essentially covers all processes that 'touch' data.
-
-The DIRECT repository captures Data Integration process information, and is an invaluable source of information to monitor how the system is expanding (time, size) but also to drive and monitor processes - a fundamental requirement for parallel processing and transaction control.
-
-The objective of the DIRECT Framework is to provide a structured approach to describing and recording Data integration processes that can be made up of many separate components. This is to be done in such a way that they can be represented and managed as a coherent system.
-
-## Overview
-
-This document covers the design and specifications for the DIRECT metadata repository and the integration (events) for data integration processes.
-
-The DIRECT framework covers a broad variety of process details, including (but not limited to):
-
-* What process information will be stored and how.
-* How a process is integrated into the various defined Layers and Areas.
-* Of what entities the metadata model consists,
-* The available procedures for managing the data solution.
-* Concepts and principles.
-* The logic which can be used to control the processes.
-* Housekeeping functions.
-* Reporting.
-
-The position of the control and execution framework in the overall architecture is:
-
-![Positioning](Images/Direct_Documentation_Figure1_Positioning.png)
+The primary goal of the DIRECT framework is to provide a structured approach to describing and recording data logistics processes, which may consist of many distinct components. This structure allows these processes to be represented and managed as a cohesive system.
 
 ## Concepts
 
 ### Purpose
 
-The process control framework supports the ability to trace back what data has been loaded, when and in what way for every individual data integration process.
+The framework provides the ability to trace back what data has been processed, when and in what way for every individual data logisitcs process.
 
 Any single data element (e.g. attribute value in a table) should be auditable. It should be possible to track the what processes have been run that has led to the visible result.
 
@@ -118,7 +95,7 @@ The following diagram illustrates the layers and technologies involved in this p
 
 ## Rollback and re-processing
 
-When processing errors occur (a data integration process fails), relevant information about the failure is recorded in the repository by the framework. This information can be used to recover from data loading errors and set the data solution back into the original state prior to the occurrence of the error.
+When processing errors occur (a process fails), relevant information about the failure is recorded in the repository by the framework. This information can be used to recover from data loading errors and set the data solution back into the original state prior to the occurrence of the error.
 
 This 'rollback' can be configured at both Batch and Module level.
 
