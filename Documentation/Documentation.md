@@ -1,88 +1,77 @@
-# Introduction of DIRECT
+# The DIRECT Framework
+
+## Introduction
 
 DIRECT, the Data Integration & Execution Control Tool, is a metadata model for controlling and executing data integration processes ('processes'). A robust data logistics control framework is essential for many data solutions, and DIRECT can serve as such a framework.
 
-Every data logistics process, such as data integration or Extract, Transform, and Load (ETL), can be registered in the DIRECT framework. DIRECT provides orchestration and management capabilities for data integration, ensuring smooth execution and control.
+Every data logistics process, such as data integration or Extract, Transform, and Load ('ETL'), can be registered in the DIRECT framework. DIRECT provides orchestration and management capabilities for data integration, ensuring smooth execution and control.
 
 DIRECT features a database repository where each data logistics process is registered, and every runtime execution is tracked. This repository serves as a valuable source of information on platform performance, usage trends, and platform growth in terms of both time and size. At its core, DIRECT focuses on defining and orchestrating processes, while also offering advanced features like continuous and parallel processing, as well as transaction control.
 
 The primary goal of the DIRECT framework is to provide a structured approach to describing and recording data logistics processes, which may consist of many distinct components. This structure allows these processes to be represented and managed as a cohesive system.
 
-## Concepts
+# Concepts
 
-### Purpose
+## Purpose
 
-The framework provides the ability to trace back what data has been processed, when and in what way for every individual data logisitcs process.
+The framework enables tracing of processed data, detailing when and how each data logistics process was handled.
 
-Any single data element (e.g. attribute value in a table) should be auditable. It should be possible to track the what processes have been run that has led to the visible result.
+To ensure that each data element is auditable, every change record must be linked to an audit trail identifier that integrates with the DIRECT framework. In the DIRECT framework this is called the module instance id.
 
-This means that the following information must be available:
+By connecting the module instance id in DIRECT, it becomes possible to determine:
 
-* When a record was inserted.
-* When a record was updated.
-* What the source was where the record originated from.
-* When the event took place that changed the source data.
-* Which process has loaded the data.
-* Within which workflow the data was loaded.
-* Which platform the process took place.
+* When a record was inserted or updated
+* How many records were inserted and/or updated for a given process
+* The source of the change record
+* The event timestamp that triggered the data change
+* The process that impacted the data
+* The workflow, if any, from which the process was initiated
+* The platform on which the process was executed
+* The executable or code used to run the process
+* Whether the process was successful, and if not, the errors encountered
+* How long it takes to complete a process
 
 ## Elements of process information
 
-While the physical components involved in the end-to-end ETL process can vary in scope and can employ a range of technologies, the framework provides a logical layer of abstraction so that a consistent view of the workflow can be visualized, maintained and reported.
+While the physical components involved in data logistics processes can vary in scope and employ a range of technologies, the framework provides a logical layer of abstraction that ensures a consistent view of workflows. This allows for processes to be visualized, maintained, and reported in a uniform manner.
 
-At the core of the framework is a logical model for describing units of work. All ETL processes executing within the Data Warehouse environment conform to this basic two-level hierarchy.
+At the core of the framework is a logical model for describing units of work. All processes within the data platform environment conform to a two-level hierarchy:
 
-* **Batch** – contains a group of executable elements. This group typically applies to a single Layer and single Area but not necessarily so.  
-    A Batch can be defined to fit any purpose by organizing any available Module.
-* **Module** – the smallest executable unit. By definition of the structuring of ETL processes, a Module may only apply to a single Area of the Outline Architecture.  
-    In order to simplify the association of logical units of work and their physical counterparts the physical component model also conforms to a simple two level hierarchy.
-* A Batch equates to an ETL workflow object and only an ETL workflow object.
-* A Module can be an ETL process (Mapping, Package), an Operating System shell script or a SQL script (procedure call).
+* **Batch**: A collection of executable elements, typically applied to a single Layer and Area, though this is not always required. A Batch can be organized for any purpose by grouping available Modules.A Batch equates to a single workflow object. Batches might call other batches to create a multi-level workflow hierarchy
+* **Module**: The smallest executable unit. A Module can be an executable process (e.g. Stored Procedure, Code, Mapping, Package), an Operating System shell script or a SQL script (procedure call).
 
-The following diagram illustrates the logical and physical models for units of work:
+The following diagram illustrates the logical and physical units of work:
 
 <img src="Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
 
-## Orchestration
+## Logical model
 
-The sequencing and submission of modular work units is controlled by two different technologies. Batches are controlled by the enterprise scheduling tool according to the execution plan defined within that environment. The modules within a Batch are sequenced by the ETL engine.
+The concepts and principles of the DIRECT framework can be summarized in this logical model:
 
-In this way it is not possible for a Batch to initiate a Module other than those defined within it nor is it possible for a Module to invoke a Module other than those within its own Batch. Batches are initiated only by the completion of another Batch and only at the direction of the scheduling software.
+<img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model" width="75%" height="75%">
 
-Modules are initiated only through the completion of another Module within the same Batch and are not scheduled directly in the scheduling tool.
+The blue objects are static in nature, these contain the metadata required to define and orchestrate the modules and batches. For a module to run, and the audit trail to be created, a module must know its definition, and any classifications and/or parameters that might apply.
 
-The following figure illustrates the end-to-end orchestration structure for Batches and their Modules:
-
-![Orchestration](Images/Direct_Documentation_Figure3_Orchestration.png "Orchestration")
+The green objects contain runtime metadata, logs of the process execution.
 
 ## Instantiation
 
-The repository is required to record the execution status and history of the defined ETL processes as and when they are invoked. Dedicated data entities are provided for the recording of work unit executions or instances:
+Each time a Batch or Module is executed, a unique instance identifier is generated, known as the Batch or Module instance ID. This identifier is added to the processed data set.
+
+The instance details are stored in the corresponding Batch/Module instance tables, where the status of each process is tracked throughout execution. This ensures full transparency regarding which processes are currently running, have been skipped, failed, or successfully completed.
 
 * Each execution of a Batch results in a Batch Instance.
 * Each execution of a Module results in a Module Instance.
 
-Each instance created is assigned a unique identifier used to tag its output and so allow the system and its users to identify the effects of a discrete component execution. If a Batch or Module is run more than once (due to restarting or re-running) a new instance record is created in order to provide full execution history.
+If a Batch or Module is restarted or re-run, a new instance record is created to maintain a complete execution history.
 
-The following figure describes how a static Batch/Module definition creates run-time instances of itself.
+The following figure illustrates how static Batch/Module definitions generate run-time instances.
 
 <img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation" width="75%" height="75%">
 
-## Parameters
+Different technologies might be involved in the invocation and tracking of Modules and Batches. At a high level, the process for a Batch execution works as follows:
 
-The framework provides for the definition of parameters and their association with defined Modules. The framework allows the ETL processes to use these parameters at run-time (depending on the ETL software used). Any parameter defined as global is used by all Modules.
-
-## Logical model
-
-The concepts and principles described so far in this document form the basis of the DIRECT data model. The  data entities required to describe the core concepts are described by the following Entity Relationship model:
-
-<img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model" width="75%" height="75%">
-
-## Execution layers
-
-There is a range of technologies and tools involved in the invocation and tracking of modular work units. Logical control is passed between the layers as follows:
-
-1. The scheduling tool invokes the next job (Batch) in its plan/schedule. This may involve executing a common wrapper script or series of events.
+1. A scheduling software or manual trigger invokes the next Batch in its plan/schedule. This may involve executing a common wrapper script or series of events.
 1. The repository is consulted for the execution syntax of the nominated Batch and creates a new Batch Instance if required.
 1. The newly created Batch Instance is executed and the system awaits a response.
 1. The Modules defined within the Batch are called in turn with each creating and updating its own Module Instance.
@@ -93,91 +82,81 @@ The following diagram illustrates the layers and technologies involved in this p
 
 <img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution" width="50%" height="50%">
 
-## Rollback and re-processing
+## Orchestration
 
-When processing errors occur (a process fails), relevant information about the failure is recorded in the repository by the framework. This information can be used to recover from data loading errors and set the data solution back into the original state prior to the occurrence of the error.
+Conceptually, both Modules and Batches can be executed. When a Batch is executed, it triggers the execution of its associated Modules in a predefined order.
 
-This 'rollback' can be configured at both Batch and Module level.
+Batches can also contain other Batches, creating a multi-layered workflow where a few top-level Batches can run significant portions of the data platform.
 
-By default, a Module is configured to check if there are earlier erroneous runs upon execution. If this is the case, for example when the previous Module Instance for the Module has an Execution Status Code set to `F`, the *running* Module Instance will roll back any data associated with these earlier erroneous instances.
+When a Module or Batch is executed as part of a parent Batch, the instance ID of the parent Batch is inherited and stored along with the instance details of the child Module or Batch.
 
-Similarly, in the standard configuration a Batch will also look into previous Batch Instances to see if failures have occurred. However, the Batch does not instigate a rollback directly. Rather, the Batch Instance will skip any earlier successfully completed Module Instances and retry the failed Module Instance(s).
+By convention, if a Batch contains both Modules and other Batches, the Modules are executed first, followed by the child Batches.
 
-This process can be overridden by setting the Next Run Status of the Batch Instance to `R` (rollback). If this value is set, the Batch Instance will rerun all Modules defined within the Batch.
+![Orchestration](Images/Direct_Documentation_Figure3_Orchestration.png "Orchestration")
 
-At runtime, information about earlier failed instances is presented as arrays of the relevant Batch and Module Instance Identifiers. The type of recovery depends on the type of data model but typically leads to DELETE and UPDATE statements on one or more tables. This specifies that ETL should be able to be rerun and recovery failed attempts.
+## Parameters
 
-The following is a high level overview of the reprocessing strategy. These actions are implemented as part of the Batch and Module Evaluation events (described in the next section):
+The framework supports the definition of parameters and their association with specific Modules and/or Batches. These parameters can be used by processes at run-time, depending on the underlying technology.
 
-* **Staging Area** ; the target table is truncated. This essentially is a redundant step because the Staging Area is truncated by the Module Instance but the step is added for consistency reasons and to be on the safe side for reprocessing
-* **Staging Area** ; if the Source Control table is implemented this information is corrected by deleting the entries that were inserted by the failed Module Instances
-* **Persistent Staging Area** ; all records that have been inserted by the failed Module Instances are deleted. Due to the default (mandatory) structure of the History Area tables only the delete statement is sufficient
-* **Integration Layer** ; rollback varies depending on the type of model but rollback usually is a combination of inserts and deletes depending on the types of tables in the Data Warehouse (in turn dependent on the data modelling technique). An example of recovery using Data Vault is added below:
-  * Hub table: deletion of all records inserted by the Module Instance.
-  * Link table: deletion of all records inserted by the Module Instance.
-  * Satellite table: deletion of all records inserted based on the Insert Module Instance ID attribute. Also included is an update of all records to set these to be the active record again (repair timelines) using the Update Module Instance ID information
+Parameters can also be reused across multiple Modules or Batches when necessary.
 
-The Interpretation Area, Helper Area and Reporting Structure Area typically use a strategy similar to the ones used on the previous steps but can be custom defined to suit the (reporting) purpose. Custom rollback approaches are documented in Implementation Patterns for the corresponding purpose.
+# Design
 
-## Design
+The physical implementation of the framework consists of a database repository and various procedures that interact with it to manage process execution, data logging, and error handling.
 
-The physical implementation of the framework requires the development of components in three distinct areas:
+## Repository database
 
-1. The repository database
-1. The events; the scripts and functions representing the framework logic
-1. Housekeeping and supporting components
+The data model for the process control framework includes all relevant entities, attributes, and their descriptions. It also defines the content for various tables, including reference values for Layers, Areas, and code tables such as `Frequency` and `Severity`.
 
-### Repository database
+The physical model is available here:
+<img src="Images/DIRECT_Framwork.png" alt="Logical model" width="75%" height="75%">
 
-The data model for the process control framework contains all involved entities, attributes and their descriptions. The model also contains content for the various tables including (reference) values for the Layers, Areas and code tables such as Frequency and Severity.
+### Core tables
+
+The following tables make up the backbone of the DIRECT framework. They reside in the `omd` schema, which stands for operational metadata.
 
 Table | Description
 ----- | -----
-AREA | The Area table contains the list of architecture areas as defined in the reference architecture (of the Data Integration Framework). This information is queried by the framework during Module execution to prepare rollback information if required. The Area is the most detailed classification of ETL processes in the ETL Framework. By defining the Area and specific settings on Module level (through naming conventions) the rollback queries can be created dynamically.
-BATCH | The Batch table contains the unique list of Batches as registered in the framework. To be able to run successfully each Batch must be present in this table with its own unique Batch ID. Batch IDs are generated keys.
-BATCH_INSTANCE | At runtime, the framework generates a new Batch Instance ID for the Batch execution. This information is stored in this table along with ETL process statistics. The Batch Instance table is the driving table for process control and recovery as it contain information about the status and results of the Batch run.
-BATCH_MODULE | The Batch Module table contains the relationships between batches and modules. It is a many-to-many relationship, i.e. one Batch can contain multiple Modules, and one Module could be utilized by multiple Batches
-EVENT_LOG | The Event Log table is a generic logging table which is used to track and record events that happen during ETL execution. The Event Log table can contain informative details (i.e. ‘Batch Instance was created’) or information related to issues or errors provided by the ETL platform. 
-EVENT_TYPE | The Event Type table contains descriptive information about types of events or errors for reporting purposes, such as process logs, environment related issues, and custom defined errors or ETL process errors.
-EXECUTION_STATUS | The Execution Status table contains descriptive attributes about the Execution Status codes that the framework uses during the ETL process.
-LAYER | The Layer table contains the list of Layers as defined in the ETL Framework Outline Architecture. Unlike the Areas this information is not queried during Module execution and is purely descriptive for use in reporting. The Layer is the higher level classification of ETL processes in the ETL Framework.
-MODULE | The Module table contains the unique list of Modules as registered in the framework. To be able to run successfully each Module must be present in this table with its own unique Module ID. Module IDs are not generated keys and are consistent across environments and represent a single ETL process.
-MODULE_INSTANCE | At runtime, the framework generates a new Module Instance ID for the Module execution. This information is stored in this table along with ETL process statistics. The Module Instance table is the driving table for process control and recovery as it contain information about the status and results of the Module run. The generated Module Instance ID is stored in the target tables for audit trail purposes. It also contains additional runtime details including the number of rows read (selected), updated, inserted, deleted, updated, discarded or rejected.
-MODULE_PARAMETER | The Module Parameter table creates a relationship between specific parameters and the Modules for which they are applicable. It is best practice to ‘register’ the Modules that require certain parameters in their processing using this table.
-NEXT_RUN_INDICATOR | The Next Run Status table contains descriptive attributes about the Next Run Status codes that the framework uses during the ETL process.
-PARAMETER | The Parameter table provides the option to define parameters that can be queried by custom code in the ETL process. This can include (but not limited to!) flags (Initial Load Y/N) or tracking date ranges for moving loading windows into the Presentation Layer.
-PROCESSING_INDICATOR | The Processing Indicator table contains descriptive attributes about the Processing Indicator codes that the framework uses during the ETL process.
-SOURCE_CONTROL | The Source Control table is used in source-to-staging interfaces that require the administration of load windows. Examples are CDC based interfaces, pull-delta interfaces or when only a certain range from a full dataset is required but all data is provided. It is designed to track the load window for each individual Module.
+BATCH	| Contains the unique list of Batches registered in the framework. Each Batch must have a unique Batch identifier to execute successfully. A Batch can be enabled or disabled using the `ACTIVE_INDICATOR` flag. 
+BATCH_HIERARCHY | Defines the parent/child relationship between batches, when these are intended to be called from higher-level (parent) Batches. The relationship can be enabled or disabled using the `ACTIVE_INDICATOR` flag.
+BATCH_INSTANCE |At runtime, the framework generates a unique Batch Instance ID for each Batch execution. This table is key for process control and recovery, as it tracks the status and results of Batch runs.
+BATCH_MODULE | Defines the many-to-many relationships between Batches and Modules. A Batch can contain multiple Modules, and a Module can be used in multiple Batches. The relationship can be enabled or disabled using the `ACTIVE_INDICATOR` flag.
+BATCH_PARAMETER |Establishes relationships between specific parameters and the Bathes they apply to. It is best practice to register Batches that require certain parameters in this table for proper process execution.
+EVENT_LOG |	A generic logging table used to track and record events during process execution. It can store both informational entries (e.g., "Batch Instance was created") and error messages provided by the platform.
+MODULE | Contains the unique list of Modules registered in the framework. Each Module must have a unique Module ID, consistent across environments, representing a single process. Module IDs are not system-generated keys.
+MODULE_INSTANCE | At runtime, a unique Module Instance ID is generated for each Module execution. This table stores process statistics, including status and results. The Module Instance ID is also stored in target tables for auditing, along with details such as rows read, inserted, updated, deleted, or rejected.
+MODULE_INSTANCE_EXECUTED_CODE | A distinct list of code executed by the Module Instances. The code is hashed and linked to the Module Instance using this hash value. This is intended to limit the volume of code being logged, without losing details.
+MODULE_PARAMETER |Establishes relationships between specific parameters and the Modules they apply to. It is best practice to register Modules that require certain parameters in this table for proper process execution.
+PARAMETER | Defines parameters that can be used for custom purposes related to the data logistics processes. Examples include flags (e.g., Initial Load Y/N) or tracking date ranges for shifting data loading windows to downstream layers.
+SOURCE_CONTROL |Manages the administration of load windows, such as CDC-based interfaces, pull-delta interfaces, or partial dataset loads. This table is used to track load windows for individual Modules.
 
-## Events
+### Metadata tables
 
-In order to provide a common, reusable means of interacting with the repository the framework includes a number of processes which collectively serve as the logic tier. The implementation of these events varies depending on the ETL software used in the various projects. This information is captured using Implementation Patterns, documenting how these concepts can be implemented using specific software. The following events, or functions, are defined as part of the framework:
+The metadata tables contain the reference codes and descriptions used by the DIRECT framework. They reside in the `omd_metadata` schema.
 
-* Create Batch Instance; initiates a new Batch Instance for the existing Batch. This creates a new Batch Instance ID, related to the Batch
-* Batch Evaluation (‘Batch Eval’); handles sanity checks, exception handling and recovery for the Batch Instance
-* Batch Success; updates the repository to indicate successful completion of a Batch Instance process
-* Batch Failure; updates the repository to record failure and relevant information when an error occurs when processing the Batch Instance
-* Batch Abort; updates the repository when the Batch Instance processing has been aborted due to integrity issues (identified during the Batch Evaluation)
-* Batch Skip; updates the repository when the Batch Instance run has been skipped. This is an option within the framework to prevent a Batch to be run when it is set to inactive or to skipped by the previous run
-* Create Module Instance; initiates a new Module Instance for the existing Module. This creates the new Module Instance ID in OM.
-* Module Evaluation (‘Module Eval’); performs the integrity checks for the new Module Instance and manages any reprocessing related to errors in previous related Module Instances that may be present
-* Module Success; updates the repository to record successful completion of a Module Instance
-* Module Failure; updates the repository to record failure in processing the Module Instance
-* Module Abort; aborts the Module Instance processing due to inconsistencies in the repository
-* Module Skip; this event skips the current processing of the Module Instance. This is recorded in the repository for the Module Instance, but no physical ETL processing (logic) will be executed
-* Write Event; this event or function is used to access the EVENT_LOG table for status updates
+Table | Description
+----- | -----
+AREA | Contains the list of architecture areas as defined in the reference architecture. This information is mainly decorative for monitoring and reporting purposes but can also be used to define specific rollback strategies for certain data platform objects.
+EVENT_TYPE | Stores descriptive information about various event or error types for reporting, including process logs, environmental issues, custom-defined errors, and process errors.
+EVENT_LOG |	A generic logging table used to track and record events during process execution. It can store both informational entries (e.g., "Batch Instance was created") and error messages provided by the platform.
+EXECUTION_STATUS | Contains descriptions of the execution status codes used by the framework to monitor the process.
+FRAMEWORK_METADATA | Versioning details to store specifics about the version of the framework in use, which can be used to determine future upgrade strategies.
+FREQUENCY | A label that defines the frequencythe Module or Batch is intended to be run. This can be used to limit excessive runs, or set certain processes to run continuously. It is usually a descriptive code only as the running interval for the process is normally managed by scheduling software external to the framework.
+INTERNAL_PROCESSING_STATUS | Stores descriptive attributes for the `INTERNAL_PROCESSING_STATUS_CODE` used by the framework during process execution.
+LAYER	| Lists the Layers defined in the solution architecture. Unlike Areas, this information is not used during Module execution and is primarily for reporting purposes. Layers serve as a higher-level grouping for processes and areas.
+NEXT_RUN_STATUS | Contains descriptions of the `NEXT_RUN_STATUS_CODE` used by the framework to manage the execution flow during processes execution.
 
-## Codes and events
+## Status codes
 
-DIRECT defines Modules as small (atomic) ETL processes and Batches as a combination or series of Modules to be run in coherence. The framework defines how these concepts integrate with and impact each other. To manage these processes both the Batch and Module Instance tables maintain a set of three operational code fields which together govern the way the metadata layer executes and directs the ETL flow.
+DIRECT defines Modules as small (atomic) processes and Batches as a combination or series of Modules to be run in coherence. The framework defines how these concepts integrate with and impact each other. To manage these processes both the Batch and Module Instance tables maintain a set of three operational code fields which together govern the way the metadata layer executes and directs the flow.
 
 These codes or flags are:
 
-* Execution Status Code; monitors the outcomes of the ETL process.
-* Processing Indicator; provides the mechanism for internal process control.
-* Next Run Status; provides information about how the ETL should operate on the next run, based on current information.
+* Execution Status Code; monitors the outcomes of the process.
+* Internal Processing Status Code; provides the mechanism for internal process control.
+* Next Run Status Code; provides information about how the process should operate on the next run, based on current information.
 
-Both Batch Instances (signifying one single execution of an ETL workflow) and Module Instances (signifying one single execution of an ETL process) use these flags in the same manner. During the captured events, and in particular during the Module and Batch Evaluation event, the framework performs various checks to verify the data in the process control subsystem.
+Both Batch Instances (signifying one single execution of an workflow) and Module Instances (signifying one single execution of a process) use these flags in the same manner. During the captured events, and in particular during the Module and Batch Evaluation event, the framework performs various checks to verify the data in the process control subsystem.
 
 These checks are:
 
@@ -185,7 +164,7 @@ These checks are:
 * Check if rollback / data recovery is required
 * Check if the Batch is executed in compliance with its frequency settings
 
-### Execution Status Code
+### Execution status
 
 Of the three code fields, the execution status summarizes the (Module / Batch) Instance's processing and as such is the main operational indicator. Although there are exceptions, in most cases the status of an Instance will always be either Executing, Failed, or Succeeded. The Execution Status Code is completely driven by the process framework subsystem and should not be altered.
 
@@ -203,9 +182,9 @@ The detailed code purpose is defined in the following table:
 | Aborted   | An abort is an attempted execution which led to the instance unable to start. Abort means that the process did not run, but was supposed to. This is typically the result of incorrect configuration or race conditions in the orchestration. The most common reasons for an abort is that another instance of the same Batch or Module is already running. The same logical unit of processing can never run more than once at the same time to maintain data consistency. If this situation is detected the second process will abort before any data is processed.<br /><br />The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship. |
 | Cancelled | The cancelled (skipped) status code indicates that the instance was attempted to be executed, but that the control framework found that it was not necessary to run the process. <br /><br />This can be due to Modules or Batches being disabled in the framework using the 'active indicator'. Disabling processes can be done at Batch, Batch/Module and Module level.<br /><br />Another common scenario is that, when Batches are restarted, earlier successful Modules in that Batch will not be reprocessed. These Module Instances will be skipped / cancelled until the full Batch has completed successfully. This is to prevents data loss. |
 
-### Internal Processing Status
+### Internal processing status
 
-The Internal Processing Status codes direct the internal actions of the instance e.g., what the instance is allowed to do next.
+The Internal Processing Status Codes direct the internal actions of the instance e.g., what the instance is allowed to do next.
 
 Because there may be a number of components which may be applied across different technologies, this indicator can be used to share processing directions between them.
 
@@ -218,7 +197,7 @@ The Internal Processing Status is the outcome of the Module (or Batch) Evaluatio
 | Cancel | The instance evaluation has determined that it is not necessary to run this process (see also the equivalent Execution Status Code for additional detail). As with Abort, if the Internal Process Status code is `Cancel` then all further processing should stop after the Execution Status Code has also been updated to `Cancel`. |
 | Rollback | The `Rollback` code is only temporarily set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Internal Processing Status will be set to `Proceed` again to enable the continuation of the process. |
 
-### Next Run Status
+### Next run status
 
 The Next Run Status codes are used for internal management of the framework. They are used to pass processing directions between instances of the same entity (e.g,Module or Batch).
 
@@ -230,29 +209,17 @@ The primary function of the Next Run Status codes is to direct the rollback func
 | Proceed  | The `Proceed` code will direct the next run of the Batch/Module to continue processing. This is the default value. Each process step will evaluate the Internal Process Status code and continue only if it was set to `Proceed`. After the rollback has been completed the `Proceed` value is the code that is required to initiate the main process. |
 | Cancel   | Administrators can manually set this code to for the Next Run Status (i.e. this will not be automatically set by the DIRECT controls) to force a one-off skip of the instance. |
 
-## Event integration
+## Events
 
-Not all Event Handling logic can be captured in generic events and ETL processes themselves also have some integration requirements in order to successfully run within the  Framework. The technical implementation can vary between ETL software but is different on Batch and Module level.
+To provide a common and reusable means of interacting with the repository, the framework includes several processes that collectively form the logic tier. The implementation of these events varies depending on the data integration methods used in different projects. DIRECT offers SQL Stored Procedures out of the box, along with specifications for implementing similar concepts in other technologies.
 
-### Batch Level Integration
+### Batch integration
 
-Ultimately, the correct calling of the events is orchestrated from the ETL process which acts as the Batch. This ETL process must perform the following tasks:
-
-* The Batch Instance Start Date Time is generated as soon as processing commences, even before the Batch Instance itself has been created
-* Batch information is queried to prepare calling the  Create Batch Instance event. This information (Batch ID and Frequency Code) is available in the BATCH table.
-* The Create Batch Instance event is called, using the Batch ID. This event creates a new Batch Instance ID
-* With the Batch Instance ID being available the Batch Evaluation event is called. This event ultimately updates the PROCESSING_INDICATOR attribute for the Batch Instance (in the BATCH_INSTANCE table) and returns this indicator for use in the Batch ETL process. It also set the NEXT_RUN_INDICATOR for Module Instances belong to current Batch if a rollback was needed.
-* The Batch Instance processing interprets the Processing Indicator value and, depending on the value, calls the Batch Skip event (Processing Indicator returns a `C` value for cancellation / skipping) or the Batch Abort event (Processing Indicator returns an `A` value for abortion of the process). If the evaluation was done without finding any issues the Batch Evaluation will have returned a `P` value for the Processing Indicator and the Module Instances of the Batch Instance can commence processing
-* After all Module Instances have been completed successfully, the Batch Success event is called
-* If, at any stage, an error is encountered in either the Batch Instance or any of the Module Instances associated with the Batch Instance the Batch Failure event is called
-
-This process is displayed in the following diagram:
+When a Batch is executed, the following steps will take place:
 
 <img src="Images/Direct_Documentation_Figure8_Batch_Execution.png" alt="Batch flow">
 
-#### Detailed Batch integration steps
-
-The DIRECT Batch-level events are documented at a more detailed level below:
+Even though complex workflows can be implemented in scheduling software, for the framework the correct calling of the events is managed by Batch.
 
 1. Set the Batch Instance Start Date Time; i.e. the time when the Batch (Instance) started
 
@@ -260,8 +227,8 @@ The DIRECT Batch-level events are documented at a more detailed level below:
 
 1. Create new Batch Instance (Batch Create Instance event). This step inserts a new record in the BATCH_INSTANCE table based on the Batch ID with the:
 
-   * Execution Status Code as 'E' (Executing)
-   * Processing Indicator as `A` (Abort)
+   * Execution Status Code as `Executing` (Executing)
+   * Processing Indicator as `Abort` (Abort)
    * Next Run Status as `P` (Proceed)
    * Start Date/Time as the Batch Instance Start Date
 
@@ -272,13 +239,13 @@ The DIRECT Batch-level events are documented at a more detailed level below:
    ```sql
    SELECT BATCH_INSTANCE_ID, PROCESSING_INDICATOR
    FROM BATCH_INSTANCE
-   WHERE EXECUTION_STATUS_CODE = 'E'
+   WHERE EXECUTION_STATUS_CODE = 'Executing'
    AND BATCH_ID = <the Batch ID>
    ```
 
 1. Evaluate the current Batch Instance (Batch Evaluation event). Similar to the Module Evaluation this event performs sanity checks and housekeeping for the framework on Batch level. If the evaluation finishes successfully and no issues have been encountered the Processing Indicator will be set to `P` (proceed) and the Modules can be started (instantiated). The Batch Evaluation verifies a number of scenarios and sets the Processing Indicator accordingly
 
-#### Batch evaluation event
+### Batch evaluation
 
 An overview of the Batch Evaluation steps is displayed in the following diagram:
 
@@ -302,7 +269,7 @@ The process is as follows:
 
 1. Retrieve previous Instance details. The Next Run Status and the Execution Status Code set by the previous Instance sets the behaviour for the running one. The following scenarios are possible:
 
-   * If the previous (Batch) Next Run Status indicates `C` (Cancel / Skip) this means that the Batch was manually set to inactive for the single run and the Processing Indicator for the current Instance will be set to `C`. This will be further handled by the Batch Skip Event which will close the Instance and set the Execution Status Code to `C` as well during this process.
+   * If the previous (Batch) Next Run Status indicates `C` (Cancel / Skip) this means that the Batch was manually set to inactive for the single run and the Processing Indicator for the current Instance will be set to `C`. This will be further handled by the Batch Skip Event which will close the Instance and set the `EXECUTION_STATUS_CODE` to `Cancelled` as well during this process.
    * If the previous (Batch) Execution Status Code is `F` this means the previous Batch has failed and the rollback process is initiated
 
 1. Rollback. The default rollback mechanism skips Modules that have successfully completed in a Batch Instance that ultimately failed. This way, no ETL is reprocessed without there being a reason for it. However, the administrator can set the Next Run Status manually to `R` to force a full rollback for all Modules associated with the Batch.
@@ -324,24 +291,13 @@ The process is as follows:
    * If a failure is detected at any time during this process the Batch Failure event is initiated. This event sets the (Batch) Execution Status Code to `F` which is used to drive rollbacks on Module level the next time the Batch is initiated.  
     Any meaningful information will be logged to the EVENT_LOG table.
 
-### Module level integration
+### Module integration
 
-Every Module needs to access the repository using the defined events. The integration on Module level ensures that every single ETL process is logged correctly and is able to use the available parameters. Modules that do not adopt this integration risk the integrity of the Data Warehouse. By design, if any issues arise when accessing the repository or using the events the ETL logic (ETL mapping) will not start. To allow for reprocessing the metadata is queried as well, ensuring that every Module can be run at any time without corrupting information.
-The following process is followed:
+When a Module is executed, the below steps will take place
 
-* The Module Instance Start Date Time is generated as soon as processing commences, even before the Module Instance itself has been created
-* Module information is queried to prepare calling the Create Module Instance event. This information (Module ID, Area Code and Table Code) is available in the MODULE and DATA_STORE table (linked by MODULE_DATA_STORE table) and is important for further processing; most notably the recovery mechanism.
-* The Create Module Instance event is called, using the Module ID. This event creates a new Module Instance ID
-* With the Module Instance ID being available the Module Evaluation event is called. This event ultimately updates the PROCESSING_INDICATOR attribute for the Module Instance (in the MODULE_INSTANCE table) and returns this indicator for use in the Module ETL process. During this step any required housekeeping activities such as rollbacks are executed.
-* The Module Instance processing interprets the Processing Indicator value and, depending on the value, calls the Module Skip event (Processing Indicator returns a `C` value for cancellation / skipping) or the Module Abort event (Processing Indicator returns an `A` value for abortion of the process). If the evaluation was done without finding any issues the Module Evaluation will have returned a `P` value for the Processing Indicator and the Module Instance can commence processing
-* After the Module Instance has been completed successfully, the Module Success event is called
-* If, at any stage, an error is encountered in the Module Instance the Module Failure event is called
+If, at any stage, an error is encountered in the Module Instance the Module Failure event is called
 
 ![Module flow](Images/Direct_Documentation_Figure7_Module_Execution.png "Module flow")
-
-#### Detailed Module integration steps
-
-The Module level events are detailed below:
 
 1. Set the Module Instance Start Date Time; i.e. the time when the Module (Instance) started.
 
@@ -386,7 +342,7 @@ The Module level events are detailed below:
     This event performs the sanity checks and housekeeping for the framework on Module level.  
     It is the most complex part of the pre-processing.
 
-#### Module evaluation event
+### Module evaluation
 
 The following diagram highlights the evaluation actions:
 
@@ -431,54 +387,101 @@ The process is as follows:
     * If the Processing Indicator is `P` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `S` (success), the Next Run Status as `P` and the current date/time as the End Date/Time. As a separate step the record counts are updated in the MODULE_INSTANCE table.
     * If a failure is detected at any time during the process (i.e. either Module start or end process), the Module Failure event is initiated. This event sets the Execution Status Code to `F` and the Next Run Status to `R` for the current Instance.  Any meaningful information will be logged to the EVENT_LOG table.
 
-### Rollback processes
+## Registration
 
-The default rollback procedures are essentially SQL queries that are dynamically created by the process control framework, although they can be swapped with other events, procedures or services as well.
+Any new Batch or Module must be registered, added, to the framework prior to execution.
 
-The exact syntax and details can vary between deployments and depending on naming conventions, modelling techniques and technical environments. For this purpose, the rollback is a configurable component.
+### Batch registration
+
+The Batch registration is done by adding a record in the `BATCH` table. This can be done using the `omd.RegisterBatch` procedure.
+
+The following details will be added:
+
+* `BATCH_ID`, a system-generated identifier used to unique identify a Batch
+* `BATCH_CODE`, the name of the Batch
+* `FREQUENCY_CODE`, indicates how often the Batch can be run (for instance daily, hourly, weekly)    
+* `BATCH_DESCRIPTION`, the descriptive information of the Batch
+* `ACTIVE_INDICATOR`, indicate whether a Batch is active or should be skipped when attempted to be run
+
+### Module registration
+
+The Module registration is done by adding a record in the MODULE table with the following details:
+
+* `MODULE_ID`, this is a system generated ID that is used to unique identify a Module
+* `AREA_CODE`, the Area as part of the Outline Architecture where the Module is part of. This identifies the type, template and purpose of the Module
+* `MODULE_CODE`, this is the name of the Module (mapping name, child package; depending on the ETL software used)
+* `MODULE_TYPE_CODE`, the type of Module (script, specific ETL job, etc.)
+* `MODULE_DESCRIPTION`, the descriptive information of the Module
+* `ACTIVE_INDICATOR`, indicate whether a Module is inactive and should be skipped during process execution
+
+### Batch-Module relationship registration
+
+The relationship between Batch and Module is registered by adding a record in the BATCH_MODULE table with the following details:
+
+* `BATCH_ID`, the foreigh key to the `BATCH` table, uniquely identifying a Batch.
+* `MODULE_ID`, the foreigh key to the `MODULE` table, uniquely identifying a Module.
+* `ACTIVE_INDICATOR`, indicate whether a Batch-Module combination is enabled, or should be skipped in during process execution.
+
+Depending on the configuration and design of the data platform, a Batch could contain multiple Modules, and a Module can be utilized by multiple Batches. Modules and Batches can be enabled/disabled on both individual (Batch and Module) as well as within the relationship.
+
+### Parameter registration
+
+The Parameter registration is done by adding a record in the PARAMETER table with the following details:
+
+* `PARAMETER_ID`, this is a system generated surrogate ID that is used to unique identify a Parameter.
+* `PARAMETER_KEY_CODE`, this is the name of the Parameter.
+* `PARAMETER_VALUE_CODE`, this is the value of the Parameter
+* `PARAMETER_DESCRIPTION`, the descriptive information of the Parameter
+
+### Parameter Relationship registration
+
+The Module registration is done by adding a record in the MODULE_PARAMETER table with the following details:
+
+* `MODULE_ID` / `BATCH_ID`, the foreigh key to the `MODULE` or `BATCH` table, uniquely identifying a Module or Batch.
+* `PARAMETER_ID`, the foreign key to the `PARAMETER`, uniquely identifying a Parameter.
+* `ACTIVE_INDICATOR`, the flag that identifies whether this relationship is enabled or disabled.
+
+Depending on the configuration and design of the data platform, a Module can be configured to utilize one or more parameters.
+
+## Other features
+
+### Rollback
+
+When a process fails, the framework records detailed information about the failure in the repository. This information can be used to recover from data loading errors and restore the data solution to its original state before the error occurred.
+
+This rollback functionality can be configured at both the Batch and Module levels.
+
+By default, a Module checks for earlier failed runs upon execution. If a previous run has failed, indicated by an `Execution Status Code` set to `Failure`, the current Module Instance will receive a `Rollback` status and continue to roll back any data associated with those earlier failed instances.
+
+Similarly, in the standard configuration, a Batch checks its previous Batch Instances for failures. However, unlike Modules, a Batch does not perform a direct rollback. Instead, it skips any successfully completed Module Instances and retries only the failed ones. The skipped Module Instances will receive a `Cancelled` status. Any code execution will always be done at Module level.
+
+Batches and Modules can be manually set to trigger rollback by updating their respective Module Instance records with the `NEXT_RUN_STATUS_CODE` status of `Rollback`. In this case, the Batch will rerun all Modules defined within it.
+
+At runtime, information about earlier failed instances is presented as arrays of the relevant Batch and Module Instance Identifiers. The recovery process depends on the data model but typically involves executing DELETE and UPDATE statements on one or more tables. These operations may be handled by the framework itself or by specific processes defined on the target platform, depending on the technology used.
+
+The default rollback procedures are essentially SQL queries that are dynamically created by the framework. The exact syntax and details can vary between deployments and depending on naming conventions, modelling techniques and technical environments. They might not apply to all platforms, and for this reason the array of Module Instance Identifiers can be returned as well.
 
 In all cases, the rollback procedure depends on consistency of the Batch definition (i.e. all Modules in a Batch Instance must be completed). The following inputs are required:
 
-* The `<Table Type>` is retrieved via the relationship between the Module and the (target) table in the MODULE_DATA_STORE repository table.
-* The `<Instance Array>` is constructed in the Module Evaluation event based on the information of previous (failed) Instances.
+#### Rollback on time-variant tables
 
-Both variables can be passed into the rollback process from DIRECT. Examples of how rollback processes work are listed below.
-
-#### Rollback through truncation
-
-The most straightforward approach to support rollback is through truncation. This can apply to various non-historised tables such as Staging Area tables.
-
-The `<Table Code>` variable is available in DIRECT and can be used to dynamically generate queries to truncate the target, for example:
-
-```sql
-/* Truncation */
-TRUNCATE TABLE <Table Code>
-
-/* Deletion */
-DELETE FROM SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN (<Instance array>)
-```
-
-#### Rollback on historised / time-variant tables
-
-Historised tables make up the majority of a typical data solution. Because these persist the recorded changes over time, they can't simply be truncated in many cases.
-
-A delete statement is usually sufficient in this case.
+Time-variant (historized) tables make up the majority of a typical data solution. Because these persist the recorded changes over time, for this reason, a rollback typically removes records associated by their Module Instance Id.
 
 ```sql
 DELETE FROM <Table Code> WHERE INSERT_MODULE_INSTANCE_ID IN (<Instance array>)
 ```
 
-If the target table also has end-dating (effective dating) applied, an update statement is required as well to reset or recalculate the expiry date/times. For example:
+If the object also has end-dating applied, an update statement is required as well to reset or recalculate the expiry date/times. This can be applied to any of the rolled-back Module Instance Id that were impacted by updates. For example:
 
 ```sql
 UPDATE <Table Code>
-SET EXPIRY_DATE='9999-12-31', CURRENT_RECORD_INDICATOR='Y'
+SET EXPIRY_DATE = '9999-12-31', CURRENT_RECORD_INDICATOR = 'Y'
 WHERE INSERT_MODULE_INSTANCE_ID IN (<Instance array>)
 ```
 
 #### Rollback for source control
 
-It may be required to rollback load window / source control tables in line with regular tables. Some ETL processes use 'high water mark' or 'load window' mechanism that control what data delta is processed from one place to another.
+It may be required to rollback load window / source control tables in line with regular tables. Some processes use 'high water mark' or similar load window mechanism that control what data delta is processed from one place to another.
 
 If a rollback impacts a table associated with the source control logging table in DIRECT, the rollback needs to be extended to make sure the load window is reset as well.
 
@@ -487,216 +490,3 @@ DELETE FROM SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN (<Instance array>)
 ```
 
 In other approaches, an option is to retain the load window until all related (Batch) processes have been successfully completed.
-
-#### Rollback at Batch level
-
-Batch processes do not have specific instances that can be rolled-back, because the (real) execution of logic only happens at Module level. Rolling back Batch processes (via the Rollback indicator) will trigger impacted Modules to run again.
-
-## Registration - adding new processes to DIRECT
-
-It is essential that any new ETL object (Batch, Module, Data Store and Parameter) and the relationship have been added to the static repository tables before execution.  
-This is going to be part of the standard procedure during development as more and more batch and modules are created.
-
-As these new objects are tested and then moved from one environment to another, the same details should be populated in the static repository tables except for the environment details.
-
-### Batch registration
-
-The Batch registration is done by adding a record in the BATCH table with the following details:
-
-* `BATCH_ID`; this is a system generated surrogate ID that is used to unique identify a Batch
-* `BATCH_CODE`; this is the name of the Batch (workflow name, parent package; depending on the ETL software used)
-* `FREQUENCY_CODE`; indicates how often the Batch can be run (for instance daily, hourly, weekly).  
-    It is usually a descriptive code only as the running interval for the ETL process is normally managed by external scheduling tool like Control-M or the build-in scheduling tool of the ETL software. When necessary, the Frequency Code can be used during the Batch Evaluation event, to evaluate the running interval and decide whether a batch should be run
-* `BATCH_DESCRIPTION`; the descriptive information of the Batch
-* `INACTIVE_INDICATOR`; indicate whether a Batch is inactive and should be skipped in the ETL process
-
-### Module registration
-
-The Module registration is done by adding a record in the MODULE table with the following details:
-
-* `MODULE_ID`; this is a system generated ID that is used to unique identify a Module
-* `AREA_CODE`; the Area as part of the Outline Architecture where the Module is part of. This identifies the type, template and purpose of the Module
-* `MODULE_CODE`; this is the name of the Module (mapping name, child package; depending on the ETL software used)
-* `MODULE_TYPE_CODE`; the type of Module (script, specific ETL job, etc.)
-* `MODULE_DESCRIPTION`; the descriptive information of the Module
-* `INACTIVE_INDICATOR`; indicate whether a Module is inactive and should be skipped in the ETL process.
-
-### Data Store registration
-
-The Data Store registration is done by adding a record in the DATA_STORE table with the following details:
-
-* `DATA_STORE_ID`; this is a system generated surrogate ID that is used to unique identify a Data Store
-* `DATA_STORE_CODE`; this is the name of the Data Store (table name, file name; depending on the type of the data store)
-* `DATA_STORE_TYPE_CODE`; the type of Data Store (table, flat file, etc.)
-* `DATA_STORE_DESCRIPTION`; the descriptive information of the Data Store
-* `ALLOW_TRUNCATE_INDICATOR`; Indicate whether a data store can be truncated to prevent accidental truncation of target tables
-
-Depending on the type of a Data Store, additional information such as the file location can be stored in `DATA_STORE_FILE` and/or `DATA_STORE_OLEDB`.
-
-### Parameter registration
-
-The Parameter registration is done by adding a record in the PARAMETER table with the following details:
-
-* `PARAMETER_ID`; this is a system generated surrogate ID that is used to unique identify a Parameter.
-* `PARAMETER_KEY_CODE`; this is the name of the Parameter.
-* `PARAMETER_VALUE_CODE`; this is the value of the Parameter
-* `PARAMETER_DESCRIPTION`; the descriptive information of the Parameter
-
-### Batch – Module Relationship registration
-
-The relationship between Batch and Module is registered by adding a record in the BATCH_MODULE table with the following details:
-
-* `BATCH_ID`; this is a foreign key from BATCH table to unique identify a Batch
-* `MODULE_ID`; this is a foreign key from MODULE table to unique identify a Module.
-* `INACTIVE_INDICATOR`; indicate whether a Batch-Module combination is inactive and should be skipped in the ETL process.
-
-Depending on the configuration and design of the Data Warehouse, a Batch could contain multiple Modules, and a Module can be utilized by multiple Batches. Modules and Batches can be set to inactive on both individual (Batch and Module) as well as within the relationship.
-
-### Module – Data Store Relationship registration
-
-The relationship between Module and Data Store is registered by adding a record in the MODULE_DATA_STORE table with the following details:
-
-* `MODULE_ID`; this is a foreign key from MODULE table to unique identify a Module
-* `DATA_STORE_ID`; this is a foreign key from DATA_STORE table to unique identify a Data Store
-* `RELATIONSHIP_TYPE`; the type of the Data Store in the Module (source, target)
-
-Depending on the configuration and design of the Data Warehouse, a Module can be configured to utilize one or more Data Store. Also, a Data Store can be utilized by one or more Modules. However, the current design only allows one “target” Data Store for each Module.
-
-### Module – Parameter Relationship registration
-
-The Module registration is done by adding a record in the MODULE_PARAMETER table with the following details:
-
-* `MODULE_ID`; this is a foreign key from MODULE table to unique identify a Module.
-* `PARAMETER_ID`; this is a foreign key from PARAMETER table to unique identify a Parameter.
-
-Depending on the configuration and design of the Data Warehouse, a Module can be configured to utilize one or more parameters
-
-## Appendices
-
-## Logic to retrieve the previous instance for a Module
-
-The query to retrieve the previous Module Instance information, including the array of failed Instances (if any) can be implemented following this logic (SQL Server):
-
-```sql
-SELECT
- ISNULL (Max(LastBatchInstanceID),-1)         AS 'LastBatchInstanceID'
-,ISNULL (Max(LastModuleInstanceID),-1)        AS 'LastModuleInstanceID'
-,ISNULL (Max(LastStartDateTime),'1900-01-01') AS 'LastStartTime'
-,MAX(LastEndDateTime)                         AS 'LastEndTime'
-,ISNULL (Max(LastExecutionStatus),'I')        AS 'LastExecutionStatus'
-,ISNULL (Max(LastNextRunIndicator),'P')       AS 'LastNextExecutionFlag'
-,ISNULL(Max(LastModuleInstanceIDList),'-1')   AS 'LastModuleInstanceIDList'
-FROM
-(
-        (SELECT
-            A.BATCH_INSTANCE_ID         AS 'LastBatchInstanceID',
-            A.MODULE_INSTANCE_ID        AS 'LastModuleInstanceID',
-            A.START_DATETIME            AS 'LastStartDateTime',
-            A.END_DATETIME              AS 'LastEndDateTime',
-            A.EXECUTION_STATUS_CODE     AS 'LastExecutionStatus',
-            A.NEXT_RUN_INDICATOR        AS 'LastNextRunIndicator',
-            (SELECT Cast('(' + STUFF
-                (
-                 (
-                   Select ',' + CAST(MODULE_INSTANCE_ID AS VARCHAR(20))
-                   From MODULE_INSTANCE
-                   Where MODULE_ID = ?
-                     AND MODULE_INSTANCE_ID >
-                         (
-                            -- Find the most recent successful run, 0 is zero
-                            SELECT ISNULL(MAX(MODULE_INSTANCE_ID),0)
-                            FROM MODULE_INSTANCE
-                            WHERE MODULE_ID=?
-                              AND EXECUTION_STATUS_CODE='S'
-                              AND NEXT_RUN_INDICATOR = 'P'
-                          )
-                         AND EXECUTION_STATUS_CODE<>'E'
-                           FOR XML PATH ('')  -- convert list module id to single variable
-                           ),1,1,''
-                  ) + ')' as VARCHAR(500))) AS 'LastModuleInstanceIDList'
-         FROM MODULE_INSTANCE A
-         INNER JOIN MODULE B ON A.MODULE_ID = B.MODULE_ID
-         INNER JOIN BATCH  C ON B.BATCH_ID =  C.BATCH_ID
-         WHERE A.MODULE_INSTANCE_ID =
-                (
-                        (select max(MODULE_INSTANCE_ID)
-                         from MODULE_INSTANCE
-                         where MODULE_ID = ? AND EXECUTION_STATUS_CODE <> 'E')
-            )
-         )
-        UNION ALL -- return if there is nothing, to give at least a result for the ETL
-        SELECT NULL, NULL, NULL, NULL, NULL, NULL, NULL
-) as sub1
-```
-
-## Logic to retrieve the previous instance for a Batch
-
-The query to retrieve the last Instance information for the current Batch can be based on the following logic:
-
-```sql
-SELECT ISNULL(MAX(A.NEXT_RUN_INDICATOR),'P') AS NEXT_RUN_INDICATOR,
-ISNULL(MAX(A.EXECUTION_STATUS_CODE), 'S') AS  EXECUTION_STATUS_CODE
-FROM
-(
-SELECT NEXT_RUN_INDICATOR,
-EXECUTION_STATUS_CODE
-FROM BATCH_INSTANCE
-WHERE BATCH_ID =  ?
-AND END_DATETIME = (SELECT MAX(END_DATETIME) FROM BATCH_INSTANCE WHERE BATCH_ID = ?) )A
-```
-
-## Logic to update an instance
-
-Updating the Module or Batch Instance records can be implemented following the logic defined in the following SQL statement:
-
-```sql
-UPDATE <Module or Batch>_INSTANCE
-SET EXECUTION_STATUS_CODE='C' (or 'S', 'A', 'F'), NEXT_RUN_INDICATOR = 'P', END_DATETIME=<System Date/Timestamp> WHERE (Module or Batch>_INSTANCE_ID)=?
-```
-
-## Logic to add an event to the Event Log
-
-An insert into the Event Log table can be done using the logic as defined in the following SQL statement:
-
-```sql
-INSERT INTO EVENT_LOG (BATCH_INSTANCE_ID,MODULE_INSTANCE_ID,EVENT_DATETIME,EVENT_TYPE_CODE,EVENT_RETURN_CODE_DETAILS,EVENT_DETAIL,ERROR_BITMAP)
-VALUES (?,0,<System Date/Timestamp>,2,?,?,0)
-```
-
-## Creation of a new instance record
-
-Creating a new Module or Batch Instance record can be implemented following the logic defined in the following SQL Statement:
-
-```sql
-INSERT INTO <Module or Batch>_INSTANCE (
-<Module or Batch>_ID, START_DATETIME, EXECUTION_STATUS_CODE, NEXT_RUN_INDICATOR, PROCESSING_INDICATOR, <Module or Batch>_EXECUTION_SYSTEM_ID) VALUES(?,?,'E','E','E',?)
-```
-
-## Logic to verify multiple concurrent running instances of the same type
-
-The check for multiple running Instances can be implemented following the logic as defined in the following query:
-
-```sql
-SELECT
-  CASE
-    WHEN ActiveInstancesCount IS NULL THEN 'Process'
-    WHEN ActiveInstancesCount IS NOT NULL AND MinimumInstance= ? THEN 'Process'
-    ELSE 'Abort'
- END AS ModuleActiveInstanceControl
-FROM
-(
-   SELECT MODULE_ID, MIN(MODULE_INSTANCE_ID) as MinimumInstance
-   FROM MODULE_INSTANCE
-   WHERE EXECUTION_STATUS_CODE = 'E' AND MODULE_ID = ?
-   GROUP BY MODULE_ID
-  -- Check for the lowest instance of the Module Instances since the process must continue if it's the first of the started instances for the particular Module.
-) MinimumInstance
-LEFT OUTER JOIN
-(
-   SELECT MODULE_ID, COUNT(*) as ActiveInstancesCount
-   FROM MODULE_INSTANCE
-   WHERE EXECUTION_STATUS_CODE = 'E' AND MODULE_ID = ?  AND MODULE_INSTANCE_ID <> ?
-   GROUP BY MODULE_ID
-   -- Check if there are no additional running instances other than the current Module Instance
-)  ActiveInstances ON ActiveInstances.MODULE_ID=MinimumInstance.MODULE_ID
-```
