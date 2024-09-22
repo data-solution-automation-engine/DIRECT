@@ -113,56 +113,56 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
   BEGIN TRY
 
-  INSERT INTO omd.BATCH_INSTANCE
-  (
-    BATCH_ID,
-    [PARENT_BATCH_INSTANCE_ID],
-    START_TIMESTAMP,
-    EXECUTION_STATUS_CODE,
-    NEXT_RUN_STATUS_CODE,
-    INTERNAL_PROCESSING_CODE,
-    EXECUTION_CONTEXT
-  )
-  VALUES
-  (
-    @BatchId,
-    @ParentBatchInstanceId,
-    SYSUTCDATETIME(),   -- Start Timestamp (UTC)
-    N'Executing',       -- Execution Status Code
-    N'Proceed',         -- Next Run Indicator
-    N'Abort',           -- Processing Indicator
-    @ExecutionContext   -- Execution Context, runtime information
-  )
+    INSERT INTO omd.BATCH_INSTANCE
+    (
+      [BATCH_ID],
+      [PARENT_BATCH_INSTANCE_ID],
+      [START_TIMESTAMP],
+      [EXECUTION_STATUS_CODE],
+      [NEXT_RUN_STATUS_CODE],
+      [INTERNAL_PROCESSING_CODE],
+      [EXECUTION_CONTEXT]
+    )
+    VALUES
+    (
+      @BatchId,
+      @ParentBatchInstanceId,
+      SYSUTCDATETIME(),   -- Start Timestamp (UTC)
+      N'Executing',       -- Execution Status Code
+      N'Proceed',         -- Next Run Indicator
+      N'Abort',           -- Processing Indicator
+      @ExecutionContext   -- Execution Context, runtime information
+    )
 
-  SET @BatchInstanceId = SCOPE_IDENTITY();
+    SET @BatchInstanceId = SCOPE_IDENTITY();
 
-  SET @LogMessage = 'A new Batch Instance Id ''' + CONVERT(NVARCHAR(10), @BatchInstanceId) + ''' has been created for Batch Code: ' + @BatchCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-  GOTO SuccessEndOfProcedure
+    SET @LogMessage = 'A new Batch Instance Id ''' + CONVERT(NVARCHAR(10), @BatchInstanceId) + ''' has been created for Batch Code: ' + @BatchCode;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    GOTO SuccessEndOfProcedure
 
   END TRY
 
   BEGIN CATCH
 
-  SET @LogMessage = N'A technical error was encountered';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @LogMessage = N'A technical error was encountered';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
-  -- Logging
-  SET @EventDetail = ERROR_MESSAGE();
-  SET @EventReturnCode = ERROR_NUMBER();
+    -- Logging
+    SET @EventDetail = ERROR_MESSAGE();
+    SET @EventReturnCode = ERROR_NUMBER();
 
-  SET @LogMessage = @EventDetail;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Message', @LogMessage, @MessageLog)
+    SET @LogMessage = @EventDetail;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Message', @LogMessage, @MessageLog)
 
-  SET @LogMessage = @EventReturnCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Return Code', @LogMessage, @MessageLog)
+    SET @LogMessage = @EventReturnCode;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Return Code', @LogMessage, @MessageLog)
 
-  EXEC [omd].[InsertIntoEventLog]
-    @BatchInstanceId = @BatchInstanceId,
-    @EventDetail = @EventDetail,
-    @EventReturnCode = @EventReturnCode;
+    EXEC [omd].[InsertIntoEventLog]
+      @BatchInstanceId = @BatchInstanceId,
+      @EventDetail = @EventDetail,
+      @EventReturnCode = @EventReturnCode;
 
-  THROW
+    THROW
 
   END CATCH
 
@@ -170,7 +170,6 @@ BEGIN TRY
 
   SET @LogMessage = N'' + @SpName + ' ended in failure.';
   SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-
 
   GOTO EndOfProcedure
 

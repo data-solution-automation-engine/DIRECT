@@ -42,13 +42,13 @@ At the core of the framework is a logical model for describing units of work. Al
 
 The following diagram illustrates the logical and physical units of work:
 
-<img src="Images/Direct_Documentation_Figure2_Components.png" alt="Logical and physical components" height="250">
+<img src="Images/Components.png" alt="Logical and physical components" height="250">
 
 ## Logical model
 
 The concepts and principles of the DIRECT framework can be summarized in this logical model:
 
-<img src="Images/Direct_Documentation_Figure5_Logical_View.png" alt="Logical model" width="75%" height="75%">
+<img src="Images/LogicalModel.png" alt="Logical model" width="75%" height="75%">
 
 The blue objects are static in nature, these contain the metadata required to define and orchestrate the modules and batches. For a module to run, and the audit trail to be created, a module must know its definition, and any classifications and/or parameters that might apply.
 
@@ -67,7 +67,7 @@ If a Batch or Module is restarted or re-run, a new instance record is created to
 
 The following figure illustrates how static Batch/Module definitions generate run-time instances.
 
-<img src="Images/Direct_Documentation_Figure4_Instantiation.png" alt="Instantiation" width="75%" height="75%">
+<img src="Images/Instantiation.png" alt="Instantiation" width="75%" height="75%">
 
 Different technologies might be involved in the invocation and tracking of Modules and Batches. At a high level, the process for a Batch execution works as follows:
 
@@ -80,7 +80,7 @@ Different technologies might be involved in the invocation and tracking of Modul
 
 The following diagram illustrates the layers and technologies involved in this process:
 
-<img src="Images/Direct_Documentation_Figure6_Execution.png" alt="Layers of execution" width="50%" height="50%">
+<img src="Images/Execution.png" alt="Layers of execution" width="50%" height="50%">
 
 ## Orchestration
 
@@ -92,7 +92,7 @@ When a Module or Batch is executed as part of a parent Batch, the instance ID of
 
 By convention, if a Batch contains both Modules and other Batches, the Modules are executed first, followed by the child Batches.
 
-![Orchestration](Images/Direct_Documentation_Figure3_Orchestration.png "Orchestration")
+![Orchestration](Images/Orchestration.png "Orchestration")
 
 ## Parameters
 
@@ -168,19 +168,17 @@ These checks are:
 
 Of the three code fields, the execution status summarizes the (Module / Batch) Instance's processing and as such is the main operational indicator. Although there are exceptions, in most cases the status of an Instance will always be either Executing, Failed, or Succeeded. The Execution Status Code is completely driven by the process framework subsystem and should not be altered.
 
-After proper testing and deployment all runs should complete successfully (Execution Status Code equals `Success`). An overview of severity is shown in the following diagram:
-
-<img src="./Images/Direct_Documentation_Figure9.png" alt="Figure 2" width="100%">
+After proper testing and deployment all runs should complete successfully (Execution Status Code equals `Succeeded`). An overview of severity is shown in the following diagram:
 
 The detailed code purpose is defined in the following table:
 
 | Code | Description                                                  |
 | ---- | ------------------------------------------------------------ |
 | Executing | The instance is currently running (executing). This is only visible while the process is actually running. As soon as it is completed this code will be updated to one of the end-state execution codes. |
-| Succeeded | The instance is no longer running after successful completion of the process. |
-| Failed    | The instance is no longer running after completing with failures. |
-| Aborted   | An abort is an attempted execution which led to the instance unable to start. Abort means that the process did not run, but was supposed to. This is typically the result of incorrect configuration or race conditions in the orchestration. The most common reasons for an abort is that another instance of the same Batch or Module is already running. The same logical unit of processing can never run more than once at the same time to maintain data consistency. If this situation is detected the second process will abort before any data is processed.<br /><br />The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship. |
-| Cancelled | The cancelled (skipped) status code indicates that the instance was attempted to be executed, but that the control framework found that it was not necessary to run the process. <br /><br />This can be due to Modules or Batches being disabled in the framework using the 'active indicator'. Disabling processes can be done at Batch, Batch/Module and Module level.<br /><br />Another common scenario is that, when Batches are restarted, earlier successful Modules in that Batch will not be reprocessed. These Module Instances will be skipped / cancelled until the full Batch has completed successfully. This is to prevents data loss. |
+| Succeeded | The process completed without errors. The instance is no longer running after successful completion of the process. |
+| Failed    | Indicates a process failure, with potential data issues / consequences. The instance is no longer running after completing with failures. |
+| Aborted   | An abort is a 'soft' failure, an attempted execution which led to the instance unable to start. Abort means that the process did not run, but was supposed to. This is typically the result of incorrect configuration or race conditions in the orchestration. The most common reasons for an abort is that another instance of the same Batch or Module is already running. The same logical unit of processing can never run more than once at the same time to maintain data consistency. If this situation is detected the second process will abort before any data is processed.<br /><br />The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship. |
+| Cancelled | Nothing is run. The cancelled (skipped) status code indicates that the instance was attempted to be executed, but that the control framework found that it was not necessary to run the process. <br /><br />This can be due to Modules or Batches being disabled in the framework using the 'active indicator'. Disabling processes can be done at Batch, Batch/Module and Module level.<br /><br />Another common scenario is that, when Batches are restarted, earlier successful Modules in that Batch will not be reprocessed. These Module Instances will be skipped / cancelled until the full Batch has completed successfully. This is to prevents data loss. |
 
 ### Internal processing status
 
@@ -215,125 +213,119 @@ To provide a common and reusable means of interacting with the repository, the f
 
 ### Event overview
 
+#### Module events
+
 Event | Description
 ----- | -----
 `CreateModuleInstance` | Create/Register a new Module Instance/Execution/Run of a Module, by Module Code and Batch Execution Id
 `ModuleEvaluation` | Checks if the Module Instance is able to proceed based on the state of all Module Instances for the particular Module
+`UpdateModuleInstance` | Modifies the status of the Module Instance
+
+#### Batch events
+
+Event | Description
+----- | -----
 `CreateBatchInstance` | Create/Register a new Batch Instance/Execution/Run of a Batch, by Batch Code
-`BatchEvaluation` | Checks if the provided Batch Instance is able to proceed, based on the state of all Batch Instances of the related Batch.
+`BatchEvaluation` | Checks if the provided Batch Instance is able to proceed, based on the state of all Batch Instances of the related Batch
+`UpdateBatchInstance` | Modifies the status of the Batch Instance
 
 ### Batch integration
 
 When a Batch is executed, the following steps will take place:
 
-<img src="Images/Direct_Documentation_Figure8_Batch_Execution.png" alt="Batch flow">
+![Run Batch](Images/RunBatch.png "Run Batch")
 
-Even though complex workflows can be implemented in scheduling software, for the framework the correct calling of the events is managed by Batch.
+#### Create new Batch Instance
 
-1. Set the Batch Instance Start Date Time; i.e. the time when the Batch (Instance) started
+This is the CreateBatchInstance event. This step inserts a new record in the `BATCH_INSTANCE` table based on the Batch ID with the:
 
-1. Retrieve the Batch Information. Based on the Batch Code (the name of the parent workflow or process), the Batch ID and Frequency Code are retrieved from the BATCH table.  The Frequency Code is used for Batch Evaluation later in the process
+* Execution Status Code as `Executing` (Executing)
+* Internal Processing Status Code as `Abort` (Abort)
+* Next Run Status as `Proceed` (Proceed)
+* Start Date/Time as the Batch Instance Start Date, i.e. the time when the Batch (Instance) started
 
-1. Create new Batch Instance (Batch Create Instance event). This step inserts a new record in the BATCH_INSTANCE table based on the Batch ID with the:
+Batch details are retrieve using the Batch Code (the name of the parent workflow or process), the Batch ID and Frequency Code are retrieved from the `BATCH` table. The Frequency Code may be used for Batch Evaluation later in the process. 
 
-   * Execution Status Code as `Executing` (Executing)
-   * Internal Processing Status Code as `Abort` (Abort)
-   * Next Run Status as `Proceed` (Proceed)
-   * Start Date/Time as the Batch Instance Start Date
+The Internal Processing Status Code is initially set to `Abort`, which acts as safety net for the unlikely event that the DIRECT subsystem fails. In other words the approach is to abort (soft error) the load until the Batch evaluation is completed correctly. The Internal Processing Status Code will be updated as part of the Batch Evaluation process.
 
-1. These values will be changed depending on how the rest of the DIRECT housekeeping proceeds. The `A` code for the Internal Processing Status Code acts as a safety net for the unlikely event that the DIRECT subsystem fails. In other words the approach is to abort (soft error) the load until the Batch evaluation is completed correctly. The Internal Processing Status Code will be updated as part of the Batch Evaluation event
+Conceptually, as part of the Batch Create Instance Event, the new Instance ID is generated. The Batch Instance ID must be retrieved for further processing. The query to identify the Instance ID is as follows:
 
-1. Conceptually, as part of the Batch Create Instance Event, the new Instance ID is generated. The Batch Instance ID must be retrieved for further processing. The query to identify the Instance ID is as follows:
+```sql
+SELECT BATCH_INSTANCE_ID, PROCESSING_INDICATOR
+FROM BATCH_INSTANCE
+WHERE EXECUTION_STATUS_CODE = 'Executing'
+AND BATCH_ID = <the Batch ID>
+```
+#### Evalute the Batch Instance
 
-   ```sql
-   SELECT BATCH_INSTANCE_ID, PROCESSING_INDICATOR
-   FROM BATCH_INSTANCE
-   WHERE EXECUTION_STATUS_CODE = 'Executing'
-   AND BATCH_ID = <the Batch ID>
-   ```
+The next step is the BatchEvaluation event. This will check the current Batch Instance by performing sanity checks and housekeeping for the framework.
 
-1. Evaluate the current Batch Instance (Batch Evaluation event). Similar to the Module Evaluation this event performs sanity checks and housekeeping for the framework on Batch level. If the evaluation finishes successfully and no issues have been encountered the Internal Processing Status Code will be set to `Proceed` (proceed) and the Modules can be started (instantiated). The Batch Evaluation verifies a number of scenarios and sets the Internal Processing Status Code accordingly
-
-### Batch evaluation
+If the evaluation finishes successfully and no issues have been encountered the Internal Processing Status Code will be set to `Proceed` and the Modules can be instantiated. The Batch Evaluation verifies a number of scenarios and sets the Internal Processing Status Code accordingly.
 
 An overview of the Batch Evaluation steps is displayed in the following diagram:
 
-![Module Integration](Images/Direct_Documentation_Figure10.png "Module Integration")
+![Batch Evaluation](Images/BatchEvaluation.png "Batch Evaluation")
 
 The process is as follows:
 
-1. Check for multiple running instances; Batches are not allowed to run in parallel; the next Batch can only start if the previous one has been completed. If there are more running instances for the same Batch the current / new Instance is 'aborted'.
+1. Check for multiple running instances; Batches are not allowed to run in parallel; the next Batch can only start if the previous one has been completed. If there are more running instances for the same Batch the current / new Instance is aborted.
 
-1. If the current Instance is the only running Instance the process continues. This information is queried as follows:
-
-   ```sql
-   SELECT COUNT(*) as ActiveInstancesCount
-   FROM BATCH_INSTANCE
-   WHERE EXECUTION_STATUS_CODE = 'E'
-     AND BATCH_ID = ?
-     AND BATCH_INSTANCE_ID < ?
-   ```
-
-1. Verify the Inactive Indicator. Only the Batch level indicator requires to be checked. If the Inactive Indicator is set to `Y` the running Instance will be skipped.
+1. Verify the Active Indicator. Only the Batch level indicator requires to be checked. If the Active Indicator is set to `Y` the running Instance will be skipped.
 
 1. Retrieve previous Instance details. The Next Run Status and the Execution Status Code set by the previous Instance sets the behaviour for the running one. The following scenarios are possible:
 
    * If the previous (Batch) Next Run Status indicates `Cancel` (Cancel / Skip) this means that the Batch was manually set to inactive for the single run and the Internal Processing Status Code for the current Instance will be set to `Cancel`. This will be further handled by the Batch Skip Event which will close the Instance and set the `EXECUTION_STATUS_CODE` to `Cancelled` as well during this process.
-   * If the previous (Batch) Execution Status Code is `F` this means the previous Batch has failed and the rollback process is initiated
+   * If the previous Batch Execution Status Code is `Failure` this means the previous Batch has failed and the rollback process is initiated
 
-1. Rollback. The default rollback mechanism skips Modules that have successfully completed in a Batch Instance that ultimately failed. This way, no data logistics processes are reprocessed without there being a reason for it. However, the administrator can set the Next Run Status manually to `R` to force a full rollback for all Modules associated with the Batch.
+1. Rollback. The default rollback mechanism skips Modules that have successfully completed in a Batch Instance that ultimately failed. This way, no data logistics processes are reprocessed without there being a reason for it. However, the administrator can set the Next Run Status manually to `Rollback` to force a full rollback for all Modules associated with the Batch.
 
-   * If the previous (Batch) Next Run Status indicates `R` the rollback process is performed on all Modules (regardless of the Module's Next Run Status). Rollback is then executed further on the Module level through the Module Evaluation. This is implemented by overriding the individual Module Instances for recovery (Next Run Status  = `R` on Module level).
+   * If the previous (Batch) Next Run Status indicates `R` the rollback process is performed on all Modules (regardless of the Module's Next Run Status). Rollback is then executed further on the Module level through the Module Evaluation. This is implemented by overriding the individual Module Instances for recovery (Next Run Status  = `Rollback` on Module level).
    * If the previous (Batch) Next Run Status indicates `Proceed` the Modules that were completed successfully are set to be skipped the next time the Batch runs. This is implemented by overriding the Next Run Status on Module level to `Cancel` which is further handled by the Module Evaluation.
 
 1. After the rollback process, or in the case there were no previous failures, the Evaluation is completed and the Internal Processing Status Code is set to `Proceed`. This is the safety catch for the Modules to start. The Modules are individually executed in the order as directed by the Batch
 
    * If at this point the Internal Processing Status Code is `Cancel` (as determined during Batch Evaluation, the Batch will be skipped (Batch Skip/Cancel event)).  
    Similar to the above, in this scenario multiple runs have been detected and one of the running workflows (the current one) is aborted but there is no reason not to restart normally next time, so the Next Run Status is set to `Proceed`.
-   * Similarly, if the Internal Processing Status Code is `A` the Batch will be aborted (Batch Abort event).
+   * Similarly, if the Internal Processing Status Code is `Abort` the Batch will be aborted (Batch Abort event).
    * As mentioned, if the Internal Processing Status Code is `Proceed` the subsequent sessions (Modules) will start. No Modules are allowed to start unless this indicator equals `Proceed`.
 
-1. Post-processing. The following scenarios are possible:
+#### Update the Batch Instance
 
-   * After all Modules have been completed without any issues the Batch Success event will update the Batch Instance to set the (Batch) Execution Status Code to `S` (success), the (Batch) Next Run Status as `Proceed` and the current date/time as the End Date/Time.  
-   This indicates that the Batch has been completed successfully and can be run normally next time. For Modules 'no issues' in this context means that Modules have received anything but the Execution Status `F`.
-   * If a failure is detected at any time during this process the Batch Failure event is initiated. This event sets the (Batch) Execution Status Code to `F` which is used to drive rollbacks on Module level the next time the Batch is initiated.  
-    Any meaningful information will be logged to the EVENT_LOG table.
+After all Modules have been completed without any issues the UpdateBatchInstance event will update the Batch Instance to set the following status codes:
+
+* The Execution Status Code is set to  `Successful`
+* The Next Run Status is set to `Proceed`
+* The End Date/Time is updated with the current timestamp
+
+This indicates that the Batch has been completed successfully and can be run normally next time. For Modules 'no issues' in this context means that Modules have received anything but the Execution Status `Failure`.
+
+If a failure is detected at any time during this process the Execution Status Code is set to `Failure` which is used to drive rollbacks on Module level the next time the Batch is initiated.
 
 ### Module integration
 
-When a Module is executed, the below steps will take place
+#### Create new Module Instance
 
-If, at any stage, an error is encountered in the Module Instance the Module Failure event is called.
+The CreateModuleInstance event will retrieve the Module details using the Module Code as input. This includes the `MODULE_ID` but also other relevant properties such as `AREA_CODE`, `TARGET_DATA_OBJECT`, and `FREQUENCY_CODE`.
 
-![Module flow](Images/Direct_Documentation_Figure7_Module_Execution.png "Module flow")
+With the available information, a new Module Instance can now be created with the:
 
-1. Retrieve the Module details using the Module Code as input. This includes the `MODULE_ID` but also other relevant properties such as `AREA_CODE`, `TARGET_DATA_OBJECT`, and `FREQUENCY_CODE`.
+* Execution Status Code as `Executing` (Executing).
+* Internal Processing Status Code as `Abort` (Abort).
+* Next Run Status Code as `Proceed` (Proceed).
+* The Start Date Time will be the timestamp the Module execution (instance) started
 
-1. Create a new Module Instance (`CreateModuleInstance` event). With the available information, a new Module Instance can now be created with the:
+At this stage, a new record will be available in the `MODULE_INSTANCE` table. The `Abort` Internal Processing Status Code acts as a safety net in the unlikely event that DIRECT fails while pre-processing. In other words the approach is to abort (soft error) the load until the Module evaluation is completed correctly. The Internal Processing Status Code will be updated as part of the `ModuleEvalation` event.
 
-   * Execution Status Code as `Executing` (Executing).
-   * Internal Processing Status Code as `Abort` (Abort).
-   * Next Run Status Code as `Proceed` (Proceed).
-   * The Start Date Time will be the timestamp the Module execution (instance) started
+It must be possible to run Modules individually (i.e. without a parent Batch)
 
-   At this stage, a new record will be available in the `MODULE_INSTANCE` table. The `Abort` Internal Processing Status Code acts as a safety net in the unlikely event that DIRECT fails while pre-processing. In other words the approach is to abort (soft error) the load until the Module evaluation is completed correctly. The Internal Processing Status Code will be updated as part of the `ModuleEvalation` event.
+* If the Module was initiated from a Batch process, the Batch Instance ID is inherited from the parent Batch Instance.
+* If the Module is run without a Batch, the Batch Instance ID will be 0 (zero)
 
-1. It must be possible to run Modules individually (i.e. without a parent Batch)
+The Module ID, Execution Status Code (for that Module) and Batch Instance ID are required since Modules can be potentially be executed in parallel from different Batches and it is required that DIRECT is able to select the correct running Instance. In this scenario the Module Evaluation event will 'Abort' all Instances after the first of the parallel Instances based on the Module Instance ID value (which is a sequenced attribute). In other words; the earliest instance will be allowed to continue to run, but all others will abort.
 
-   * If the Module was initiated from a Batch process, the Batch Instance ID is inherited from the parent Batch Instance.
-   * If the Module is run without a Batch, the Batch Instance ID will be 0 (zero)
+#### Evaluate the Module Instance
 
-1. The Module ID, Execution Status Code (for that Module) and Batch Instance ID are required since Modules can be potentially be executed in parallel from different Batches and it is required that DIRECT is able to select the correct running Instance. In this scenario the Module Evaluation event will 'Abort' all Instances after the first of the parallel Instances based on the Module Instance ID value (which is a sequenced attribute). In other words; the earliest instance will be allowed to continue to run, but all others will abort.
-
-1. Evaluate the current Module Instance (Module Evaluation event).  
-    This event performs the sanity checks and housekeeping for the framework on Module level. It is the most complex part of the pre-processing.
-
-### Module evaluation
-
-The following diagram highlights the evaluation actions:
-
-![Module Evaluation](Images/Direct_Documentation_Figure11.png "Module Evaluation")
+The ModuleEvaluation event performs the sanity checks and housekeeping for the framework on Module level. It is the most complex part of the pre-processing.
 
 The process is as follows:
 
@@ -355,34 +347,39 @@ The process is as follows:
      * The system administrator has labelled this Module to be disabled for this run by manually setting the Next Run Status value to `Cancel` in the Module Instance.
      * The previous Batch failed but the specific Module (Instance) was run successfully in that particular Batch and is skipped when the Batch is run again (rollback on Batch level)
 
-   * If the previous Module Next Run Status is `R` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Internal Processing Status Code is set to `Proceed` and processing will continue as usual.
+   * If the previous Module Next Run Status is `Rollback` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Internal Processing Status Code is set to `Proceed` and processing will continue as usual.
 
 1. The Module Evaluation effectively returns the Internal Processing Status Code for the current Module Instance. The next step for the processing is to interpret this indicator for the current Module Instance to either stop or continue the processing
 
 1. After the Module Evaluation is complete and the Internal Processing Status Code equal `Proceed` the regular ETL process can be executed. In other words, no regular processing is allowed unless this indicator is `Proceed`.  This is the safety catch for the Module to start.
 
    * If at this point the (Module) Internal Processing Status Code is `Cancel` the Module Instance record is updated to set the final Execution Status Code to `Cancel` and the End Date/Time to the current date/time value (sysdate, getdate or equivalent).
-   * If at this point the (Module) Internal Processing Status Code is `A` the Module Instance record is updated to set the final Execution Status Code to `A` and the End Date/Time to the current date/time value (sysdate, getdate or equivalent).
+   * If at this point the (Module) Internal Processing Status Code is `Abort` the Module Instance record is updated to set the final Execution Status Code to `Aborted` and the End Date/Time to the current date/time value (sysdate, getdate or equivalent).
    * As mentioned, if the Internal Processing Status Code is `Proceed` the real ETL logic will be executed. No Modules are allowed to start unless this indicator equals `Proceed`
 
-1. Post-processing. After the ETL logic has completed without any issues, the Internal Processing Status Code of the Module Instance is checked.
+#### Update the Module Instance
 
-The following outcomes are possible:
+After the execution has completed without any issues, the Internal Processing Status Code of the Module Instance is checked.
 
-* If the Internal Processing Status Code is `Cancel`, the Module Instance is updated with:
-   * the Execution Status Code `Cancelled`
-   * the Next Run Status as `Proceed`
-   * current date/time as the End Date/Time. 
+If the Internal Processing Status Code is `Cancel`, the Module Instance is updated with:
 
-   This corresponds to the `ModuleSkip` event
-* If the Internal Processing Status Code is `Abort`, the Module Instance is updated with:
-   * the Execution Status Code set to `Aborted`, 
-   * the Next Run Status as `Proceed` and 
-   * the current date/time as the End Date/Time.
+* Execution Status Code `Cancelled`
+* Next Run Status as `Proceed`
+* End Date/Time as the current timestamp
+
+If the Internal Processing Status Code is `Abort`, the Module Instance is updated with:
+
+* The Execution Status Code set to `Aborted`, 
+* The Next Run Status as `Proceed` and 
+* End Date/Time as the current timestamp
    
-   This is the `ModuleAbort` event.
-* If the Internal Processing Status Code is `Proceed` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `Succesful`, the Next Run Status as `Proceed` and the current date/time as the End Date/Time. As a separate step the record counts are updated in the MODULE_INSTANCE table.
-* If a failure is detected at any time during the process (i.e. either Module start or end process), the Module Failure event is initiated. This event sets the Execution Status Code to `Failed` and the Next Run Status to `Rollback` for the current Instance.  Any meaningful information will be logged to the EVENT_LOG table.
+If the Internal Processing Status Code is `Proceed` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `Succesful`, the Next Run Status as `Proceed` and the current date/time as the End Date/Time. 
+
+As a separate step the record counts are updated in the `MODULE_INSTANCE` table.
+
+If a failure is detected at any time during the process (i.e. either Module start or end process), the Module Failure event is initiated. This event sets the Execution Status Code to `Failed` and the Next Run Status to `Rollback` for the current Instance.
+
+Any meaningful information will be logged to the EVENT_LOG table.
 
 ## Registration
 
