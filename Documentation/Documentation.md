@@ -109,7 +109,7 @@ The physical implementation of the framework consists of a database repository a
 The data model for the process control framework includes all relevant entities, attributes, and their descriptions. It also defines the content for various tables, including reference values for Layers, Areas, and code tables such as `Frequency` and `Severity`.
 
 The physical model is available here:
-<img src="Images/DIRECT_Framwork.png" alt="Logical model" width="75%" height="75%">
+<img src="Images/DIRECT_Framework.png" alt="Physical model" width="75%" height="75%">
 
 ### Core tables
 
