@@ -1,0 +1,27 @@
+flowchart TD
+%% Nodes
+
+subgraph BatchEvaluation["Batch Evaluation"]
+  Start("Start of the process"):::Main
+  CheckMultiple("Check for multiple running Batch Instances")
+  IsMultipleInstances{"Are multiple instances running?"}
+  SetAbort("Update the Internal Processing Status Code to 'Abort'")
+  IsActive{"Is the Batch enabled?"}
+  SetCancel("Update the Internal Processing Status Code to 'Cancel'")
+  IsRollback{"Is the rollback required?"}
+  Rollback("Perform Rollback")  
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CheckMultiple --> IsMultipleInstances
+IsMultipleInstances -- Yes --> SetAbort
+IsMultipleInstances -- No --> IsActive
+IsActive -- No --> SetCancel
+IsActive -- Yes --> IsRollback
+IsRollback -- Yes --> Rollback
+Rollback ----> End
+IsRollback -- No --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px

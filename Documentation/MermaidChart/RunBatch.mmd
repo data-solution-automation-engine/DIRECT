@@ -1,0 +1,22 @@
+flowchart TD
+%% Nodes
+
+subgraph BatchInstance["Batch Instance"]
+  Start("Start of the process"):::Main
+  CreateBatchInstance
+  BatchEvaluation{"BatchEvaluation"}
+  RunModule("Run all Modules associated with the Batch")
+  RunBatch("Run all (child) Batches associated with the Batch")
+  UpdateBatchInstance
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CreateBatchInstance --> BatchEvaluation
+BatchEvaluation --  Internal Processing Status Code is not 'Abort' or 'Cancel' --> RunModule --> RunBatch
+BatchEvaluation -- Internal Processing Status Code is either 'Abort' or 'Cancel' --> End
+RunBatch --> UpdateBatchInstance
+UpdateBatchInstance --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px

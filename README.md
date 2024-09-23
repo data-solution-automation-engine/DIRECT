@@ -1,17 +1,17 @@
 # DIRECT
 
-Data Integration Run-time Execution Control Tool
+The Data Integration Run-time Execution Control Tool (DIRECT) is a framework for defining, orchestrating, and logging of data logistics processes and workflows ('ETL', 'pipelines') so that a full audit trail is created.
+
+The framework provides mechanism to administer the individual processes or workflows, and track their runtime execution.
 
 This repository contains the following:
 
-* Data Model (DDL and DML)
-* Management tool (C#)
-* SSIS examples with Biml code generation for DIRECT hooks
-* T-SQL hooks
-* Functional specification
-* Support SQL scripts
+* Data Model
+* Tables and scripts (DDL and DML)
+* Examples and support scripts
+* Documentation
+* Testing script to validate any framework changes
 
 ## Learn more
 
 * GitHub information:  [https://github.com/data-solution-automation-engine](https://github.com/data-solution-automation-engine)
-* More information: [www.roelantvos.com](www.roelantvos.com)

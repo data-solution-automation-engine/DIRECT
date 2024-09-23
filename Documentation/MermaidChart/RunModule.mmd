@@ -1,0 +1,21 @@
+flowchart TD
+%% Nodes
+
+subgraph ModuleInstance["Module Instance"]
+  Start("Start of the process"):::Main
+  CreateModuleInstance
+  ModuleEvaluation{"ModuleEvaluation"}
+  RunModule("Execute Module logic")
+  UpdateModuleInstance
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CreateModuleInstance --> ModuleEvaluation
+ModuleEvaluation --  Internal Processing Status Code is not 'Abort' or 'Cancel' --> RunModule
+ModuleEvaluation -- Internal Processing Status Code is either 'Abort' or 'Cancel' --> End
+RunModule --> UpdateModuleInstance
+UpdateModuleInstance --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
