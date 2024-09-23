@@ -53,7 +53,10 @@ DECLARE
   @RunTest10 CHAR(1) = 'Y',
   @RunTest11 CHAR(1) = 'Y',
   @RunTest12 CHAR(1) = 'Y',
-  @RunTest13 CHAR(1) = 'Y'
+  @RunTest13 CHAR(1) = 'Y',
+  @RunTest14 CHAR(1) = 'Y',
+  @RunTest15 CHAR(1) = 'Y',
+  @RunTest16 CHAR(1) = 'Y'
 
 
 
@@ -120,7 +123,7 @@ BEGIN
   INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
 
   EXEC [omd].[RunModule]
-  @ModuleCode = 'MyNewModule'
+   @ModuleCode = 'MyNewModule'
   ,@Debug = @Debug
 
   SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
@@ -755,6 +758,145 @@ BEGIN
   END CATCH
 END
 
+/*******************************************************************************
+    14 Attempting to run a disabled Module stand-alone
+*******************************************************************************/
+IF @RunTest14 = 'Y'
+BEGIN
+  SET @CurrentTestName = 'TEST 14'
+  SET @CurrentTestDescription = 'Attempting to run a disabled Module stand-alone'
+
+  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
+  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+
+  BEGIN TRY
+
+	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_CODE='MyNewModule'
+
+	  EXEC [omd].[RunModule]
+	   @ModuleCode = 'MyNewModule'
+	  ,@Debug = @Debug
+
+	  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+	  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+
+	  IF @Verbose = 'Y'
+	  BEGIN
+		PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
+	  END
+
+	  IF @CurrentModuleExecutionStatus = 'Cancelled'
+	  BEGIN
+		PRINT '  ' + @CurrentTestName + ' - succeeded'
+		UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+	  END
+	  ELSE
+	  BEGIN
+		PRINT '  ' + @CurrentTestName + ' - failed'
+		UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+	  END
+
+	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
+ END TRY
+  BEGIN CATCH
+    PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
+    UPDATE @ResultTable SET Result = 'Technical Failure' WHERE Test = @CurrentTestName
+  END CATCH
+END
+
+/*******************************************************************************
+    15 Attempting to run a disabled Module from a Batch
+*******************************************************************************/
+IF @RunTest15 = 'Y'
+BEGIN
+  SET @CurrentTestName = 'TEST 15'
+  SET @CurrentTestDescription = 'Attempting to run a disabled Module from a Batch'
+
+  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
+  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+
+  BEGIN TRY
+
+	  UPDATE omd.BATCH_MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE='MySecondModule')
+
+      EXEC [omd].[RunBatch]
+        @BatchCode = 'MyNewBatch'
+       ,@Debug = @Debug
+
+	  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+	  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+
+	  IF @Verbose = 'Y'
+	  BEGIN
+		PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
+	  END
+
+	  IF @CurrentModuleExecutionStatus = 'Cancelled'
+	  BEGIN
+		PRINT '  ' + @CurrentTestName + ' - succeeded'
+		UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+	  END
+	  ELSE
+	  BEGIN
+		PRINT '  ' + @CurrentTestName + ' - failed'
+		UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+	  END
+
+	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
+ END TRY
+  BEGIN CATCH
+    PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
+    UPDATE @ResultTable SET Result = 'Technical Failure' WHERE Test = @CurrentTestName
+  END CATCH
+END
+
+/*******************************************************************************
+    16 Attempting to run a disabled Batch
+*******************************************************************************/
+IF @RunTest16 = 'Y'
+BEGIN
+  SET @CurrentTestName = 'TEST 16'
+  SET @CurrentTestDescription = 'Attempting to run a disabled Batch'
+
+  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
+  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+
+  BEGIN TRY
+
+	  UPDATE omd.BATCH SET ACTIVE_INDICATOR = 'N' WHERE BATCH_CODE = 'MyNewBatch'
+
+      EXEC [omd].[RunBatch]
+        @BatchCode = 'MyNewBatch'
+       ,@Debug = @Debug
+
+      SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
+      SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+
+      IF @Verbose = 'Y'
+      BEGIN
+          PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
+      END
+
+      -- Log Test Results
+      IF (@CurrentBatchExecutionStatus = 'Cancelled')
+      BEGIN
+        PRINT '  ' + @CurrentTestName + ' - succeeded'
+        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+      END
+      ELSE
+      BEGIN
+        PRINT '  ' + @CurrentTestName + ' - failed'
+        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+    END
+
+    UPDATE omd.BATCH SET ACTIVE_INDICATOR = 'Y' WHERE BATCH_CODE = 'MyNewBatch'
+ END TRY
+  BEGIN CATCH
+    PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
+    UPDATE @ResultTable SET Result = 'Technical Failure' WHERE Test = @CurrentTestName
+  END CATCH
+END
 
 -- Display Results, optionally filter by success etc...
 SELECT * FROM @ResultTable ORDER BY Test
@@ -763,12 +905,12 @@ SELECT * FROM @ResultTable ORDER BY Test
 /*******************************************************************************
 -- Debug and verification only
 SELECT * FROM [omd].[MODULE]
-SELECT * FROM [omd].[MODULE_INSTANCE]
+SELECT * FROM [omd].[MODULE_INSTANCE] ORDER BY 1 DESC
 
 SELECT * FROM [omd].[BATCH]
-SELECT * FROM [omd].[BATCH_INSTANCE]
+SELECT * FROM [omd].[BATCH_INSTANCE] ORDER BY 1 DESC
 
-SELECT * FROM [omd].[BATCH_MODULE] WHERE BATCH_ID = 1
+SELECT * FROM [omd].[BATCH_MODULE] WHERE BATCH_ID = (SELECT BATCH_ID FROM omd.BATCH WHERE BATCH_CODE = 'MyNewBatch')
 
 SELECT * FROM [omd].[MODULE_INSTANCE_EXECUTED_CODE]
 SELECT * FROM [omd].EVENT_LOG

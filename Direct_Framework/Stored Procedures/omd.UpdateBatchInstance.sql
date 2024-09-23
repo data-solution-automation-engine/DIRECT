@@ -119,7 +119,7 @@ BEGIN TRY
 
     UPDATE [omd].[BATCH_INSTANCE]
     SET
-      EXECUTION_STATUS_CODE     = N'Cancel',
+      EXECUTION_STATUS_CODE     = N'Cancelled',
       INTERNAL_PROCESSING_CODE  = N'Cancel',
       NEXT_RUN_STATUS_CODE      = N'Proceed',
       PARENT_BATCH_INSTANCE_ID  = @ParentBatchInstanceId,

@@ -138,7 +138,7 @@ BEGIN TRY
       JOIN omd.MODULE module on bm.MODULE_ID = module.MODULE_ID
       JOIN omd.BATCH batch on bm.BATCH_ID = batch.BATCH_ID
       WHERE batch.BATCH_CODE=@BatchCode
-      AND bm.ACTIVE_INDICATOR = 'Y'
+      --AND bm.ACTIVE_INDICATOR = 'Y'
       ORDER BY bm.[SEQUENCE]
 
     OPEN Module_Cursor
@@ -187,9 +187,9 @@ BEGIN TRY
       JOIN omd.BATCH parent_batch ON bh.PARENT_BATCH_ID = parent_batch.BATCH_ID
       JOIN omd.BATCH child_batch ON bh.BATCH_ID = child_batch.BATCH_ID
       WHERE parent_batch.BATCH_CODE = @BatchCode
-        AND bh.ACTIVE_INDICATOR = 'Y'
-        AND parent_batch.ACTIVE_INDICATOR = 'Y'
-        AND child_batch.ACTIVE_INDICATOR = 'Y'
+        --AND bh.ACTIVE_INDICATOR = 'Y'
+        --AND parent_batch.ACTIVE_INDICATOR = 'Y'
+        --AND child_batch.ACTIVE_INDICATOR = 'Y'
       ORDER BY bh.[SEQUENCE]
 
     OPEN Batch_Cursor
