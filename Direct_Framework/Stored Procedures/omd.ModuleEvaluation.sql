@@ -189,7 +189,7 @@ BEGIN TRY
     GOTO ModuleFailure
   END
 
-  SET @LogMessage = 'Start of Batch / Module relationship evalation step.'
+  SET @LogMessage = 'Start of Batch / Module relationship evalation.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   IF @BatchId = 0 -- The Module was run stand-alone (not from a Batch).
@@ -212,15 +212,14 @@ BEGIN TRY
       SET @LogMessage = 'The Batch / Module inactive flag value is ' + @BatchModuleActiveIndicator
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-      IF (@BatchModuleActiveIndicator = 'N') -- Skip
+      -- If the active indicator at Batch/Module level is set to 'N' the process is disabled in the framework.
+      -- In this case, the Module must be cancelled (was attempted to be run, but not allowed to).
+      IF (@BatchModuleActiveIndicator = 'N') -- Cancel
       BEGIN
-        SET @LogMessage = 'The Module Instance will be skipped / cancelled'
+        SET @LogMessage = 'The Module Instance will be cancelled'
         SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-        -- If the inactive indicator at Batch/Module level is set to 'Y' the process is disabled in the framework.
-        -- In this case, the Module must be skipped / cancelled (was attempted to be run, but not allowed).
-
-        -- Call the Cancel (skip) event.
+        -- Update the Module Instance to set the Internal Status Processing Code to 'Cancel'.
         EXEC [omd].[UpdateModuleInstance]
           @ModuleInstanceId = @ModuleInstanceId,
           @EventCode = N'Cancel',
@@ -232,15 +231,14 @@ BEGIN TRY
         GOTO EndOfProcedure
     END
 
+    -- If the inactive indicator at Batch/Module level is NULL or unknwon then there is an error in the framework registration / setup.
+    -- In this case, the Module must be aborted. The module was attempted to be run form a Batch it is not registered for).
     IF (@BatchModuleActiveIndicator = 'U') -- Abort
     BEGIN
       SET @LogMessage = 'The Module Instance will be aborted.'
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-      -- If the inactive indicator at Batch/Module level is NULL then there is an error in the framework registration / setup.
-      -- In this case, the Module must be aborted. The module was attempted to be run form a Batch it is not registered for).
-
-      -- Call the Abort event.
+      -- Update the Module Instance to set the Internal Status Processing Code to 'Abort'.
       EXEC [omd].[UpdateModuleInstance]
         @ModuleInstanceId = @ModuleInstanceId,
         @EventCode = N'Abort',

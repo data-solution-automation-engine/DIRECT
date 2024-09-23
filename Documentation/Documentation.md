@@ -303,6 +303,10 @@ If a failure is detected at any time during this process the Execution Status Co
 
 ### Module integration
 
+The Module execution process is as follows:
+
+![Run Module](Images/RunModule.png "Run Module")
+
 #### Create new Module Instance
 
 The CreateModuleInstance event will retrieve the Module details using the Module Code as input. This includes the `MODULE_ID` but also other relevant properties such as `AREA_CODE`, `TARGET_DATA_OBJECT`, and `FREQUENCY_CODE`.
@@ -329,37 +333,29 @@ The ModuleEvaluation event performs the sanity checks and housekeeping for the f
 
 The process is as follows:
 
-1. Check for multiple running instances; if there are more running instances for the same Module only the first one is allowed to continue, the other active Instances must be aborted. This means that the current in-progress Module Instance for which the check is done needs to query if it itself is in the earliest (MIN) of the set of active Instances for the same Module. If this is true the Instance can continue, otherwise it will be flagged to be aborted (Internal Processing Status Code `Abort`)
+![Module Evaluation](Images/ModuleEvaluation.png "Module Evaluation")
 
-1. This value in of the Internal Processing Status Code will trigger an update of the MODULE_INSTANCE table to set the Execution Status Code to `Aborted` for the current Instance and avoid executing of the regular ETL logic
+1. If there are more running instances for the same Module only the first one is allowed to continue, the other active Instances must be aborted. This means that the current in-progress Module Instance for which the check is done needs to query if it itself is in the earliest (MIN) of the set of active Instances for the Module. If this is true, the Instance can continue. Otherwise it will be flagged to be aborted (Internal Processing Status Code `Abort`).This  will trigger an update of the `MODULE_INSTANCE` table to set the Execution Status Code to `Aborted` for the current Instance and avoid executing of the regular Module logic
 
-1. Validate Batch Execution. DIRECT will query the Batch information to validate if the Module was registered properly (i.e. contains an entry in the Batch/Module relationship table) when instantiated from a Batch. This check also takes into account the value of the `ACTIVE_INDICATOR` on Batch/Module level
+1. DIRECT will assess if the Module is enabled, either individually or when called from a Batch by checking the `ACTIVE_INDICATOR` value. If either the Module or Batch/Module equivalent value is set to `N`, the current Instance will be skipped as this indicates the Module is disabled for the particular Batch
 
-1. If this value is set to `N` the current Instance will be skipped as this indicates the Module is disabled for the particular Batch
-
-1. Retrieve Previous Instance details. If allowed to continue the Module Evaluation then checks if the previous run(s) have failed or not. It will select the Next Run Status value from the previous Module Instance to direct the internal processing. If a failure is detected (the status of the previous instance Next Run Status is `Rollback`) this step will create an array of all Module Instances from the last logged successful run to the most recent (failed) run
-
-1. This effectively selects multiple failed runs for rollback from the point where the run was last successful. This array of (failed) Module Instances will ultimately be used as the 'IN' clause of the Rollback SQL
+1. Details of earlier instances will be retrieved to determine a rollback is required. It will select the Next Run Status value from the previous Module Instance to direct the internal processing. If a failure is detected (the status of the previous instance Next Run Status is `Rollback`) this step will create an array of all Module Instances from the last logged successful run to the most recent (failed) run This effectively selects multiple failed runs for rollback from the point where the run was last successful. This array of (failed) Module Instances will ultimately be used as the 'IN' clause of the Rollback SQL
 
 1. Based on the result of this check the following scenarios are possible:
 
-   * If the previous (Module) Next Run Status is `Cancel` the run will be finished before the actual ETL starts. This can happen if:
-     * The system administrator has labelled this Module to be disabled for this run by manually setting the Next Run Status value to `Cancel` in the Module Instance.
-     * The previous Batch failed but the specific Module (Instance) was run successfully in that particular Batch and is skipped when the Batch is run again (rollback on Batch level)
-
+   * If the previous (Module) Next Run Status is `Cancel` the run will be finished before the actual Module execution starts. This can happen if:
+   * The system administrator has labelled this Module to be disabled for this run by manually setting the Next Run Status value to `Cancel` in the Module Instance.
+   * The previous Batch failed but the specific Module (Instance) was run successfully in that particular Batch and is skipped when the Batch is run again (rollback on Batch level)
    * If the previous Module Next Run Status is `Rollback` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Internal Processing Status Code is set to `Proceed` and processing will continue as usual.
-
-1. The Module Evaluation effectively returns the Internal Processing Status Code for the current Module Instance. The next step for the processing is to interpret this indicator for the current Module Instance to either stop or continue the processing
-
-1. After the Module Evaluation is complete and the Internal Processing Status Code equal `Proceed` the regular ETL process can be executed. In other words, no regular processing is allowed unless this indicator is `Proceed`.  This is the safety catch for the Module to start.
-
-   * If at this point the (Module) Internal Processing Status Code is `Cancel` the Module Instance record is updated to set the final Execution Status Code to `Cancel` and the End Date/Time to the current date/time value (sysdate, getdate or equivalent).
-   * If at this point the (Module) Internal Processing Status Code is `Abort` the Module Instance record is updated to set the final Execution Status Code to `Aborted` and the End Date/Time to the current date/time value (sysdate, getdate or equivalent).
-   * As mentioned, if the Internal Processing Status Code is `Proceed` the real ETL logic will be executed. No Modules are allowed to start unless this indicator equals `Proceed`
 
 #### Update the Module Instance
 
-After the execution has completed without any issues, the Internal Processing Status Code of the Module Instance is checked.
+The Module Evaluation returns the Internal Processing Status Code for the current Module Instance. The next step for the processing is to interpret this indicator for the current Module Instance, to either stop or continue the processing
+
+After the evaluation has completed without any issues, the Internal Processing Status Code of the Module Instance is checked.
+
+If the Internal Processing Status Code equals `Proceed` the regular process can be executed. In other words, no regular processing is allowed _unless_ this indicator is `Proceed`. This is the safety catch for the Module to start.
+
 
 If the Internal Processing Status Code is `Cancel`, the Module Instance is updated with:
 
@@ -373,7 +369,7 @@ If the Internal Processing Status Code is `Abort`, the Module Instance is update
 * The Next Run Status as `Proceed` and 
 * End Date/Time as the current timestamp
    
-If the Internal Processing Status Code is `Proceed` and the ETL runs without issues the Module Instance is updated to set the Execution Status Code to `Succesful`, the Next Run Status as `Proceed` and the current date/time as the End Date/Time. 
+If the Internal Processing Status Code is `Proceed` and the Module runs without issues the Module Instance is updated to set the Execution Status Code to `Succesful`, the Next Run Status as `Proceed` and the current date/time as the End Date/Time. 
 
 As a separate step the record counts are updated in the `MODULE_INSTANCE` table.
 
@@ -403,8 +399,8 @@ The Module registration is done by adding a record in the MODULE table with the 
 
 * `MODULE_ID`, this is a system generated ID that is used to unique identify a Module
 * `AREA_CODE`, the Area as part of the Outline Architecture where the Module is part of. This identifies the type, template and purpose of the Module
-* `MODULE_CODE`, this is the name of the Module (mapping name, child package; depending on the ETL software used)
-* `MODULE_TYPE_CODE`, the type of Module (script, specific ETL job, etc.)
+* `MODULE_CODE`, this is the name of the Module
+* `MODULE_TYPE_CODE`, the type of Module (script, specific data processing job, etc.)
 * `MODULE_DESCRIPTION`, the descriptive information of the Module
 * `ACTIVE_INDICATOR`, indicate whether a Module is inactive and should be skipped during process execution
 
@@ -482,5 +478,3 @@ If a rollback impacts a table associated with the source control logging table i
 ```sql
 DELETE FROM SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN (<Instance array>)
 ```
-
-In other approaches, an option is to retain the load window until all related (Batch) processes have been successfully completed.
