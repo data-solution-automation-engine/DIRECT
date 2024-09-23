@@ -233,8 +233,30 @@ Event | Description
 
 When a Batch is executed, the following steps will take place:
 
-![Run Batch](Images/RunBatch.png "Run Batch")
+```mermaid
+flowchart TD
+%% Nodes
 
+subgraph BatchInstance["Batch Instance"]
+  Start("Start of the process"):::Main
+  CreateBatchInstance
+  BatchEvaluation{"BatchEvaluation"}
+  RunModule("Run all Modules associated with the Batch")
+  RunBatch("Run all (child) Batches associated with the Batch")
+  UpdateBatchInstance
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CreateBatchInstance --> BatchEvaluation
+BatchEvaluation --  Internal Processing Status Code is not 'Abort' or 'Cancel' --> RunModule --> RunBatch
+BatchEvaluation -- Internal Processing Status Code is either 'Abort' or 'Cancel' --> End
+RunBatch --> UpdateBatchInstance
+UpdateBatchInstance --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
+```
 #### Create new Batch Instance
 
 This is the CreateBatchInstance event. This step inserts a new record in the `BATCH_INSTANCE` table based on the Batch ID with the:
@@ -264,7 +286,35 @@ If the evaluation finishes successfully and no issues have been encountered the 
 
 An overview of the Batch Evaluation steps is displayed in the following diagram:
 
-![Batch Evaluation](Images/BatchEvaluation.png "Batch Evaluation")
+```mermaid
+flowchart TD
+%% Nodes
+
+subgraph BatchEvaluation["Batch Evaluation"]
+  Start("Start of the process"):::Main
+  CheckMultiple("Check for multiple running Batch Instances")
+  IsMultipleInstances{"Are multiple instances running?"}
+  SetAbort("Update the Internal Processing Status Code to 'Abort'")
+  IsActive{"Is the Batch enabled?"}
+  SetCancel("Update the Internal Processing Status Code to 'Cancel'")
+  IsRollback{"Is the rollback required?"}
+  Rollback("Perform Rollback")  
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CheckMultiple --> IsMultipleInstances
+IsMultipleInstances -- Yes --> SetAbort
+IsMultipleInstances -- No --> IsActive
+IsActive -- No --> SetCancel
+IsActive -- Yes --> IsRollback
+IsRollback -- Yes --> Rollback
+Rollback ----> End
+IsRollback -- No --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
+```
 
 The process is as follows:
 
@@ -305,7 +355,29 @@ If a failure is detected at any time during this process the Execution Status Co
 
 The Module execution process is as follows:
 
-![Run Module](Images/RunModule.png "Run Module")
+```mermaid
+flowchart TD
+%% Nodes
+
+subgraph ModuleInstance["Module Instance"]
+  Start("Start of the process"):::Main
+  CreateModuleInstance
+  ModuleEvaluation{"ModuleEvaluation"}
+  RunModule("Execute Module logic")
+  UpdateModuleInstance
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CreateModuleInstance --> ModuleEvaluation
+ModuleEvaluation --  Internal Processing Status Code is not 'Abort' or 'Cancel' --> RunModule
+ModuleEvaluation -- Internal Processing Status Code is either 'Abort' or 'Cancel' --> End
+RunModule --> UpdateModuleInstance
+UpdateModuleInstance --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
+```
 
 #### Create new Module Instance
 
@@ -333,7 +405,35 @@ The ModuleEvaluation event performs the sanity checks and housekeeping for the f
 
 The process is as follows:
 
-![Module Evaluation](Images/ModuleEvaluation.png "Module Evaluation")
+```mermaid
+flowchart TD
+%% Nodes
+
+subgraph BatchEvaluation["Batch Evaluation"]
+  Start("Start of the process"):::Main
+  CheckMultiple("Check for multiple running Batch Instances")
+  IsMultipleInstances{"Are multiple instances running?"}
+  SetAbort("Update the Internal Processing Status Code to 'Abort'")
+  IsActive{"Is the Batch enabled?"}
+  SetCancel("Update the Internal Processing Status Code to 'Cancel'")
+  IsRollback{"Is the rollback required?"}
+  Rollback("Perform Rollback")  
+  End("End of the process"):::Main
+end
+
+%% Edges
+Start --> CheckMultiple --> IsMultipleInstances
+IsMultipleInstances -- Yes --> SetAbort
+IsMultipleInstances -- No --> IsActive
+IsActive -- No --> SetCancel
+IsActive -- Yes --> IsRollback
+IsRollback -- Yes --> Rollback
+Rollback ----> End
+IsRollback -- No --> End
+
+%% Styling
+    classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
+```
 
 1. If there are more running instances for the same Module only the first one is allowed to continue, the other active Instances must be aborted. This means that the current in-progress Module Instance for which the check is done needs to query if it itself is in the earliest (MIN) of the set of active Instances for the Module. If this is true, the Instance can continue. Otherwise it will be flagged to be aborted (Internal Processing Status Code `Abort`).This  will trigger an update of the `MODULE_INSTANCE` table to set the Execution Status Code to `Aborted` for the current Instance and avoid executing of the regular Module logic
 
