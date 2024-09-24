@@ -1,6 +1,8 @@
 # Direct Framework Physical Model
 
-This section contains the DIRECT physical model in MermaidChart format. The contents below can be rendered or pasted in the online editor (https://www.mermaidchart.com/).
+This section contains the DIRECT physical model in Mermaid erDiagram format.
+
+The contents below can be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
 
 ```mermaid
 ---
@@ -31,7 +33,7 @@ erDiagram
     BATCH_INSTANCE {
         BATCH_INSTANCE_ID           BIGINT PK
         BATCH_ID                    INT FK
-        PARENT_BATCH_INSTANCE_ID    BIGINT        
+        PARENT_BATCH_INSTANCE_ID    BIGINT
         START_TIMESTAMP             DATETIME2
         END_TIMESTAMP               DATETIME2
         INTERNAL_PROCESSING_CODE    NVARCHAR(100) FK
@@ -170,7 +172,7 @@ erDiagram
         EVENT_TYPE_CODE_DESCRIPTION     NVARCHAR(4000)
     }
 
-    EVENT_TYPE ||..|{ EVENT_LOG : states    
+    EVENT_TYPE ||..|{ EVENT_LOG : states
 
     EXECUTION_STATUS {
         EXECUTION_STATUS_CODE NVARCHAR(100) PK
@@ -186,7 +188,7 @@ erDiagram
         GROUP NVARCHAR(100) 
         DESCRIPTION NVARCHAR(4000)
         ACTIVE_INDICATOR CHAR(1)
-    }        
+    }
 
     FREQUENCY {
         FREQUENCY_CODE NVARCHAR(100) PK

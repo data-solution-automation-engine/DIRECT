@@ -24,7 +24,7 @@ ORDER BY 3 DESC
 -- Exception check Module level
 SELECT
     module.MODULE_CODE,
-	main.BATCH_INSTANCE_ID,
+    main.BATCH_INSTANCE_ID,
     main.MODULE_INSTANCE_ID AS MOST_RECENT_MODULE_INSTANCE_ID,
     main.START_DATETIME,
     main.END_DATETIME,

@@ -10,6 +10,6 @@
 		on t.object_id = p.object_id
 	inner join sys.allocation_units a on p.partition_id = a.container_id
 group by t.name
-order by 
+order by
 CAST(FORMAT(SUM(round(8 * a.total_pages/1024.0,2)),'####') AS INT)
 DESC
