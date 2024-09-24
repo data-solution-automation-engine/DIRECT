@@ -19,7 +19,9 @@ This allows it to pull the required reference Dacpac files from nuget without ha
 
 This project format also allows building the project using dotnet, removing a dependency on other, less readily available toolings, which can be helpful when building in containers, or through pipelines with limited tool support.
 
-Version and references are kept at SQL Server 2019/150
+Version and references in the project are currently Azure SQL database, which is only using the master reference.
+
+Add/remove references as needed, and set the version to the expected target. The below example uses version 150 instead (SQL Server 2019)
 
 ## Creating a project
 

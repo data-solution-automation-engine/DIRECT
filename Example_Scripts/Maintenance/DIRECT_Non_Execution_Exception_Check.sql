@@ -1,5 +1,5 @@
 --Show which modules haven't run in the last 3 days
-SELECT 
+SELECT
 	module.MODULE_CODE,
 	module.MODULE_ID,
 	main.MODULE_INSTANCE_ID AS MOST_RECENT_MODULE_INSTANCE_ID,

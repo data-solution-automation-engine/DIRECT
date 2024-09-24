@@ -58,8 +58,6 @@ DECLARE
   @RunTest15 CHAR(1) = 'Y',
   @RunTest16 CHAR(1) = 'Y'
 
-
-
 -- Reset the environment (for multiple runs)
 DELETE FROM [omd].[BATCH_HIERARCHY]
 DELETE FROM [omd].[SOURCE_CONTROL]
@@ -148,7 +146,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    02- Custom code execution test
+    02 - Custom code execution test
 *******************************************************************************/
 IF @RunTest02 = 'Y'
 BEGIN
@@ -160,8 +158,8 @@ BEGIN
 
   EXEC [omd].[RunModule]
   @ModuleCode = 'MyNewModule',
-  --@Debug = 'Y',
-  @Query = 'SELECT SYSDATETIME()'
+  @Debug      = @Debug,
+  @Query      = 'SELECT SYSDATETIME()'
 
   SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
   SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
@@ -716,7 +714,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    13 Running a Parent Batch
+    13 - Running a Parent Batch
 *******************************************************************************/
 IF @RunTest13 = 'Y'
 BEGIN
@@ -759,7 +757,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    14 Attempting to run a disabled Module stand-alone
+    14 - Attempting to run a disabled Module stand-alone
 *******************************************************************************/
 IF @RunTest14 = 'Y'
 BEGIN
@@ -771,32 +769,32 @@ BEGIN
 
   BEGIN TRY
 
-	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_CODE='MyNewModule'
+    UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_CODE='MyNewModule'
 
-	  EXEC [omd].[RunModule]
-	   @ModuleCode = 'MyNewModule'
-	  ,@Debug = @Debug
+    EXEC [omd].[RunModule]
+     @ModuleCode = 'MyNewModule'
+    ,@Debug = @Debug
 
-	  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-	  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-	  IF @Verbose = 'Y'
-	  BEGIN
-		PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
-	  END
+    IF @Verbose = 'Y'
+    BEGIN
+    PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
+    END
 
-	  IF @CurrentModuleExecutionStatus = 'Cancelled'
-	  BEGIN
-		PRINT '  ' + @CurrentTestName + ' - succeeded'
-		UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-	  END
-	  ELSE
-	  BEGIN
-		PRINT '  ' + @CurrentTestName + ' - failed'
-		UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-	  END
+    IF @CurrentModuleExecutionStatus = 'Cancelled'
+    BEGIN
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+    END
+    ELSE
+    BEGIN
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+    END
 
-	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
+    UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
  END TRY
   BEGIN CATCH
     PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
@@ -805,7 +803,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    15 Attempting to run a disabled Module from a Batch
+    15 - Attempting to run a disabled Module from a Batch
 *******************************************************************************/
 IF @RunTest15 = 'Y'
 BEGIN
@@ -817,32 +815,32 @@ BEGIN
 
   BEGIN TRY
 
-	  UPDATE omd.BATCH_MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE='MySecondModule')
+    UPDATE omd.BATCH_MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE='MySecondModule')
 
       EXEC [omd].[RunBatch]
         @BatchCode = 'MyNewBatch'
        ,@Debug = @Debug
 
-	  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-	  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-	  IF @Verbose = 'Y'
-	  BEGIN
-		PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
-	  END
+    IF @Verbose = 'Y'
+    BEGIN
+    PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
+    END
 
-	  IF @CurrentModuleExecutionStatus = 'Cancelled'
-	  BEGIN
-		PRINT '  ' + @CurrentTestName + ' - succeeded'
-		UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-	  END
-	  ELSE
-	  BEGIN
-		PRINT '  ' + @CurrentTestName + ' - failed'
-		UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-	  END
+    IF @CurrentModuleExecutionStatus = 'Cancelled'
+    BEGIN
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+    END
+    ELSE
+    BEGIN
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+    END
 
-	  UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
+    UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
  END TRY
   BEGIN CATCH
     PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
@@ -851,7 +849,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    16 Attempting to run a disabled Batch
+    16 - Attempting to run a disabled Batch
 *******************************************************************************/
 IF @RunTest16 = 'Y'
 BEGIN
@@ -863,7 +861,7 @@ BEGIN
 
   BEGIN TRY
 
-	  UPDATE omd.BATCH SET ACTIVE_INDICATOR = 'N' WHERE BATCH_CODE = 'MyNewBatch'
+    UPDATE omd.BATCH SET ACTIVE_INDICATOR = 'N' WHERE BATCH_CODE = 'MyNewBatch'
 
       EXEC [omd].[RunBatch]
         @BatchCode = 'MyNewBatch'
