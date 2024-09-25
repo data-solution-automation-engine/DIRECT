@@ -1,8 +1,8 @@
 # Direct Framework Physical Model
 
-This section contains the DIRECT physical model in Mermaid erDiagram format.
+This section contains the DIRECT physical model in Mermaid Entity Relationship diagram format.
 
-The contents below can be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
+In various platforms, including Github, the diagram will be rendered automatically. Otherwise, the contents below can also be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
 
 ```mermaid
 ---
