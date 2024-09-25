@@ -1,3 +1,19 @@
+CREATE PROCEDURE [omd].[UpdateBatchInstance]
+(
+  -- Mandatory parameters
+  @BatchInstanceId        BIGINT,
+  -- Optional parameters
+  @EventCode              NVARCHAR(100) = N'None',
+  @Debug                  CHAR(1)       = 'N',
+    -- Output parameters
+  @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
+  @MessageLog             NVARCHAR(MAX) = NULL OUTPUT
+)
+AS
+BEGIN TRY
+  SET NOCOUNT ON;
+  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
+
 /*******************************************************************************
  * [omd].[UpdateBatchInstance]
  *******************************************************************************
@@ -25,33 +41,16 @@
 DECLARE @BatchInstanceId INT
 
 EXEC [omd].[UpdateBatchInstance]
-   @BatchInstanceId = <>,
-   @EventCode = '<>'
-   -- Output parameters
-   @BatchInstanceId = @BatchInstanceId OUTPUT;
+  @BatchInstanceId = <>,
+  @EventCode = '<>'
+  -- Output parameters
+  @BatchInstanceId = @BatchInstanceId OUTPUT;
 
 PRINT @BatchInstanceId;
 
  *******************************************************************************
  *
  ******************************************************************************/
-
-CREATE PROCEDURE [omd].[UpdateBatchInstance]
-(
-  -- Mandatory parameters
-  @BatchInstanceId        BIGINT,
-  -- Optional parameters
-  @ParentBatchInstanceId  BIGINT = 0,
-  @EventCode              NVARCHAR(100) = N'None',
-  @Debug                  CHAR(1)       = 'N',
-    -- Output parameters
-  @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX) = NULL OUTPUT
-)
-AS
-BEGIN TRY
-  SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -102,7 +101,6 @@ BEGIN TRY
       EXECUTION_STATUS_CODE     = 'Aborted',
       INTERNAL_PROCESSING_CODE  = 'Abort',
       NEXT_RUN_STATUS_CODE      = 'Proceed',
-      PARENT_BATCH_INSTANCE_ID  = @ParentBatchInstanceId,
       END_TIMESTAMP             = SYSUTCDATETIME()
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
@@ -122,7 +120,6 @@ BEGIN TRY
       EXECUTION_STATUS_CODE     = N'Cancelled',
       INTERNAL_PROCESSING_CODE  = N'Cancel',
       NEXT_RUN_STATUS_CODE      = N'Proceed',
-      PARENT_BATCH_INSTANCE_ID  = @ParentBatchInstanceId,
       END_TIMESTAMP             = SYSUTCDATETIME()
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
@@ -141,9 +138,8 @@ BEGIN TRY
     SET
       EXECUTION_STATUS_CODE   = 'Succeeded',
       NEXT_RUN_STATUS_CODE    = 'Proceed',
-      PARENT_BATCH_INSTANCE_ID  = @ParentBatchInstanceId,
       END_TIMESTAMP           = SYSUTCDATETIME()
-    WHERE  BATCH_INSTANCE_ID = @BatchInstanceId
+    WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
     GOTO EndOfProcedure
 
@@ -163,7 +159,6 @@ BEGIN TRY
     SET
       EXECUTION_STATUS_CODE   = 'Failed',
       NEXT_RUN_STATUS_CODE    = 'Proceed',
-      PARENT_BATCH_INSTANCE_ID  = @ParentBatchInstanceId,
       END_TIMESTAMP           = SYSUTCDATETIME()
     WHERE  BATCH_INSTANCE_ID = @BatchInstanceId
 

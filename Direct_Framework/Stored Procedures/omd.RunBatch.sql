@@ -226,7 +226,6 @@ BEGIN TRY
     -- Batch Success
     EXEC [omd].[UpdateBatchInstance]
         @BatchInstanceId  = @BatchInstanceId,
-        @ParentBatchInstanceId = @ParentBatchInstanceId,
         @Debug            = @Debug,
         @EventCode        = 'Success'
 
@@ -241,7 +240,6 @@ BEGIN TRY
       -- Batch Failure
       EXEC [omd].[UpdateBatchInstance]
         @BatchInstanceId  = @BatchInstanceId,
-        @ParentBatchInstanceId = @ParentBatchInstanceId,
         @Debug            = @Debug,
         @EventCode        = 'Failure';
 
