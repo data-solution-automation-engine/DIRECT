@@ -143,12 +143,13 @@ BEGIN TRY
 
       UPDATE [omd].[MODULE_INSTANCE]
       SET
-        EXECUTION_STATUS_CODE   = 'Succeeded',
-        NEXT_RUN_STATUS_CODE    = 'Proceed',
-        END_TIMESTAMP           = SYSUTCDATETIME(),
-        ROWS_INPUT              = @RowCountSelect,
-        ROWS_INSERTED           = @RowCountInsert
-        WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
+        EXECUTION_STATUS_CODE     = 'Succeeded',
+        NEXT_RUN_STATUS_CODE      = 'Proceed',
+        INTERNAL_PROCESSING_CODE  = 'Proceed',
+        END_TIMESTAMP             = SYSUTCDATETIME(),
+        ROWS_INPUT                = @RowCountSelect,
+        ROWS_INSERTED             = @RowCountInsert
+      WHERE MODULE_INSTANCE_ID    = @ModuleInstanceId
     END TRY
     BEGIN CATCH
       THROW
