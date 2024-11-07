@@ -243,7 +243,8 @@ BEGIN TRY
         @Debug            = @Debug,
         @EventCode        = 'Failure';
 
-    SET @Result = 'Failure';
+      SET @Result = 'Failure';
+      SET @SuccessIndicator = 'N';
 
     THROW
 

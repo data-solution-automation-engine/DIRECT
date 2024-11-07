@@ -168,12 +168,16 @@ BEGIN TRY
 
   FailureEndOfProcedure:
 
+  SET @SuccessIndicator = 'N'
+
   SET @LogMessage = N'' + @SpName + ' ended in failure.';
   SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
   GOTO EndOfProcedure
 
   SuccessEndOfProcedure:
+
+  SET @SuccessIndicator = 'Y'
 
   SET @LogMessage = N'' + @SpName + ' completed succesfully.';
   SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)

@@ -192,6 +192,7 @@ WHERE NOT EXISTS
   -- End of procedure label
   EndOfProcedure:
 
+  SET @SuccessIndicator = 'Y'
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   SET @LogMessage = @EndTimestampString;
