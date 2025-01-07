@@ -136,10 +136,11 @@ PRINT @BatchInstanceId;
 
     UPDATE [omd].[BATCH_INSTANCE]
     SET
-      EXECUTION_STATUS_CODE   = 'Succeeded',
-      NEXT_RUN_STATUS_CODE    = 'Proceed',
-      END_TIMESTAMP           = SYSUTCDATETIME()
-    WHERE BATCH_INSTANCE_ID = @BatchInstanceId
+      EXECUTION_STATUS_CODE     = 'Succeeded',
+      NEXT_RUN_STATUS_CODE      = 'Proceed',
+      INTERNAL_PROCESSING_CODE  = 'Proceed',
+      END_TIMESTAMP             = SYSUTCDATETIME()
+    WHERE BATCH_INSTANCE_ID     = @BatchInstanceId
 
     GOTO EndOfProcedure
 
