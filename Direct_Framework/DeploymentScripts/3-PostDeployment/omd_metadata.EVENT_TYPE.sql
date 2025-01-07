@@ -23,22 +23,22 @@ DECLARE @tblMerge TABLE(
 
 INSERT INTO @tblMerge([EVENT_TYPE_CODE], [EVENT_TYPE_CODE_DESCRIPTION])
 VALUES
- (N'1', N'Infrastructure error.'),
- (N'2', N'Internal data integration process error or system generated event.'),
- (N'3', N'Custom exception handling that has been implemented in code (Error Bitmaps).')
+  (N'1', N'Infrastructure error.'),
+  (N'2', N'Internal data integration process error or system generated event.'),
+  (N'3', N'Custom exception handling that has been implemented in code (Error Bitmaps).')
 
 MERGE [omd_metadata].[EVENT_TYPE] AS TARGET
 USING @tblMerge AS src
-    ON  TARGET.[EVENT_TYPE_CODE] = src.[EVENT_TYPE_CODE]
+  ON  TARGET.[EVENT_TYPE_CODE] = src.[EVENT_TYPE_CODE]
 
 WHEN MATCHED THEN
-    UPDATE
-    SET    [EVENT_TYPE_CODE_DESCRIPTION] = src.[EVENT_TYPE_CODE_DESCRIPTION]
+  UPDATE
+  SET      [EVENT_TYPE_CODE_DESCRIPTION] = src.[EVENT_TYPE_CODE_DESCRIPTION]
 
 WHEN NOT MATCHED THEN
-    INSERT  ([EVENT_TYPE_CODE]
-            ,[EVENT_TYPE_CODE_DESCRIPTION])
-    VALUES  ([EVENT_TYPE_CODE]
-            ,[EVENT_TYPE_CODE_DESCRIPTION]);
+  INSERT  ([EVENT_TYPE_CODE]
+          ,[EVENT_TYPE_CODE_DESCRIPTION])
+  VALUES  ([EVENT_TYPE_CODE]
+          ,[EVENT_TYPE_CODE_DESCRIPTION]);
 
 GO
