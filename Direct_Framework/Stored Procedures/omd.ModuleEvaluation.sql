@@ -464,6 +464,7 @@ BEGIN TRY
 
   ModuleFailure:
   -- The procedure should not be able to end in this part, so this is just to be sure there is a failure reported when this happens.
+  SET @SuccessIndicator = 'N'
   EXEC [omd].[UpdateModuleInstance]
     @ModuleInstanceId   = @ModuleInstanceId,
     @Debug              = @Debug,
@@ -483,6 +484,7 @@ BEGIN TRY
   -- End of procedure label
   EndOfProcedure:
 
+  SET @SuccessIndicator = 'Y'
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   SET @LogMessage = @EndTimestampString;
