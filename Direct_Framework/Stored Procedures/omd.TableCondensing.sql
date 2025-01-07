@@ -216,7 +216,7 @@ BEGIN TRY
   SET @FinalQuery = 'WITH CondensingCTE AS' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''MD5'',' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''SHA2_512'',' + CHAR(10);
   SET @FinalQuery = @FinalQuery + @HashSnippet;
   SET @FinalQuery = @FinalQuery + '  ) AS FULL_ROW_CHECKSUM,' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '  *' + CHAR(10);

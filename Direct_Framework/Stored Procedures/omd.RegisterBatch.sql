@@ -150,7 +150,7 @@ BEGIN TRY
     -- Evaluate the incoming values to see if the Batch should be updated.
     -- Note that the active indicator is excluded here, to allow it to be managed separately.
     DECLARE @NewChecksum BINARY(20) =
-    HASHBYTES('SHA1',
+    HASHBYTES('SHA2_512',
       @BatchType             + '!' +
       @BatchFrequency        + '!' +
       @BatchDescription
@@ -163,7 +163,7 @@ BEGIN TRY
     -- Evaluate the existing values to see if the Module requires to be updated.
     DECLARE @ExistingChecksum BINARY(20);
     SELECT @ExistingChecksum =
-    HASHBYTES('SHA1',
+    HASHBYTES('SHA2_512',
       COALESCE([BATCH_TYPE],        'N/A') + '!' +
       COALESCE([FREQUENCY_CODE],    'N/A') + '!' +
       COALESCE([BATCH_DESCRIPTION], 'N/A'))

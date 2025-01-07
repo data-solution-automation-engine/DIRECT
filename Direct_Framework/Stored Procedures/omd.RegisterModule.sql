@@ -187,7 +187,7 @@ BEGIN TRY
     -- Note that the active indicator is excluded here,
     -- to allow it to be managed separately.
     DECLARE @NewChecksum BINARY(20) =
-    HASHBYTES('SHA1',
+    HASHBYTES('SHA2_512',
       @ModuleType             + '!' +
       @ModuleSourceDataObject + '!' +
       @ModuleTargetDataObject + '!' +
@@ -203,7 +203,7 @@ BEGIN TRY
     -- Evaluate the existing values to see if the Module requires to be updated.
     DECLARE @ExistingChecksum BINARY(20);
     SELECT @ExistingChecksum =
-    HASHBYTES('SHA1',
+    HASHBYTES('SHA2_512',
       COALESCE([MODULE_TYPE],         'N/A') + '!' +
       COALESCE([DATA_OBJECT_SOURCE],  'N/A') + '!' +
       COALESCE([DATA_OBJECT_TARGET],  'N/A') + '!' +
