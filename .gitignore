@@ -408,3 +408,4 @@ FodyWeavers.xsd
 # Direct_Framework/Reference_Databases/[Bb]in/[Dd]ebug/*
 # !Direct_Framework/Reference_Databases/bin/Debug/master.dacpac
 # !Direct_Framework/Reference_Databases/bin/Debug/msdb.dacpac
+/.vscode
