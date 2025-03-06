@@ -149,7 +149,7 @@ BEGIN TRY
 
     -- Evaluate the incoming values to see if the Batch should be updated.
     -- Note that the active indicator is excluded here, to allow it to be managed separately.
-    DECLARE @NewChecksum BINARY(20) =
+    DECLARE @NewChecksum VARBINARY(64) =
     HASHBYTES('SHA2_512',
       @BatchType             + '!' +
       @BatchFrequency        + '!' +
