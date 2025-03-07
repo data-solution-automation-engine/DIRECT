@@ -186,7 +186,7 @@ BEGIN TRY
     -- Evaluate the incoming values to see if the Module should be updated.
     -- Note that the active indicator is excluded here,
     -- to allow it to be managed separately.
-    DECLARE @NewChecksum BINARY(20) =
+    DECLARE @NewChecksum VARBINARY(64) =
     HASHBYTES('SHA2_512',
       @ModuleType             + '!' +
       @ModuleSourceDataObject + '!' +
@@ -201,7 +201,7 @@ BEGIN TRY
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     -- Evaluate the existing values to see if the Module requires to be updated.
-    DECLARE @ExistingChecksum BINARY(20);
+    DECLARE @ExistingChecksum VARBINARY(64);
     SELECT @ExistingChecksum =
     HASHBYTES('SHA2_512',
       COALESCE([MODULE_TYPE],         'N/A') + '!' +

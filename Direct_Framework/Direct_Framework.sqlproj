@@ -209,7 +209,6 @@
     <None Include="BuildTools\PostBuild.ps1" />
     <None Include="BuildTools\PreBuild.cmd" />
     <None Include="BuildTools\PreBuild.ps1" />
-    <None Include="Direct_Framework.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
