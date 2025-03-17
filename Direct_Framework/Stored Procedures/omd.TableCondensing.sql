@@ -80,74 +80,76 @@ BEGIN TRY
  * Start of main process
  ******************************************************************************/
 
+  SET @LogMessage = 'Start of main process';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+
   -- Local procedure variables
-  DECLARE @ColumnList VARCHAR(MAX)
+  DECLARE @ColumnListDynamicSQL NVARCHAR(MAX);
+  DECLARE @ColumnList VARCHAR(MAX);
+  DECLARE @KeyListDynamicSQL NVARCHAR(MAX);
   DECLARE @KeyList VARCHAR(MAX);
 
   -- Create a list of columns that need to be taken into evaluation for condensing (checksum)
-  SELECT @ColumnList =
-    ''''+
-    STUFF
-    (
-      (
-        SELECT DISTINCT ', ' + COLUMN_NAME
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE
-          TABLE_NAME = @Table AND
-          TABLE_SCHEMA = @SchemaName AND
-          COLUMN_NAME NOT IN
-          (
-            'OMD_EVENT_DATETIME',
-            'OMD_INSERT_DATETIME',
-            'OMD_INSERT_MODULE_INSTANCE_ID',
-            'OMD_SOURCE_ROW_ID',
-            'OMD_HASH_FULL_RECORD',
-            'OMD_CHANGE_KEY',
-            'OMD_CHANGE_DATETIME'
-          )
-        FOR XML PATH('')
-      ),
-      1,
-      1,
-      ''
-    )
-    + ''''
+  SET @ColumnListDynamicSQL = N'
+    SELECT @ColumnListOUT =
+      STUFF(
+             (
+               SELECT DISTINCT '', '' + QUOTENAME(COLUMN_NAME)
+               FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.COLUMNS
+               WHERE TABLE_NAME = @Table AND TABLE_SCHEMA = @SchemaName
+               AND COLUMN_NAME NOT IN
+               (
+                ''OMD_EVENT_DATETIME'',
+				''SOURCE_TIMESTAMP'',
+                ''OMD_INSERT_DATETIME'',
+				''INSCRIPTION_TIMESTAMP'',
+                ''OMD_INSERT_MODULE_INSTANCE_ID'',
+				''AUDIT_TRAIL_ID'',
+                ''OMD_SOURCE_ROW_ID'',
+                ''INSCRIPTION_RECORD_ID'',
+                ''OMD_HASH_FULL_RECORD'',
+				''CHECKSUM'',
+                ''OMD_CHANGE_KEY'',
+                ''OMD_CHANGE_DATETIME'',
+				''CHANGE_DATA_INDICATOR''
+               )
+            FOR XML PATH(''''), TYPE).value(''text()[1]'', ''NVARCHAR(MAX)'')
+        , 1, 2, ''''
+    )';
+
+  EXEC sp_executesql
+    @ColumnListDynamicSQL,
+	N'@Table NVARCHAR(128), @SchemaName NVARCHAR(128), @ColumnListOUT NVARCHAR(MAX) OUTPUT',
+	@Table, @SchemaName, @ColumnList OUTPUT;
 
   SELECT @ColumnList = LTRIM(RTRIM(@ColumnList));
 
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT 'Column list = ' + @ColumnList
-  END
+  SET @LogMessage = @ColumnList;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Column List', @LogMessage, @MessageLog)
 
   -- Create a list of keys for use in the window functions and joins
-  SELECT @KeyList =
-    ''''+
-    STUFF
-    (
-      (
-        SELECT DISTINCT ', ' + COLUMN_NAME
-        FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
-        INNER JOIN
-          INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
-          ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' AND
-            TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME AND
-            KU.TABLE_NAME=@Table
-        WHERE COLUMN_NAME NOT LIKE 'OMD_%'
-        FOR XML PATH('')
-      ),
-      1,
-      1,
-      ''
-    )
-    + ''''
+  SET @KeyListDynamicSQL = N'
+    SELECT @KeyList_OUT =
+      STRING_AGG(COLUMN_NAME, '','')
+    FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+    INNER JOIN ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
+       ON TC.CONSTRAINT_TYPE = ''PRIMARY KEY''
+      AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME
+      AND KU.TABLE_NAME = @Table_IN
+    WHERE COLUMN_NAME NOT LIKE ''OMD_%'';'; -- Must exclude time component e.g. OMD_INSERT_DATETIME. For improvement.
 
-  SELECT @KeyList = REPLACE(LTRIM(RTRIM(@KeyList)),'''','');
+  -- Execute dynamic SQL
+  EXEC sp_executesql
+    @KeyListDynamicSQL,
+    N'@Table_IN NVARCHAR(128), @KeyList_OUT NVARCHAR(MAX) OUTPUT',
+    @Table_IN = @Table,
+    @KeyList_OUT = @KeyList OUTPUT;
 
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT 'Key list = ' + @KeyList;
-  END
+  -- Trim spaces if needed
+  SET @KeyList = LTRIM(RTRIM(@KeyList));
+
+  SET @LogMessage = @KeyList;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Key List', @LogMessage, @MessageLog)
 
   -- Translating back
   DECLARE @HashSnippet VARCHAR(MAX);
@@ -205,10 +207,8 @@ BEGIN TRY
 
   SET @HashSnippet = LEFT(@HashSnippet,DATALENGTH(@HashSnippet)-2)+CHAR(10);
 
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT @HashSnippet
-  END
+  SET @LogMessage = @HashSnippet;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Hash snippet', @LogMessage, @MessageLog)
 
   -- Build the dynamic SQL
   DECLARE @FinalQuery NVARCHAR(MAX);
@@ -216,29 +216,29 @@ BEGIN TRY
   SET @FinalQuery = 'WITH CondensingCTE AS' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''SHA2_512'',' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''MD5'',' + CHAR(10);
   SET @FinalQuery = @FinalQuery + @HashSnippet;
-  SET @FinalQuery = @FinalQuery + '  ) AS FULL_ROW_CHECKSUM,' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  ) AS [TMP_CHECKSUM],' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '  *' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'FROM ' + @DatabaseName + '.' + @SchemaName + '.' + @Table+CHAR(10);
+  SET @FinalQuery = @FinalQuery + 'FROM [' + @DatabaseName + '].' + @SchemaName + '.' + @Table+CHAR(10);
   SET @FinalQuery = @FinalQuery + '), Subselect AS' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  OMD_CHANGE_KEY,' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  FULL_ROW_CHECKSUM,' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  LAG(FULL_ROW_CHECKSUM) OVER (PARTITION BY ' + @KeyList + ' ORDER BY OMD_CHANGE_KEY) AS NEXT_FULL_ROW_CHECKSUM' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  *,' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  LAG([TMP_CHECKSUM]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHECKSUM],' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  LAG([CHANGE_DATA_INDICATOR]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'FROM CondensingCTE' + CHAR(10);
   SET @FinalQuery = @FinalQuery + ')' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'DELETE FROM Subselect' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'WHERE FULL_ROW_CHECKSUM = NEXT_FULL_ROW_CHECKSUM' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + 'WHERE [TMP_CHECKSUM] = [NEXT_CHECKSUM]' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + 'AND [CHANGE_DATA_INDICATOR] = [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
 
   -- Spool the resulting query
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT @FinalQuery
-  END
+  SET @LogMessage = @FinalQuery;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Final query', @LogMessage, @MessageLog)
 
-  EXECUTE sp_executesql @FinalQuery;
+  --EXECUTE sp_executesql @FinalQuery;
+  PRINT @FinalQuery;
 
   -- End of procedure label
   EndOfProcedure:
