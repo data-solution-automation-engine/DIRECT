@@ -1,7 +1,6 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# Run a Microsoft DevSkim code security scan on the codebase
+# upload the results to the GitHub Security tab
+# https://github.com/microsoft/DevSkim
 
 name: DevSkim
 
@@ -16,7 +15,7 @@ on:
 jobs:
   lint:
     name: DevSkim
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
@@ -25,10 +24,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run DevSkim scanner
+      - name: Run Msft DevSkim scanner
         uses: microsoft/DevSkim-Action@v1
 
-      - name: Upload DevSkim scan results to GitHub Security tab
+      - name: Upload DevSkim scan results sarif to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: devskim-results.sarif
