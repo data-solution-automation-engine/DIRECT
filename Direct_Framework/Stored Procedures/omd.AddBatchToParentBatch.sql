@@ -134,17 +134,46 @@ BEGIN TRY
 
   -- Validate the DAG
   BEGIN TRY
-    /*
-      TODO: Validate DAG, no circular references allowed...
-    */
-
+    -- DAG Check: Ensure that adding @ParentBatchId -> @BatchId does not form a cycle
     IF @CheckDag = 'Y'
     BEGIN
-      PRINT('There should be some clever SQL added here to warn of circular relations...')
+      ;WITH Ancestors AS (
+        SELECT BATCH_ID, PARENT_BATCH_ID
+        FROM [omd].[BATCH_HIERARCHY]
+        WHERE BATCH_ID = @ParentBatchId
+
+        UNION ALL
+
+        SELECT h.BATCH_ID, h.PARENT_BATCH_ID
+        FROM [omd].[BATCH_HIERARCHY] h
+        INNER JOIN Ancestors a ON h.BATCH_ID = a.PARENT_BATCH_ID
+      )
+      SELECT BATCH_ID
+      INTO #DagViolation
+      FROM Ancestors
+      WHERE PARENT_BATCH_ID = @BatchId;
+
+      IF EXISTS (SELECT 1 FROM #DagViolation)
+      BEGIN
+        SET @LogMessage = 'Circular relationship detected: adding BatchId ' + CONVERT(NVARCHAR(10), @BatchId) +
+                          ' under ParentBatchId ' + CONVERT(NVARCHAR(10), @ParentBatchId) +
+                          ' would create a cycle.';
+        SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+        DROP TABLE IF EXISTS #DagViolation;
+        GOTO EndOfProcedureFailure;
+      END
+
+      DROP TABLE IF EXISTS #DagViolation;
     END
+
+
   END TRY
   BEGIN CATCH
-  -- TODO
+    SET @LogMessage = 'Error testing for circular relationships in the DAG check.';
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+    SET @SuccessIndicator = 'N';
+
+    THROW 50000, @LogMessage, 1
   END CATCH
 
   -- Find the Parent Batch Id
