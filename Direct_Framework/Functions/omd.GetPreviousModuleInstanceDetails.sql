@@ -5,22 +5,50 @@ CREATE FUNCTION [omd].[GetPreviousModuleInstanceDetails]
 )
 RETURNS TABLE AS
 
--- =============================================
--- Function:    GetPreviousModuleInstanceDetails
--- Description: TODO: tba...
--- =============================================
+/*******************************************************************************
+ * [omd].[GetPreviousModuleInstanceDetails]
+ *******************************************************************************
+ *
+ * https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * DIRECT model v2.0
+ *
+ *
+ * Purpose: Returns details about the most recent completed execution of a specified module within a specific batch context.
+ *          If no such instance exists, a default placeholder value is returned.
+ *          This information can be used for determining module execution eligibility.
+ *          The function retrieves the latest completed module instance based on the execution status and batch context.
+ *
+ * Inputs:
+ *   - @ModuleId (INT): The ID of the module for which execution details are requested.
+ *   - @BatchId (INT): The ID of the batch in which the module was executed. A value of 0 indicates standalone (non-batch) execution.
+ *
+ * Outputs:
+ *     A single-row table containing the following fields:
+ *     - LastBatchInstanceID: ID of the most recent batch instance.
+ *     - LastModuleInstanceID: ID of the most recent module instance.
+ *     - LastStartTimestamp: Start time of the last module execution.
+ *     - LastEndTimestamp: End time of the last module execution.
+ *     - LastExecutionStatus: Execution status code of the last module run.
+ *     - LastNextExecutionFlag: Indicator suggesting the next action (e.g., 'Proceed').
+ *     - LastModuleInstanceIDList: Comma-separated list of relevant module instance IDs after the last successful run.
+ *     - ActiveIndicator: Flag indicating whether the module is active (ACTIVE_INDICATOR from the MODULE table).
+ *
+ * Usage:
+ *
+ *******************************************************************************/
 
 RETURN
 (
   SELECT TOP 1
-     ISNULL(MAX(LastBatchInstanceID),-1)             AS [LastBatchInstanceID]
-    ,ISNULL(MAX(LastModuleInstanceID),-1)            AS [LastModuleInstanceID]
-    ,ISNULL(MAX(LastStartTimestamp),'1900-01-01')     AS [LastStartTimestamp]
-    ,MAX(LastEndTimestamp)                            AS [LastEndTimestamp]
-    ,ISNULL(MAX(LastExecutionStatus),'I')            AS [LastExecutionStatus]
-    ,ISNULL(MAX(LastNextRunStatusCode),'Proceed')           AS [LastNextExecutionFlag]
-    ,ISNULL(MAX(LastModuleInstanceIDList),'-1')      AS [LastModuleInstanceIDList]
-    ,(SELECT ACTIVE_INDICATOR FROM [omd].[MODULE] WHERE MODULE_ID = @ModuleId) AS ActiveIndicator
+     ISNULL(MAX(LastBatchInstanceID),-1)                                        AS [LastBatchInstanceID]
+    ,ISNULL(MAX(LastModuleInstanceID),-1)                                       AS [LastModuleInstanceID]
+    ,ISNULL(MAX(LastStartTimestamp),'1900-01-01')                               AS [LastStartTimestamp]
+    ,MAX(LastEndTimestamp)                                                      AS [LastEndTimestamp]
+    ,ISNULL(MAX(LastExecutionStatus),'I')                                       AS [LastExecutionStatus]
+    ,ISNULL(MAX(LastNextRunStatusCode),'Proceed')                               AS [LastNextExecutionFlag]
+    ,ISNULL(MAX(LastModuleInstanceIDList),'-1')                                 AS [LastModuleInstanceIDList]
+    ,(SELECT ACTIVE_INDICATOR FROM [omd].[MODULE] WHERE MODULE_ID = @ModuleId)  AS [ActiveIndicator]
   FROM
   (
     (
@@ -73,7 +101,7 @@ RETURN
                 )
              ,1,1,''
            )
-          + ')' as varchar(500)
+          + ')' AS VARCHAR(MAX)
         )
       ) AS [LastModuleInstanceIDList]
 
