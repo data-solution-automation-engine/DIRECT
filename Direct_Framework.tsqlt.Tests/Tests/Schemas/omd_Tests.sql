@@ -1,0 +1,2 @@
+CREATE SCHEMA omd_Tests;
+GO

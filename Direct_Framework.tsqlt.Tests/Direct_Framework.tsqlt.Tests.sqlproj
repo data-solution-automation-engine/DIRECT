@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0">
+  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0-preview.2" />
+  <PropertyGroup>
+    <!-- builds a separate DACPAC that will never be deployed to prod -->
+    <TargetDatabaseName>Direct_Framework_tsqlt_Tests</TargetDatabaseName>
+    <ModelCollation>1033,CS</ModelCollation>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
+  </PropertyGroup>
+  <!-- references to the model under test and its dependencies 
+   so test DB contains the real objects to test -->
+  <ItemGroup>
+    <ArtifactReference Include="..\Direct_Framework\bin\Debug\Direct_Framework.dacpac" />
+    <ArtifactReference Include="..\Direct_Framework\bin\Debug\master.dacpac" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="tSQLt.Edge" Version="0.9.9" PrivateAssets="all" />
+  </ItemGroup>
+  <!-- bring in the tSQLt framework during publish -->
+  <ItemGroup>
+    <PreDeploy Include="PreDeploy_Install_tSQLt.sql" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <SqlCodeAnalysisRules>-Microsoft.Rules.Data.NETSDK1057;-NETSDK1057;</SqlCodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+  </PropertyGroup>
+</Project>

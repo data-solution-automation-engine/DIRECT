@@ -14,21 +14,14 @@ Write-Host "*** PWSH/ps1 - Pre-Build Event: process starting..." -ForegroundColo
 ################################################################################################################################################################
 # Build the reference project so that the reference dacpacs are restored
 
-# Change active folder to the reference project
-Set-Location "$path\..\..\Reference_Databases"
-
-Get-Location | Write-Host
-
-# Run the dotnet build command to restore the reference dacpacs
-dotnet build
-
-# return to the original folder for further processing as needed...
-Set-Location -
-
 ################################################################################################################################################################
 # Add tasks and steps here as needed
+# These are executed before the build of the database project starts
+# This could include testing, validation, migration, setups, build alerts etc.
+# Most useful for local development, for ci/cd scenarios,
+# it might be more convenient to run these tasks/steps as separate parts of the pipeline
 
-# OPTIONAL run pre-dacpac deployment script using sqlcmd
+# OPTIONAL - run pre-dacpac deployment script using sqlcmd
 # Use this to validate pre-dacpac deployment scripts from inside the project build process
 
 # script assumes using the new go version
@@ -59,4 +52,3 @@ else
 
 ################################################################################################################################################################
 Write-Host "*** PWSH/ps1 - Pre-Build Event: process completed..." -ForegroundColor Green
-

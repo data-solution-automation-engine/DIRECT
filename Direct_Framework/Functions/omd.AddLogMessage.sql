@@ -66,7 +66,7 @@ BEGIN
   -- Set parameters to valid values, including defaulting missing ones
   SET @TimestampString  = CAST(STRING_ESCAPE(FORMAT(ISNULL(@Timestamp, SYSUTCDATETIME()), 'yyyy-MM-dd HH:mm:ss.fffffff'), 'json') AS NVARCHAR(MAX));
   SET @SeverityString   = CAST(STRING_ESCAPE(ISNULL(@Severity, 'INFO'), 'json') AS NVARCHAR(MAX));
-  SET @LogMessageKey    = CAST(STRING_ESCAPE(ISNULL(@LogMessageKey, ''), 'json') AS NVARCHAR(MAX));
+  SET @LogMessageKey    = CAST(STRING_ESCAPE(ISNULL(@LogMessageKey, ''), 'json') AS NVARCHAR(1000));
   SET @LogMessage       = CAST(STRING_ESCAPE(ISNULL(@LogMessage, ''), 'json') AS NVARCHAR(MAX));
 
   -- Declare ouput variable and populate it with the new message log

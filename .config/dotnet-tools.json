@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-sqltest": {
+      "version": "1.4.3",
+      "commands": [
+        "sqltest"
+      ],
+      "rollForward": false
+    },
+    "microsoft.sqlpackage": {
+      "version": "170.0.94",
+      "commands": [
+        "sqlpackage"
+      ],
+      "rollForward": false
+    }
+  }
+}

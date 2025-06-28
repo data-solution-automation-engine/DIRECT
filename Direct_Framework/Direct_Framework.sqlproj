@@ -1,22 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project DefaultTargets="Build" ToolsVersion="4.0">
+  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0-preview.2" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <!-- version definitions and reference dacpac names:
+      https://github.com/microsoft/dacfx -->
     <Name>Direct_Framework</Name>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
     <RootNamespace>Direct_Framework</RootNamespace>
     <AssemblyName>Direct_Framework</AssemblyName>
     <ModelCollation>1033,CS</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
-    <DeployToDatabase>True</DeployToDatabase>
+    <!-- <DeployToDatabase>True</DeployToDatabase>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -24,124 +20,17 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CS_AS</DefaultCollation>
-    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup> -->
     <DacDescription>https://github.com/data-solution-automation-engine/DIRECT</DacDescription>
-    <GenerateCreateScript>False</GenerateCreateScript>
+    <!-- <GenerateCreateScript>False</GenerateCreateScript> -->
     <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
-    <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState>
+    <!-- <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState> -->
+    <CompatibilityMode>160</CompatibilityMode>
+    <RunSqlCodeAnalysis>True</RunSqlCodeAnalysis>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineDebug>false</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
-    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
-    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
-  </PropertyGroup>
-  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
-  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
-    <Folder Include="Functions" />
-    <Folder Include="Properties" />
-    <Folder Include="Schemas" />
-    <Folder Include="Stored Procedures" />
-    <Folder Include="Tables" />
-    <Folder Include="Views" />
-    <Folder Include="DeploymentScripts" />
-    <Folder Include="DeploymentScripts\4-PostDacpacDeployment" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment" />
-    <Folder Include="DeploymentScripts\3-PostDeployment" />
-    <Folder Include="DeploymentScripts\2-PreDeployment" />
-    <Folder Include="BuildTools" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\Migrations" />
-  </ItemGroup>
-  <ItemGroup>
-    <Build Include="Functions\omd_processing.GetDependentTables.sql" />
-    <Build Include="Functions\omd.CalculateChangeKey.sql" />
-    <Build Include="Functions\omd.GetBatchIdByBatchInstanceId.sql" />
-    <Build Include="Functions\omd.GetBatchIdByModuleInstanceId.sql" />
-    <Build Include="Functions\omd.GetBatchIdByName.sql" />
-    <Build Include="Functions\omd.GetBatchModuleActiveIndicatorValue.sql" />
-    <Build Include="Functions\omd.GetDependency.sql" />
-    <Build Include="Functions\omd.GetFailedBatchIdList.sql" />
-    <Build Include="Functions\omd.GetModuleAreaByModuleId.sql" />
-    <Build Include="Functions\omd.GetModuleIdByModuleInstanceId.sql" />
-    <Build Include="Functions\omd.GetModuleIdByName.sql" />
-    <Build Include="Functions\omd.GetModuleLoadWindowValue.sql" />
-    <Build Include="Functions\omd.GetPreviousBatchInstanceDetails.sql" />
-    <Build Include="Functions\omd.GetPreviousModuleInstanceDetails.sql" />
-    <Build Include="Schemas\omd_processing.sql" />
-    <Build Include="Schemas\omd_reporting.sql" />
-    <Build Include="Schemas\omd.sql" />
-    <Build Include="Stored Procedures\omd.AddModuleToBatch.sql" />
-    <Build Include="Stored Procedures\omd.BatchEvaluation.sql" />
-    <Build Include="Stored Procedures\omd.CreateBatchInstance.sql" />
-    <Build Include="Stored Procedures\omd.CreateLoadWindow.sql" />
-    <Build Include="Stored Procedures\omd.CreateModuleInstance.sql" />
-    <Build Include="Stored Procedures\omd.GetConsistencyTimestamp.sql" />
-    <Build Include="Stored Procedures\omd.InsertIntoEventLog.sql" />
-    <Build Include="Stored Procedures\omd.ModuleEvaluation.sql" />
-    <Build Include="Stored Procedures\omd.RegisterBatch.sql" />
-    <Build Include="Stored Procedures\omd.RegisterModule.sql" />
-    <Build Include="Stored Procedures\omd.RunBatch.sql" />
-    <Build Include="Stored Procedures\omd.RunModule.sql" />
-    <Build Include="Stored Procedures\omd.TableCondensing.sql" />
-    <Build Include="Stored Procedures\omd.UpdateBatchInstance.sql" />
-    <Build Include="Stored Procedures\omd.UpdateModuleInstance.sql" />
-    <Build Include="Tables\omd.BATCH_INSTANCE.sql" />
-    <Build Include="Tables\omd.BATCH_MODULE.sql" />
-    <Build Include="Tables\omd.BATCH.sql" />
-    <Build Include="Tables\omd.EVENT_LOG.sql" />
-    <Build Include="Tables\omd.MODULE_INSTANCE.sql" />
-    <Build Include="Tables\omd.MODULE_PARAMETER.sql" />
-    <Build Include="Tables\omd.MODULE.sql" />
-    <Build Include="Tables\omd.PARAMETER.sql" />
-    <Build Include="Tables\omd.SOURCE_CONTROL.sql" />
-    <Build Include="Views\omd_reporting.vw_COMMON_ERRORS.sql" />
-    <Build Include="Views\omd_reporting.vw_CUMULATIVE_LOAD_TIME.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_BATCH.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_DISABLED_PROCESSES.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_LONG_RUNNING_PROCESSES.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_MODULE.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_BATCHES.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_NON_RUNNING_MODULES.sql" />
-    <Build Include="Views\omd_reporting.vw_EXCEPTIONS_TABLE_CONSISTENCY.sql" />
-    <Build Include="Views\omd_reporting.vw_EXECUTION_EVENT_LOG.sql" />
-    <Build Include="Views\omd_reporting.vw_EXECUTION_LOG_BATCH_INSTANCE.sql" />
-    <Build Include="Views\omd_reporting.vw_EXECUTION_LOG_MODULE_INSTANCE.sql" />
-    <Build Include="Views\omd_reporting.vw_MODULE_FAILURES.sql" />
     <None Include="Stored Procedures\omd.EndDating.sql" />
-    <Build Include="Views\omd_processing.vw_QUEUE_BATCH_PROCESSING.sql" />
-    <Build Include="Views\omd_processing.vw_QUEUE_MODULE_PROCESSING.sql" />
-    <Build Include="Schemas\omd_metadata.sql" />
-    <Build Include="Tables\omd_metadata.FRAMEWORK_METADATA.sql" />
-    <Build Include="Tables\omd_metadata.AREA.sql" />
-    <Build Include="Tables\omd_metadata.EVENT_TYPE.sql" />
-    <Build Include="Tables\omd_metadata.EXECUTION_STATUS.sql" />
-    <Build Include="Tables\omd_metadata.LAYER.sql" />
-    <Build Include="Tables\omd_metadata.NEXT_RUN_STATUS.sql" />
-    <Build Include="Tables\omd_metadata.INTERNAL_PROCESSING_STATUS.sql" />
     <None Include="DeploymentScripts\4-PostDacpacDeployment\PostDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -160,15 +49,9 @@
     <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.NEXT_RUN_STATUS.sql" />
     <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.INTERNAL_PROCESSING_STATUS.sql" />
     <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Batch.sql" />
-    <Build Include="Tables\omd_metadata.FREQUENCY.sql" />
     <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FREQUENCY.sql" />
-    <Build Include="Tables\omd.MODULE_INSTANCE_EXECUTED_CODE.sql" />
-    <Build Include="Tables\omd.BATCH_HIERARCHY.sql" />
     <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FRAMEWORK_METADATA.sql" />
     <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE_INSTANCE_EXECUTED_CODE.sql" />
-    <Build Include="Functions\omd.AddLogMessage.sql" />
-    <Build Include="Stored Procedures\omd.AddBatchToParentBatch.sql" />
-    <Build Include="Functions\omd_metadata.GetFrameworkVersion.sql" />
     <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-2.0.0.0.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -178,28 +61,23 @@
     <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-1.9.1.0.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Build Include="Tables\omd.BATCH_PARAMETER.sql" />
-    <Build Include="Stored Procedures\omd.GetModule.sql" />
-    <Build Include="Stored Procedures\omd.GetBatch.sql" />
-    <Build Include="Stored Procedures\omd.PrintLog.sql" />
-    <Build Include="Stored Procedures\omd.AddMessageLogToEventLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- <ItemGroup>
     <SqlCmdVariable Include="master">
       <DefaultValue>master</DefaultValue>
-      <Value>$(SqlCmdVar__4)</Value>
+      <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup> -->
+  <!-- <ItemGroup>
     <ArtifactReference Include="..\Reference_Databases\bin\Debug\master.dacpac">
       <HintPath>..\Reference_Databases\bin\Debug\master.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseSqlCmdVariable>master</DatabaseSqlCmdVariable>
     </ArtifactReference>
-  </ItemGroup>
+  </ItemGroup> -->
   <ItemGroup>
     <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
   </ItemGroup>
@@ -211,19 +89,40 @@
     <None Include="BuildTools\PreBuild.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" Version="2.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" Version="2.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SqlServer.Dacpacs.Azure.Master">
+      <Version>160.2.4</Version>
+      <GeneratePathProperty>True</GeneratePathProperty>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Stored Procedures\" />
+    <Folder Include="DeploymentScripts\" />
+    <Folder Include="DeploymentScripts\4-PostDacpacDeployment\" />
+    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\" />
+    <Folder Include="DeploymentScripts\3-PostDeployment\" />
+    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\" />
+    <Folder Include="DeploymentScripts\2-PreDeployment\" />
+    <Folder Include="BuildTools\" />
+  </ItemGroup>
+  <!-- <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
       <Version>1.0.0</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <PropertyGroup>
-    <PreBuildEvent>cmd /c $(ProjectDir)BuildTools\PreBuild.cmd</PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>cmd /c $(ProjectDir)BuildTools\PostBuild.cmd</PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" Condition="'$(NetCoreBuild)' == 'true'" />
-  <Target Name="BeforeBuild">
-    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
+  </ItemGroup> -->
+  <Target Name="RunPreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PreBuild.cmd&quot;" />
+  </Target>
+  <Target Name="RunPostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PostBuild.cmd&quot;" />
   </Target>
 </Project>

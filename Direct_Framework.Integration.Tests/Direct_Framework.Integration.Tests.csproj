@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit"                     Version="2.6.7" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.6.7" />
+    <PackageReference Include="FluentAssertions"          Version="6.15.0" />
+    <PackageReference Include="Dapper"                    Version="2.1.35" />
+    <PackageReference Include="Testcontainers.MsSql"      Version="3.9.0" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.*" />
+  </ItemGroup>
+</Project>

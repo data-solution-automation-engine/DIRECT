@@ -17,11 +17,11 @@
 SET NOCOUNT ON;
 
 DECLARE @tblMerge TABLE(
-  [NEXT_RUN_STATUS_CODE]             NVARCHAR (100)  NOT NULL PRIMARY KEY CLUSTERED,
-  [NEXT_RUN_STATUS_CODE_DESCRIPTION] NVARCHAR (4000) NULL
+  [NEXT_RUN_STATUS_CODE]        NVARCHAR (100)  NOT NULL PRIMARY KEY CLUSTERED,
+  [NEXT_RUN_STATUS_DESCRIPTION] NVARCHAR (4000) NULL
 );
 
-INSERT INTO @tblMerge([NEXT_RUN_STATUS_CODE], [NEXT_RUN_STATUS_CODE_DESCRIPTION])
+INSERT INTO @tblMerge([NEXT_RUN_STATUS_CODE], [NEXT_RUN_STATUS_DESCRIPTION])
 VALUES
   (N'Cancel',    N'Administrators can manually set this code to for the Next Run Status (i.e. this will not be automatically set by the DIRECT controls) to force a one-off skip of the instance.'),
   (N'Proceed',   N'The `Proceed` code will direct the next run of the Batch/Module to continue processing. This is the default value. Each process step will evaluate the Internal Process Status Code and continue only if it was set to `Proceed`. After the rollback has been completed the `Proceed` value is the code that is required to initiate the main process.'),
@@ -32,11 +32,11 @@ USING @tblMerge AS src
   ON  TARGET.[NEXT_RUN_STATUS_CODE] = src.[NEXT_RUN_STATUS_CODE]
 WHEN MATCHED THEN
   UPDATE
-  SET      [NEXT_RUN_STATUS_CODE_DESCRIPTION] = src.[NEXT_RUN_STATUS_CODE_DESCRIPTION]
+  SET      [NEXT_RUN_STATUS_DESCRIPTION] = src.[NEXT_RUN_STATUS_DESCRIPTION]
 WHEN NOT MATCHED THEN
   INSERT  ([NEXT_RUN_STATUS_CODE]
-          ,[NEXT_RUN_STATUS_CODE_DESCRIPTION])
+          ,[NEXT_RUN_STATUS_DESCRIPTION])
   VALUES  ([NEXT_RUN_STATUS_CODE]
-          ,[NEXT_RUN_STATUS_CODE_DESCRIPTION]);
+          ,[NEXT_RUN_STATUS_DESCRIPTION]);
 
 GO
