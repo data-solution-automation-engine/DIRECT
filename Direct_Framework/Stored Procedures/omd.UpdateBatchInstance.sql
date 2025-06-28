@@ -10,7 +10,7 @@ CREATE PROCEDURE [omd].[UpdateBatchInstance]
   @MessageLog             NVARCHAR(MAX) = NULL OUTPUT
 )
 AS
-BEGIN TRY
+BEGIN TRY;
   SET NOCOUNT ON;
   SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
@@ -63,11 +63,11 @@ PRINT @BatchInstanceId;
 
   -- Log standard metadata
   SET @LogMessage = @SpName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog);
   SET @LogMessage = @DirectVersion;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog);
   SET @LogMessage = @StartTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog);
 
   -- Log parameters
   SET @LogMessage = @BatchInstanceId;
@@ -78,7 +78,7 @@ PRINT @BatchInstanceId;
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
   DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
  * Start of main process
@@ -87,14 +87,14 @@ PRINT @BatchInstanceId;
   -- Exception handling
   IF @EventCode NOT IN ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
   BEGIN
-    ;THROW 50000, 'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure, and Rollback', 1
+    ;THROW 50000, 'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure, and Rollback', 1;
   END
   -- Abort event
   -- This is an end-state event (no further processing)
   IF @EventCode = 'Abort'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
     UPDATE [omd].[BATCH_INSTANCE]
     SET

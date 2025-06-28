@@ -68,9 +68,9 @@ BEGIN TRY;
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -78,26 +78,26 @@ BEGIN TRY;
   SET @LogMessage = @SpName;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog);
   SET @LogMessage = @DirectVersion;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog);
   SET @LogMessage = @StartTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog);
 
   -- Log parameters
   SET @LogMessage = @BatchCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchCode', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchCode', @LogMessage, @MessageLog);
   SET @LogMessage = @ParentBatchCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ParentBatchCode', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ParentBatchCode', @LogMessage, @MessageLog);
   SET @LogMessage = CONVERT(NVARCHAR(10), @Sequence);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @Sequence', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @Sequence', @LogMessage, @MessageLog);
   SET @LogMessage = @ActiveIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ActiveIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ActiveIndicator', @LogMessage, @MessageLog);
   SET @LogMessage = @CheckDag;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @CheckDag', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @CheckDag', @LogMessage, @MessageLog);
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
   DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
  * Start of main process
@@ -108,32 +108,32 @@ BEGIN TRY;
   DECLARE @ParentBatchId INT;
 
   -- Find the Child Batch Id
-  BEGIN TRY
-    SET @BatchId = [omd].[GetBatchIdByName](@BatchCode)
+  BEGIN TRY;
+    SET @BatchId = [omd].[GetBatchIdByName](@BatchCode);
 
     IF @BatchId IS NOT NULL
     BEGIN
   SET @LogMessage = 'Batch Id ''' + CONVERT(NVARCHAR(10), @BatchId) + ''' has been retrieved for Batch Code ''' + @BatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 END
     ELSE
     BEGIN
   SET @LogMessage = 'No Batch Id was found for Batch Code ''' + @BatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
   GOTO EndOfProcedureFailure
 END
   END TRY
   BEGIN CATCH
     SET @LogMessage = 'Error Processing Batch Code.';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     SET @SuccessIndicator = 'N';
 
-    THROW 50000, @LogMessage ,1
+    THROW 50000, @LogMessage ,1;
   END CATCH
 
   -- Validate the DAG
-  BEGIN TRY
+  BEGIN TRY;
     -- DAG Check: Ensure that adding @ParentBatchId -> @BatchId does not form a cycle
     IF @CheckDag = 'Y'
     BEGIN
@@ -158,7 +158,7 @@ END
 
   IF EXISTS (SELECT 1
   FROM #DagViolation)
-      BEGIN
+  BEGIN
     SET @LogMessage = 'Circular relationship detected: adding BatchId ' + CONVERT(NVARCHAR(10), @BatchId) +
                           ' under ParentBatchId ' + CONVERT(NVARCHAR(10), @ParentBatchId) +
                           ' would create a cycle.';
@@ -170,47 +170,46 @@ END
   DROP TABLE IF EXISTS #DagViolation;
 END
 
-
   END TRY
   BEGIN CATCH
     SET @LogMessage = 'Error testing for circular relationships in the DAG check.';
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     SET @SuccessIndicator = 'N';
 
-    THROW 50000, @LogMessage, 1
-  END CATCH
+    THROW 50000, @LogMessage, 1;
+  END CATCH;
 
   -- Find the Parent Batch Id
-  BEGIN TRY
-    SET @ParentBatchId = [omd].[GetBatchIdByName](@ParentBatchCode)
+  BEGIN TRY;
+    SET @ParentBatchId = [omd].[GetBatchIdByName](@ParentBatchCode);
 
     IF @ParentBatchId IS NOT NULL
     BEGIN
   SET @LogMessage = 'Batch Id ''' + CONVERT(NVARCHAR(10), @ParentBatchId) + ''' has been retrieved for Parent Batch Code ''' + @ParentBatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
 END
     ELSE
     BEGIN
   SET @LogMessage = 'No Batch Id was found for Parent Batch Code ''' + @ParentBatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
   GOTO EndOfProcedureFailure
 END
   END TRY
   BEGIN CATCH
     SET @LogMessage = 'Error Processing Parent Batch Code.';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     SET @SuccessIndicator = 'N';
 
-    THROW 50000, @LogMessage, 1
+    THROW 50000, @LogMessage, 1;
   END CATCH
 
   /*
     Batch - Parent Batch Registration.
   */
 
-  BEGIN TRY
+  BEGIN TRY;
 
     -- TODO: Consider an update for existing mappings here?
 
@@ -232,7 +231,7 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
     SET @LogMessage =
       'The Batch ''' + @BatchCode + ''' ('+CONVERT(NVARCHAR(10), @BatchId) + ') ' +
       'is associated with Parent Batch ''' + @ParentBatchCode + ''' (' + CONVERT(NVARCHAR(10), @ParentBatchId) + ').';
-    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
     SET @LogMessage =
       'SELECT * FROM [omd].[BATCH_HIERARCHY]' + CHAR(10) +
@@ -240,9 +239,9 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
       '  [PARENT_BATCH_ID] = ' + CONVERT(NVARCHAR(10), @ParentBatchId) + CHAR(10) +
       '  AND [BATCH_ID] = ' + CONVERT(NVARCHAR(10), @BatchId);
 
-    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
-    GOTO EndOfProcedureSuccess
+    GOTO EndOfProcedureSuccess;
   END TRY
 
   BEGIN CATCH
@@ -250,14 +249,14 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
     SET @LogMessage = 'Unknown Error';
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
-    THROW 50000, @LogMessage ,1
+    THROW 50000, @LogMessage ,1;
   END CATCH
 
   EndOfProcedureFailure:
 
     SET @SuccessIndicator = 'N';
-    SET @LogMessage = N'Batch to Parent Batch registration process encountered errors.'
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @LogMessage = N'Batch to Parent Batch registration process encountered errors.';
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
     GOTO EndOfProcedure
 
@@ -265,7 +264,7 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
 
     SET @SuccessIndicator = 'Y';
     SET @LogMessage = N'Batch to Parent Batch registration process completed succesfully.';
-    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
     GOTO EndOfProcedure
 
@@ -275,23 +274,23 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   SET @LogMessage = @EndTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog);
   SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog);
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   IF @Debug = 'Y'
   BEGIN
-  EXEC [omd].[PrintMessageLog] @MessageLog;
+  EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 END
 
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   DECLARE @ErrorMessage NVARCHAR(4000);
   DECLARE @ErrorSeverity INT;
@@ -310,17 +309,17 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-  PRINT 'Error in '''       + @SpName + ''''
-  PRINT 'Error Message: '   + @ErrorMessage
-  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-  PRINT 'Error Procedure: ' + @ErrorProcedure
-  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-  PRINT 'SuccessIndicator: '+ @SuccessIndicator
+  PRINT 'Error in '''       + @SpName + '''';
+  PRINT 'Error Message: '   + @ErrorMessage;
+  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+  PRINT 'Error Procedure: ' + @ErrorProcedure;
+  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+  PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
   -- Spool message log
-  EXEC [omd].[PrintMessageLog] @MessageLog;
+  EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 END
 
   SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
@@ -330,5 +329,5 @@ END
     @EventDetail       = @EventDetail,
     @EventReturnCode   = @EventReturnCode;
 
-  THROW
+  THROW;
 END CATCH

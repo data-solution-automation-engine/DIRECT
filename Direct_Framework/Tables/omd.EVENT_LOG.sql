@@ -12,7 +12,7 @@ CREATE TABLE [omd].[EVENT_LOG] (
     DEFAULT (SYSUTCDATETIME())                                NOT NULL,
   [EVENT_RETURN_CODE]         NVARCHAR (100)                  NULL,
   [EVENT_DETAIL]              NVARCHAR (4000)                 NOT NULL,
-  [ERROR_BITMAP]              NUMERIC (20)                    NULL,
+  [ERROR_BITMAP]              NUMERIC (20, 0)                 NULL,
 
   CONSTRAINT [PK_OMD_EVENT_LOG]
     PRIMARY KEY CLUSTERED ([EVENT_ID] ASC),

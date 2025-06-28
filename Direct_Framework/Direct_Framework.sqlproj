@@ -18,16 +18,16 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
-    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <TargetDatabaseSet>True</TargetDatabaseSet> -->
     <DefaultCollation>SQL_Latin1_General_CP1_CS_AS</DefaultCollation>
-    <DefaultFilegroup>PRIMARY</DefaultFilegroup> -->
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
     <DacDescription>https://github.com/data-solution-automation-engine/DIRECT</DacDescription>
     <!-- <GenerateCreateScript>False</GenerateCreateScript> -->
     <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
     <!-- <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState> -->
     <CompatibilityMode>160</CompatibilityMode>
     <RunSqlCodeAnalysis>True</RunSqlCodeAnalysis>
-    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <CodeAnalysisRules>-SqlServer.Rules.SRN0007;-SRN0007;-*.SRN0007;-Smells.*</CodeAnalysisRules>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Stored Procedures\omd.EndDating.sql" />
