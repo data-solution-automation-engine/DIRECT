@@ -8,9 +8,9 @@
 -- results
 DECLARE @ResultTable TABLE
 (
-  [Test]          NVARCHAR(100),
-  [Description]   NVARCHAR(1000),
-  [Result]        NVARCHAR(100)
+  [Test]        NVARCHAR(100)
+  ,[Description] NVARCHAR(1000)
+  ,[Result]      NVARCHAR(100)
 )
 
 -- Parameters
@@ -118,14 +118,22 @@ BEGIN
   SET @CurrentTestDescription = 'basic module execution'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   EXEC [omd].[RunModule]
    @ModuleCode = 'MyNewModule'
   ,@Debug = @Debug
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
   BEGIN
@@ -154,15 +162,23 @@ BEGIN
   SET @CurrentTestDescription = 'module execution with custom code'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   EXEC [omd].[RunModule]
   @ModuleCode = 'MyNewModule',
   @Debug      = @Debug,
   @Query      = 'SELECT SYSDATETIME()'
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @CurrentModuleExecutionStatus = 'Succeeded'
   BEGIN
@@ -187,59 +203,79 @@ BEGIN
     SET @CurrentTestDescription = 'module execution with failure'
 
     PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-    INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+    INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
     EXEC [omd].[RunModule]
     @ModuleCode   = 'MyNewModule',
     @Debug        = @Debug,
     @Query        = 'SELECT 1/0'
 
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+    SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
     -- Log Test Results
     IF @CurrentModuleExecutionStatus = 'Failed'
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - succeeded'
-      UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
     ELSE
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - failed'
-      UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
   END TRY
   BEGIN CATCH
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+    SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
     -- Log Test Results
     IF @CurrentModuleExecutionStatus = 'Failed'
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - succeeded'
-      UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
     ELSE
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - failed'
-      UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
   END CATCH
 
-/*******************************************************************************
+  /*******************************************************************************
     03a - Failure logging test
 *******************************************************************************/
   SET @CurrentTestName = 'TEST 03a'
   SET @CurrentTestDescription = 'Failure logging test'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   -- Check if the event log is populated.
   -- There should be 1 error in the log now.
-  SELECT @Count = COUNT(*) FROM omd.EVENT_LOG WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId
+  SELECT
+    @Count = COUNT(*)
+  FROM
+    omd.EVENT_LOG
+  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId
 
   -- Log Test Results
   IF @Count = 1
@@ -264,9 +300,13 @@ BEGIN
   SET @CurrentTestDescription = 'Aborting the module because a previous instance is already running'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
 
   UPDATE omd.MODULE_INSTANCE SET EXECUTION_STATUS_CODE = 'Executing' WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
@@ -274,8 +314,15 @@ BEGIN
     @ModuleCode = 'MyNewModule',
     @Debug = @Debug
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
   BEGIN
@@ -305,9 +352,13 @@ BEGIN
   SET @CurrentTestDescription = 'Rolling back from failure'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
 
   UPDATE omd.MODULE_INSTANCE SET EXECUTION_STATUS_CODE = 'Failed', NEXT_RUN_STATUS_CODE='Rollback' WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId-1;
 
@@ -315,9 +366,20 @@ BEGIN
     @ModuleCode = 'MyNewModule'
     ,@Debug = @Debug
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
-  SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
   BEGIN
@@ -347,9 +409,13 @@ BEGIN
   SET @CurrentTestDescription = 'Module Cancelling'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
 
   UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID=@ModuleId;
 
@@ -357,9 +423,20 @@ BEGIN
     @ModuleCode = 'MyNewModule'
     ,@Debug = @Debug
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
-  SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
   BEGIN
@@ -378,7 +455,7 @@ BEGIN
     UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
   END
 
--- Clean Up
+  -- Clean Up
   UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_ID = @ModuleId;
 END
 
@@ -392,7 +469,8 @@ BEGIN
   SET @CurrentTestDescription = 'Failing multiple times and rolling back'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   -- Three failures
   BEGIN TRY
@@ -418,9 +496,20 @@ BEGIN
    @ModuleCode = 'MyNewModule'
   ,@Debug = @Debug
 
-  SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-  SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
-  SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+  SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
+  SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
   BEGIN
@@ -453,7 +542,8 @@ BEGIN
   SET @CurrentTestDescription = 'Running a Module Code that does not exist'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   DECLARE @NonExistingModuleName NVARCHAR(1000) = 'MyNonExistingModule'
 
@@ -465,25 +555,29 @@ BEGIN
   BEGIN CATCH
 
     -- Get the latest valid error log (disregarding system error logging)
-    SELECT @EventDetail = EVENT_DETAIL
-    FROM [omd].[EVENT_LOG]
-    WHERE EVENT_ID = (
-      SELECT MAX(EVENT_ID)
-      FROM [omd].[EVENT_LOG]
-      WHERE [EVENT_RETURN_CODE] = 'N/A' -- filter out later technical logs of the error
+    SELECT
+    @EventDetail = EVENT_DETAIL
+  FROM
+    [omd].[EVENT_LOG]
+  WHERE EVENT_ID = (
+      SELECT
+    MAX(EVENT_ID)
+  FROM
+    [omd].[EVENT_LOG]
+  WHERE [EVENT_RETURN_CODE] = 'N/A' -- filter out later technical logs of the error
     )
 
     -- Log Test Results
     IF @EventDetail = 'The Module Id was not found for Module Code ''' + @NonExistingModuleName + ''''
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - succeeded'
-      UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
     ELSE
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - failed'
-      UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
     END CATCH
 END
@@ -497,7 +591,8 @@ BEGIN
   SET @CurrentTestDescription = 'Running a Batch with one Module'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
 
@@ -505,35 +600,57 @@ BEGIN
       @BatchCode = 'MyNewBatch'
      ,@Debug = @Debug
 
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
-    SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+    SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-    SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
-    SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
-    SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+    SELECT
+    @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID)
+  FROM
+    omd.BATCH_INSTANCE
+    SELECT
+    @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+    SELECT
+    @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
 
     IF @Verbose = 'Y'
     BEGIN
-      PRINT 'The Current Module Instance is ' + CONVERT(NVARCHAR(10), @CurrentModuleInstanceId) + ' with execution status '''+@CurrentModuleExecutionStatus +''' and next runs status code ''' +''+@CurrentModuleNextRunStatus +'''' +'.'
-      PRINT 'The Current Batch Instance is ' + CONVERT(NVARCHAR(10), @CurrentBatchInstanceId) + ' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
-    END
+    PRINT 'The Current Module Instance is ' + CONVERT(NVARCHAR(10), @CurrentModuleInstanceId) + ' with execution status '''+@CurrentModuleExecutionStatus +''' and next runs status code ''' +''+@CurrentModuleNextRunStatus +'''' +'.'
+    PRINT 'The Current Batch Instance is ' + CONVERT(NVARCHAR(10), @CurrentBatchInstanceId) + ' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
+  END
 
     -- Log Test Results
     IF (
       @CurrentModuleExecutionStatus = 'Succeeded' AND
-      @CurrentModuleNextRunStatus = 'Proceed' AND
-      @CurrentBatchExecutionStatus = 'Succeeded' AND
-      @CurrentBatchNextRunStatus = 'Proceed')
+    @CurrentModuleNextRunStatus = 'Proceed' AND
+    @CurrentBatchExecutionStatus = 'Succeeded' AND
+    @CurrentBatchNextRunStatus = 'Proceed')
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - succeeded'
-      UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
     ELSE
     BEGIN
-      PRINT '  ' + @CurrentTestName + ' - failed'
-      UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
   END TRY
   BEGIN CATCH
     PRINT '  ' + @CurrentTestName + ' - failed with technical error'
@@ -550,7 +667,8 @@ BEGIN
   SET @CurrentTestDescription = 'Running a Batch with two Modules, failing the second'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
 
@@ -573,35 +691,57 @@ BEGIN
 
   END TRY
   BEGIN CATCH
-      SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-      SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
-      SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+      SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+      SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+      SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-      SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
-      SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
-      SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID)
+  FROM
+    omd.BATCH_INSTANCE
+      SELECT
+    @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
 
       IF @Verbose = 'Y'
       BEGIN
-        PRINT 'The Current Module Instance is ' + CONVERT(NVARCHAR(10), @CurrentModuleInstanceId) + ' with execution status '''+@CurrentModuleExecutionStatus + ''' and next runs status code ''' + ''+@CurrentModuleNextRunStatus + '''' + '.'
-        PRINT 'The Current Batch Instance is ' + CONVERT(NVARCHAR(10), @CurrentBatchInstanceId) + ' with execution status '''+@CurrentBatchExecutionStatus + ''' and next runs status code ''' + '' + @CurrentBatchNextRunStatus + '''' + '.'
-      END
+    PRINT 'The Current Module Instance is ' + CONVERT(NVARCHAR(10), @CurrentModuleInstanceId) + ' with execution status '''+@CurrentModuleExecutionStatus + ''' and next runs status code ''' + ''+@CurrentModuleNextRunStatus + '''' + '.'
+    PRINT 'The Current Batch Instance is ' + CONVERT(NVARCHAR(10), @CurrentBatchInstanceId) + ' with execution status '''+@CurrentBatchExecutionStatus + ''' and next runs status code ''' + '' + @CurrentBatchNextRunStatus + '''' + '.'
+  END
 
       -- Log Test Results
       IF (
         @CurrentModuleExecutionStatus = 'Failed' AND
-        @CurrentModuleNextRunStatus = 'Rollback' AND
-        @CurrentBatchExecutionStatus = 'Failed' AND
-        @CurrentBatchNextRunStatus = 'Proceed')
+    @CurrentModuleNextRunStatus = 'Rollback' AND
+    @CurrentBatchExecutionStatus = 'Failed' AND
+    @CurrentBatchNextRunStatus = 'Proceed')
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - succeeded'
-        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
       ELSE
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - failed'
-        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
   END CATCH
 END
@@ -616,7 +756,8 @@ BEGIN
   SET @CurrentTestDescription = 'Running a Batch with two Modules where the 2nd failed on the previous run'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
     -- 'Fixing' the broken module
@@ -631,35 +772,57 @@ BEGIN
         @BatchCode = 'MyNewBatch'
        ,@Debug = @Debug
 
-      SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-      SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
-      SELECT @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+      SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+      SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+      SELECT
+    @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-      SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
-      SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
-      SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID)
+  FROM
+    omd.BATCH_INSTANCE
+      SELECT
+    @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
 
       IF @Verbose = 'Y'
       BEGIN
-        PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with execution status '''+@CurrentModuleExecutionStatus +''' and next runs status code ''' +''+@CurrentModuleNextRunStatus +'''' +'.'
-        PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
-      END
+    PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with execution status '''+@CurrentModuleExecutionStatus +''' and next runs status code ''' +''+@CurrentModuleNextRunStatus +'''' +'.'
+    PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
+  END
 
       -- Log Test Results
       IF (
         @CurrentModuleExecutionStatus = 'Succeeded' AND
-        @CurrentModuleNextRunStatus = 'Proceed' AND
-        @CurrentBatchExecutionStatus = 'Succeeded' AND
-        @CurrentBatchNextRunStatus = 'Proceed')
+    @CurrentModuleNextRunStatus = 'Proceed' AND
+    @CurrentBatchExecutionStatus = 'Succeeded' AND
+    @CurrentBatchNextRunStatus = 'Proceed')
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - succeeded'
-        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
       ELSE
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - failed'
-        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
 
   END TRY
@@ -678,7 +841,8 @@ BEGIN
   SET @CurrentTestDescription = 'Adding a Batch to the Parent Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
     EXEC [omd].[RegisterBatch]
@@ -693,19 +857,22 @@ BEGIN
         ,@SuccessIndicator = @SuccessIndicator OUTPUT
         ,@MessageLog       = @MessageLog OUTPUT;
 
-      SELECT @Counter = COUNT(PARENT_BATCH_ID) FROM omd.BATCH_HIERARCHY
+      SELECT
+    @Counter = COUNT(PARENT_BATCH_ID)
+  FROM
+    omd.BATCH_HIERARCHY
 
       -- Log Test Results
       IF (@Counter=1)
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - succeeded'
-        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
       ELSE
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - failed'
-        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
   END TRY
   BEGIN CATCH
     PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
@@ -722,33 +889,45 @@ BEGIN
   SET @CurrentTestDescription = 'Running a parent batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
         EXEC [omd].[RunBatch]
         @BatchCode = 'MainBatch'
        ,@Debug = @Debug
 
-      SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
-      SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
-      SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID)
+  FROM
+    omd.BATCH_INSTANCE
+      SELECT
+    @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
 
       IF @Verbose = 'Y'
       BEGIN
-          PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
-      END
+    PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
+  END
 
       -- Log Test Results
       IF (@CurrentBatchExecutionStatus = 'Succeeded' AND @CurrentBatchNextRunStatus = 'Proceed')
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - succeeded'
-        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
       ELSE
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - failed'
-        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
   END TRY
   BEGIN CATCH
     PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
@@ -765,7 +944,8 @@ BEGIN
   SET @CurrentTestDescription = 'Attempting to run a disabled Module stand-alone'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
 
@@ -775,24 +955,31 @@ BEGIN
      @ModuleCode = 'MyNewModule'
     ,@Debug = @Debug
 
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+    SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
     IF @Verbose = 'Y'
     BEGIN
     PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
-    END
+  END
 
     IF @CurrentModuleExecutionStatus = 'Cancelled'
     BEGIN
     PRINT '  ' + @CurrentTestName + ' - succeeded'
     UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+  END
     ELSE
     BEGIN
     PRINT '  ' + @CurrentTestName + ' - failed'
     UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+  END
 
     UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
  END TRY
@@ -811,34 +998,46 @@ BEGIN
   SET @CurrentTestDescription = 'Attempting to run a disabled Module from a Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
 
-    UPDATE omd.BATCH_MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID = (SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE='MySecondModule')
+    UPDATE omd.BATCH_MODULE SET ACTIVE_INDICATOR = 'N' WHERE MODULE_ID = (SELECT
+    MODULE_ID
+  FROM
+    omd.MODULE
+  WHERE MODULE_CODE='MySecondModule')
 
       EXEC [omd].[RunBatch]
         @BatchCode = 'MyNewBatch'
        ,@Debug = @Debug
 
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID) FROM omd.MODULE_INSTANCE
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT
+    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+  FROM
+    omd.MODULE_INSTANCE
+    SELECT
+    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.MODULE_INSTANCE
+  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
     IF @Verbose = 'Y'
     BEGIN
     PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
-    END
+  END
 
     IF @CurrentModuleExecutionStatus = 'Cancelled'
     BEGIN
     PRINT '  ' + @CurrentTestName + ' - succeeded'
     UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-    END
+  END
     ELSE
     BEGIN
     PRINT '  ' + @CurrentTestName + ' - failed'
     UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+  END
 
     UPDATE omd.MODULE SET ACTIVE_INDICATOR = 'Y' WHERE MODULE_CODE='MyNewModule'
  END TRY
@@ -857,7 +1056,8 @@ BEGIN
   SET @CurrentTestDescription = 'Attempting to run a disabled Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  INSERT INTO @ResultTable VALUES(@CurrentTestName, @CurrentTestDescription, @DefaultRunStatus)
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   BEGIN TRY
 
@@ -867,26 +1067,37 @@ BEGIN
         @BatchCode = 'MyNewBatch'
        ,@Debug = @Debug
 
-      SELECT @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID) FROM omd.BATCH_INSTANCE
-      SELECT @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
-      SELECT @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchInstanceId = MAX(BATCH_INSTANCE_ID)
+  FROM
+    omd.BATCH_INSTANCE
+      SELECT
+    @CurrentBatchExecutionStatus = EXECUTION_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
+      SELECT
+    @CurrentBatchNextRunStatus = NEXT_RUN_STATUS_CODE
+  FROM
+    omd.BATCH_INSTANCE
+  WHERE BATCH_INSTANCE_ID=@CurrentBatchInstanceId;
 
       IF @Verbose = 'Y'
       BEGIN
-          PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
-      END
+    PRINT 'The Current Batch Instance is ' + CONVERT(VARCHAR(10),@CurrentBatchInstanceId)+' with execution status '''+@CurrentBatchExecutionStatus +''' and next runs status code ''' +''+@CurrentBatchNextRunStatus +'''' +'.'
+  END
 
       -- Log Test Results
       IF (@CurrentBatchExecutionStatus = 'Cancelled')
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - succeeded'
-        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
-      END
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+  END
       ELSE
       BEGIN
-        PRINT '  ' + @CurrentTestName + ' - failed'
-        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
-    END
+    PRINT '  ' + @CurrentTestName + ' - failed'
+    UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+  END
 
     UPDATE omd.BATCH SET ACTIVE_INDICATOR = 'Y' WHERE BATCH_CODE = 'MyNewBatch'
  END TRY
@@ -897,7 +1108,11 @@ BEGIN
 END
 
 -- Display Results, optionally filter by success etc...
-SELECT * FROM @ResultTable ORDER BY Test
+SELECT
+  *
+FROM
+  @ResultTable
+ORDER BY Test
 
 
 /*******************************************************************************

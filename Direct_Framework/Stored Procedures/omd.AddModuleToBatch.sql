@@ -59,9 +59,9 @@ BEGIN TRY
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -115,7 +115,10 @@ BEGIN TRY
   END TRY
 
   BEGIN CATCH
-    THROW 50000,'Incorrect Module Code specified.',1
+    SET @LogMessage = 'Incorrect Module Code specified.';
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+    SET @SuccessIndicator = 'N';
+    THROW 50000, @LogMessage, 1
   END CATCH
 
   -- Find the Batch Id
@@ -151,7 +154,7 @@ BEGIN TRY
 
     IF EXISTS (SELECT 1 FROM [omd].[BATCH_MODULE] WHERE [BATCH_ID] = @BatchId AND [MODULE_ID] = @ModuleId)
     BEGIN
-      SET @LogMessage = 'The Module ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @ModuleId) + ') is already associated with Batch ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @BatchId) + '). No update to the existing record will be done.';
+      SET @LogMessage = 'The Module ''' + @ModuleCode + ''' (' + CONVERT(NVARCHAR(10), @ModuleId) + ') is already associated with Batch ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @BatchId) + '). No update to the existing record will be done.';
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
     END
     ELSE
@@ -169,7 +172,7 @@ BEGIN TRY
         WHERE bm.BATCH_ID = refData.BATCH_ID AND bm.MODULE_ID = refData.MODULE_ID
       );
 
-      SET @LogMessage = 'The Module ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @ModuleId) + ') is associated with Batch ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @BatchId) + ').';
+      SET @LogMessage = 'The Module ''' + @ModuleCode + ''' (' + CONVERT(NVARCHAR(10), @ModuleId) + ') is associated with Batch ''' + @BatchCode + ''' (' + CONVERT(NVARCHAR(10), @BatchId) + ').';
       SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
     END
 
@@ -181,9 +184,9 @@ BEGIN TRY
 
   BEGIN CATCH
     SET @LogMessage = 'Unknown Error.';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     SET @SuccessIndicator = 'N';
-    THROW
+    THROW;
   END CATCH
 
   EndOfProcedureFailure:
@@ -197,7 +200,7 @@ BEGIN TRY
   EndOfProcedureSuccess:
 
     SET @SuccessIndicator = 'Y';
-    SET @LogMessage = N'Batch/Module addition process completed succesfully.';
+    SET @LogMessage = N'Batch/Module addition process completed successfully.';
     SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
     GOTO EndOfProcedure
@@ -213,7 +216,7 @@ BEGIN TRY
   SET @LogMessage = @EndTimestampString;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
   SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (seconds)', @LogMessage, @MessageLog)
 
   IF @Debug = 'Y'
   BEGIN

@@ -13,8 +13,6 @@
     <ModelCollation>1033,CS</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <!-- <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
@@ -27,7 +25,6 @@
     <!-- <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState> -->
     <CompatibilityMode>160</CompatibilityMode>
     <RunSqlCodeAnalysis>True</RunSqlCodeAnalysis>
-    <CodeAnalysisRules>-SqlServer.Rules.SRN0007;-SRN0007;-*.SRN0007;-Smells.*</CodeAnalysisRules>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Stored Procedures\omd.EndDating.sql" />
@@ -65,19 +62,6 @@
   <ItemGroup>
     <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
   </ItemGroup>
-  <!-- <ItemGroup>
-    <SqlCmdVariable Include="master">
-      <DefaultValue>master</DefaultValue>
-      <Value>$(SqlCmdVar__1)</Value>
-    </SqlCmdVariable>
-  </ItemGroup> -->
-  <!-- <ItemGroup>
-    <ArtifactReference Include="..\Reference_Databases\bin\Debug\master.dacpac">
-      <HintPath>..\Reference_Databases\bin\Debug\master.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-      <DatabaseSqlCmdVariable>master</DatabaseSqlCmdVariable>
-    </ArtifactReference>
-  </ItemGroup> -->
   <ItemGroup>
     <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
   </ItemGroup>
@@ -89,14 +73,14 @@
     <None Include="BuildTools\PreBuild.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" Version="2.0.0">
+    <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" Version="2.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" Version="2.0.0">
+    </PackageReference> -->
+    <!-- <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" Version="2.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    </PackageReference> -->
     <PackageReference Include="Microsoft.SqlServer.Dacpacs.Azure.Master">
       <Version>160.2.4</Version>
       <GeneratePathProperty>True</GeneratePathProperty>
@@ -113,12 +97,6 @@
     <Folder Include="DeploymentScripts\2-PreDeployment\" />
     <Folder Include="BuildTools\" />
   </ItemGroup>
-  <!-- <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
-      <Version>1.0.0</Version>
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-  </ItemGroup> -->
   <Target Name="RunPreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PreBuild.cmd&quot;" />
   </Target>

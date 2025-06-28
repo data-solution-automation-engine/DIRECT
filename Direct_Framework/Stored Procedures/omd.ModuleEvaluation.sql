@@ -50,14 +50,13 @@ CREATE PROCEDURE [omd].[ModuleEvaluation]
 AS
 BEGIN TRY
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -116,7 +115,6 @@ BEGIN TRY
 
   SET @LogMessage = 'Beginning of active instance checks.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
 
   -- Check for the lowest instance of the Module Instances since the process must continue if it's the first of the started instances for the particular Module.
   SELECT @MinimumActiveModuleInstance = MIN(MODULE_INSTANCE_ID)
@@ -189,7 +187,7 @@ BEGIN TRY
     GOTO ModuleFailure
   END
 
-  SET @LogMessage = 'Start of Batch / Module relationship evalation.'
+  SET @LogMessage = 'Start of Batch / Module relationship evaluation.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   IF @BatchId = 0 -- The Module was run stand-alone (not from a Batch).
@@ -209,7 +207,7 @@ BEGIN TRY
       -- The Module Instance was started by a Batch, so we must check if the Module is allowed to run.
       SELECT @BatchModuleActiveIndicator = [omd].[GetBatchModuleActiveIndicatorValue](@BatchId, @ModuleId)
 
-      SET @LogMessage = 'The Batch / Module inactive flag value is ' + @BatchModuleActiveIndicator
+      SET @LogMessage = 'The Batch / Module active indicator value is ' + @BatchModuleActiveIndicator
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
       -- If the active indicator at Batch/Module level is set to 'N' the process is disabled in the framework.
@@ -231,8 +229,8 @@ BEGIN TRY
         GOTO EndOfProcedure
     END
 
-    -- If the inactive indicator at Batch/Module level is NULL or unknwon then there is an error in the framework registration / setup.
-    -- In this case, the Module must be aborted. The module was attempted to be run form a Batch it is not registered for).
+    -- If the inactive indicator at Batch/Module level is NULL or unknown then there is an error in the framework registration / setup.
+    -- In this case, the Module must be aborted. The module was attempted to be run from a Batch it is not registered for).
     IF (@BatchModuleActiveIndicator = 'U') -- Abort
     BEGIN
       SET @LogMessage = 'The Module Instance will be aborted.'
@@ -292,7 +290,8 @@ BEGIN TRY
   */
 
   -- If the previously completed Module Instance (for the same Module) is set to cancel OR the module is set to inactive the run must be cancelled.
-  IF ((SELECT LastNextExecutionFlag FROM @PreviousModuleInstanceTable) = 'Cancel') OR((SELECT ActiveIndicator FROM @PreviousModuleInstanceTable) = 'N')
+  IF (EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE LastNextExecutionFlag = 'Cancel')
+      OR EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE ActiveIndicator = 'N'))
   BEGIN
     SET @LogMessage = 'The last Execution Flag is ''Cancel'' OR the Active Indicator at Module level is ''N''. The process will be cancelled. The Module Instance will be cancelled'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -311,8 +310,10 @@ BEGIN TRY
 
   -- Proceed with success
   -- If the previous run for the module (the previous Module Instance) was completed successfully and the Module is not disabled, the process can report 'proceed' for
-  -- any code execution in the body (e.g. the data logistics process itself).
-  IF ((SELECT LastNextExecutionFlag FROM @PreviousModuleInstanceTable) = 'Proceed') AND ((SELECT ActiveIndicator FROM @PreviousModuleInstanceTable) <> 'N')
+  IF (
+      EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE LastNextExecutionFlag = 'Proceed')
+      AND NOT EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE ActiveIndicator = 'N')
+     )
   BEGIN
     SET @LogMessage = 'The last Execution Flag is ''Proceed'' AND the Active Indicator at Module level is not ''N''. The process can proceed (no rollback is required). The Module Instance will be set to proceed'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -330,7 +331,7 @@ BEGIN TRY
 
   -- Proceed with Rollback.
   -- If the previous Module Instance is set to Rollback, this will trigger the current Module instance to do so before proceeding.
-  IF ((SELECT LastNextExecutionFlag FROM @PreviousModuleInstanceTable) = 'Rollback') AND ((SELECT ActiveIndicator FROM @PreviousModuleInstanceTable) <> 'N')
+  IF ((SELECT MIN(LastNextExecutionFlag) FROM @PreviousModuleInstanceTable) = 'Rollback') AND ((SELECT MIN(ActiveIndicator) FROM @PreviousModuleInstanceTable) <> 'N')
   BEGIN
     SET @LogMessage = 'The last Execution Code is ''Rollback'' and the Active Indicator at Module level is not ''N''. The process should perform a rollback. The Module Instance will be set to rollback'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -368,7 +369,7 @@ BEGIN TRY
     DECLARE @SqlStatement VARCHAR(MAX);
     --DECLARE @AreaCode VARCHAR(10);
     --SELECT @AreaCode = AREA_CODE FROM omd.MODULE WHERE MODULE_ID=@ModuleId;
-    DECLARE @TableCode VARCHAR(255);
+    DECLARE @TableCode NVARCHAR(1000);
     SELECT @TableCode = DATA_OBJECT_TARGET FROM [omd].[MODULE] WHERE MODULE_ID=@ModuleId;
 
     SET @LogMessage = 'The Table Code (DATA_OBJECT_TARGET) for Module ' + CONVERT(VARCHAR(10), @ModuleId) + ' is ' + @TableCode + '.'
@@ -388,14 +389,19 @@ BEGIN TRY
       --IF @LocalAreaCode = 'INT'
         --SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
       --ELSE
-        SET @SqlStatement = 'DELETE FROM ' + @TableCode + ' WHERE ' + @ModuleInstanceIdColumnName + ' IN ' + @ModuleInstanceIdList;
+        SET @SqlStatement = 'DELETE FROM ' + QUOTENAME(@TableCode) + ' WHERE ' + QUOTENAME(@ModuleInstanceIdColumnName) + ' IN (' + @ModuleInstanceIdList + ')';
 
         SET @LogMessage = 'Rollback SQL statement is: ' + @SqlStatement
         SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
         EXEC (@SqlStatement);
 
-        SET @SqlStatement = 'DELETE FROM omd.SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN ' + @ModuleInstanceIdList;
+        SET @SqlStatement = 'DELETE FROM omd.SOURCE_CONTROL WHERE MODULE_INSTANCE_ID IN (' +
+          CASE
+            WHEN LEFT(LTRIM(RTRIM(@ModuleInstanceIdList)), 1) = '(' AND RIGHT(LTRIM(RTRIM(@ModuleInstanceIdList)), 1) = ')'
+              THEN SUBSTRING(@ModuleInstanceIdList, 2, LEN(@ModuleInstanceIdList) - 2)
+            ELSE @ModuleInstanceIdList
+          END + ')';
 
         SET @LogMessage = 'Source Control Rollback SQL statement is: ' + @SqlStatement
         SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -484,10 +490,15 @@ BEGIN TRY
   -- End of procedure label
   EndOfProcedure:
 
-  SET @SuccessIndicator = 'Y'
+  IF @InternalProcessingStatusCode <> 'Failure'
+    SET @SuccessIndicator = 'Y'
+  -- Otherwise, leave @SuccessIndicator as set earlier (likely 'N' on failure)
+
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  SET @LogMessage = @EndTimestampString;
+
+  SET @LogMessage = CONVERT(NVARCHAR(20), DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp)) + N' seconds';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time', @LogMessage, @MessageLog)
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
   SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)

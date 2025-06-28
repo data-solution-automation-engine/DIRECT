@@ -63,14 +63,13 @@ CREATE PROCEDURE [omd].[RunModule]
 AS
 BEGIN TRY
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -136,7 +135,7 @@ BEGIN TRY
   -- Make sure that a valid module instance was created
   IF @ModuleInstanceId IS NULL
   BEGIN
-    -- If not, cause a soft error.
+    -- If not, raise a soft error.
     SET @SuccessIndicator = 'N'
     GOTO EndOfProcedure;
   END

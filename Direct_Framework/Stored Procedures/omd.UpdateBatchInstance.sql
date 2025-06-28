@@ -12,7 +12,6 @@ CREATE PROCEDURE [omd].[UpdateBatchInstance]
 AS
 BEGIN TRY;
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
 /*******************************************************************************
  * [omd].[UpdateBatchInstance]
@@ -55,9 +54,9 @@ PRINT @BatchInstanceId;
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -71,9 +70,9 @@ PRINT @BatchInstanceId;
 
   -- Log parameters
   SET @LogMessage = @BatchInstanceId;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchInstanceId', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchInstanceId', @LogMessage, @MessageLog);
   SET @LogMessage = @EventCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventCode', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventCode', @LogMessage, @MessageLog);
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
@@ -216,9 +215,9 @@ PRINT @BatchInstanceId;
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   DECLARE @ErrorMessage NVARCHAR(4000);
   DECLARE @ErrorSeverity INT;
@@ -237,14 +236,14 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
+    PRINT 'Error in '''       + @SpName + '''';
+    PRINT 'Error Message: '   + @ErrorMessage;
+    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+    PRINT 'Error Procedure: ' + @ErrorProcedure;
+    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
     -- Spool message log
     EXEC [omd].[PrintMessageLog] @MessageLog;

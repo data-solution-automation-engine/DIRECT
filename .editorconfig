@@ -1,0 +1,56 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 160
+trim_trailing_whitespace = true
+
+# Make sure to not trim trailing whitespace when it might have actual meaning
+[*.{md, handlebars}]
+trim_trailing_whitespace = false
+
+# Goes with the SQL formatter extensions for Visual Studio and VS Code
+# and the guidelines extensions
+[*.sql]
+guidelines = 80 dotted, 160 solid
+SqlServer.Rules.SRN0007.severity = none
+
+align_clause_bodies                                 = true
+align_column_definition_fields                      = true
+align_set_clause_item                               = true
+allow_external_language_paths                       = true
+allow_external_library_paths                        = true
+as_keyword_on_own_line                              = true
+include_semicolons                                  = false
+indent_set_clause                                   = false
+keyword_casing                                      = uppercase
+indentation_size                                    = 2
+indent_view_body                                    = false
+multiline_insert_sources_list                       = true
+multiline_insert_targets_list                       = true
+multiline_select_elements_list                      = true
+multiline_set_clause_items                          = true
+multiline_view_columns_list                         = true
+multiline_where_predicates_list                     = true
+new_line_before_close_parenthesis_in_multiline_list = true
+new_line_before_from_clause                         = true
+new_line_before_group_by_clause                     = true
+new_line_before_having_clause                       = true
+new_line_before_join_clause                         = true
+new_line_before_offset_clause                       = true
+new_line_before_open_parenthesis_in_multiline_list  = false
+new_line_before_order_by_clause                     = true
+new_line_before_output_clause                       = true
+new_line_before_where_clause                        = true
+new_line_before_window_clause                       = true
+newline_formatted_check_constraint                  = false
+new_line_formatted_index_definition                 = false
+num_newlines_after_statement                        = 1
+space_between_data_type_and_parameters              = true
+space_between_parameters_in_data_type               = true
+sql_engine_type                                     = all
+sql_version                                         = sql170
