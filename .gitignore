@@ -397,15 +397,8 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# DIRECT OPTION - Specifically include only the reference dacpacs in the repo,
-# so they can be directly referenced in project without requiring a separate build
-# The build process has a preprocess step that builds the references,
-# so including these are optional depending on the development and deploymetn workflow used
-# Also consider the build configuration used, the following is for a Debug build
-
-# !Direct_Framework/Reference_Databases/[Bb]in
-# !Direct_Framework/Reference_Databases/[Bb]in/[Dd]ebug/
-# Direct_Framework/Reference_Databases/[Bb]in/[Dd]ebug/*
-# !Direct_Framework/Reference_Databases/bin/Debug/master.dacpac
-# !Direct_Framework/Reference_Databases/bin/Debug/msdb.dacpac
-/.vscode
+.vscode
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
