@@ -20,7 +20,7 @@
 PRINT 'Pre-Deployment Script Starting'
 
 -- placeholder contents...
-PRINT 'Doing nothing...'
+PRINT 'Pre-Deployment Script is doing nothing...'
 -- Do some setup, migration or prepare work as part of pre-deployment
 -- :r .\SomeScriptFile.sql
 
