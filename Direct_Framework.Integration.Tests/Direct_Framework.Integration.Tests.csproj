@@ -1,15 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="xunit"                     Version="2.6.7" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.6.7" />
-    <PackageReference Include="FluentAssertions"          Version="6.15.0" />
-    <PackageReference Include="Dapper"                    Version="2.1.35" />
-    <PackageReference Include="Testcontainers.MsSql"      Version="3.9.0" />
-    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.*" />
+    <PackageReference Include="Testcontainers.MsSql" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" />
+    <PackageReference Include="MSTest" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <!-- <PackageReference Include="Dapper" /> -->
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Direct_Framework\Direct_Framework.sqlproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
   </ItemGroup>
 </Project>

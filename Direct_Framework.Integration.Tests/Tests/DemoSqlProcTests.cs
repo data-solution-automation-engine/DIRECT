@@ -1,21 +1,36 @@
-using Dapper;
-using FluentAssertions;
-using System.Data.SqlClient;
-using Xunit;
+namespace Direct_Framework.Integration.Tests.Tests;
 
-public class OrderProcedureTests(MsSqlFixture f) : IClassFixture<MsSqlFixture>
+[TestClass]
+public class OrderProcedureTests
 {
-    readonly string _cs = f.ConnectionString;
+  private string ConnectionString => SqlServerContainerManager.ConnectionString;
 
-    [Fact]
-    public async Task UpsertOrder_returns_zero_on_success()
-    {
-        using var conn = new SqlConnection(_cs);
+  [ClassInitialize]
+  public static async Task ClassInitialize(TestContext context)
+  {
+    await Task.Yield();
+    // Container is already initialized by GlobalTestSetup
+    // Optionally reset database state for this test class
+    // await SqlServerContainerManager.ResetDatabaseAsync();
+  }
 
-        var result = await conn.ExecuteScalarAsync<int>(
-            "EXEC dbo.UpsertOrder @OrderId = @Id, @Amount = @Amt",
-            new { Id = 42, Amt = 100 });
+  [TestMethod]
+  public async Task OmdBatch_returns_y_on_success()
+  {
+    using var conn = new SqlConnection(ConnectionString);
 
-        result.Should().Be(0);
-    }
+    var parameters = new DynamicParameters();
+    parameters.Add("@BatchCode", "Default Batch");
+    parameters.Add("@Debug", "N");
+    parameters.Add("@BatchDetails", dbType: System.Data.DbType.String, direction: System.Data.ParameterDirection.Output, size: -1);
+    parameters.Add("@SuccessIndicator", dbType: System.Data.DbType.String, direction: System.Data.ParameterDirection.Output, size: 1);
+    parameters.Add("@MessageLog", dbType: System.Data.DbType.String, direction: System.Data.ParameterDirection.Output, size: -1);
+
+    await conn.ExecuteAsync("EXEC [omd].[GetBatch] @BatchCode, @Debug, @BatchDetails OUTPUT, @SuccessIndicator OUTPUT, @MessageLog OUTPUT", parameters);
+
+    var successIndicator = parameters.Get<string>("@SuccessIndicator");
+    var messageLog = parameters.Get<string>("@MessageLog");
+
+    successIndicator.Should().Be("Y");
+  }
 }

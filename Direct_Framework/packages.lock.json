@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dependencies": {
+    ".NETStandard,Version=v2.1": {
+      "Microsoft.SqlServer.Dacpacs.Azure.Master": {
+        "type": "Direct",
+        "requested": "[160.2.4, )",
+        "resolved": "160.2.4",
+        "contentHash": "XGDIAQDe9g/PPHiIJU1fxkw2MDi+PRr/tGy0G67po4wHz275qYJKtVGj5oVavh92Cvztf0NUfQpd/n5sJbuvbw=="
+      }
+    }
+  }
+}

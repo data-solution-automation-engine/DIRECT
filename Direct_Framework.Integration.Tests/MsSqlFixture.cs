@@ -1,28 +1,23 @@
-using Dapper;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using Microsoft.SqlServer.Dac;
-using Xunit;
+using Direct_Framework.Integration.Tests.Infrastructure;
 
-public sealed class MsSqlFixture : IAsyncLifetime
+namespace Direct_Framework.Integration.Tests;
+
+/// <summary>
+/// Lightweight fixture that provides access to the shared SQL Server container
+/// </summary>
+public sealed class MsSqlFixture
 {
-    public string ConnectionString => _container.GetConnectionString();
-    readonly MsSqlContainer _container =
-        new MsSqlBuilder().WithPassword("P@ssword123").Build();
+    /// <summary>
+    /// Gets the connection string for the shared test database
+    /// </summary>
+    public string ConnectionString => SqlServerContainerManager.ConnectionString;
 
-    public async Task InitializeAsync()
+    /// <summary>
+    /// Optional: Reset database to clean state before each test class
+    /// Call this from [ClassInitialize] if you need a fresh database state
+    /// </summary>
+    public async Task ResetDatabaseAsync()
     {
-        await _container.StartAsync();
-
-        // load the production DACPAC
-        var dacpac = DacPackage.Load(
-            Path.Combine("..", "..", "src", "MyDatabase", "bin", "Debug",
-                         "MyDatabase.dacpac"));
-
-        var svc = new DacServices(ConnectionString);
-        await Task.Run(() =>
-            svc.Deploy(dacpac, "MyDatabase", upgradeExisting: true));
+        await SqlServerContainerManager.ResetDatabaseAsync();
     }
-
-    public Task DisposeAsync() => _container.DisposeAsync().AsTask();
 }

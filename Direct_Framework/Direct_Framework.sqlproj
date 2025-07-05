@@ -82,7 +82,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->
     <PackageReference Include="Microsoft.SqlServer.Dacpacs.Azure.Master">
-      <Version>160.2.4</Version>
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>

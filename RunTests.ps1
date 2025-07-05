@@ -20,3 +20,6 @@ dotnet sqltest runall `
 # dotnet test tests
 
 # dotnet sqltest runall --project Direct_Framework.tsqlt.Tests/Direct_Framework.tsqlt.Tests.sqlproj --image mcr.microsoft.com/mssql/server:2022-latest
+
+# Run integration tests with reports from the integration tests project directory
+dotnet test --no-build --no-restore --configuration Debug --report-trx --report-trx-filename "testresults.trx" --coverage --coverage-output "coverage.cobertura.xml" --coverage-output-format cobertura --results-directory ./TestResults

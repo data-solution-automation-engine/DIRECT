@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <!-- Microsoft Code Coverage data collector -->
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+            <!-- Include assemblies -->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*\.dll$</ModulePath>
+                <ModulePath>.*\.exe$</ModulePath>
+              </Include>
+              <Exclude>
+                <!-- Exclude test assemblies -->
+                <ModulePath>.*Tests\.dll$</ModulePath>
+                <ModulePath>.*\.Tests\.dll$</ModulePath>
+                <!-- Exclude third-party libraries -->
+                <ModulePath>.*Microsoft\..*</ModulePath>
+                <ModulePath>.*System\..*</ModulePath>
+                <ModulePath>.*mscorlib\..*</ModulePath>
+                <ModulePath>.*Newtonsoft\..*</ModulePath>
+              </Exclude>
+            </ModulePaths>
+
+            <!-- Include/exclude by attributes -->
+            <Attributes>
+              <Exclude>
+                <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
+                <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+              </Exclude>
+            </Attributes>
+
+            <!-- Include/exclude source files -->
+            <Sources>
+              <Exclude>
+                <Source>.*\\bin\\.*</Source>
+                <Source>.*\\obj\\.*</Source>
+                <Source>.*\\Migrations\\.*</Source>
+                <Source>.*\\.Designer\.cs$</Source>
+                <Source>.*\\.g\.cs$</Source>
+                <Source>.*\\.g\.i\.cs$</Source>
+              </Exclude>
+            </Sources>
+
+            <!-- Include/exclude by company name -->
+            <CompanyNames>
+              <Exclude>
+                <CompanyName>.*Microsoft.*</CompanyName>
+              </Exclude>
+            </CompanyNames>
+
+            <!-- Include/exclude public key tokens -->
+            <PublicKeyTokens>
+              <Exclude>
+                <PublicKeyToken>^B77A5C561934E089$</PublicKeyToken>
+                <PublicKeyToken>^B03F5F7F11D50A3A$</PublicKeyToken>
+                <PublicKeyToken>^31BF3856AD364E35$</PublicKeyToken>
+                <PublicKeyToken>^89845DCD8080CC91$</PublicKeyToken>
+              </Exclude>
+            </PublicKeyTokens>
+
+            <!-- Additional settings -->
+            <UseVerifiableInstrumentation>True</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>True</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>True</CollectFromChildProcesses>
+            <CollectAspDotNet>False</CollectAspDotNet>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+
+  <!-- Test result settings -->
+  <LoggerRunSettings>
+    <Loggers>
+      <Logger friendlyName="trx" enabled="True">
+        <Configuration>
+          <LogFileName>TestResults.trx</LogFileName>
+        </Configuration>
+      </Logger>
+      <Logger friendlyName="html" enabled="True" />
+      <Logger friendlyName="console" enabled="True" />
+    </Loggers>
+  </LoggerRunSettings>
+
+  <!-- Microsoft Testing Platform specific settings -->
+  <TestingPlatformRunSettings>
+    <EnableCodeCoverage>true</EnableCodeCoverage>
+    <CodeCoverageFormat>cobertura,opencover,xml</CodeCoverageFormat>
+  </TestingPlatformRunSettings>
+
+</RunSettings>

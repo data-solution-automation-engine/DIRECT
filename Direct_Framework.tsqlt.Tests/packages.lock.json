@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dependencies": {
+    ".NETStandard,Version=v2.1": {
+      "tSQLt.Edge": {
+        "type": "Direct",
+        "requested": "[0.9.9, )",
+        "resolved": "0.9.9",
+        "contentHash": "RNbOriRdKZhLE2FVFweMnYyga1qyxjKzs1zph26rE4O8PGIjgwKvUme+OUjNlJTnneYxpb/A1jyCIcwOEhFiAw=="
+      }
+    }
+  }
+}

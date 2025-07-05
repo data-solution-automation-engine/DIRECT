@@ -8,14 +8,14 @@
     <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
   </PropertyGroup>
-  <!-- references to the model under test and its dependencies 
+  <!-- references to the model under test and its dependencies
    so test DB contains the real objects to test -->
   <ItemGroup>
     <ArtifactReference Include="..\Direct_Framework\bin\Debug\Direct_Framework.dacpac" />
     <ArtifactReference Include="..\Direct_Framework\bin\Debug\master.dacpac" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="tSQLt.Edge" Version="0.9.9" PrivateAssets="all" />
+    <PackageReference Include="tSQLt.Edge" PrivateAssets="all" />
   </ItemGroup>
   <!-- bring in the tSQLt framework during publish -->
   <ItemGroup>
