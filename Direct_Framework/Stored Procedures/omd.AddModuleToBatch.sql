@@ -230,6 +230,9 @@ BEGIN CATCH
  * SP-wide error handler and logging
  ******************************************************************************/
 
+  SET @LogMessage = 'An error was encountered in the stored procedure: ' + @SpName + '.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (seconds)', @LogMessage, @MessageLog)
+
   SET @SuccessIndicator = 'N'
 
   DECLARE @ErrorMessage NVARCHAR(4000);
