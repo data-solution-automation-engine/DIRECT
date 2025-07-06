@@ -96,8 +96,7 @@ BEGIN TRY;
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode NVARCHAR(1000);
-  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -130,6 +129,32 @@ END
     SET @SuccessIndicator = 'N';
 
     THROW 50000, @LogMessage ,1;
+  END CATCH
+
+  -- Find the Parent Batch Id
+  BEGIN TRY;
+    SET @ParentBatchId = [omd].[GetBatchIdByName](@ParentBatchCode);
+
+    IF @ParentBatchId IS NOT NULL
+    BEGIN
+  SET @LogMessage = 'Batch Id ''' + CONVERT(NVARCHAR(10), @ParentBatchId) + ''' has been retrieved for Parent Batch Code ''' + @ParentBatchCode + '''.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+
+END
+    ELSE
+    BEGIN
+  SET @LogMessage = 'No Batch Id was found for Parent Batch Code ''' + @ParentBatchCode + '''.';
+  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+
+  GOTO EndOfProcedureFailure
+END
+  END TRY
+  BEGIN CATCH
+    SET @LogMessage = 'Error Processing Parent Batch Code.';
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+    SET @SuccessIndicator = 'N';
+
+    THROW 50000, @LogMessage, 1;
   END CATCH
 
   -- Validate the DAG
@@ -178,32 +203,6 @@ END
 
     THROW 50000, @LogMessage, 1;
   END CATCH;
-
-  -- Find the Parent Batch Id
-  BEGIN TRY;
-    SET @ParentBatchId = [omd].[GetBatchIdByName](@ParentBatchCode);
-
-    IF @ParentBatchId IS NOT NULL
-    BEGIN
-  SET @LogMessage = 'Batch Id ''' + CONVERT(NVARCHAR(10), @ParentBatchId) + ''' has been retrieved for Parent Batch Code ''' + @ParentBatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-
-END
-    ELSE
-    BEGIN
-  SET @LogMessage = 'No Batch Id was found for Parent Batch Code ''' + @ParentBatchCode + '''.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-
-  GOTO EndOfProcedureFailure
-END
-  END TRY
-  BEGIN CATCH
-    SET @LogMessage = 'Error Processing Parent Batch Code.';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-    SET @SuccessIndicator = 'N';
-
-    THROW 50000, @LogMessage, 1;
-  END CATCH
 
   /*
     Batch - Parent Batch Registration.
@@ -263,7 +262,7 @@ WHERE bh.PARENT_BATCH_ID = refData.PARENT_BATCH_ID AND bh.BATCH_ID = refData.BAT
   EndOfProcedureSuccess:
 
     SET @SuccessIndicator = 'Y';
-    SET @LogMessage = N'Batch to Parent Batch registration process completed succesfully.';
+    SET @LogMessage = N'Batch to Parent Batch registration process completed successfully.';
     SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
     GOTO EndOfProcedure

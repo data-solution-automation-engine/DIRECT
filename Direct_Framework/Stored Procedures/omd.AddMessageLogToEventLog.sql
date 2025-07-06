@@ -7,13 +7,13 @@
  * DIRECT model v2.0
  *
  * Purpose:
- *   tba
+ *   Adds a message log entry to the event log for auditing or tracking purposes.
  *
  * Inputs:
  *   - Message Log
  *
  * Output:
- *   - tba
+ *   - Returns 0 on success; logs the provided message to the event log.
  *
  * Usage:
  *
@@ -32,8 +32,19 @@ CREATE PROCEDURE [omd].[AddMessageLogToEventLog]
 AS
 BEGIN
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF;
 
-  PRINT 'todo: omd.AddMessageLogToEventLog';
+  -- Validate input
+  IF @MessageLog IS NULL OR LTRIM(RTRIM(@MessageLog)) = ''
+  BEGIN
+    RETURN 0; -- No message to log, return immediately
+  END
 
+  ELSE
+  BEGIN
+    -- Log the messages to the event log
+    INSERT INTO [omd].[EventLog] ([Message], [CreatedDate])
+    VALUES (@MessageLog, SYSDATETIME());
+  END
+
+  RETURN 0;
 END

@@ -83,9 +83,8 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process

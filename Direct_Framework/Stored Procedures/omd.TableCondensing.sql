@@ -40,7 +40,7 @@ CREATE PROCEDURE [omd].[TableCondensing]
   @Debug                    CHAR(1) = 'N',
   -- Output parameters
   @SuccessIndicator         CHAR(1)        = 'N' OUTPUT,
-  @MessageLog               NVARCHAR(MAX)  = NULL OUTPUT
+  @MessageLog               NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 
@@ -72,9 +72,8 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @Table', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process

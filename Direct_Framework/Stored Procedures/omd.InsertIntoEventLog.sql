@@ -93,9 +93,6 @@ BEGIN TRY
   SET @LogMessage = @ErrorBitmap;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ErrorBitmap', @LogMessage, @MessageLog);
 
-  -- Process variables
-  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
-
 /*******************************************************************************
  * Start of main process
  ******************************************************************************/

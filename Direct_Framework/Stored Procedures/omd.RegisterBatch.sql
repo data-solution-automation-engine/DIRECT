@@ -64,8 +64,8 @@ CREATE PROCEDURE [omd].[RegisterBatch]
   @Debug                  CHAR(1)        = 'N',
   -- Output parameters
   @BatchId                INT            = NULL OUTPUT,
-  @SuccessIndicator       CHAR(1)        = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX)  = NULL OUTPUT
+  @SuccessIndicator       CHAR(1)        = 'N'  OUTPUT,
+  @MessageLog             NVARCHAR(MAX)  = N''  OUTPUT
 )
 AS
 BEGIN TRY
@@ -103,8 +103,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process

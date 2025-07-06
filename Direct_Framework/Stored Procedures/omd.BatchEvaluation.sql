@@ -78,9 +78,8 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchInstanceId', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -102,7 +101,9 @@ BEGIN TRY
     SET @LogMessage = 'The Batch Id was not found for Batch Instance Id ''' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ''''
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
+    EXEC [omd].[InsertIntoEventLog]
+      @BatchInstanceId = @BatchInstanceId,
+      @EventDetail = @EventDetail;
 
     GOTO FailureEndOfProcedure
   END
@@ -254,7 +255,7 @@ BEGIN TRY
   -- If the previous Batch Instance has failed and the previous next run indicator is not set to skip OR the previous next run indicator is set to rerun the rollback step must be initiatied.
   IF
   (
-    (@LastExecutionStatusCode = 'Failed' AND @LastNextRunStatusCode <> 'Cancelled') OR
+    (@LastExecutionStatusCode = 'Failed' AND @LastNextRunStatusCode <> 'Cancel') OR
     @LastNextRunStatusCode = 'Rollback'
   )
   BEGIN
@@ -342,7 +343,7 @@ BEGIN TRY
   BEGIN
     BEGIN TRY
 
-    SET @SqlStatement = 'UPDATE omd.MODULE_INSTANCE SET NEXT_RUN_STATUS_CODE = ''Cancel'' WHERE EXECUTION_STATUS_CODE <> ''Failed'' AND BATCH_INSTANCE_ID IN '+@FailedBatchIdArray;
+    SET @SqlStatement = 'UPDATE omd.MODULE_INSTANCE SET NEXT_RUN_STATUS_CODE = ''Cancel'' WHERE EXECUTION_STATUS_CODE <> ''Failed'' AND BATCH_INSTANCE_ID IN (' + @FailedBatchIdArray + ')';
 
     SET @LogMessage = 'Rollback SQL statement (partial) is: ' + @SqlStatement;
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -400,13 +401,13 @@ BEGIN TRY
 
   SET @InternalProcessingStatusCode = 'Failure';
 
-  RAISERROR('Incorrect Batch Evaluation path encountered (post-rollback).',1,1)
+  RAISERROR('Incorrect Batch Evaluation path encountered (post-rollback).',16,1)
 
   FailureEndOfProcedure:
 
     SET @SuccessIndicator = 'N'
     SET @LogMessage = N'' + @SpName + ' ended in failure.';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
   GOTO EndOfProcedure
 
@@ -482,5 +483,4 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode,
     @BatchInstanceId   = @BatchInstanceId;
 
-  THROW
 END CATCH

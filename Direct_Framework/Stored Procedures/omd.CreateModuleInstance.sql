@@ -95,9 +95,9 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ExecutionContext', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
+   -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
  * Start of main process
@@ -234,7 +234,7 @@ BEGIN TRY
 
   SET @SuccessIndicator = 'Y'
 
-  SET @LogMessage = N'' + @SpName + ' completed succesfully.';
+  SET @LogMessage = N'' + @SpName + ' completed successfully.';
   SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
   GOTO EndOfProcedure

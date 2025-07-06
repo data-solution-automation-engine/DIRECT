@@ -85,8 +85,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode NVARCHAR(1000);
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -199,11 +198,11 @@ BEGIN TRY
 
   EndOfProcedureSuccess:
 
-    SET @SuccessIndicator = 'Y';
-    SET @LogMessage = N'Batch/Module addition process completed successfully.';
-    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+      SET @SuccessIndicator = 'Y';
+      SET @LogMessage = N'Batch/Module addition process completed successfully.';
+      SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
-    GOTO EndOfProcedure
+      GOTO EndOfProcedure
 
 /*******************************************************************************
  * EndOfProcedure Label
@@ -231,7 +230,7 @@ BEGIN CATCH
  ******************************************************************************/
 
   SET @LogMessage = 'An error was encountered in the stored procedure: ' + @SpName + '.';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (seconds)', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Error', @LogMessage, @MessageLog)
 
   SET @SuccessIndicator = 'N'
 
@@ -274,5 +273,5 @@ BEGIN CATCH
     @EventDetail       = @EventDetail,
     @EventReturnCode   = @EventReturnCode;
 
-  THROW
+  -- Error has been logged and handled; do not re-throw.
 END CATCH

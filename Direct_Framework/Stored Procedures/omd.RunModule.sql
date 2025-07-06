@@ -92,9 +92,8 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceIdColumnName', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -106,7 +105,7 @@ BEGIN TRY
     SET @LogMessage = 'The Module Code provided is NULL, the process will fail gracefully.'
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    SET @SuccessIndicator = 'N'
+    SET @SuccessIndicator = 'N';
     GOTO EndOfProcedure;
   END
 
@@ -115,13 +114,13 @@ BEGIN TRY
   BEGIN
     SELECT @Query = [EXECUTABLE] FROM [omd].[MODULE] WHERE MODULE_CODE = @ModuleCode;
 
-    SET @LogMessage = 'The executable code retrieved is: ''' + COALESCE(@Query, '') + '''.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'The executable code retrieved is: ''' + COALESCE(@Query, '') + '''.';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
   END
   ELSE
   BEGIN
-    SET @LogMessage = 'An executable code override parameter has been provided: ''' + COALESCE(@Query, '') + '''.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'An executable code override parameter has been provided: ''' + COALESCE(@Query, '') + '''.';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
   END
 
   -- Create Module Instance
@@ -136,7 +135,7 @@ BEGIN TRY
   IF @ModuleInstanceId IS NULL
   BEGIN
     -- If not, raise a soft error.
-    SET @SuccessIndicator = 'N'
+    SET @SuccessIndicator = 'N';
     GOTO EndOfProcedure;
   END
 
@@ -149,25 +148,25 @@ BEGIN TRY
     @ModuleInstanceIdColumnName     = @ModuleInstanceIdColumnName,
     @InternalProcessingStatusCode   = @InternalProcessingStatusCode OUTPUT;
 
-    SET @LogMessage = 'The Processing Status Code is: '+@InternalProcessingStatusCode
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'The Processing Status Code is: '+@InternalProcessingStatusCode;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
   IF @InternalProcessingStatusCode NOT IN ('Abort','Cancel') -- These are end-states for the process.
   BEGIN
     -- Replace placeholder variable(s)
-    SET @Query = REPLACE(@Query,'@ModuleInstanceId', @ModuleInstanceId)
+    SET @Query = REPLACE(@Query,'@ModuleInstanceId', @ModuleInstanceId);
 
     -- Run the code
-    DECLARE @RowCount NUMERIC(38)
+    DECLARE @RowCount NUMERIC(38);
     EXEC(@Query);
     SET @RowCount = @@ROWCOUNT;
 
-    SET @LogMessage = 'The returned row count is '  + CONVERT(NVARCHAR(20),@RowCount)
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'The returned row count is '  + CONVERT(NVARCHAR(20),@RowCount);
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
     -- Wrap up
-    SET @LogMessage = 'Success pathway'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'Success pathway';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
     -- Module Success
     EXEC [omd].[UpdateModuleInstance]
@@ -176,15 +175,15 @@ BEGIN TRY
       @Debug            = @Debug,
       @EventCode        = 'Success'
 
-    SET @SuccessIndicator = 'Y'
+    SET @SuccessIndicator = 'Y';
   END
   ELSE
   BEGIN
     -- Nothing is done because the internal processing code is either Abort or Cancel.
-    -- The process completes succesfully.
-    SET @SuccessIndicator = 'Y'
-    SET @LogMessage = 'Nothing is done, the process reported Abort or Cancel.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    -- The process completes successfully.
+    SET @SuccessIndicator = 'Y';
+    SET @LogMessage = 'Nothing is done, the process reported Abort or Cancel.';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
   END
 
   -- End of procedure label
@@ -258,5 +257,4 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode,
     @BatchInstanceId   = @BatchInstanceId;
 
-  THROW
 END CATCH

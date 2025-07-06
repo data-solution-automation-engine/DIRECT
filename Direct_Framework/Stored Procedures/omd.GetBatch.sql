@@ -22,6 +22,7 @@
  *   - Batch Description
  *
  * Output variables:
+ *   - Batch Details (JSON representation of the batch, or NULL if not found)
  *   - Success Indicator (Y/N)
  *   - Message Log
  *
@@ -43,9 +44,9 @@ CREATE PROCEDURE [omd].[GetBatch]
   -- Optional parameters
   @Debug                    CHAR(1)         = 'N',
   -- Output parameters
-  @BatchDetails             NVARCHAR(MAX)   = NULL  OUTPUT,
-  @SuccessIndicator         CHAR(1)         = 'N'   OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   = NULL  OUTPUT
+  @BatchDetails             NVARCHAR(MAX)   = N''  OUTPUT,
+  @SuccessIndicator         CHAR(1)         = 'N'  OUTPUT,
+  @MessageLog               NVARCHAR(MAX)   = N''  OUTPUT
 )
 AS
 BEGIN TRY
@@ -75,8 +76,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode NVARCHAR(1000);
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -210,9 +210,15 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode;
 
   -- Ensure output parameters are set before re-throwing
-  SET @BatchDetails = NULL;
+  SET @BatchDetails = (
+    SELECT
+      'ERROR' AS [Status],
+      COALESCE(@ErrorMessage, 'Unknown error') AS [ErrorMessage],
+      COALESCE(@ErrorProcedure, 'N/A') AS [ErrorProcedure],
+      COALESCE(@ErrorLine, -1) AS [ErrorLine],
+      COALESCE(@ErrorNumber, -1) AS [ErrorNumber]
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+  );
   SET @SuccessIndicator = 'N';
-  -- @MessageLog is already set with error details above
 
-  THROW
 END CATCH

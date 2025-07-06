@@ -66,7 +66,7 @@ CREATE PROCEDURE [omd].[RegisterModule]
   -- Output parameters
   @ModuleId                 INT             = NULL  OUTPUT,
   @SuccessIndicator         CHAR(1)         = 'N'   OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   = NULL  OUTPUT
+  @MessageLog               NVARCHAR(MAX)   = N''   OUTPUT
 )
 AS
 BEGIN TRY
@@ -112,8 +112,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode NVARCHAR(1000);
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process

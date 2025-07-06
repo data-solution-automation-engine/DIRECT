@@ -47,8 +47,8 @@ CREATE PROCEDURE [omd].[END_DATING]
  ,@EffectiveDateColumnName          VARCHAR(50)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
  ,@Debug                            CHAR(1)       = 'N',
   -- Output parameters
-  @SuccessIndicator                 CHAR(1)       = NULL OUTPUT,
-  @MessageLog                       NVARCHAR(MAX) = NULL OUTPUT
+  @SuccessIndicator                 CHAR(1)       = 'N' OUTPUT,
+  @MessageLog                       NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
 BEGIN TRY
@@ -90,9 +90,8 @@ SET NOCOUNT ON
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EffectiveDateColumnName', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -110,10 +109,6 @@ DECLARE
   ,@EffectiveDateColumnName VARCHAR(50)                 = 'INSCRIPTION_TIMESTAMP'
   ,@ExpiryDateColumnName VARCHAR(50)                    = 'INSCRIPTION_BEFORE_TIMESTAMP'
   ,@DirectUpdateModuleInstanceIdColumnName VARCHAR(50)  = 'MODULE_INSTANCE_UPDATE_ID'
-
-    -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
 
 -- The resulting query
 DECLARE @Query AS VARCHAR(MAX);

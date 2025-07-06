@@ -1,18 +1,3 @@
-CREATE PROCEDURE [omd].[UpdateBatchInstance]
-(
-  -- Mandatory parameters
-  @BatchInstanceId        BIGINT,
-  -- Optional parameters
-  @EventCode              NVARCHAR(100) = N'None',
-  @Debug                  CHAR(1)       = 'N',
-    -- Output parameters
-  @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX) = NULL OUTPUT
-)
-AS
-BEGIN TRY;
-  SET NOCOUNT ON;
-
 /*******************************************************************************
  * [omd].[UpdateBatchInstance]
  *******************************************************************************
@@ -51,6 +36,22 @@ PRINT @BatchInstanceId;
  *
  ******************************************************************************/
 
+CREATE PROCEDURE [omd].[UpdateBatchInstance]
+(
+  -- Mandatory parameters
+  @BatchInstanceId        BIGINT,
+  -- Optional parameters
+  @EventCode              NVARCHAR(100) = N'None',
+  @Debug                  CHAR(1)       = 'N',
+    -- Output parameters
+  @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
+  @MessageLog             NVARCHAR(MAX) = N'' OUTPUT
+)
+AS
+BEGIN TRY
+  SET NOCOUNT ON;
+  SET @Debug = UPPER(@Debug);
+
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
@@ -76,8 +77,7 @@ PRINT @BatchInstanceId;
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -153,7 +153,7 @@ PRINT @BatchInstanceId;
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     -- Note that the default behaviour is that Next Run Indicator at Batch level is 'Proceed'.
-    -- This will only skip/cancel already succesfully completed Modules when a failed Batch is rerun.
+    -- This will only skip/cancel already successfully completed Modules when a failed Batch is rerun.
 
     UPDATE [omd].[BATCH_INSTANCE]
     SET
