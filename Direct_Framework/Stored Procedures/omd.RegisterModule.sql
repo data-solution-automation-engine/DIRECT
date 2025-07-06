@@ -70,6 +70,8 @@ CREATE PROCEDURE [omd].[RegisterModule]
 )
 AS
 BEGIN TRY
+
+  SET @SuccessIndicator = 'N';
   SET NOCOUNT ON;
   SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
@@ -270,7 +272,7 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
   SET @ModuleId = NULL;
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)

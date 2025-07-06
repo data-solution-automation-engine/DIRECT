@@ -38,8 +38,8 @@ CREATE PROCEDURE [omd].[UpdateModuleInstance]
   @ModuleInstanceId   BIGINT,
   -- Optional parameters
   @EventCode          NVARCHAR(100) = 'None',
-  @RowCountSelect     INT           = 0,
-  @RowCountInsert     INT           = 0,
+  @RowCountSelect     NUMERIC(38)   = 0,
+  @RowCountInsert     NUMERIC(38)   = 0,
   @Debug              CHAR(1)       = 'N',
   -- Output parameters
   @SuccessIndicator   CHAR(1)       = 'N' OUTPUT,

@@ -267,8 +267,6 @@ BEGIN CATCH
   SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
   SET @EventReturnCode = ERROR_NUMBER();
 
-  EXEC [omd].[AddMessageLogToEventLog] @MessageLog;
-
   EXEC [omd].[InsertIntoEventLog]
     @EventDetail       = @EventDetail,
     @EventReturnCode   = @EventReturnCode;
