@@ -55,8 +55,8 @@ CREATE PROCEDURE [omd].[RegisterModule]
   @ModuleCode               NVARCHAR(1000),
   @ModuleAreaCode           NVARCHAR(100),
   -- Optional parameters
-  @ModuleType               NVARCHAR(1000)  = N'SQL',
-  @Executable               VARCHAR(MAX)    = N'',
+  @ModuleType               NVARCHAR(100)   = N'SQL',
+  @Executable               NVARCHAR(MAX)   = N'',
   @ModuleDescription        NVARCHAR(4000)  = N'',
   @ModuleSourceDataObject   NVARCHAR(1000)  = N'N/A',
   @ModuleTargetDataObject   NVARCHAR(1000)  = N'N/A',
@@ -112,7 +112,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
+  DECLARE @EventReturnCode NVARCHAR(1000);
   SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
@@ -131,7 +131,16 @@ BEGIN TRY
     [MODULE_DESCRIPTION],
     [EXECUTABLE]
   )
-  SELECT *
+  SELECT
+    [MODULE_CODE],
+    [MODULE_TYPE],
+    [DATA_OBJECT_SOURCE],
+    [DATA_OBJECT_TARGET],
+    [AREA_CODE],
+    [FREQUENCY_CODE],
+    [ACTIVE_INDICATOR],
+    [MODULE_DESCRIPTION],
+    [EXECUTABLE]
   FROM
   (
     VALUES
@@ -197,7 +206,7 @@ BEGIN TRY
       @Executable
     );
 
-    SET @LogMessage = 'The incoming attribute checksum is ''' + CONVERT(VARCHAR(40), @NewChecksum, 2) + '''.'
+    SET @LogMessage = 'The incoming attribute checksum is ''' + CONVERT(VARCHAR(128), @NewChecksum, 2) + '''.'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     -- Evaluate the existing values to see if the Module requires to be updated.
@@ -213,7 +222,7 @@ BEGIN TRY
       COALESCE([EXECUTABLE],          'N/A'))
     FROM [omd].[MODULE] WHERE [MODULE_CODE] = @ModuleCode;
 
-    SET @LogMessage = 'The existing attribute checksum is ''' + CONVERT(VARCHAR(40), @ExistingChecksum, 2) + '''.'
+    SET @LogMessage = 'The existing attribute checksum is ''' + CONVERT(VARCHAR(128), @ExistingChecksum, 2) + '''.'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     -- Update the existing Module with new values, if they are different.
@@ -263,6 +272,7 @@ END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
   SET @SuccessIndicator = 'N'
+  SET @ModuleId = NULL;
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 

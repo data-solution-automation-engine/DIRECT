@@ -154,7 +154,7 @@ FROM
   WHERE B.MODULE_ID = ' + CONVERT(NVARCHAR(10), @ModuleId) + '
   -- Default value
   UNION
-  SELECT 1,''1900-01-01''
+  SELECT 1,''0001-01-01''
 ) sub
 WHERE RN=1';
 
@@ -180,7 +180,7 @@ WHERE RN=1';
     ELSE
     BEGIN
       SET @EndValueSql =
-'SELECT COALESCE(MAX(' + @LoadWindowAttributeName + '),''1900-01-01'') AS END_VALUE
+'SELECT COALESCE(MAX(' + @LoadWindowAttributeName + '),''0001-01-01'') AS END_VALUE
 FROM ' + @SourceDataObject + ' sdo
 JOIN omd.MODULE_INSTANCE modinst ON sdo.' + @ModuleInstanceIdColumnName + ' = modinst.MODULE_INSTANCE_ID
 WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';

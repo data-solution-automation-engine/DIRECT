@@ -43,7 +43,7 @@ RETURN
   SELECT TOP 1
      ISNULL(MAX(LastBatchInstanceID),-1)                                        AS [LastBatchInstanceID]
     ,ISNULL(MAX(LastModuleInstanceID),-1)                                       AS [LastModuleInstanceID]
-    ,ISNULL(MAX(LastStartTimestamp),'1900-01-01')                               AS [LastStartTimestamp]
+    ,ISNULL(MAX(LastStartTimestamp),'0001-01-01')                               AS [LastStartTimestamp]
     ,MAX(LastEndTimestamp)                                                      AS [LastEndTimestamp]
     ,ISNULL(MAX(LastExecutionStatus),'I')                                       AS [LastExecutionStatus]
     ,ISNULL(MAX(LastNextRunStatusCode),'Proceed')                               AS [LastNextExecutionFlag]

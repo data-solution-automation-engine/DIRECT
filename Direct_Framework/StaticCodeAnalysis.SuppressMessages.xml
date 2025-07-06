@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StaticCodeAnalysis version="2" xmlns="urn:Microsoft.Data.Tools.Schema.StaticCodeAnalysis">
-	<SuppressedFile FilePath="Functions\omd_processing.GetDependentTables.sql">
-		<!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0007" />-->
-		<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0004" />
-		<!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0005" />-->
-		<!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0015" />-->
-	</SuppressedFile>
-	<SuppressedFile FilePath="dbo\Functions\Function1.sql">
-		<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0007" />
-	</SuppressedFile>
+    <SuppressedFile FilePath="Functions\omd_processing.GetDependentTables.sql">
+        <!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0007" />-->
+        <SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0004" />
+        <!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0005" />-->
+        <!--<SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0015" />-->
+    </SuppressedFile>
+    <SuppressedFile FilePath="Stored Procedures\omd.InsertIntoEventLog.sql">
+        <SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0014" />
+    </SuppressedFile>
 </StaticCodeAnalysis>

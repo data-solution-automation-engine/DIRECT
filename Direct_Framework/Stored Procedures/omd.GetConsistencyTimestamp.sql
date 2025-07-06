@@ -414,7 +414,7 @@ WHERE INTERVAL_END_TIMESTAMP_ORDER = 1
    BEGIN
     DECLARE @localSourceMaxDateTime DATETIME2(7);
 
-    SET @localSqlStatement = 'SELECT @localSourceMaxDateTime=COALESCE(MAX(LOAD_DATETIME),''1900-01-01'')' + 'FROM ' + @localDataObjectSource + ' sdo ' + 'JOIN omd.MODULE_INSTANCE modinst ON sdo.module_instance_id=modinst.MODULE_INSTANCE_ID ' + 'WHERE 1=1 ' + '--AND modinst.EXECUTION_STATUS_CODE=''Succeeded ' + 'AND LOAD_DATETIME <= ''' + CONVERT(VARCHAR(100), @MeasurementDateTime) + ''''
+    SET @localSqlStatement = 'SELECT @localSourceMaxDateTime=COALESCE(MAX(LOAD_DATETIME),''0001-01-01'')' + 'FROM ' + @localDataObjectSource + ' sdo ' + 'JOIN omd.MODULE_INSTANCE modinst ON sdo.module_instance_id=modinst.MODULE_INSTANCE_ID ' + 'WHERE 1=1 ' + '--AND modinst.EXECUTION_STATUS_CODE=''Succeeded ' + 'AND LOAD_DATETIME <= ''' + CONVERT(VARCHAR(100), @MeasurementDateTime) + ''''
 
     -- Commented out EXECUTION_STATUS_CODE line because uncommitted rows should also be evaluated to prevent gaps in the load windows.
     -- Otherwise, status changes made to 'Succeeded' later on may be left out of the selection.

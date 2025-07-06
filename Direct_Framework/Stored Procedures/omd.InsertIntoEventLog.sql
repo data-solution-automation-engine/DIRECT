@@ -45,7 +45,7 @@ CREATE PROCEDURE [omd].[InsertIntoEventLog]
   @BatchInstanceId    BIGINT          = 0,
   @EventTimestamp     DATETIME2       = NULL,
   @EventTypeCode      NVARCHAR(100)   = '2',
-  @EventReturnCode    NVARCHAR(1000)  = 'N/A',
+  @EventReturnCode    NVARCHAR(100)  = 'N/A',
   @ErrorBitmap        NUMERIC(20,0)   = 0,
   @Debug              CHAR(1)         = 'N',
   -- Output parameters
@@ -64,6 +64,10 @@ BEGIN TRY
   DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
+  DECLARE @EventTimestampString NVARCHAR(33) = N'';
+
+  SET @EventTimestamp = COALESCE(@EventTimestamp, SYSUTCDATETIME());
+  SET @EventTimestampString = CONVERT(NVARCHAR(33), @EventTimestamp, 126);
 
   -- Log standard metadata
   SET @LogMessage = @SpName;
@@ -75,34 +79,32 @@ BEGIN TRY
 
   -- Log parameters
   SET @LogMessage = @ModuleInstanceId;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceId', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceId', @LogMessage, @MessageLog);
   SET @LogMessage = @EventDetail;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventDetail', @LogMessage, @MessageLog)
-  SET @LogMessage = @BatchInstanceId
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchInstanceId', @LogMessage, @MessageLog)
-  SET @LogMessage = @EventTimestamp
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventTimestamp', @LogMessage, @MessageLog)
-  SET @LogMessage = @EventTypeCode
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventTypeCode', @LogMessage, @MessageLog)
-  SET @LogMessage = @EventReturnCode
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventReturnCode', @LogMessage, @MessageLog)
-  SET @LogMessage = @ErrorBitmap
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ErrorBitmap', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventDetail', @LogMessage, @MessageLog);
+  SET @LogMessage = @BatchInstanceId;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchInstanceId', @LogMessage, @MessageLog);
+  SET @LogMessage = @EventTimestampString;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventTimestamp', @LogMessage, @MessageLog);
+  SET @LogMessage = @EventTypeCode;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventTypeCode', @LogMessage, @MessageLog);
+  SET @LogMessage = @EventReturnCode;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventReturnCode', @LogMessage, @MessageLog);
+  SET @LogMessage = @ErrorBitmap;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ErrorBitmap', @LogMessage, @MessageLog);
 
   -- Process variables
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
  * Start of main process
  ******************************************************************************/
 
-  SET @EventTimestamp = COALESCE(@EventTimestamp, SYSUTCDATETIME());
-
   SET @LogMessage = 'Inserting record in Event Log for Module Instance Id ''' + CONVERT(NVARCHAR(20), COALESCE(@ModuleInstanceId, 0)) + ''''
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
   SET @LogMessage = 'Batch Instance Id ''' + CONVERT(NVARCHAR(20), COALESCE(@BatchInstanceId, 0)) + ''''
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-  SET @LogMessage = 'Message: '+@EventDetail
+  SET @LogMessage = 'Message: ' + @EventDetail
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   INSERT INTO [omd].[EVENT_LOG]
@@ -169,19 +171,19 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
+    PRINT 'Error in '''       + @SpName + '''';
+    PRINT 'Error Message: '   + @ErrorMessage;
+    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+    PRINT 'Error Procedure: ' + @ErrorProcedure;
+    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
     -- Spool message log
     EXEC [omd].[PrintMessageLog] @MessageLog;
 
   END;
 
-  THROW
+  THROW;
 END CATCH
