@@ -60,10 +60,10 @@ BEGIN TRY
 
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 

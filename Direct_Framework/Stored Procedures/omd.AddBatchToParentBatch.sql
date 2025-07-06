@@ -67,7 +67,7 @@ BEGIN TRY;
 
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -96,7 +96,7 @@ BEGIN TRY;
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
+  DECLARE @EventReturnCode NVARCHAR(1000);
   SET @SuccessIndicator = 'N'; -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
@@ -141,7 +141,7 @@ END
     Ancestors
     AS
     (
-              SELECT BATCH_ID, PARENT_BATCH_ID
+        SELECT BATCH_ID, PARENT_BATCH_ID
         FROM [omd].[BATCH_HIERARCHY]
         WHERE BATCH_ID = @ParentBatchId
 
@@ -149,7 +149,7 @@ END
 
         SELECT h.BATCH_ID, h.PARENT_BATCH_ID
         FROM [omd].[BATCH_HIERARCHY] h
-          INNER JOIN Ancestors a ON h.BATCH_ID = a.PARENT_BATCH_ID
+        INNER JOIN Ancestors a ON h.BATCH_ID = a.PARENT_BATCH_ID
     )
   SELECT BATCH_ID
   INTO #DagViolation

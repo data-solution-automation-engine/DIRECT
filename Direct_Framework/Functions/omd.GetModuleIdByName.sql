@@ -1,8 +1,8 @@
 CREATE FUNCTION omd.GetModuleIdByName
 (
-  @ModuleCode VARCHAR(255) -- The name of the module, as identified in the MODULE_CODE attribute in the MODULE table.
+  @ModuleCode NVARCHAR(1000) -- The name of the module, as identified in the MODULE_CODE attribute in the MODULE table.
 )
-RETURNS VARCHAR(255) AS
+RETURNS INT AS
 
 -- =============================================
 -- Function: Get Module Id (by name)

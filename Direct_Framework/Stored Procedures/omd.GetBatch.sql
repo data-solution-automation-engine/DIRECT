@@ -50,12 +50,11 @@ CREATE PROCEDURE [omd].[GetBatch]
 AS
 BEGIN TRY
   SET NOCOUNT ON;
-  -- Normalize @Debug to uppercase to avoid case-sensitivity issues
   SET @Debug = UPPER(@Debug);
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -76,7 +75,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
+  DECLARE @EventReturnCode NVARCHAR(1000);
   SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
@@ -110,11 +109,10 @@ BEGIN TRY
       SET @SuccessIndicator = 'Y';
       SET @LogMessage = 'Batch with Code ''' + @BatchCode + ''' was found.'
       SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Batch Found', @LogMessage, @MessageLog)
-
   END
   ELSE
   BEGIN
-      SET @SuccessIndicator = 'N';
+    SET @SuccessIndicator = 'N';
     SET @LogMessage = 'No Batch with Code ''' + @BatchCode + ''' was found.'
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Error Message', @LogMessage, @MessageLog)
   END
@@ -123,8 +121,30 @@ BEGIN TRY
  * Return Resultset
  ******************************************************************************/
 
-  SELECT *
+  SELECT TOP 1
+    [BATCH_ID],
+    [BATCH_CODE],
+    [BATCH_TYPE],
+    [FREQUENCY_CODE],
+    [ACTIVE_INDICATOR],
+    [BATCH_DESCRIPTION]
   FROM @Results;
+
+/*******************************************************************************
+ * Return Output Parameter @BatchDetails
+ ******************************************************************************/
+
+  SELECT @BatchDetails = (
+    SELECT TOP 1
+      [BATCH_ID],
+      [BATCH_CODE],
+      [BATCH_TYPE],
+      [FREQUENCY_CODE],
+      [ACTIVE_INDICATOR],
+      [BATCH_DESCRIPTION]
+    FROM @Results
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+  );
 
 /*******************************************************************************
  * EndOfProcedure Label

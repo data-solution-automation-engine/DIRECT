@@ -63,7 +63,7 @@ BEGIN
   PRINT '''[omd_metadata].[GetFrameworkVersion]'' function exists, script assumes this is an incremental deploy on v2+'
 
   -- If all is ok, get the current version of the database
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
 
   IF @DirectVersion IS NULL
   BEGIN
