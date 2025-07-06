@@ -1,32 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0">
+<Project DefaultTargets="Build">
   <Sdk Name="Microsoft.Build.Sql" Version="2.0.0-preview.2" />
   <PropertyGroup>
-    <!-- version definitions and reference dacpac names:
-      https://github.com/microsoft/dacfx -->
-    <Name>Direct_Framework</Name>
-    <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
-    <OutputType>Database</OutputType>
-    <RootNamespace>Direct_Framework</RootNamespace>
+    <!-- version definitions, dsp monikers and reference dacpac names:
+      https://github.com/microsoft/dacfx
+      https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/concepts/target-platform
+      Microsoft.Build.SQL Sdk package versions:
+      https://www.nuget.org/packages/Microsoft.Build.Sql#versions-body-tab
+      Dotnet Sdk for building project:
+      https://dotnet.microsoft.com/en-us/download
+      Properties for this property group:
+      https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/concepts/project-properties
+    -->
     <AssemblyName>Direct_Framework</AssemblyName>
-    <ModelCollation>1033,CS</ModelCollation>
-    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
-    <!-- <DeployToDatabase>True</DeployToDatabase>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <SqlServerVerification>False</SqlServerVerification>
-    <IncludeCompositeObjects>True</IncludeCompositeObjects>
-    <TargetDatabaseSet>True</TargetDatabaseSet> -->
+    <CompatibilityMode>160</CompatibilityMode>
+    <DacDescription>https://github.com/data-solution-automation-engine/DIRECT</DacDescription>
+    <DacVersion>2.1.0</DacVersion>
     <DefaultCollation>SQL_Latin1_General_CP1_CS_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
-    <DacDescription>https://github.com/data-solution-automation-engine/DIRECT</DacDescription>
-    <!-- <GenerateCreateScript>False</GenerateCreateScript> -->
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
-    <!-- <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState> -->
-    <CompatibilityMode>160</CompatibilityMode>
+    <ModelCollation>1033,CS</ModelCollation>
+    <Name>Direct_Framework</Name>
+    <OutputType>Database</OutputType>
+    <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
+    <RootNamespace>Direct_Framework</RootNamespace>
     <RunSqlCodeAnalysis>True</RunSqlCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <!-- Fail on warnings when building a Release -->
+    <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
+    <None Include="StaticCodeAnalysis.SuppressMessages.xml" />
     <None Include="Stored Procedures\omd.EndDating.sql" />
     <None Include="DeploymentScripts\4-PostDacpacDeployment\PostDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -73,11 +81,12 @@
     <None Include="BuildTools\PreBuild.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" Version="2.0.0">
+    <!-- The ErikEJ packages currently has limited business rules and no mute function for them -->
+    <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->
-    <!-- <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" Version="2.0.0">
+    <!-- <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->
@@ -96,10 +105,21 @@
     <Folder Include="DeploymentScripts\2-PreDeployment\" />
     <Folder Include="BuildTools\" />
   </ItemGroup>
-  <Target Name="RunPreBuild" BeforeTargets="PreBuildEvent">
+
+  <Target Name="RunPreBuild" BeforeTargets="Build">
     <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PreBuild.cmd&quot;" />
   </Target>
-  <Target Name="RunPostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="RunPostBuild" AfterTargets="Build">
     <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PostBuild.cmd&quot;" />
   </Target>
+  <!-- This below deletion is only needed in sql sdk version 1.0.0 when building
+       in Visual Studio w dotnet 8/9 atm
+       in dotnet 10 and sql sdk 2.0.0 preview it is solved, but that comes with other errors atm.
+       When dotnet 10 and sql sdk v2 is released this should be revisited/removed,
+       else there will probably be other build errors... -->
+  <!--<Target
+  Name="DeleteProjectAssetsJson" BeforeTargets="BeforeBuild"
+  Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <Delete Files="$(MSBuildProjectDirectory)\obj\project.assets.json" />
+  </Target>-->
 </Project>
