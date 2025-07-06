@@ -86,5 +86,10 @@ WITH TableCheckCTE AS
     )) AS ERROR_TOTAL
   FROM ErrorEvaluation
 )
-SELECT * FROM SingleErrorEvaluation
+SELECT
+  TABLE_CATALOG,
+  TABLE_NAME,
+  TABLE_SCHEMA,
+  ERROR_TOTAL
+FROM SingleErrorEvaluation
 WHERE ERROR_TOTAL <> ''

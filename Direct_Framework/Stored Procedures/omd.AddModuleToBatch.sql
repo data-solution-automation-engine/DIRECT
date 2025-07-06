@@ -28,8 +28,8 @@
 DECLARE @BatchId INT
 
 EXEC [omd].[AddModuleToBatch]
-  -- Mandatory parameters
-  @ModuleCode = 'MyNewModule'
+   -- Mandatory parameters
+   @ModuleCode = 'MyNewModule'
   ,@BatchCode = 'MyNewBatch'
   -- Optional parameters
   ,@ActiveIndicator = 'Y'
@@ -85,7 +85,7 @@ BEGIN TRY
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
+  DECLARE @EventReturnCode NVARCHAR(1000);
   SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************

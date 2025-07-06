@@ -7,11 +7,31 @@ The framework provides mechanism to administer the individual processes or workf
 This repository contains the following:
 
 * [Data Model](https://github.com/data-solution-automation-engine/DIRECT/blob/main/Documentation/Model.md)
+* [Documentation](https://github.com/data-solution-automation-engine/DIRECT/blob/main/Documentation/Documentation.md)
 * Tables and scripts (DDL and DML)
 * Examples and support scripts
-* [Documentation](https://github.com/data-solution-automation-engine/DIRECT/blob/main/Documentation/Documentation.md)
 * Testing script to validate any framework changes
 
 ## Learn more
 
-* GitHub information:  [https://github.com/data-solution-automation-engine](https://github.com/data-solution-automation-engine)
+* This repository belongs to this parent GitHub: [https://github.com/data-solution-automation-engine](https://github.com/data-solution-automation-engine)
+
+## Getting started - quick guide
+
+Podman is required for full end-to-end unit testing and regression testing.
+
+From the terminal, run the following commands:
+
+```azurepowershell
+winget install RedHat.Podman
+winget install RedHat.Podman-Desktop
+```
+
+The following command will build all solutions inside, and downstream of, the directory that it is run in. Running in the root of this repository will build all solutions including the DIRECT framework and the tests.
+
+```azurepowershell
+dotnet build
+```
+
+> [!NOTE]
+> Additional details are available in the [installation](./Documentation/Installation.md) section.
