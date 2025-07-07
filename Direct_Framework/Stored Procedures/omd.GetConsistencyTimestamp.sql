@@ -39,15 +39,15 @@ PRINT @ConsistencyDateTime;
 
  *******************************************************************************
  *
- *******************************************************************************/
+ ******************************************************************************/
 
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   (
   -- Mandatory parameters
-  @TableList                 NVARCHAR(MAX)
+   @TableList                NVARCHAR(MAX)
   -- Optional parameters
   ,@MeasurementDateTime      DATETIME2(7)  = NULL
-  ,@LoadWindowAttributeName  NVARCHAR(255)  = 'LOAD_DATETIME'
+  ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
   ,@Debug                    CHAR(1)       = 'N'
   -- Output parameters
   ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
@@ -56,6 +56,15 @@ CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
 )
 AS
 BEGIN TRY
+
+  /* Debug block */
+  --DECLARE @TableList NVARCHAR(MAX) = '[200_Integration_layer].vdw.HUB_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER_ADDITIONAL_DETAILS';
+  --DECLARE @MeasurementDateTime DATETIME2(7) = SYSUTCDATETIME();
+  --DECLARE @LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP';
+  --DECLARE @Debug CHAR(1) = 'Y';
+  --DECLARE @ConsistencyDateTime DATETIME2(7) = NULL;
+  --DECLARE @SuccessIndicator CHAR(1) = 'N';
+  --DECLARE @MessageLog NVARCHAR(MAX) = NULL;
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -129,17 +138,15 @@ END
   WITH
   cteSplits
   (
-    starting_position
+     starting_position
     ,end_position
   )
   AS
   (
-          SELECT
-        CAST(1 AS BIGINT)
+    SELECT
+      CAST(1 AS BIGINT)
       ,CHARINDEX(',', @TableList)
-
     UNION ALL
-
       SELECT
         end_position + 1
         ,charindex(',', @TableList, end_position + 1)

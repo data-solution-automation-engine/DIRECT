@@ -7,7 +7,7 @@
  * DIRECT model v2.0
  *
  * Purpose:
- *   Inserts an event log entry capturing failures or other noteworthy events.
+ *   Inserts a single event log entry capturing failures or other noteworthy events.
  *
  * Input:
  *   - Batch Instance Id (0 if not set)
@@ -45,7 +45,7 @@ CREATE PROCEDURE [omd].[InsertIntoEventLog]
   @BatchInstanceId    BIGINT          = 0,
   @EventTimestamp     DATETIME2       = NULL,
   @EventTypeCode      NVARCHAR(100)   = '2',
-  @EventReturnCode    NVARCHAR(100)  = 'N/A',
+  @EventReturnCode    NVARCHAR(100)   = 'N/A',
   @ErrorBitmap        NUMERIC(20,0)   = 0,
   @Debug              CHAR(1)         = 'N',
   -- Output parameters
