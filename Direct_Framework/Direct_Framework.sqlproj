@@ -13,15 +13,15 @@
       https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/concepts/project-properties
     -->
     <AssemblyName>Direct_Framework</AssemblyName>
-    <CompatibilityMode>160</CompatibilityMode>
+    <CompatibilityMode>$(CompatibilityMode)</CompatibilityMode>
     <DacDescription>https://github.com/data-solution-automation-engine/DIRECT</DacDescription>
-    <DacVersion>2.1.0</DacVersion>
-    <DefaultCollation>SQL_Latin1_General_CP1_CS_AS</DefaultCollation>
+    <DacVersion>$(DacVersion)</DacVersion>
+    <DefaultCollation>$(DefaultCollation)</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
-    <ModelCollation>1033,CS</ModelCollation>
+    <ModelCollation>$(ModelCollation)</ModelCollation>
     <Name>Direct_Framework</Name>
     <OutputType>Database</OutputType>
     <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
@@ -90,7 +90,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->
-    <PackageReference Include="Microsoft.SqlServer.Dacpacs.Azure.Master">
+    <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" >
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>

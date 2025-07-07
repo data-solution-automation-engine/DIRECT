@@ -97,7 +97,6 @@ BEGIN TRY
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
   DECLARE @EventReturnCode NVARCHAR(100);
-   -- Ensure the process starts as not successful, so that is updated accordingly when it is.
 
 /*******************************************************************************
  * Start of main process
@@ -111,11 +110,9 @@ BEGIN TRY
   IF @ModuleId IS NULL
   BEGIN
     SET @LogMessage = 'The Module Id was not found for Module Code ''' + @ModuleCode + '''';
-    EXEC [omd].[InsertIntoEventLog] @EventDetail = @LogMessage;
+    Set @EventDetail = LEFT(@LogMessage, 4000);
+    EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter Error', @LogMessage, @MessageLog);
-
-    -- TODO: THROW OR GOTO HERE?
-    THROW 50000, @LogMessage, 1;
 
     GOTO FailureEndOfProcedure
   END
@@ -164,12 +161,12 @@ BEGIN TRY
     'Abort',              -- Processing Indicator
     @BatchInstanceId,     -- Batch Instance Id
     @ExecutionContext,    -- Runtime Module Execution System Id or similar
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS DECIMAL(38,0)),
     @QueryHash
   );
 

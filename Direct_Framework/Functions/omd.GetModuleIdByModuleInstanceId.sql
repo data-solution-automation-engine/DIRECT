@@ -1,7 +1,7 @@
 
 CREATE FUNCTION [omd].[GetModuleIdByModuleInstanceId]
 (
-  @ModuleInstanceId INT -- An instance of the module.
+  @ModuleInstanceId BIGINT -- An instance of the module.
 )
 RETURNS INT AS
 

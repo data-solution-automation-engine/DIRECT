@@ -9,4 +9,7 @@
     <SuppressedFile FilePath="Stored Procedures\omd.InsertIntoEventLog.sql">
         <SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0014" />
     </SuppressedFile>
+    <SuppressedFile FilePath="Stored Procedures\omd.UpdateModuleInstance.sql">
+        <SuppressedRule Category="Microsoft.Rules.Data" RuleId="SR0014" />
+    </SuppressedFile>
 </StaticCodeAnalysis>

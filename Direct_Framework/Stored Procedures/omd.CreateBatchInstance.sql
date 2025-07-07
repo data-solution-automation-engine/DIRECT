@@ -84,7 +84,7 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ExecutionContext', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventDetail NVARCHAR(4000) = N'';
   DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
@@ -101,7 +101,7 @@ BEGIN TRY
   BEGIN
     SET @LogMessage = N'The Batch Id was not found for Batch Code ''' + @BatchCode + '''';
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-    SET @EventDetail = @LogMessage
+    SET @EventDetail = LEFT(@LogMessage, 4000);
     EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
 
     GOTO FailureEndOfProcedure
@@ -109,7 +109,7 @@ BEGIN TRY
   END
 
   SET @LogMessage =  N'For Batch Code ''' + @BatchCode + ''' the following Batch Id was found in omd.BATCH: ' + CONVERT(NVARCHAR(10), @BatchId);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
   BEGIN TRY
 
     INSERT INTO omd.BATCH_INSTANCE
@@ -131,12 +131,12 @@ BEGIN TRY
       N'Proceed',         -- Next Run Indicator
       N'Abort',           -- Processing Indicator
       @ExecutionContext   -- Execution Context, runtime information
-    )
+    );
 
     SET @BatchInstanceId = SCOPE_IDENTITY();
 
     SET @LogMessage = 'A new Batch Instance Id ''' + CONVERT(NVARCHAR(10), @BatchInstanceId) + ''' has been created for Batch Code: ' + @BatchCode;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     GOTO SuccessEndOfProcedure
 
   END TRY
@@ -144,17 +144,17 @@ BEGIN TRY
   BEGIN CATCH
 
     SET @LogMessage = N'A technical error was encountered';
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
     -- Logging
     SET @EventDetail = ERROR_MESSAGE();
     SET @EventReturnCode = ERROR_NUMBER();
 
     SET @LogMessage = @EventDetail;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Message', @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Message', @LogMessage, @MessageLog);
 
     SET @LogMessage = @EventReturnCode;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Return Code', @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Return Code', @LogMessage, @MessageLog);
 
     EXEC [omd].[InsertIntoEventLog]
       @BatchInstanceId = @BatchInstanceId,
@@ -167,19 +167,19 @@ BEGIN TRY
 
   FailureEndOfProcedure:
 
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
 
   SET @LogMessage = N'' + @SpName + ' ended in failure.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
   GOTO EndOfProcedure
 
   SuccessEndOfProcedure:
 
-  SET @SuccessIndicator = 'Y'
+  SET @SuccessIndicator = 'Y';
 
   SET @LogMessage = N'' + @SpName + ' completed successfully.';
-  SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
   GOTO EndOfProcedure
 
@@ -189,11 +189,11 @@ BEGIN TRY
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   SET @LogMessage = @EndTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog);
   SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog);
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   IF @Debug = 'Y'
   BEGIN
@@ -203,9 +203,9 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   DECLARE @ErrorMessage NVARCHAR(4000);
   DECLARE @ErrorSeverity INT;
@@ -224,14 +224,14 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
+    PRINT 'Error in '''       + @SpName + '''';
+    PRINT 'Error Message: '   + @ErrorMessage;
+    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+    PRINT 'Error Procedure: ' + @ErrorProcedure;
+    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
     -- Spool message log
     EXEC [omd].[PrintMessageLog] @MessageLog;

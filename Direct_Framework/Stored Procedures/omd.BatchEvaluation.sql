@@ -217,17 +217,16 @@ BEGIN TRY
   );
 
   INSERT @PreviousBatchInstanceTable
-  SELECT * FROM [omd].[GetPreviousBatchInstanceDetails](@BatchId)
-
+  SELECT PREVIOUS_EXECUTION_STATUS_CODE, PREVIOUS_NEXT_RUN_STATUS FROM [omd].[GetPreviousBatchInstanceDetails](@BatchId);
   SELECT @LastExecutionStatusCode = LastExecutionStatusCode FROM @PreviousBatchInstanceTable;
 
-  SET @LogMessage = 'The previous Batch Instance Execution Status Code is ' + @LastExecutionStatusCode
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'The previous Batch Instance Execution Status Code is ' + @LastExecutionStatusCode;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
   SELECT @LastNextRunStatusCode = LastNextRunStatusCode FROM @PreviousBatchInstanceTable;
 
-  SET @LogMessage = 'The previous Batch Instance Next Run Status Code is ' + @LastNextRunStatusCode
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'The previous Batch Instance Next Run Status Code is ' + @LastNextRunStatusCode;
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
   -- Proceed
   -- The execution can proceed if the previous run for the Batch (the previous Batch Instance) was without failure, was not set to rerun and was not cancelled.

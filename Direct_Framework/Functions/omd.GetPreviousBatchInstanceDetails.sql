@@ -1,13 +1,13 @@
+-- =============================================
+-- Function:    GetPreviousBatchInstanceDetails
+-- Description: TODO: tba...
+-- =============================================
+
 CREATE FUNCTION [omd].[GetPreviousBatchInstanceDetails]
 (
   @BatchId INT
 )
 RETURNS TABLE AS
-
--- =============================================
--- Function:    GetPreviousBatchInstanceDetails
--- Description: TODO: tba...
--- =============================================
 
 RETURN
 (

@@ -26,7 +26,7 @@
  *
  *******************************************************************************
 
-DECLARE @Result VARCHAR(10);
+DECLARE @Result NVARCHAR(10);
 EXEC [omd].[RunBatch]
   @BatchCode = '<>',
   @Result = @Result OUTPUT;

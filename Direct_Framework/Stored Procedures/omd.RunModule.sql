@@ -28,7 +28,7 @@
  *
  *******************************************************************************
 
-DECLARE @SuccessIndicator VARCHAR(10);
+DECLARE @SuccessIndicator CHAR(1);
 EXEC [omd].[RunModule]
   @ModuleCode = '<>',
   @Query = '<>'
@@ -140,7 +140,7 @@ BEGIN TRY
   END
 
   -- Module Evaluation
-  DECLARE @InternalProcessingStatusCode VARCHAR(10);
+  DECLARE @InternalProcessingStatusCode NVARCHAR(100);
 
   EXEC [omd].[ModuleEvaluation]
     @ModuleInstanceId               = @ModuleInstanceId,
@@ -157,7 +157,7 @@ BEGIN TRY
     SET @Query = REPLACE(@Query,'@ModuleInstanceId', @ModuleInstanceId);
 
     -- Run the code
-    DECLARE @RowCount NUMERIC(38);
+    DECLARE @RowCount NUMERIC(38,0);
     EXEC(@Query);
     SET @RowCount = @@ROWCOUNT;
 

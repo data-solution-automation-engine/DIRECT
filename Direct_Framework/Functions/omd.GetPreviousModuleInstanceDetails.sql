@@ -1,10 +1,3 @@
-CREATE FUNCTION [omd].[GetPreviousModuleInstanceDetails]
-(
-  @ModuleId INT,
-  @BatchId INT
-)
-RETURNS TABLE AS
-
 /*******************************************************************************
  * [omd].[GetPreviousModuleInstanceDetails]
  *******************************************************************************
@@ -37,6 +30,13 @@ RETURNS TABLE AS
  * Usage:
  *
  *******************************************************************************/
+
+CREATE FUNCTION [omd].[GetPreviousModuleInstanceDetails]
+(
+  @ModuleId INT,
+  @BatchId INT
+)
+RETURNS TABLE AS
 
 RETURN
 (

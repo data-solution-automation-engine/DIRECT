@@ -87,9 +87,11 @@ BEGIN TRY
   SET @LogMessage = @ModuleInstanceIdColumnName;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceIdColumnName', @LogMessage, @MessageLog)
 
-    -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
+  -- Process variables
+  DECLARE @EventDetail NVARCHAR(4000) = N'';
   DECLARE @EventReturnCode NVARCHAR(100);
+  DECLARE @StartValueDate DATETIME2;
+  DECLARE @EndValueDate DATETIME2;
 
 /*******************************************************************************
  * Start of main process
@@ -104,10 +106,12 @@ BEGIN TRY
   -- Exception handling - The Module Id cannot be NULL
   IF @ModuleId IS NULL
   BEGIN
-    SET @EventDetail = 'The Module Id was not found for Module Instance Id ''' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + '''';
+    SET @LogMessage = 'The Module Id was not found for Module Instance Id ''' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + '''';
+    Set @EventDetail = LEFT(@LogMessage, 4000);
     EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter Error', @LogMessage, @MessageLog);
 
-    THROW 50000, @EventDetail, 1;
+    GOTO FailureEndOfProcedure
   END
 
   -- Figure out what the source is.
@@ -222,8 +226,10 @@ WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';
   EXEC (@SqlStatement);
 
   -- Retrieve values for return.
-  SELECT @StartValue = [omd].[GetModuleLoadWindowValue](@ModuleId, 1);
-  SELECT @EndValue = [omd].[GetModuleLoadWindowValue](@ModuleId, 2);
+  SELECT @StartValueDate = [omd].[GetModuleLoadWindowValue](@ModuleId, 1);
+  SELECT @EndValueDate = [omd].[GetModuleLoadWindowValue](@ModuleId, 2);
+  SET @StartValue = CONVERT(NVARCHAR(MAX), @StartValueDate, 126);
+  SET @EndValue = CONVERT(NVARCHAR(MAX), @EndValueDate, 126);
 
   -- End of procedure label
   EndOfProcedure:

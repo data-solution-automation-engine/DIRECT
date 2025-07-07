@@ -23,7 +23,7 @@
  *
  *******************************************************************************
 
-DECLARE @InternalProcessingStatusCode VARCHAR(10);
+DECLARE @InternalProcessingStatusCode NVARCHAR(100);
 
 EXEC [omd].[ModuleEvaluation]
   @ModuleInstanceId = <Id>,
@@ -40,10 +40,10 @@ CREATE PROCEDURE [omd].[ModuleEvaluation]
   -- Mandatory parameters
   @ModuleInstanceId             BIGINT,
   -- Optional parameters
-  @ModuleInstanceIdColumnName   VARCHAR(1000) = 'MODULE_INSTANCE_ID',
+  @ModuleInstanceIdColumnName   NVARCHAR(1000) = 'MODULE_INSTANCE_ID',
   @Debug                        CHAR(1)       = 'N',
   -- Output parameters
-  @InternalProcessingStatusCode NVARCHAR(10)  = NULL OUTPUT,
+  @InternalProcessingStatusCode NVARCHAR(100)  = NULL OUTPUT,
   @SuccessIndicator             CHAR(1)       = 'N' OUTPUT,
   @MessageLog                   NVARCHAR(MAX) = N'' OUTPUT
 )
@@ -112,8 +112,8 @@ BEGIN TRY
     Multiple active instances indicate corruption in the DIRECT repository.
   */
 
-  SET @LogMessage = 'Beginning of active instance checks.'
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Beginning of active instance checks.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
   -- Check for the lowest instance of the Module Instances since the process must continue if it's the first of the started instances for the particular Module.
   SELECT @MinimumActiveModuleInstance = MIN(MODULE_INSTANCE_ID)
@@ -130,11 +130,11 @@ BEGIN TRY
      AND MODULE_INSTANCE_ID <> @ModuleInstanceId
   GROUP BY MODULE_ID
 
-  SET @LogMessage = 'The number of active Module Instances is '+ COALESCE(CONVERT(NVARCHAR(10), @ActiveModuleInstanceCount), '0') + '.'
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'The number of active Module Instances is ' + COALESCE(CONVERT(NVARCHAR(10), @ActiveModuleInstanceCount), '0') + '.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
-  SET @LogMessage = 'The minimum active Module Instance Id is '+ COALESCE(CONVERT(NVARCHAR(10), @MinimumActiveModuleInstance), '0') + '.'
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'The minimum active Module Instance Id is ' + COALESCE(CONVERT(NVARCHAR(10), @MinimumActiveModuleInstance), '0') + '.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
   IF ((@ActiveModuleInstanceCount IS NULL) OR (@ActiveModuleInstanceCount IS NOT NULL AND @MinimumActiveModuleInstance = @ModuleInstanceId))
   BEGIN
@@ -282,7 +282,16 @@ BEGIN TRY
   );
 
   INSERT @PreviousModuleInstanceTable
-  SELECT * FROM [omd].[GetPreviousModuleInstanceDetails](@ModuleId, @BatchId)
+  SELECT
+     [LastBatchInstanceID]
+    ,[LastModuleInstanceID]
+    ,[LastStartTimestamp]
+    ,[LastEndTimestamp]
+    ,[LastExecutionStatus]
+    ,[LastNextExecutionFlag]
+    ,[LastModuleInstanceIDList]
+    ,[ActiveIndicator]
+  FROM [omd].[GetPreviousModuleInstanceDetails](@ModuleId, @BatchId)
 
   /* Internal debug only
   SELECT * FROM @PreviousModuleInstanceTable;

@@ -1,10 +1,3 @@
-CREATE FUNCTION [omd].[GetModuleLoadWindowValue]
-(
-  @ModuleId INT,
-  @start_or_end TINYINT
-)
-RETURNS DATETIME2(7) AS
-
 -- =============================================
 -- Function:    The GetModuleLoadWindowValue retrieves the start or end value as currently available in the source control table.
 -- Description: The from part of the load window can be selected by providing the parameter value 1,
@@ -20,6 +13,13 @@ RETURNS DATETIME2(7) AS
 --              Load windows can be created via Stored Procedure [omd].[CreateLoadWindow]
 --
 -- =============================================
+
+CREATE FUNCTION [omd].[GetModuleLoadWindowValue]
+(
+  @ModuleId INT,
+  @start_or_end TINYINT
+)
+RETURNS DATETIME2(7) AS
 
 BEGIN
   DECLARE @result DATETIME2(7)

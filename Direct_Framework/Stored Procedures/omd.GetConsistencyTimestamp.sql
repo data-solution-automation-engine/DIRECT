@@ -44,13 +44,13 @@ PRINT @ConsistencyDateTime;
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   (
   -- Mandatory parameters
-  @TableList                VARCHAR(MAX)
+  @TableList                 NVARCHAR(MAX)
   -- Optional parameters
   ,@MeasurementDateTime      DATETIME2(7)  = NULL
-  ,@LoadWindowAttributeName  VARCHAR(255)  = 'LOAD_DATETIME'
+  ,@LoadWindowAttributeName  NVARCHAR(255)  = 'LOAD_DATETIME'
   ,@Debug                    CHAR(1)       = 'N'
   -- Output parameters
-  ,@ConsistencyDateTime      DATETIME2(7)  = NULL OUTPUT
+  ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
   ,@SuccessIndicator         CHAR(1)       = 'N' OUTPUT
   ,@MessageLog               NVARCHAR(MAX) = N'' OUTPUT
 )
@@ -77,7 +77,7 @@ BEGIN TRY
   -- Log parameters
   SET @LogMessage = @TableList;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @TableList', @LogMessage, @MessageLog)
-  SET @LogMessage = @MeasurementDateTime;
+  SET @LogMessage = CONVERT(NVARCHAR(33), @MeasurementDateTime, 126);
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @MeasurementDateTime', @LogMessage, @MessageLog)
   SET @LogMessage = @LoadWindowAttributeName;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
@@ -116,7 +116,7 @@ END
   PRINT @TableList
 END
 
- DECLARE @TableNames TABLE (TABLE_NAME VARCHAR(MAX));
+ DECLARE @TableNames TABLE (TABLE_NAME NVARCHAR(MAX));
 
  -- Region table name interpretation
  BEGIN TRY
@@ -159,7 +159,7 @@ END
   )
 INSERT @TableNames
 SELECT
-  *
+  DATA_STORE_CODE
 FROM
   table_names
 
@@ -168,12 +168,12 @@ FROM
   PRINT 'The following rows are found interpreting the table array.'
 
   DECLARE @xmltmp XML = (
-     SELECT
-    *
-  FROM
-    @TableNames
-  FOR XML PATH('')
-     )
+    SELECT
+      TABLE_NAME
+    FROM
+      @TableNames
+    FOR XML PATH('')
+ )
 
   PRINT CONVERT(NVARCHAR(MAX), @xmltmp)
 END
@@ -181,31 +181,34 @@ END
 
  BEGIN CATCH
   -- Logging
-  SET @EventDetail = 'Error occurred when transposing table array. The error is.' + ERROR_MESSAGE();
+  SET @EventDetail = 'Error occurred when transposing table array. The error is: ' + ERROR_MESSAGE();
 
   THROW 50000, @EventDetail, 1;
  END CATCH
 
  -- End of table interpretation
  -- Load window interpretation
- IF @Debug = 'Y'
-  PRINT 'Commencing load window retrieval';
+  IF @Debug = 'Y'
+  BEGIN
+    PRINT 'Commencing load window retrieval';
+  END
 
- DECLARE @LoadWindows TABLE (INTERVAL_END_TIMESTAMP_ORDER    INT
-  ,MODULE_CODE                     VARCHAR(256)
-  ,START_VALUE                     DATETIME2(7)
-  ,END_VALUE                       DATETIME2(7)
-  ,DATA_OBJECT_SOURCE              VARCHAR(256)
-  ,DATA_OBJECT_TARGET              VARCHAR(256)
-  ,EXECUTION_STATUS_CODE           CHAR(1)
-  ,CHANGE_DELTA_INDICATOR          INT
-  ,MODULE_INSTANCE_ID              INT
-  ,MODULE_ID                       INT
-  ,CHANGE_FOR_LOGICAL_SOURCE_GROUP CHAR(1));
+  DECLARE @LoadWindows TABLE (
+     INTERVAL_END_TIMESTAMP_ORDER    INT
+    ,MODULE_CODE                     NVARCHAR(1000)
+    ,START_VALUE                     DATETIME2
+    ,END_VALUE                       DATETIME2
+    ,DATA_OBJECT_SOURCE              NVARCHAR(1000)
+    ,DATA_OBJECT_TARGET              NVARCHAR(1000)
+    ,EXECUTION_STATUS_CODE           NVARCHAR(100)
+    ,CHANGE_DELTA_INDICATOR          INT
+    ,MODULE_INSTANCE_ID              BIGINT
+    ,MODULE_ID                       INT
+    ,CHANGE_FOR_LOGICAL_SOURCE_GROUP CHAR(1)
+  );
 
- BEGIN TRY
-  WITH
-  LoadWindowCte
+BEGIN TRY
+  WITH LoadWindowCte
   AS
   (
     SELECT
@@ -222,7 +225,7 @@ END
       ,MODULE_INSTANCE_ID
       ,MODULE_ID
     FROM
-      (
+    (
     SELECT
         module.MODULE_CODE
         ,sct.START_VALUE
@@ -285,11 +288,21 @@ FROM
   -- The exception to manage is when other sources are reported up-to-date (no delta change indicators). In this case we must check if there are any waiting records in the PSA.
   IF @Debug = 'Y'
   BEGIN
-  PRINT 'The following rows are found interpreting the table array.'
+    PRINT 'The following rows are found interpreting the table array.'
 
   DECLARE @xmltmp2 XML = (
      SELECT
-    *
+    INTERVAL_END_TIMESTAMP_ORDER
+    ,MODULE_CODE
+    ,START_VALUE
+    ,END_VALUE
+    ,DATA_OBJECT_SOURCE
+    ,DATA_OBJECT_TARGET
+    ,EXECUTION_STATUS_CODE
+    ,CHANGE_DELTA_INDICATOR
+    ,MODULE_INSTANCE_ID
+    ,MODULE_ID
+    ,CHANGE_FOR_LOGICAL_SOURCE_GROUP
   FROM
     @LoadWindows
   FOR XML PATH('')
@@ -420,7 +433,7 @@ WHERE INTERVAL_END_TIMESTAMP_ORDER = 1
     IF @Debug = 'Y'
      PRINT @localSqlStatement;
 
-    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT
+    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT -- DevSkim: ignore DS224000
 
     IF @Debug = 'Y'
     BEGIN
@@ -526,7 +539,7 @@ BEGIN CATCH
   DECLARE @ErrorLine INT;
 
   SELECT
-  @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
+   @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
   ,@ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              )
   ,@ErrorState     = COALESCE(ERROR_STATE(),       -1              )
   ,@ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  )
@@ -535,14 +548,14 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-  PRINT 'Error in '''       + @SpName + ''''
-  PRINT 'Error Message: '   + @ErrorMessage
-  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-  PRINT 'Error Procedure: ' + @ErrorProcedure
-  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-  PRINT 'SuccessIndicator: '+ @SuccessIndicator
+  PRINT 'Error in '''       + @SpName + '''';
+  PRINT 'Error Message: '   + @ErrorMessage;
+  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+  PRINT 'Error Procedure: ' + @ErrorProcedure;
+  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+  PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
   -- Spool message log
   EXEC [omd].[PrintMessageLog] @MessageLog;
@@ -556,5 +569,4 @@ END
     @EventDetail       = @EventDetail,
     @EventReturnCode   = @EventReturnCode;
 
-  THROW
 END CATCH

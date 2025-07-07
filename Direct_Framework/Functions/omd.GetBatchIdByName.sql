@@ -18,6 +18,6 @@ BEGIN
     WHERE b.BATCH_CODE = @BatchCode
   )
 
-  RETURN @BatchId
+  RETURN @BatchId;
 
 END

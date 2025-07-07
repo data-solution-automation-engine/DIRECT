@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
+    <!-- Central Direct Framework versioning -->
+    <Version>2.1.0-preview.1</Version>
+    <DacVersion>$(Version)</DacVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Central SQL Server target versioning -->
+    <!-- 160 = SQL Server 2022 -->
+    <CompatibilityMode>160</CompatibilityMode>
+    <DefaultCollation>SQL_Latin1_General_CP1_CS_AS</DefaultCollation>
+    <ModelCollation>1033,CS</ModelCollation>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Shared project properties -->
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
     <EnableLegacyVSTest>false</EnableLegacyVSTest>
+    <EnforceConsistentLineEndings>true</EnforceConsistentLineEndings>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
-    <NuGetAudit>false</NuGetAudit>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NuGetAudit>true</NuGetAudit>
+    <Nullable>enable</Nullable>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/data-solution-automation-engine/DIRECT</RepositoryUrl>
+    <TestResultsDirectory>$(MSBuildProjectDirectory)\TestResults</TestResultsDirectory>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
     <UseMicrosoftTestingPlatform>true</UseMicrosoftTestingPlatform>
   </PropertyGroup>
 </Project>

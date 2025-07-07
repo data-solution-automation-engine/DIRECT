@@ -1,6 +1,6 @@
 CREATE FUNCTION [omd].[GetBatchIdByBatchInstanceId]
 (
-  @BatchInstanceId INT -- An instance of the Batch.
+  @BatchInstanceId BIGINT -- An instance of the Batch.
 )
 RETURNS INT AS
 
@@ -10,7 +10,6 @@ RETURNS INT AS
 -- =============================================
 
 BEGIN
-  -- Declare ouput variable
 
   DECLARE @BatchId INT =
   (
@@ -19,8 +18,6 @@ BEGIN
     WHERE BatchInstance.BATCH_INSTANCE_ID = @BatchInstanceId
   )
 
-  -- SET @BatchId = COALESCE(@BatchId,0)    -- << line removed to catch NULL for incorrect @BatchInstanceId
+  RETURN @BatchId;
 
-  -- Return the result of the function
-  RETURN @BatchId
 END
