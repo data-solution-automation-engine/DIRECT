@@ -133,7 +133,17 @@ BEGIN TRY
  * Return Resultset
  ******************************************************************************/
 
-  SELECT *
+  SELECT
+     [MODULE_ID]
+    ,[MODULE_CODE]
+    ,[MODULE_TYPE]
+    ,[DATA_OBJECT_SOURCE]
+    ,[DATA_OBJECT_TARGET]
+    ,[AREA_CODE]
+    ,[FREQUENCY_CODE]
+    ,[ACTIVE_INDICATOR]
+    ,[MODULE_DESCRIPTION]
+    ,[EXECUTABLE]
   FROM @Results;
 
 /*******************************************************************************
