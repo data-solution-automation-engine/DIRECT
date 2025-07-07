@@ -31,6 +31,6 @@ public class OrderProcedureTests
     var successIndicator = parameters.Get<string>("@SuccessIndicator");
     var messageLog = parameters.Get<string>("@MessageLog");
 
-    successIndicator.Should().Be("Y");
+    Assert.AreEqual("Y", successIndicator);
   }
 }

@@ -13,15 +13,8 @@
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
-    <!-- <PackageReference Include="Dapper" /> -->
+    <PackageReference Include="Dapper" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Direct_Framework\Direct_Framework.sqlproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Content</OutputItemType>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
   </ItemGroup>
 </Project>
