@@ -18,6 +18,21 @@ This repository contains the following:
 
 ## Getting started - quick guide
 
+> [!NOTE]
+> Additional details are available in the [installation](./Documentation/Installation.md) section.
+
+### Setting up the development environment
+
+Run the `SetupEnvironment.ps1` PowerShell script to ensure the local development environment is ready.
+
+The following command will build all solutions inside, and downstream of, the directory that it is run in. Running in the root of this repository will build all solutions including the DIRECT framework and the tests.
+
+```azurepowershell
+dotnet build
+```
+
+### Running Unit Tests
+
 Podman is required for full end-to-end unit testing and regression testing.
 
 From the terminal, run the following commands:
@@ -27,11 +42,4 @@ winget install RedHat.Podman
 winget install RedHat.Podman-Desktop
 ```
 
-The following command will build all solutions inside, and downstream of, the directory that it is run in. Running in the root of this repository will build all solutions including the DIRECT framework and the tests.
-
-```azurepowershell
-dotnet build
-```
-
-> [!NOTE]
-> Additional details are available in the [installation](./Documentation/Installation.md) section.
+The `RunTests.ps1` PowerShell script can be run to run the DIRECT unit and regression tests in the container.

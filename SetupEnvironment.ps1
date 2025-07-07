@@ -1,9 +1,7 @@
-# restore local dotnet tools
-# This restores the tools defined in `.config/dotnet-tools.json`
-
+# Restore the local dotnet tools as defined in `.config/dotnet-tools.json`
 dotnet tool restore
 
-# check for apps
+# Check for app availability, to assert if the apps are installed globally
 $apps = @(
     'dotnet-sqltest',
     'dotnet-dacpac',
@@ -20,8 +18,8 @@ foreach ($app in $apps) {
     }
 }
 
-# run update for all local tools
+# Run an update for all local tools
 dotnet tool update --all
 
-# run update on dotnet dependencies (NuGets)
+# Run update on dotnet dependencies (NuGets)
 dotnet outdated
