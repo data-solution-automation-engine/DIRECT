@@ -5,15 +5,15 @@
   <ItemGroup>
     <!-- SQL Server master database reference -->
     <PackageVersion Include="Microsoft.SqlServer.Dacpacs.Master" Version="160.2.4" />
-
     <!-- Other Packages -->
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="ErikEJ.DacFX.SqlServer.Rules" Version="2.0.0" />
     <PackageVersion Include="ErikEJ.DacFX.TSQLSmellSCA" Version="2.0.0" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.0-preview2.25178.5" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.1.47-preview" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.Telemetry" Version="1.7.3" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" Version="1.7.3" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.7.3" />
     <PackageVersion Include="Microsoft.Testing.Platform" Version="1.7.3" />
