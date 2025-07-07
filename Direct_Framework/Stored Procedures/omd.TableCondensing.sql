@@ -46,6 +46,9 @@ AS
 
 BEGIN TRY
 
+  -- Success indicator will be updated to 'Y' when successfully following the procedure pathways.
+  SET @SuccessIndicator = 'N';
+
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
@@ -84,9 +87,9 @@ BEGIN TRY
 
   -- Local procedure variables
   DECLARE @ColumnListDynamicSQL NVARCHAR(MAX);
-  DECLARE @ColumnList VARCHAR(MAX);
+  DECLARE @ColumnList NVARCHAR(MAX);
   DECLARE @KeyListDynamicSQL NVARCHAR(MAX);
-  DECLARE @KeyList VARCHAR(MAX);
+  DECLARE @KeyList NVARCHAR(MAX);
 
   -- Create a list of columns that need to be taken into evaluation for condensing (checksum)
   SET @ColumnListDynamicSQL = N'
@@ -151,10 +154,10 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Key List', @LogMessage, @MessageLog)
 
   -- Translating back
-  DECLARE @HashSnippet VARCHAR(MAX);
+  DECLARE @HashSnippet NVARCHAR(MAX);
   SET @HashSnippet = '';
 
-  DECLARE @ColumnName VARCHAR(MAX);
+  DECLARE @ColumnName NVARCHAR(MAX);
 
   DECLARE column_cursor CURSOR FOR
 
@@ -255,6 +258,9 @@ BEGIN TRY
   BEGIN
     EXEC [omd].[PrintMessageLog] @MessageLog;
   END
+
+  -- Reached the end of the procedure without issues.
+  SET @SuccessIndicator = 'Y'
 
 END TRY
 BEGIN CATCH
