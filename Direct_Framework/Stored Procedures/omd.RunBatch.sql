@@ -251,6 +251,7 @@ BEGIN TRY
   END
   ELSE
   BEGIN
+    SET @SuccessIndicator = 'Y'
     SET @Result = @InternalProcessingStatusCode;
   END
 

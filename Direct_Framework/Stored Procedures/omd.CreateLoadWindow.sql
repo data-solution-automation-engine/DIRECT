@@ -101,7 +101,7 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   -- Local variables (Module Id and source Data Object)
-  DECLARE @ModuleId BIGINT = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
+  DECLARE @ModuleId INT = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
 
   -- Exception handling - The Module Id cannot be NULL
   IF @ModuleId IS NULL
