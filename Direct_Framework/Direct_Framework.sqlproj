@@ -27,36 +27,22 @@
     <ProjectGuid>{b88ff268-22f9-4416-9e36-cfe598d243eb}</ProjectGuid>
     <RootNamespace>Direct_Framework</RootNamespace>
     <RunSqlCodeAnalysis>True</RunSqlCodeAnalysis>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <!-- Fail on warnings when building a Release -->
     <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Include="StaticCodeAnalysis.SuppressMessages.xml" />
-    <None Include="Stored Procedures\omd.EndDating.sql" />
-    <None Include="DeploymentScripts\4-PostDacpacDeployment\PostDacpacDeployment.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <!-- Dacpac internal pre and post-deployments -->
+    <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
+    <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Pre-deployment migration scripts -->
     <None Include="DeploymentScripts\1-PreDacpacDeployment\PreDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Module.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd.BATCH.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd.BATCH_INSTANCE.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE_INSTANCE.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.AREA.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.EVENT_TYPE.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.EXECUTION_STATUS.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.LAYER.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.NEXT_RUN_STATUS.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.INTERNAL_PROCESSING_STATUS.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Batch.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FREQUENCY.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FRAMEWORK_METADATA.sql" />
-    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE_INSTANCE_EXECUTED_CODE.sql" />
     <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-2.0.0.0.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -68,19 +54,73 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
+    <!-- Post-deployment maintenance scripts -->
+    <None Include="DeploymentScripts\4-PostDacpacDeployment\PostDacpacDeployment.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
-  </ItemGroup>
-  <ItemGroup>
+    <!-- auxiliary files and scripts not part of dacpac database package -->
+    <None Include="StaticCodeAnalysis.SuppressMessages.xml" />
+    <None Include="BuildScripts\PostBuild.cmd" />
+    <None Include="BuildScripts\PostBuild.ps1" />
+    <None Include="BuildScripts\PreBuild.cmd" />
+    <None Include="BuildScripts\PreBuild.ps1" />
     <None Include="DeploymentScripts\readme.md" />
-    <None Include="BuildTools\PostBuild.cmd" />
-    <None Include="BuildTools\PostBuild.ps1" />
-    <None Include="BuildTools\PreBuild.cmd" />
-    <None Include="BuildTools\PreBuild.ps1" />
+    <None Include="Stored Procedures\omd.EndDating.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.AREA.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.EVENT_TYPE.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.EXECUTION_STATUS.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FRAMEWORK_METADATA.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.FREQUENCY.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.INTERNAL_PROCESSING_STATUS.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.LAYER.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd_metadata.NEXT_RUN_STATUS.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd.BATCH_INSTANCE.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd.BATCH.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE_INSTANCE_EXECUTED_CODE.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE_INSTANCE.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\omd.MODULE.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Batch.sql" />
+    <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Module.sql" />
   </ItemGroup>
-  <ItemGroup>
+
+  <!-- <ItemGroup>
+    <Folder Include="BuildScripts\" />
+    <Folder Include="DeploymentScripts\" />
+    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\" />
+    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\" />
+    <Folder Include="DeploymentScripts\2-PreDeployment\" />
+    <Folder Include="DeploymentScripts\3-PostDeployment\" />
+    <Folder Include="DeploymentScripts\4-PostDacpacDeployment\" />
+    <Folder Include="Functions\" />
+    <Folder Include="Schemas\" />
+    <Folder Include="Stored Procedures\" />
+    <Folder Include="Tables\" />
+    <Folder Include="Views\" />
+  </ItemGroup> -->
+  <!-- <ItemGroup>
+    <Build Include="Functions/*" />
+    <Build Include="Schemas/*" />
+    <Build Include="Stored Procedures/*" />
+    <Build Include="Tables/*" />
+    <Build Include="Views/*" />
+  </ItemGroup> -->
+  <Target Name="RunPreBuild" BeforeTargets="Build">
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot;" />
+  </Target>
+  <Target Name="RunPostBuild" AfterTargets="Build">
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PostBuild.cmd&quot;" />
+  </Target>
+  <!-- This below deletion is only needed in sql sdk version 1.0.0 when building
+       in Visual Studio w dotnet 8/9 atm
+       in dotnet 10 and sql sdk 2.0.0 preview it is solved, but that comes with other errors atm.
+       When dotnet 10 and sql sdk v2 is released this should be revisited/removed,
+       else there will probably be other build errors... -->
+  <Target Name="DeleteProjectAssetsJson" BeforeTargets="BeforeBuild" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <Delete Files="$(MSBuildProjectDirectory)\obj\project.assets.json" />
+  </Target>
+    <ItemGroup>
     <!-- The ErikEJ packages currently has limited business rules and no mute function for them -->
     <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -94,32 +134,8 @@
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Stored Procedures\" />
-    <Folder Include="DeploymentScripts\" />
-    <Folder Include="DeploymentScripts\4-PostDacpacDeployment\" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\" />
-    <Folder Include="DeploymentScripts\3-PostDeployment\" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\" />
-    <Folder Include="DeploymentScripts\2-PreDeployment\" />
-    <Folder Include="BuildTools\" />
-  </ItemGroup>
-
-  <Target Name="RunPreBuild" BeforeTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PreBuild.cmd&quot;" />
-  </Target>
-  <Target Name="RunPostBuild" AfterTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildTools/PostBuild.cmd&quot;" />
-  </Target>
-  <!-- This below deletion is only needed in sql sdk version 1.0.0 when building
-       in Visual Studio w dotnet 8/9 atm
-       in dotnet 10 and sql sdk 2.0.0 preview it is solved, but that comes with other errors atm.
-       When dotnet 10 and sql sdk v2 is released this should be revisited/removed,
-       else there will probably be other build errors... -->
-  <!--<Target
-  Name="DeleteProjectAssetsJson" BeforeTargets="BeforeBuild"
-  Condition="'$(BuildingInsideVisualStudio)' == 'true'">
-    <Delete Files="$(MSBuildProjectDirectory)\obj\project.assets.json" />
-  </Target>-->
+    </ItemGroup>
+      <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+  </PropertyGroup>
 </Project>

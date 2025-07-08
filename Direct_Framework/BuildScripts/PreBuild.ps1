@@ -50,7 +50,7 @@ try {
 }
 catch {
   Write-Host ("`n" + ('*' * 80)) -ForegroundColor Red
-  Write-Host "*** PWSH - Post-Build Event: process failed with error:`n$($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "*** PWSH - Pre-Build Event: process failed with error:`n$($_.Exception.Message)" -ForegroundColor Red
   Write-Host (('*' * 80) + "`n") -ForegroundColor Red
   exit 1
 }

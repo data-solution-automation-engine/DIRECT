@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    ".NETStandard,Version=v2.1": {
+    ".NETFramework,Version=v4.7.2": {
       "Microsoft.SqlServer.Dacpacs.Master": {
         "type": "Direct",
         "requested": "[160.2.4, )",
