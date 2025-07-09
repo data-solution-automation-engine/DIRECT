@@ -2,7 +2,9 @@
 # DATABASE PROJECT PRE-BUILD PWSH SCRIPT
 ################################################################################################################################################################
 
-param([string]$path)
+param(
+    [string]$Configuration = "Debug"
+)
 
 try {
   Write-Host ("`n" + ('*' * 80)) -ForegroundColor Green
@@ -29,7 +31,7 @@ try {
     Write-Host "*** - Running integrated pre-dacpac deployment script testing execution..."
 
     # Change active folder to the reference project
-    Set-Location "$path\..\DeploymentScripts\1-PreDacpacDeployment"
+    Set-Location "$PSScriptRoot\..\DeploymentScripts\1-PreDacpacDeployment"
 
     # Target server and Database *NOT* parameterised here...
     Get-Location | Write-Host

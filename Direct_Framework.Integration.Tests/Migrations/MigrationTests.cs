@@ -48,7 +48,7 @@ END
     }
     catch (Exception ex)
     {
-      Assert.Fail($"Failed to deploy current version DACPAC:\n{ex.Message}");
+      Assert.Fail($"Failed to deploy **PREVIOUS** version DACPAC:\n{ex.Message}");
     }
 
     // 2. Run pre/post deploy scripts for v1 if needed
@@ -81,7 +81,7 @@ END
     }
     catch (Exception ex)
     {
-      Assert.Fail($"Failed to deploy current version DACPAC:\n{ex.Message}");
+      Assert.Fail($"Failed to deploy **CURRENT** version DACPAC:\n{ex.Message}");
     }
 
     // 5. Run pre/post deploy scripts for current version if needed

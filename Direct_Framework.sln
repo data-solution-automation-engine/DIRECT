@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1 d17.14
+VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{42EA0DBD-9CF1-443E-919E-BE9C484E4577}") = "Direct_Framework", "Direct_Framework\Direct_Framework.sqlproj", "{B88FF268-22F9-4416-9E36-CFE598D243EB}"
 EndProject
@@ -31,6 +31,10 @@ Global
 		{1C2116BC-E467-8272-712C-072DC61519D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C2116BC-E467-8272-712C-072DC61519D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C2116BC-E467-8272-712C-072DC61519D0}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2F28BDC4-A2F9-44A7-BBB9-BDF9FA834064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F28BDC4-A2F9-44A7-BBB9-BDF9FA834064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F28BDC4-A2F9-44A7-BBB9-BDF9FA834064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F28BDC4-A2F9-44A7-BBB9-BDF9FA834064}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

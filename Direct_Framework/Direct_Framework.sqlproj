@@ -107,10 +107,10 @@
     <Build Include="Views/*" />
   </ItemGroup> -->
   <Target Name="RunPreBuild" BeforeTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot;" />
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot; $(Configuration)" />
   </Target>
   <Target Name="RunPostBuild" AfterTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PostBuild.cmd&quot;" />
+    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PostBuild.cmd&quot; $(Configuration)" />
   </Target>
   <!-- This below deletion is only needed in sql sdk version 1.0.0 when building
        in Visual Studio w dotnet 8/9 atm
