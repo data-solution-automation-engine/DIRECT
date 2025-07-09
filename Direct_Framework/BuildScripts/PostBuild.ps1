@@ -18,13 +18,13 @@ try {
   # More useful for local development,
   # for ci/cd scenarios it might be more convenient to run these tasks/steps as separate parts of the pipeline
 
-  # Copy the project outputs to the current release directory
-  # This allows the test projects to test the current/local version
+  # Copy the project outputs to the next release directory
+  # This allows the test projects to test the next/local version
   # without relying on a direct connection to, or a build of, this project
   # Also assumes the project is built with the latest changes before tests
-  Write-Host "*** - Copy output to current release directory..." -ForegroundColor Cyan
+  Write-Host "*** - Copy output to next release directory..." -ForegroundColor Cyan
   $sourcePath = "$PSScriptRoot\..\bin\$Configuration"
-  $destinationPath = "$PSScriptRoot\..\..\Releases.Direct_Framework\current\db"
+  $destinationPath = "$PSScriptRoot\..\..\Releases.Direct_Framework\next\db"
 
   if (Test-Path -Path $sourcePath) {
     # Make sure target directory exists

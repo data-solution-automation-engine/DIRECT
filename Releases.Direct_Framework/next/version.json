@@ -1,0 +1,8 @@
+{
+  "directFrameworkVersion": "2.1.0",
+  "sqlServer": "2022",
+  "compatibilityMode": "160",
+  "defaultCollation": "SQL_Latin1_General_CP1_CS_AS",
+  "dsp": "Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider",
+  "modelCollation": "1033,CS"
+}

@@ -11,19 +11,17 @@ public class MigrationTests
   [TestMethod]
   public async Task Can_Migrate_From_Previous_To_Current()
   {
-    // Get the output directory (e.g., bin\Debug\net10.0)
     var outputDir = AppContext.BaseDirectory;
 
     // Traverse up to the project folder
     var projectDir = Directory.GetParent(outputDir)!.Parent!.Parent!.Parent!.Parent!.FullName;
 
-
-    // 1. Deploy previous version DACPAC
-    var previousDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "v2.0.0", "db", "Direct_Framework.dacpac");
+    // 1. Deploy current version DACPAC
+    var currentDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "Current", "db", "Direct_Framework.dacpac");
     var dacServices = new DacServices(MasterConnectionString);
-    var previousDacpac = DacPackage.Load(previousDacpacPath);
+    var currentDacpac = DacPackage.Load(currentDacpacPath);
 
-    // drop current database if it exists, else we'll be downgrading here...
+    // drop database if it exists, else we might try to downgrade here...
     try
     {
       using var dconn = new SqlConnection(MasterConnectionString);
@@ -44,16 +42,16 @@ END
 
     try
     {
-      dacServices.Deploy(previousDacpac, "Direct_Framework", true);
+      dacServices.Deploy(currentDacpac, "Direct_Framework", true);
     }
     catch (Exception ex)
     {
-      Assert.Fail($"Failed to deploy **PREVIOUS** version DACPAC:\n{ex.Message}");
+      Assert.Fail($"Failed to deploy **CURRENT** version DACPAC:\n{ex.Message}");
     }
 
-    // 2. Run pre/post deploy scripts for v1 if needed
-    //var preDeployScript = File.ReadAllText(Path.Combine("Migrations", "PreviousVersion", "PreDeploy_v1.sql"));
-    //var postDeployScript = File.ReadAllText(Path.Combine("Migrations", "PreviousVersion", "PostDeploy_v1.sql"));
+    // 2. Run pre/post deploy scripts for current version if needed
+    //var preDeployScript = File.ReadAllText(Path.Combine("Migrations", "CurrentVersion", "PreDeploy_v1.sql"));
+    //var postDeployScript = File.ReadAllText(Path.Combine("Migrations", "CurrentVersion", "PostDeploy_v1.sql"));
     //using (var conn = new SqlConnection(ConnectionString))
     //{
     //  await conn.OpenAsync();
@@ -72,20 +70,20 @@ END
     //  await cmd.ExecuteNonQueryAsync();
     //}
 
-    // 4. Deploy current version DACPAC (built from the database project)
-    var currentDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "Current", "db", "Direct_Framework.dacpac");
-    var currentDacpac = DacPackage.Load(currentDacpacPath);
+    // 4. Deploy next version DACPAC (built from the database project)
+    var nextDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "Next", "db", "Direct_Framework.dacpac");
+    var nextDacpac = DacPackage.Load(nextDacpacPath);
     try
     {
-      dacServices.Deploy(currentDacpac, "Direct_Framework", true);
+      dacServices.Deploy(nextDacpac, "Direct_Framework", true);
     }
     catch (Exception ex)
     {
-      Assert.Fail($"Failed to deploy **CURRENT** version DACPAC:\n{ex.Message}");
+      Assert.Fail($"Failed to deploy **NEXT** version DACPAC:\n{ex.Message}");
     }
 
-    // 5. Run pre/post deploy scripts for current version if needed
-    // (Repeat as above, using current version scripts)
+    // 5. Run pre/post deploy scripts for next version if needed
+    // (Repeat as above, using next version scripts)
 
     // 6. Assert migration success (check schema, data, etc.)
     using var conn = new SqlConnection(ConnectionString);

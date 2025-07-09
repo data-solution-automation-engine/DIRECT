@@ -73,7 +73,7 @@ public static class SqlServerContainerManager
     await WaitForSqlServerReadyAsync();
 
     // Deploy the database schema
-    await DeployDatabaseSchemaAsync();
+    await DeployDatabaseSchemaAsync("next");
 
     // Update connection string to point to the deployed database
     _connectionString = _connectionString.Replace("Database=master", "Database=Direct_Framework");
@@ -104,12 +104,12 @@ public static class SqlServerContainerManager
     if (!_isInitialized)
       throw new InvalidOperationException("Container not initialized.");
 
-    await DeployDatabaseSchemaAsync();
+    await DeployDatabaseSchemaAsync("next");
   }
 
-  private static async Task DeployDatabaseSchemaAsync()
+  private static async Task DeployDatabaseSchemaAsync(string version = "next")
   {
-    var dacpacPath = FindDacpacPath();
+    var dacpacPath = FindDacpacPath(version);
 
     if (!File.Exists(dacpacPath))
     {
@@ -118,7 +118,7 @@ public static class SqlServerContainerManager
           "Ensure the Direct_Framework project is built before running tests.");
     }
 
-    Console.WriteLine($"Deploying DACPAC from: {dacpacPath}");
+    Console.WriteLine($"Deploying DACPAC '{version}' from: {dacpacPath}");
     Console.WriteLine($"Target connection: {_connectionString}");
 
     try
@@ -157,7 +157,7 @@ public static class SqlServerContainerManager
     }
   }
 
-  private static string FindDacpacPath()
+  private static string FindDacpacPath(string version = "current")
   {
     // Get the output directory (e.g., bin\Debug\net10.0)
     var outputDir = AppContext.BaseDirectory;
@@ -166,24 +166,14 @@ public static class SqlServerContainerManager
     var projectDir = Directory.GetParent(outputDir)!.Parent!.Parent!.Parent!.Parent!.FullName;
 
     // 1. Deploy previous version DACPAC
-    var currentDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "current", "db", "Direct_Framework.dacpac");
+    var dacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", version, "db", "Direct_Framework.dacpac");
 
-    // Maybe try multiple possible paths?
-    //// reuse the current build output
-    //var possiblePaths = new[]
-    //    {
-    //        Path.Combine("..", "..", "Releases.Direct_Framework", "current", "db", "Direct_Framework.dacpac"),
-    //    };
-
-    //foreach (var path in possiblePaths)
-    //{
-    if (File.Exists(currentDacpacPath))
+    if (File.Exists(dacpacPath))
     {
-      return currentDacpacPath;
+      return dacpacPath;
     }
-    //}
 
-    throw new FileNotFoundException("Could not locate current Direct_Framework.dacpac. Please build the main project.");
+    throw new FileNotFoundException($"Could not locate '{version}' Direct_Framework.dacpac. Please validate the reference location and build the main project.");
   }
 
   /// <summary>
