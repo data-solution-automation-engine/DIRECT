@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Problems>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@ModuleInstanceId) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.RunModule.sql</SourceFile>
+    <Line>59</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@Result) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.RunBatch.sql</SourceFile>
+    <Line>52</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@BatchId) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.RegisterBatch.sql</SourceFile>
+    <Line>66</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.ModuleEvaluation.sql</SourceFile>
+    <Line>301</Line>
+    <Column>64</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.ModuleEvaluation.sql</SourceFile>
+    <Line>302</Line>
+    <Column>67</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.ModuleEvaluation.sql</SourceFile>
+    <Line>322</Line>
+    <Column>64</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.ModuleEvaluation.sql</SourceFile>
+    <Line>323</Line>
+    <Column>72</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@InternalProcessingStatusCode) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.ModuleEvaluation.sql</SourceFile>
+    <Line>46</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.GetConsistencyTimestamp.sql</SourceFile>
+    <Line>261</Line>
+    <Column>105</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.GetConsistencyTimestamp.sql</SourceFile>
+    <Line>406</Line>
+    <Column>7</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0007</Rule>
+    <ProblemDescription>Nullable columns can cause final results to be evaluated as NULL for the predicate.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.GetConsistencyTimestamp.sql</SourceFile>
+    <Line>498</Line>
+    <Column>7</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@ConsistencyDateTime) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.GetConsistencyTimestamp.sql</SourceFile>
+    <Line>53</Line>
+    <Column>4</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@ModuleInstanceId) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.CreateModuleInstance.sql</SourceFile>
+    <Line>62</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@StartValue) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.CreateLoadWindow.sql</SourceFile>
+    <Line>56</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@EndValue) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.CreateLoadWindow.sql</SourceFile>
+    <Line>57</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@BatchInstanceId) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.CreateBatchInstance.sql</SourceFile>
+    <Line>53</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@InternalProcessingStatusCode) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.BatchEvaluation.sql</SourceFile>
+    <Line>51</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0013</Rule>
+    <ProblemDescription>Output parameter (@SuccessIndicator) is not populated in all code paths.</ProblemDescription>
+    <SourceFile>C:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.BatchEvaluation.sql</SourceFile>
+    <Line>52</Line>
+    <Column>3</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+</Problems>
