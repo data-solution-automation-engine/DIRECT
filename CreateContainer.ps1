@@ -127,3 +127,29 @@ while ($attempt -le $maxAttempts -and -not $success) {
 if (-not $success) {
     Write-Host "SQL Server connection test failed after $maxAttempts attempts." -ForegroundColor Red
 }
+
+# Path to the .dacpac file
+$dacpacPath = "testing/Testing_Framework.dacpac"
+
+# Check if the dacpac file exists
+if (-not (Test-Path $dacpacPath)) {
+    Write-Host "DACPAC file not found at $dacpacPath" -ForegroundColor Red
+    exit 1
+}
+
+# Deploy the DACPAC to the container's SQL Server
+$connectionStringTestingFramework = "Server=$localAddress,${sqlServerPort};Database=Testing_Framework;User Id=sa;Password=$sqlPassword;TrustServerCertificate=true;"
+$deployCmd = "& `"SqlPackage`" /Action:Publish /SourceFile:`"$dacpacPath`" /TargetConnectionString:`"$connectionStringTestingFramework`" /p:BlockOnPossibleDataLoss=false"
+
+# Print it out for debugging
+Write-Host "The testing framework deployment is using the following command:" -ForegroundColor Blue
+Write-Host $deployCmd -ForegroundColor Blue
+
+Write-Host "Starting DACPAC deployment..." -ForegroundColor Cyan
+Invoke-Expression $deployCmd
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "DACPAC deployed successfully." -ForegroundColor Green
+} else {
+    Write-Host "DACPAC deployment failed." -ForegroundColor Red
+    exit 1
+}
