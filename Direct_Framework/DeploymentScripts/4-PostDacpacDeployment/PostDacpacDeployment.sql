@@ -15,6 +15,6 @@
 -- placeholder contents...
 print 'Post-Dacpac Deployment Script Starting'
 
-print 'Doing nothing...'
+print 'Post-Dacpac Deployment Script is doing nothing at the moment...'
 
 print 'Post-Dacpac Deployment Script Completed'

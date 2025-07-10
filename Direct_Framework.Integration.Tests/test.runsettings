@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
-  <DataCollectionRunSettings>
+  <!--<DataCollectionRunSettings>
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
@@ -12,7 +12,7 @@
         </Configuration>
       </DataCollector>
     </DataCollectors>
-  </DataCollectionRunSettings>
+  </DataCollectionRunSettings>-->
   <LoggerRunSettings>
     <Loggers>
       <Logger friendlyName="trx">

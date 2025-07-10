@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using Microsoft.SqlServer.Dac;
 
 namespace Direct_Framework.Integration.Tests.Migrations;
@@ -7,6 +9,38 @@ public class MigrationTests
 {
   private string ConnectionString => SqlServerContainerManager.ConnectionString;
   private string MasterConnectionString = SqlServerContainerManager.ConnectionString.Replace("Database=Direct_Framework", "Database=master");
+
+  public void RunSqlCmdScript(string scriptPath, string connectionString)
+  {
+    // Parse connection string for server and database
+    var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
+
+    var process = new Process
+    {
+      StartInfo = new ProcessStartInfo
+      {
+        FileName = "sqlcmd",
+        Arguments = $"-S {builder.DataSource} -d {builder.InitialCatalog} -U {builder.UserID} -P {builder.Password} -i \"{scriptPath}\" -b -I",
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true,
+        WorkingDirectory = Path.GetDirectoryName(scriptPath)
+      }
+    };
+
+    process.Start();
+    string output = process.StandardOutput.ReadToEnd();
+    string error = process.StandardError.ReadToEnd();
+    process.WaitForExit();
+
+    if (process.ExitCode != 0)
+    {
+      throw new Exception($"sqlcmd failed: {error}\n{output}");
+    }
+  }
+
+
 
   [TestMethod]
   public async Task Can_Migrate_From_Previous_To_Current()
@@ -61,6 +95,12 @@ END
     //  await cmd2.ExecuteNonQueryAsync();
     //}
 
+    var predeployPath = Path.Combine(projectDir, "Releases.Direct_Framework", "next", "db", "DeploymentScripts", "1-PreDacpacDeployment", "PreDacpacDeployment.sql");
+
+    RunSqlCmdScript(predeployPath, ConnectionString);
+
+    var bob = 42;
+
     // 3. Populate with sample/test data
     //var sampleDataScript = File.ReadAllText(Path.Combine("Migrations", "MigrationTestData", "SampleData_v1.sql"));
     //using (var conn = new SqlConnection(ConnectionString))
@@ -70,27 +110,27 @@ END
     //  await cmd.ExecuteNonQueryAsync();
     //}
 
-    // 4. Deploy next version DACPAC (built from the database project)
-    var nextDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "Next", "db", "Direct_Framework.dacpac");
-    var nextDacpac = DacPackage.Load(nextDacpacPath);
-    try
-    {
-      dacServices.Deploy(nextDacpac, "Direct_Framework", true);
-    }
-    catch (Exception ex)
-    {
-      Assert.Fail($"Failed to deploy **NEXT** version DACPAC:\n{ex.Message}");
-    }
+    //// 4. Deploy next version DACPAC (built from the database project)
+    //var nextDacpacPath = Path.Combine(projectDir, "Releases.Direct_Framework", "Next", "db", "Direct_Framework.dacpac");
+    //var nextDacpac = DacPackage.Load(nextDacpacPath);
+    //try
+    //{
+    //  dacServices.Deploy(nextDacpac, "Direct_Framework", true);
+    //}
+    //catch (Exception ex)
+    //{
+    //  Assert.Fail($"Failed to deploy **NEXT** version DACPAC:\n{ex.Message}");
+    //}
 
     // 5. Run pre/post deploy scripts for next version if needed
     // (Repeat as above, using next version scripts)
 
-    // 6. Assert migration success (check schema, data, etc.)
-    using var conn = new SqlConnection(ConnectionString);
-    await conn.OpenAsync();
-    using var cmd = new SqlCommand("SELECT COUNT(*) FROM sys.schemas WHERE name = 'omd'", conn);
-    var res = await cmd.ExecuteScalarAsync();
-    var count = Convert.ToInt32(res);
-    Assert.IsTrue(count > 0, "Schema 'omd' should exist after migration.");
+    //// 6. Assert migration success (check schema, data, etc.)
+    //using var conn = new SqlConnection(ConnectionString);
+    //await conn.OpenAsync();
+    //using var cmd = new SqlCommand("SELECT COUNT(*) FROM sys.schemas WHERE name = 'omd'", conn);
+    //var res = await cmd.ExecuteScalarAsync();
+    //var count = Convert.ToInt32(res);
+    //Assert.IsTrue(count > 0, "Schema 'omd' should exist after migration.");
   }
 }

@@ -34,12 +34,18 @@
     <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Build Remove="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-vNext.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Dacpac internal pre and post-deployments -->
     <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
     <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <!-- Pre-deployment migration scripts -->
+    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-vNext.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="DeploymentScripts\1-PreDacpacDeployment\PreDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -130,7 +136,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->
-    <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" >
+    <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master">
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>

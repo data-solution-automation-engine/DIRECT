@@ -26,7 +26,7 @@ DECLARE @tblMerge TABLE(
 
 INSERT INTO @tblMerge([CODE], [VALUE], [GROUP], [DESCRIPTION], [ACTIVE_INDICATOR])
 VALUES
-  (N'DIRECT_VERSION', N'2.0.0.0', N'SYSTEM_METADATA', N'The current version of the DIRECT Framework and database', 'Y')
+  (N'DIRECT_VERSION', N'vNext', N'SYSTEM_METADATA', N'The current version of the DIRECT Framework and database', 'Y')
 
 MERGE [omd_metadata].[FRAMEWORK_METADATA] AS TARGET
 USING @tblMerge AS src

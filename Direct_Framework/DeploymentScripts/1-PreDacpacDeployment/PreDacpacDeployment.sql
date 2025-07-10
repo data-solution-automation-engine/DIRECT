@@ -13,12 +13,17 @@
  * Version control in the metadata table tracks the current version of the
  * database, which is/should be used to determine which migration scripts to
  * run, if and when needed...
+ *
+ * Note that the actual dacpac version must be a pure dotnet version,
+ * only 4 numbers. So the external semver versioning is translated to
+ * a compatible format for the actual, technical dacpac version, by adding a
+ * trailing number
  ******************************************************************************/
 
- -- The DACPAC version/The current version of the code being deployed
- -- If a migration is required this should include the migration code from the
- -- previous version to this/the current version
-DECLARE @CurrentVersion NVARCHAR(10) = '2.0.0.0'
+-- The DACPAC version/the version of the code being deployed
+-- If a migration is required this should include the migration code from the
+-- previous version to this new version
+DECLARE @CurrentVersion NVARCHAR(10) = '2.1.0.0'
 
 -- placeholder contents...
 PRINT 'Pre-Dacpac Deployment Script Starting'
@@ -47,7 +52,7 @@ BEGIN
   GOTO EndOfProcedure
 END
 
-PRINT '''[omd].[BATCH]'' table exists, script assumes this is an incremental deploy'
+PRINT '''[omd].[BATCH]'' table exists, script assumes this is an incremental deploy/update'
 
 -- Check that the version function is available
 IF EXISTS (
@@ -112,28 +117,35 @@ BEGIN
     -- this is an example
     -- point migrations should be rolled up to higher versions when available
 
-    IF @DirectVersion = '1.9.0.0'
+    IF @DirectVersion = '1.9.0'
     BEGIN
-      PRINT 'Running migration 1.9.0.0 to version 1.9.1.0'
+      PRINT 'Running migration 1.9.0 to version 1.9.1'
       :r ./Migrations/Migration-1.9.1.0.sql
       -- Check that upgrade was successful
     END
 
     SET @DirectVersion = [omd_metadata].[GetFrameworkVersion]();
 
-    IF @DirectVersion = '1.9.1.0'
+    IF @DirectVersion = '1.9.1'
     BEGIN
-      PRINT 'Running migration 1.9.1.0 to version 1.9.2.0'
+      PRINT 'Running migration 1.9.1 to version 1.9.2'
       :r ./Migrations/Migration-1.9.2.0.sql
       -- Check that upgrade was successful
     END
 
     SET @DirectVersion = [omd_metadata].[GetFrameworkVersion]();
 
-    IF @DirectVersion = '1.9.2.0'
+    IF @DirectVersion = '1.9.2'
     BEGIN
-      PRINT 'Running migration 1.9.2.0 to version 2.0.0.0'
+      PRINT 'Running migration 1.9.2 to version 2.0.0'
       :r ./Migrations/Migration-2.0.0.0.sql
+      -- Check that upgrade was successful
+    END
+
+    IF @DirectVersion = '2.0.0'
+    BEGIN
+      PRINT 'Running migration 2.0.0 to version vNext'
+      :r ./Migrations/Migration-vNext.sql
       -- Check that upgrade was successful
     END
 
