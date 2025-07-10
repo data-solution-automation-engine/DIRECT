@@ -90,7 +90,7 @@ BEGIN
   BEGIN
     PRINT 'Database is already at a higher version ' + @CurrentVersion
     PRINT 'this script is an older version than the current database'
-    PRINT 'Downgrading throught this script is not possible'
+    PRINT 'Downgrading through this script is not possible'
     PRINT 'Aborting pre-processing'
 
     GOTO EndOfProcedure
@@ -115,9 +115,10 @@ BEGIN
 
     -- sequence through the migrations as needed
     -- this is an example
-    -- point migrations should be rolled up to higher versions when available
+    -- point migrations should eventually be rolled up to higher versions
+    -- when available
 
-    IF @DirectVersion = '1.9.0'
+    IF @DirectVersion = '1.9.0.0'
     BEGIN
       PRINT 'Running migration 1.9.0 to version 1.9.1'
       :r ./Migrations/Migration-1.9.1.0.sql
@@ -126,7 +127,7 @@ BEGIN
 
     SET @DirectVersion = [omd_metadata].[GetFrameworkVersion]();
 
-    IF @DirectVersion = '1.9.1'
+    IF @DirectVersion = '1.9.1.0'
     BEGIN
       PRINT 'Running migration 1.9.1 to version 1.9.2'
       :r ./Migrations/Migration-1.9.2.0.sql
@@ -135,14 +136,14 @@ BEGIN
 
     SET @DirectVersion = [omd_metadata].[GetFrameworkVersion]();
 
-    IF @DirectVersion = '1.9.2'
+    IF @DirectVersion = '1.9.2.0'
     BEGIN
       PRINT 'Running migration 1.9.2 to version 2.0.0'
       :r ./Migrations/Migration-2.0.0.0.sql
       -- Check that upgrade was successful
     END
 
-    IF @DirectVersion = '2.0.0'
+    IF @DirectVersion = '2.0.0.0'
     BEGIN
       PRINT 'Running migration 2.0.0 to version vNext'
       :r ./Migrations/Migration-vNext.sql
@@ -156,7 +157,7 @@ BEGIN
 END
 ELSE
 BEGIN
-  PRINT 'Metadata table or framerwork version function not found'
+  PRINT 'Metadata table or framework version function not found'
   PRINT 'Assume this is an incremental deploy on v1 or a non-DIRECT database'
   PRINT 'Automated upgrades from v1 currently not supported'
   PRINT 'Please add the required migration code to the GitHub repo'
