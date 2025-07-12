@@ -55,11 +55,14 @@ CREATE PROCEDURE [omd].[BatchEvaluation]
 AS
 BEGIN TRY
   SET NOCOUNT ON;
+  SET @Debug = UPPER(@Debug);
+  DECLARE @UtcNow DATETIME2 = SYSUTCDATETIME();
+  DECLARE @UtcNowDisplayString NVARCHAR(20) = FORMAT(@UtcNow, 'yyyy-MM-dd HH:mm:ss');
 
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
+  DECLARE @StartTimestamp DATETIME2 = @UtcNow;
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
@@ -94,18 +97,19 @@ BEGIN TRY
 
   -- Get the Batch Id for this Batch Instance.
   SELECT @BatchId = [omd].[GetBatchIdByBatchInstanceId](@BatchInstanceId);
+  SET @SuccessIndicator = 'Y';
 
   -- Exception handling, the Batch Id cannot be NULL
   IF @BatchId IS NULL
   BEGIN
-    SET @LogMessage = 'The Batch Id was not found for Batch Instance Id ''' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ''''
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'The Batch Id was not found for Batch Instance Id ''' + CONVERT(NVARCHAR(20), @BatchInstanceId) + '''';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
     EXEC [omd].[InsertIntoEventLog]
       @BatchInstanceId = @BatchInstanceId,
       @EventDetail = @EventDetail;
 
-    GOTO FailureEndOfProcedure
+    GOTO FailureEndOfProcedure;
   END
 
   SET @LogMessage = 'For Batch Instance Id ' + CONVERT(NVARCHAR(20), @BatchInstanceId)+  ' the Batch Id ' + CONVERT(NVARCHAR(10), @BatchId) + ' was found in [omd].[BATCH].'
@@ -206,14 +210,14 @@ BEGIN TRY
   SET @LogMessage = 'Start of the rollback evaluation process step.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-  DECLARE @LastExecutionStatusCode NVARCHAR(10);
-  DECLARE @LastNextRunStatusCode NVARCHAR(10);
+  DECLARE @LastExecutionStatusCode NVARCHAR(100);
+  DECLARE @LastNextRunStatusCode NVARCHAR(100);
 
   -- Get the Next Run Status Code and Execution Status Code from the previous Batch Instance.
   DECLARE @PreviousBatchInstanceTable TABLE
   (
-    LastExecutionStatusCode NVARCHAR(10),
-    LastNextRunStatusCode NVARCHAR(10)
+    LastExecutionStatusCode NVARCHAR(100),
+    LastNextRunStatusCode NVARCHAR(100)
   );
 
   INSERT @PreviousBatchInstanceTable
@@ -318,21 +322,23 @@ BEGIN TRY
    END TRY
    BEGIN CATCH
 
-    -- Batch Failure
-     EXEC [omd].[UpdateBatchInstance]
-      @BatchInstanceId = @BatchInstanceId,
-      @Debug = @Debug,
-      @EventCode = 'Failure';
-    SET @InternalProcessingStatusCode = 'Failure';
+      SET @SuccessIndicator = 'N';
+      SET @InternalProcessingStatusCode = 'Failure';
 
-    -- Logging
-     SET @EventDetail = ERROR_MESSAGE();
-     SET @EventReturnCode = ERROR_NUMBER();
+      -- Batch Failure
+      EXEC [omd].[UpdateBatchInstance]
+        @BatchInstanceId = @BatchInstanceId,
+        @Debug = @Debug,
+        @EventCode = 'Failure';
 
-    EXEC [omd].[InsertIntoEventLog]
-      @BatchInstanceId = @BatchInstanceId,
-      @EventDetail = @EventDetail,
-      @EventReturnCode = @EventReturnCode;
+      -- Logging
+      SET @EventDetail = ERROR_MESSAGE();
+      SET @EventReturnCode = ERROR_NUMBER();
+
+      EXEC [omd].[InsertIntoEventLog]
+        @BatchInstanceId = @BatchInstanceId,
+        @EventDetail = @EventDetail,
+        @EventReturnCode = @EventReturnCode;
 
     THROW
   END CATCH
@@ -369,12 +375,12 @@ BEGIN TRY
   BEGIN CATCH
     -- Batch Failure
     SET @SuccessIndicator = 'N'
+    SET @InternalProcessingStatusCode = 'Failure';
+
     EXEC [omd].[UpdateBatchInstance]
        @BatchInstanceId = @BatchInstanceId,
        @Debug = @Debug,
        @EventCode = 'Failure';
-
-    SET @InternalProcessingStatusCode = 'Failure';
 
     -- Logging
     SET @EventDetail = ERROR_MESSAGE();
@@ -405,22 +411,23 @@ BEGIN TRY
   FailureEndOfProcedure:
 
     SET @SuccessIndicator = 'N'
+    SET @InternalProcessingStatusCode = 'Failure';
+
     SET @LogMessage = N'' + @SpName + ' ended in failure.';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
   GOTO EndOfProcedure
 
   /*
-  Region: end of processing, final step.
+  Region: end of procedure and processing, final step.
   */
+  EndOfProcedure:
 
   SET @LogMessage = 'Batch Instance Id ' + CONVERT(NVARCHAR(10) , @BatchInstanceId) + ' was processed';
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Result', @LogMessage, @MessageLog)
   SET @LogMessage = 'The result (processing status code) is ' + @InternalProcessingStatusCode;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Result', @LogMessage, @MessageLog)
 
-  -- End of procedure label
-  EndOfProcedure:
 
   SET @EndTimestamp = SYSUTCDATETIME();
   SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
@@ -438,8 +445,10 @@ BEGIN TRY
 
 END TRY
 BEGIN CATCH
-  -- SP-wide error handler and logging
+
   SET @SuccessIndicator = 'N'
+  SET @InternalProcessingStatusCode = 'Failure';
+
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 
@@ -460,13 +469,13 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
+    PRINT 'Error in '''       + @SpName + '''';
+    PRINT 'Error Message: '   + @ErrorMessage;
+    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+    PRINT 'Error Procedure: ' + @ErrorProcedure;
+    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
     PRINT 'SuccessIndicator: '+ @SuccessIndicator
 
     -- Spool message log

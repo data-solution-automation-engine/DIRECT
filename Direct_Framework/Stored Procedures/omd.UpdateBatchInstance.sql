@@ -41,7 +41,7 @@ CREATE PROCEDURE [omd].[UpdateBatchInstance]
   -- Mandatory parameters
   @BatchInstanceId        BIGINT,
   -- Optional parameters
-  @EventCode              NVARCHAR(100) = N'None',
+  @EventCode              NVARCHAR(100) = NULL,
   @Debug                  CHAR(1)       = 'N',
     -- Output parameters
   @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
@@ -84,7 +84,7 @@ BEGIN TRY
  ******************************************************************************/
 
   -- Exception handling
-  IF @EventCode NOT IN ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
+  IF @EventCode IS NULL OR @EventCode NOT IN ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
   BEGIN
     ;THROW 50000, 'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure, and Rollback', 1;
   END

@@ -70,7 +70,6 @@ CREATE PROCEDURE [omd].[RegisterBatch]
 AS
 BEGIN TRY
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -156,11 +155,11 @@ BEGIN TRY
     );
 
 
-    SET @LogMessage = 'The incoming attribute checksum is ''' + CONVERT(VARCHAR(40), @NewChecksum, 2) + '''.'
+    SET @LogMessage = 'The incoming attribute checksum is ''' + CONVERT(VARCHAR(128), @NewChecksum, 2) + '''.'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
     -- Evaluate the existing values to see if the Module requires to be updated.
-    DECLARE @ExistingChecksum BINARY(20);
+    DECLARE @ExistingChecksum VARBINARY(64);
     SELECT @ExistingChecksum =
     HASHBYTES('SHA2_512',
       COALESCE([BATCH_TYPE],        'N/A') + '!' +
@@ -168,7 +167,7 @@ BEGIN TRY
       COALESCE([BATCH_DESCRIPTION], 'N/A'))
     FROM [omd].[BATCH] WHERE [BATCH_CODE] = @BatchCode;
 
-    SET @LogMessage = 'The existing attribute checksum is ''' + CONVERT(VARCHAR(40), @ExistingChecksum, 2) + '''.'
+    SET @LogMessage = 'The existing attribute checksum is ''' + CONVERT(VARCHAR(128), @ExistingChecksum, 2) + '''.'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
     -- Update the existing Batch with new values, if they are different.
@@ -214,7 +213,8 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
+  SET @BatchId = NULL;
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 

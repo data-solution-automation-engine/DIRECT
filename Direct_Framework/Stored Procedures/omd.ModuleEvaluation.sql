@@ -136,14 +136,17 @@ BEGIN TRY
   SET @LogMessage = 'The minimum active Module Instance Id is ' + COALESCE(CONVERT(NVARCHAR(10), @MinimumActiveModuleInstance), '0') + '.';
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
-  IF ((@ActiveModuleInstanceCount IS NULL) OR (@ActiveModuleInstanceCount IS NOT NULL AND @MinimumActiveModuleInstance = @ModuleInstanceId))
+  IF (
+        (@ActiveModuleInstanceCount IS NULL) OR
+        (@ActiveModuleInstanceCount IS NOT NULL AND @MinimumActiveModuleInstance = @ModuleInstanceId)
+  )
   BEGIN
     -- Continue, either there is only 1 active instance for the Module (this one) OR this instance is the first of many running instances and this one should be allowed to continue.
-    SET @LogMessage = 'Either there is only 1 active instance for the Module (this one) OR this instance is the first (MIN) of many running instances and should be allowed to continue.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    SET @LogMessage = 'Either there is only 1 active instance for the Module (this one) OR this instance is the first (MIN) of many running instances and should be allowed to continue.';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
     -- Go to the next step in the process.
-    GOTO BatchModuleEvaluation
+    GOTO BatchModuleEvaluation;
   END
   ELSE -- There are already multiple running instances for the same Module, the process must be aborted.
   BEGIN
@@ -298,8 +301,8 @@ BEGIN TRY
   */
 
   -- If the previously completed Module Instance (for the same Module) is set to cancel OR the module is set to inactive the run must be cancelled.
-  IF (EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE LastNextExecutionFlag = 'Cancel')
-      OR EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE ActiveIndicator = 'N'))
+  IF (EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE COALESCE(LastNextExecutionFlag, '') = 'Cancel')
+      OR EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE COALESCE(ActiveIndicator, '') = 'N'))
   BEGIN
     SET @LogMessage = 'The last Execution Flag is ''Cancel'' OR the Active Indicator at Module level is ''N''. The process will be cancelled. The Module Instance will be cancelled'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -319,8 +322,8 @@ BEGIN TRY
   -- Proceed with success
   -- If the previous run for the module (the previous Module Instance) was completed successfully and the Module is not disabled, the process can report 'proceed' for
   IF (
-      EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE LastNextExecutionFlag = 'Proceed')
-      AND NOT EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE ActiveIndicator = 'N')
+      EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE COALESCE(LastNextExecutionFlag, '') = 'Proceed')
+      AND NOT EXISTS (SELECT 1 FROM @PreviousModuleInstanceTable WHERE COALESCE(ActiveIndicator, '')  = 'N')
      )
   BEGIN
     SET @LogMessage = 'The last Execution Flag is ''Proceed'' AND the Active Indicator at Module level is not ''N''. The process can proceed (no rollback is required). The Module Instance will be set to proceed'
@@ -522,6 +525,7 @@ END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
   SET @SuccessIndicator = 'N'
+  set @InternalProcessingStatusCode = 'Abort';
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 
@@ -564,5 +568,4 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode,
     @ModuleInstanceId  = @ModuleInstanceId;
 
-  THROW
 END CATCH

@@ -49,14 +49,13 @@ CREATE PROCEDURE [omd].[RunBatch]
   @ModuleInstanceIdColumnName   NVARCHAR(1000)  = 'MODULE_INSTANCE_ID',
   @Debug                        CHAR(1)         = 'N',
   -- Output parameters
-  @Result                       NVARCHAR(10)    = NULL OUTPUT,
+  @Result                       NVARCHAR(100)   = NULL OUTPUT,
   @SuccessIndicator             CHAR(1)         = 'N' OUTPUT,
   @MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN TRY
   SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -98,6 +97,8 @@ BEGIN TRY
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     SET @SuccessIndicator = 'N'
+    SET @Result = 'Failure';
+
     GOTO EndOfProcedure;
   END
 
@@ -172,9 +173,9 @@ BEGIN TRY
     SET @LogMessage = 'Start of Child Batch execution'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
     DECLARE @BatchIdParent INT;
-    DECLARE @BatchCodeParent VARCHAR(255);
+    DECLARE @BatchCodeParent NVARCHAR(1000);
     DECLARE @BatchIdChild INT;
-    DECLARE @BatchCodeChild VARCHAR(255);
+    DECLARE @BatchCodeChild NVARCHAR(1000);
 
     DECLARE Batch_Cursor CURSOR FOR
       SELECT
@@ -228,9 +229,9 @@ BEGIN TRY
         @Debug            = @Debug,
         @EventCode        = 'Success'
 
+    SET @SuccessIndicator = 'Y'
     SET @Result = 'Success';
 
-    SET @SuccessIndicator = 'Y'
    END TRY
     BEGIN CATCH
       SET @LogMessage = 'Failure pathway.'
@@ -242,8 +243,8 @@ BEGIN TRY
         @Debug            = @Debug,
         @EventCode        = 'Failure';
 
-      SET @Result = 'Failure';
       SET @SuccessIndicator = 'N';
+      SET @Result = 'Failure';
 
     THROW
 
@@ -275,9 +276,11 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
+  SET @Result = 'Failure';
+
   SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
   DECLARE @ErrorMessage NVARCHAR(4000);
   DECLARE @ErrorSeverity INT;
@@ -296,14 +299,14 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
+    PRINT 'Error in '''       + @SpName + '''';
+    PRINT 'Error Message: '   + @ErrorMessage;
+    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+    PRINT 'Error Procedure: ' + @ErrorProcedure;
+    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
     -- Spool message log
     EXEC [omd].[PrintMessageLog] @MessageLog;

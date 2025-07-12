@@ -182,12 +182,12 @@ WHERE RN=1';
     END
     ELSE
     BEGIN
+
       SET @EndValueSql =
 'SELECT COALESCE(MAX(' + @LoadWindowAttributeName + '),''0001-01-01'') AS END_VALUE
 FROM ' + @SourceDataObject + ' sdo
 JOIN omd.MODULE_INSTANCE modinst ON sdo.' + @ModuleInstanceIdColumnName + ' = modinst.MODULE_INSTANCE_ID
 WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';
-
 
       SET @LogMessage =  'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.'
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -238,6 +238,9 @@ WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';
   FailureEndOfProcedure:
 
     SET @SuccessIndicator = 'N'
+    SET @StartValue = NULL;
+    SET @EndValue = NULL;
+
     SET @LogMessage = N'' + @SpName + ' ended in failure.';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
@@ -264,6 +267,9 @@ END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
   SET @SuccessIndicator = 'N'
+  SET @StartValue = NULL;
+  SET @EndValue = NULL;
+
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 

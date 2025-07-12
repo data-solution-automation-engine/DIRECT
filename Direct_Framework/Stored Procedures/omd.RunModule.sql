@@ -57,12 +57,16 @@ CREATE PROCEDURE [omd].[RunModule]
   @Debug                        CHAR(1)         = 'N',
   -- Output parameters
   @ModuleInstanceId             BIGINT          = NULL OUTPUT,
+  @ModuleInstanceStartTimestamp DATETIME2       = NULL OUTPUT,
   @SuccessIndicator             CHAR(1)         = 'N' OUTPUT,
   @MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN TRY
   SET NOCOUNT ON;
+
+  DECLARE @nowUtc DATETIME2 = SYSUTCDATETIME();
+  DECLARE @nowUtcString NVARCHAR(20) = CONVERT(NVARCHAR(20), @nowUtc, 126);
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -100,11 +104,12 @@ BEGIN TRY
  ******************************************************************************/
 
   -- Check if the Module Code is NULL and trigger a soft error.
-  IF @ModuleCode IS NULL
+  IF @ModuleCode IS NULL OR TRIM(@ModuleCode) = ''
   BEGIN
-    SET @LogMessage = 'The Module Code provided is NULL, the process will fail gracefully.'
+    SET @LogMessage = 'The Module Code provided is NULL or empty, the process will fail gracefully.'
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
+    SET @ModuleInstanceId = NULL;
+    SET @ModuleInstanceStartTimestamp = NULL;
     SET @SuccessIndicator = 'N';
     GOTO EndOfProcedure;
   END
@@ -119,7 +124,7 @@ BEGIN TRY
   END
   ELSE
   BEGIN
-    SET @LogMessage = 'An executable code override parameter has been provided: ''' + COALESCE(@Query, '') + '''.';
+    SET @LogMessage = 'An executable code override parameter/query has been provided: ''' + COALESCE(@Query, '') + '''.';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
   END
 
@@ -129,13 +134,17 @@ BEGIN TRY
     @Query              = @Query,
     @Debug              = @Debug,
     @BatchInstanceId    = @BatchInstanceId, -- The Batch Instance Id, if the Module is run from a Batch.
-    @ModuleInstanceId   = @ModuleInstanceId OUTPUT;
+    @ModuleInstanceId   = @ModuleInstanceId OUTPUT,
+    @ModuleInstanceStartTimestamp = @ModuleInstanceStartTimestamp OUTPUT;
 
   -- Make sure that a valid module instance was created
   IF @ModuleInstanceId IS NULL
   BEGIN
     -- If not, raise a soft error.
     SET @SuccessIndicator = 'N';
+    SET @ModuleInstanceId = NULL;
+    SET @ModuleInstanceStartTimestamp = NULL;
+
     GOTO EndOfProcedure;
   END
 
@@ -182,6 +191,9 @@ BEGIN TRY
     -- Nothing is done because the internal processing code is either Abort or Cancel.
     -- The process completes successfully.
     SET @SuccessIndicator = 'Y';
+    SET @ModuleInstanceId = NULL;
+    SET @ModuleInstanceStartTimestamp = NULL;
+
     SET @LogMessage = 'Nothing is done, the process reported Abort or Cancel.';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
   END
@@ -207,6 +219,9 @@ END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
   SET @SuccessIndicator = 'N'
+  SET @ModuleInstanceId = NULL;
+  SET @ModuleInstanceStartTimestamp = NULL;
+
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 

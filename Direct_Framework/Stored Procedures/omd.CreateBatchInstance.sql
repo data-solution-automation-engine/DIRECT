@@ -44,25 +44,30 @@ PRINT @BatchInstanceId;
 CREATE PROCEDURE [omd].[CreateBatchInstance]
 (
   -- Mandatory parameters
-  @BatchCode              NVARCHAR(1000),
+  @BatchCode                    NVARCHAR(1000),
   -- Optional parameters
-  @ParentBatchInstanceId  BIGINT          = 0,
-  @Debug                  CHAR(1)         = 'N',
-  @ExecutionContext       NVARCHAR(4000)  = N'',
+  @ParentBatchInstanceId        BIGINT          = 0,
+  @Debug                        CHAR(1)         = 'N',
+  @ExecutionContext             NVARCHAR(4000)  = N'',
   -- Output parameters
-  @BatchInstanceId        BIGINT          = NULL OUTPUT,
-  @SuccessIndicator       CHAR(1)         = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX)   = N'' OUTPUT
+  @BatchInstanceId              BIGINT          = NULL OUTPUT,
+  @BatchInstanceStartTimestamp  DATETIME2       = NULL OUTPUT,
+  @SuccessIndicator             CHAR(1)         = 'N' OUTPUT,
+  @MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN TRY
   SET NOCOUNT ON;
 
+  SET @Debug = UPPER(@Debug);
+  DECLARE @UtcNow DATETIME2 = SYSUTCDATETIME();
+  DECLARE @UtcNowDisplayString NVARCHAR(20) = FORMAT(@UtcNow, 'yyyy-MM-dd HH:mm:ss');
+
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
   DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
-  DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+  DECLARE @StartTimestamp DATETIME2 = @UtcNow;
+  DECLARE @StartTimestampString NVARCHAR(27) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
@@ -100,11 +105,11 @@ BEGIN TRY
   IF @BatchId IS NULL
   BEGIN
     SET @LogMessage = N'The Batch Id was not found for Batch Code ''' + @BatchCode + '''';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
     SET @EventDetail = LEFT(@LogMessage, 4000);
     EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
 
-    GOTO FailureEndOfProcedure
+    GOTO FailureEndOfProcedure;
 
   END
 
@@ -126,7 +131,7 @@ BEGIN TRY
     (
       @BatchId,
       @ParentBatchInstanceId,
-      SYSUTCDATETIME(),   -- Start Timestamp (UTC)
+      @UtcNow,            -- Start Timestamp (UTC)
       N'Executing',       -- Execution Status Code
       N'Proceed',         -- Next Run Indicator
       N'Abort',           -- Processing Indicator
@@ -137,11 +142,15 @@ BEGIN TRY
 
     SET @LogMessage = 'A new Batch Instance Id ''' + CONVERT(NVARCHAR(10), @BatchInstanceId) + ''' has been created for Batch Code: ' + @BatchCode;
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-    GOTO SuccessEndOfProcedure
+    GOTO SuccessEndOfProcedure;
 
   END TRY
 
   BEGIN CATCH
+    SET @SuccessIndicator = 'N';
+    SET @BatchInstanceId = NULL;
+    SET @BatchInstanceStartTimestamp = NULL;
+
 
     SET @LogMessage = N'A technical error was encountered';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
@@ -167,7 +176,9 @@ BEGIN TRY
 
   FailureEndOfProcedure:
 
-  SET @SuccessIndicator = 'N';
+    SET @SuccessIndicator = 'N';
+    SET @BatchInstanceId = NULL;
+    SET @BatchInstanceStartTimestamp = NULL;
 
   SET @LogMessage = N'' + @SpName + ' ended in failure.';
   SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
@@ -204,6 +215,9 @@ END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
   SET @SuccessIndicator = 'N';
+  SET @BatchInstanceId = NULL;
+  SET @BatchInstanceStartTimestamp = NULL;
+
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog);
 
@@ -246,5 +260,4 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode,
     @BatchInstanceId   = @BatchInstanceId;
 
-  THROW
 END CATCH

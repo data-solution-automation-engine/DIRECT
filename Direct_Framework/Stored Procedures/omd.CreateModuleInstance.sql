@@ -53,19 +53,24 @@ CREATE PROCEDURE [omd].[CreateModuleInstance]
 (
   -- Mandatory parameters
   @ModuleCode           NVARCHAR(1000),
-  @Query                NVARCHAR(MAX),
   -- Optional parameters
+  @Query                NVARCHAR(MAX)   = NULL,
   @BatchInstanceId      BIGINT          = 0,
   @ExecutionContext     NVARCHAR(1000)  = N'',
   @Debug                CHAR(1)         = 'N',
   -- Output parameters
-  @ModuleInstanceId     BIGINT          = NULL OUTPUT,
-  @SuccessIndicator     CHAR(1)         = 'N' OUTPUT,
-  @MessageLog           NVARCHAR(MAX)   = N'' OUTPUT
-  )
+  @ModuleInstanceId             BIGINT          = NULL OUTPUT,
+  @ModuleInstanceStartTimestamp DATETIME2       = NULL OUTPUT,
+  @SuccessIndicator             CHAR(1)         = 'N' OUTPUT,
+  @MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
+)
 AS
 BEGIN TRY
   SET NOCOUNT ON;
+
+  DECLARE @utcNow DATETIME2 = SYSUTCDATETIME();
+  DECLARE @@utcNowDisplayString NVARCHAR(20) = FORMAT(@utcNow, 'yyyy-MM-dd HH:mm:ss');
+  SET @ModuleInstanceStartTimestamp = @utcNow;
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -128,7 +133,7 @@ BEGIN TRY
   DECLARE @QueryHash VARBINARY(64) =
   CASE
     WHEN
-      @Query IS NULL OR @Query = ''
+      @Query IS NULL OR TRIM(@Query) = ''
     THEN
       CONVERT(VARBINARY(64), REPLICATE(0x00, 64))
     ELSE
@@ -155,7 +160,7 @@ BEGIN TRY
   VALUES
   (
     @ModuleId,            -- Module ID
-    SYSUTCDATETIME(),     -- Start Datetime (UTC)
+    @utcNow,              -- Start Datetime (UTC)
     'Executing',          -- Execution Status Code
     'Proceed',            -- Next Run Indicator
     'Abort',              -- Processing Indicator
@@ -195,10 +200,13 @@ BEGIN TRY
   END TRY
   BEGIN CATCH
 
+    SET @SuccessIndicator = 'N';
+    SET @ModuleInstanceId = NULL;
+    SET @ModuleInstanceStartTimestamp = NULL;
+
     SET @LogMessage = N'A technical error was encountered';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
-     -- Logging
     SET @EventDetail      = COALESCE(ERROR_MESSAGE(), 'None');
     SET @EventReturnCode  = COALESCE(ERROR_NUMBER(), -1);
 
@@ -220,21 +228,23 @@ BEGIN TRY
 
   FailureEndOfProcedure:
 
-  SET @SuccessIndicator = 'N'
+    SET @SuccessIndicator = 'N';
+    SET @ModuleInstanceId = NULL;
+    SET @ModuleInstanceStartTimestamp = NULL;
 
-  SET @LogMessage = N'' + @SpName + ' ended in failure.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @LogMessage = N'' + @SpName + ' ended in failure.';
+    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
-  GOTO EndOfProcedure
+    GOTO EndOfProcedure
 
   SuccessEndOfProcedure:
 
-  SET @SuccessIndicator = 'Y'
+    SET @SuccessIndicator = 'Y'
 
-  SET @LogMessage = N'' + @SpName + ' completed successfully.';
-  SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    SET @LogMessage = N'' + @SpName + ' completed successfully.';
+    SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
-  GOTO EndOfProcedure
+    GOTO EndOfProcedure
 
   -- End of procedure label
   EndOfProcedure:
@@ -256,7 +266,10 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
+  SET @SuccessIndicator = 'N';
+  SET @ModuleInstanceId = NULL;
+  SET @ModuleInstanceStartTimestamp = NULL;
+
   SET @LogMessage = @SuccessIndicator;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 
@@ -299,5 +312,4 @@ BEGIN CATCH
     @EventReturnCode   = @EventReturnCode,
     @ModuleInstanceId  = @ModuleInstanceId;
 
-  THROW
 END CATCH
