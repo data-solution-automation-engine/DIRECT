@@ -9,44 +9,27 @@
     <ProjectGuid>{1c2116bc-e467-8272-712c-072dc61519d0}</ProjectGuid>
     <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
-  <ItemGroup>
-    <Build Remove="tSQLt\Example.sql" />
-    <Build Remove="tSQLt\PrepareServer.sql" />
-    <Build Remove="tSQLt\tSQLt.class.sql" />
-  </ItemGroup>
+
   <!-- bring in the tSQLt framework during publish -->
-  <ItemGroup>
+  <!--<ItemGroup>
     <PreDeploy Include="PreDeploy_Install_tSQLt.sql" />
-  </ItemGroup>
+  </ItemGroup>-->
   <!-- <ItemGroup>
     <Build Include="Schemas\omd_Tests.sql" />
   </ItemGroup> -->
   <ItemGroup>
-    <Folder Include="Schemas" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="tSQLt\Example.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="tSQLt\PrepareServer.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="tSQLt\tSQLt.class.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Direct_Framework\Direct_Framework.sqlproj" />
-  </ItemGroup>
-  <ItemGroup>
-      <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" >
+      <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master">
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>
   </ItemGroup>
-  <PropertyGroup>
-    <SqlCodeAnalysisRules>-Microsoft.Rules.Data.NETSDK1057;-NETSDK1057;</SqlCodeAnalysisRules>
-  </PropertyGroup>
+  <ItemGroup>
+    <!-- Add a reference to the release dacpac instead of the live project
+         This should allow slight separation of concern while adding a build dependency -->
+    <ArtifactReference Include="..\Releases.Direct_Framework\next\db\Direct_Framework.dacpac">
+      <HintPath>..\Releases.Direct_Framework\next\db\Direct_Framework.dacpac</HintPath>
+    </ArtifactReference>
+  </ItemGroup>
   <PropertyGroup>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>

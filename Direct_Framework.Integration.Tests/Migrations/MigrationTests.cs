@@ -40,8 +40,6 @@ public class MigrationTests
     }
   }
 
-
-
   [TestMethod]
   public async Task Can_Migrate_From_Previous_To_Current()
   {
@@ -58,16 +56,18 @@ public class MigrationTests
     // drop database if it exists, else we might try to downgrade here...
     try
     {
-      using var dconn = new SqlConnection(MasterConnectionString);
+      await using var dconn = new SqlConnection(MasterConnectionString);
       await dconn.OpenAsync();
-      using var dcmd = new SqlCommand(@"
+      await using var dcmd = new SqlCommand(@"
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Direct_Framework')
 BEGIN
-    ALTER DATABASE [Direct_Framework] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE [Direct_Framework];
+  ALTER DATABASE [Direct_Framework] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+  DROP DATABASE [Direct_Framework];
 END
 ", dconn);
+
       await dcmd.ExecuteNonQueryAsync();
+
     }
     catch (Exception ex)
     {
@@ -98,8 +98,6 @@ END
     var predeployPath = Path.Combine(projectDir, "Releases.Direct_Framework", "next", "db", "DeploymentScripts", "1-PreDacpacDeployment", "PreDacpacDeployment.sql");
 
     RunSqlCmdScript(predeployPath, ConnectionString);
-
-    var bob = 42;
 
     // 3. Populate with sample/test data
     //var sampleDataScript = File.ReadAllText(Path.Combine("Migrations", "MigrationTestData", "SampleData_v1.sql"));

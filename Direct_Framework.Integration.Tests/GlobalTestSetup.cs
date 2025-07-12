@@ -1,5 +1,6 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Direct_Framework.Integration.Tests.Infrastructure;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Direct_Framework.Integration.Tests;
 
@@ -9,37 +10,37 @@ namespace Direct_Framework.Integration.Tests;
 [TestClass]
 public sealed class GlobalTestSetup
 {
-    /// <summary>
-    /// Gets the connection string for the shared test database
-    /// </summary>
-    public static string ConnectionString => SqlServerContainerManager.ConnectionString;
+  /// <summary>
+  /// Gets the connection string for the shared test database
+  /// </summary>
+  public static string ConnectionString => SqlServerContainerManager.ConnectionString;
 
-    /// <summary>
-    /// Initializes the shared SQL Server container and deploys the DACPAC
-    /// This runs once per test assembly
-    /// </summary>
-    [AssemblyInitialize]
-    public static async Task AssemblyInitialize(TestContext context)
-    {
-        await SqlServerContainerManager.InitializeAsync();
-    }
+  /// <summary>
+  /// Initializes the shared SQL Server container and deploys the DACPAC
+  /// This runs once per test assembly
+  /// </summary>
+  [AssemblyInitialize]
+  public static async Task AssemblyInitialize(TestContext context)
+  {
+    await SqlServerContainerManager.InitializeAsync();
+  }
 
-    /// <summary>
-    /// Cleans up the shared container
-    /// This runs once per test assembly
-    /// </summary>
-    [AssemblyCleanup]
-    public static async Task AssemblyCleanup()
-    {
-        await SqlServerContainerManager.DisposeAsync();
-    }
+  /// <summary>
+  /// Cleans up the shared container
+  /// This runs once per test assembly
+  /// </summary>
+  [AssemblyCleanup]
+  public static async Task AssemblyCleanup()
+  {
+    await SqlServerContainerManager.DisposeAsync();
+  }
 
-    /// <summary>
-    /// Resets the database to a clean state
-    /// Can be called by individual test classes that need a fresh database
-    /// </summary>
-    public static async Task ResetDatabaseAsync()
-    {
-        await SqlServerContainerManager.ResetDatabaseAsync();
-    }
+  /// <summary>
+  /// Resets the database to a clean state
+  /// Can be called by individual test classes that need a fresh database
+  /// </summary>
+  public static async Task ResetDatabaseAsync()
+  {
+    await SqlServerContainerManager.ResetDatabaseAsync();
+  }
 }
