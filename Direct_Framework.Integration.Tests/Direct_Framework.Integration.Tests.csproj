@@ -7,6 +7,9 @@
     <OutputType>Exe</OutputType>
     <EnableMSTestRunner>true</EnableMSTestRunner>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\..\default.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Microsoft.SqlServer.DacFx" />

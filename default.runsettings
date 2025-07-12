@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+  <Parallelize>
+    <Workers>4</Workers>
+    <Scope>ClassLevel</Scope>
+  </Parallelize>
+
   <DataCollectionRunSettings>
     <DataCollectors>
       <!-- Microsoft Code Coverage data collector -->
