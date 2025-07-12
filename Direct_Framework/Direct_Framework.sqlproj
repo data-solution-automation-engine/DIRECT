@@ -2,6 +2,9 @@
 <Project DefaultTargets="Build">
   <Sdk Name="Microsoft.Build.Sql" Version="2.0.0-preview.2" />
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
     <!-- version definitions, dsp monikers and reference dacpac names:
       https://github.com/microsoft/dacfx
       https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/concepts/target-platform
