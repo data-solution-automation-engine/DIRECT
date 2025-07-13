@@ -1,9 +1,24 @@
 {
   "files.associations": {
-    "*.sqlproj": "xml"
+    "*.{sqlproj,csproj}": "xml"
   },
+
+  "git.autofetch": true,
+
+  "editor.rulers": [
+    {
+      "column": 80,
+      "color": "#333333"
+    },
+    {
+      "column": 120,
+      "color": "#772233"
+    }
+  ],
+
   "editor.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', monospace",
   "editor.fontLigatures": true,
+
   "mssql.intelliSense.enableIntelliSense": true,
   "mssql.intelliSense.enableErrorChecking": true,
   "mssql.intelliSense.enableSuggestions": true,
@@ -13,5 +28,5 @@
   "mssql.format.datatypeCasing": "uppercase",
   "mssql.format.keywordCasing": "uppercase",
   "mssql.format.placeCommasBeforeNextStatement": true,
-  "mssql.format.placeSelectStatementReferencesOnNewLine": true,
+  "mssql.format.placeSelectStatementReferencesOnNewLine": true
 }
