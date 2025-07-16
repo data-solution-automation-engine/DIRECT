@@ -33,6 +33,13 @@
       <HintPath>..\Releases.Direct_Framework\next\db\Direct_Framework.dacpac</HintPath>
     </ArtifactReference>
   </ItemGroup>
+  <ItemGroup>
+    <!-- Add a reference to the release dacpac instead of the live project
+         This should allow slight separation of concern while adding a build dependency -->
+    <ArtifactReference Include="..\Reference_Dacpacs\tSQLt.2019.dacpac">
+      <HintPath>..\Reference_Dacpacs\tSQLt.2019.dacpac</HintPath>
+    </ArtifactReference>
+  </ItemGroup>
   <PropertyGroup>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
