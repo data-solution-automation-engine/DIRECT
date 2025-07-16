@@ -87,10 +87,23 @@ $directFrameworkDatabaseName = "Direct_Framework"
 $directFrameworkVersion = "current" # "current"/"next"
 $directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkVersion/db/Direct_Framework.dacpac"
 
-# connectionString: define valid connection string for SQL Server
-# with the system database "master" as the defined database/Initial Catalog
-$connectionString =
-"Server=$localAddress,${sqlServerPort};Database=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+# define valid connection strings for SQL Server
+
+# to system database "master"
+$masterConnectionString =
+"Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+
+# to Testing Framework database
+$testingConnectionString =
+"Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+
+
+# to Direct Framework database
+$directConnectionString =
+"Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+
+$tsqltExampleConnectionString =
+"Server=$localAddress,${sqlServerPort};Initial Catalog=tSQLt_Example;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # nap controls, increase or decrease as needed for the current host
 $maxAttempts = 10
@@ -105,7 +118,7 @@ $napLength = 5 # seconds
 ################################################################################
 
 Write-Host "Container Image Name: $imageName" -ForegroundColor Cyan
-Write-Host "Connection String: $connectionString" -ForegroundColor Cyan
+Write-Host "Master Connection String: $masterConnectionString" -ForegroundColor Cyan
 
 # Prerequisites:
 # - Podman must be installed and running, with direct access to the Podman CLI
@@ -251,7 +264,7 @@ Write-Host "Container '$containerName' logs end" -ForegroundColor Cyan
 
 # Display the SQL Server connection information
 Write-Host "You can connect to SQL Server using the following connection string:" -ForegroundColor Blue
-Write-Host "$connectionString" -ForegroundColor Blue
+Write-Host "$masterConnectionString" -ForegroundColor Blue
 
 # Reminder to change the sa use password as needed if needed
 Write-Host "Change the sa user password as needed to meet security requirements." -ForegroundColor Yellow
@@ -265,7 +278,7 @@ $attempt = 1
 Write-Host "Waiting for server to start, running SQL Server connection tests..." -ForegroundColor Cyan
 while ($attempt -le $maxAttempts -and -not $success) {
   try {
-    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection($masterConnectionString)
     $sqlConnection.Open()
     Write-Host "SQL Server connection test successful on attempt $attempt." -ForegroundColor Green
     $sqlConnection.Close()
@@ -428,6 +441,14 @@ function Write-Heading {
   Write-Host ""
 }
 
+function Write-Success {
+  param(
+    [string]$Message = "Success"
+  )
+  # Green bold ansi codes to output
+  Write-Output "`e[32m`e[1m$Message`e[0m"
+}
+
 <#
 .SYNOPSIS
   Extracts the version from a DACPAC file.
@@ -497,6 +518,77 @@ function Test-PortInUse {
   }
 }
 
+<#
+.SYNOPSIS
+  Executes a Sql File on a SQL Server database.
+.DESCRIPTION
+  Executes SQL file using sqlcmd against a SQL Server instance.
+.PARAMETER SqlPath
+  The path to the SQL file to deploy.
+.PARAMETER ConnectionString
+  The connection string for the SQL Server instance.
+.EXAMPLE
+  Invoke-SqlCmd -SqlPath "./sqlFile.sql" -ConnectionString $cs
+.NOTES
+  Returns $true if invocation succeeds, otherwise $false.
+#>
+function Invoke-SqlCmd {
+  param(
+    [Parameter(Mandatory = $true)][string]$SqlPath,
+    [Parameter(Mandatory = $true)][string]$ConnectionString
+  )
+  try {
+
+    if (-not (Test-Path $SqlPath)) {
+      Write-Error "Returning: '$SqlPath' file not found"
+      return $false
+    }
+
+    if (-Not $ConnectionString) {
+      Write-Error "Returning: connection string not provided."
+      return $false
+    }
+
+    if (-not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
+      Write-Error "The 'sqlcmd' tool can't be found. It might not be installed or not in your PATH."
+      Write-Host "Please install it before running this script."
+      Write-Host "Install via: 'winget install sqlcmd' on Windows."
+      Write-Host "More information: https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility"
+      return $false
+    }
+
+    # Parse the connection string
+    $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder($ConnectionString)
+
+    # Map to sqlcmd parameters
+    $sqlcmdArgs = @(
+      "-S", $builder["Server"]
+      "-d", $builder["Initial Catalog"]
+      "-U", $builder["User ID"]
+      "-P", $builder["Password"]
+      "-i", $SqlPath
+    )
+
+    # Run the sqlcmd command
+    $sqlcmdOutput = & sqlcmd @sqlcmdArgs
+
+    Write-Heading -Heading "process results"
+    Write-Host ($sqlcmdOutput -join "`n")  -ForegroundColor Cyan
+
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "Deployed successfully." -ForegroundColor Green
+      return $true
+    }
+    else {
+      Write-Error "Deployment failed."
+      return $false
+    }
+  }
+  catch {
+    Write-Error "An error occurred while executing the SQL file:`n$_"
+    return $false
+  }
+}
 
 <#
 .SYNOPSIS
@@ -564,6 +656,10 @@ function Deploy-Dacpac {
 
     $builder["Initial Catalog"] = "master"
     $MasterConnectionString = $builder.ConnectionString
+
+    $builder["Initial Catalog"] = $DatabaseName
+    $ConnectionString = $builder.ConnectionString
+
     $DacpacFileName = [System.IO.Path]::GetFileName($DacpacPath)
     if ([string]::IsNullOrWhiteSpace($Description)) {
       $Description = [System.IO.Path]::GetFileNameWithoutExtension($DacpacPath)
@@ -673,13 +769,52 @@ function Deploy-Dacpac {
   }
 }
 
+# End of preamble setup, functions and helpers
+Write-Success "SQL Server container setup completed."
+
+##############################################################################
+##############################################################################
+
+################################################################################
+# Reconfigure the server to allow tSQLt executions (clr enable = 1)
+################################################################################
+try {
+  Write-Host "Disabling clr security, enabling clr on server - to support tSQLt" -ForegroundColor Cyan
+  $MasterConnectionString
+  $sqlConnection = New-Object System.Data.SqlClient.SqlConnection($MasterConnectionString)
+  $sqlConnection.Open()
+  $cmd = $sqlConnection.CreateCommand()
+  $cmd.CommandText = "EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+EXEC sp_configure 'clr strict security', 0;
+RECONFIGURE;
+EXEC sp_configure 'clr enabled', 1;
+RECONFIGURE;"
+  $cmd.ExecuteNonQuery()
+
+  Write-Host "reconfigured." -ForegroundColor Green
+}
+catch {
+  Write-Error "Failed to enable clr:`n$_"
+}
+finally {
+  if ($sqlConnection?.State -eq 'Open') {
+    $sqlConnection.Close()
+  }
+}
+
 ################################################################################
 # DEPLOY TESTING FRAMEWORK DACPAC
 ################################################################################
 
 if ($AutoDeploy) {
   $result = Deploy-Dacpac -DacpacPath $testingFrameworkDacpacFileName `
-    -ConnectionString $ConnectionString -Description "Testing Framework DACPAC" -DatabaseName $testingFrameworkDatabaseName -AutoDeploy $autoDeploy -AutoPurge $autoPurge
+    -ConnectionString $masterConnectionString `
+    -Description "Testing Framework DACPAC" `
+    -DatabaseName $testingFrameworkDatabaseName `
+    -AutoDeploy $autoDeploy `
+    -AutoPurge $autoPurge
+
   if (-not $result) {
     Write-Error "Testing Framework DACPAC deployment failed. Please review."
   }
@@ -693,7 +828,12 @@ else {
 ################################################################################
 
 if ($AutoDeploy) {
-  $result = Deploy-Dacpac -DacpacPath $directFrameworkDacpacFileName -ConnectionString $ConnectionString -Description "Direct Framework DACPAC ('${directFrameworkVersion}')" -DatabaseName $directFrameworkDatabaseName -AutoDeploy $autoDeploy -AutoPurge $autoPurge
+  $result = Deploy-Dacpac -DacpacPath $directFrameworkDacpacFileName `
+    -ConnectionString $masterConnectionString `
+    -Description "Direct Framework DACPAC ('${directFrameworkVersion}')" `
+    -DatabaseName $directFrameworkDatabaseName `
+    -AutoDeploy $autoDeploy -AutoPurge $autoPurge
+
   if (-not $result) {
     Write-Error "Direct Framework DACPAC deployment failed. Please review."
   }
@@ -702,4 +842,84 @@ else {
   Write-Host "AutoDeploy is off - Skipping Direct Framework deployment."
 }
 
-Write-Host "Container '$containerName' is deployed and ready for use." -ForegroundColor Green
+################################################################################
+# tSQLt SETUP AND DEPLOYMENT
+################################################################################
+# tSQLt is a database unit testing framework for SQL Server. (https://tsqlt.org/)
+# it has its own deployment and setup process using a script approach.
+
+# install and set up in the Direct Framework database to allow tSQLt tests
+if ($AutoDeploy) {
+  try {
+    Write-Heading -Heading "Installing tSQLt Framework into '$directFrameworkDatabaseName'"
+
+    $result = Invoke-SqlCmd `
+      -SqlPath "Direct_Framework.tsqlt.Tests/tSQLt/tSQLt.class.sql" `
+      -ConnectionString $directConnectionString
+
+    if (-not $result) {
+      Write-Error "tSQLt deployment failed. Please review."
+    }
+  }
+  catch {
+    Write-Error "Failed to install tSQLt in '$directFrameworkDatabaseName':`n$_"
+  }
+
+  # Deploy and run the tSQLt example tests in a separate database 'tSQLt_Example'
+  try {
+    Write-Heading -Heading "Installing tSQLt examples into 'tSQLt_Example'"
+
+    $result = Invoke-SqlCmd -SqlPath "Direct_Framework.tsqlt.Tests/tSQLt/Example.sql" `
+      -ConnectionString $masterConnectionString
+
+    if (-not $result) {
+      Write-Error "tSQLt example deployment failed. Please review."
+    }
+  }
+  catch {
+    Write-Error "Failed to install tSQLt examples into 'tSQLt_Example':`n$_"
+  }
+
+  # Build the sqlcmd command
+  $sqlcmdArgs = @(
+    "-S", "$localAddress,$sqlServerPort"
+    "-d", "tSQLt_Example"
+    "-U", "sa"
+    "-P", "$sqlPassword"
+    "-Q", "EXEC tSQLt.RunAll;"
+  )
+
+  # Run sqlcmd and capture output
+  $output = & sqlcmd @sqlcmdArgs
+
+  # Print the output
+  foreach ($line in $output) {
+    if ($line -match '\|Success\|') {
+      Write-Host $line -ForegroundColor Green
+    }
+    elseif ($line -match '\|Failure\|') {
+      Write-Host $line -ForegroundColor Red
+    }
+
+    # Also add the Skipped and Errored cases, check their output codes.
+
+    elseif ($line -match '^Test Case Summary: (\d+) test case\(s\) executed, (\d+) succeeded, (\d+) skipped, (\d+) failed, (\d+) errored\.') {
+      $exec = $matches[1]
+      $succ = $matches[2]
+      $skip = $matches[3]
+      $fail = $matches[4]
+      $err = $matches[5]
+      $colored = "Test Case Summary: `e[36m$exec test case(s) executed`e[0m, " +
+      "`e[32m$succ succeeded`e[0m, " +
+      "`e[33m$skip skipped`e[0m, " +
+      "`e[31m$fail failed`e[0m, " +
+      "`e[31m$err errored`e[0m."
+      Write-Output $colored
+    }
+    else {
+      Write-Host $line
+    }
+  }
+}
+
+Write-Success "Container '$containerName' is deployed and ready for use."
