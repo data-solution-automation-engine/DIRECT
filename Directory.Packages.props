@@ -24,6 +24,6 @@
     <PackageVersion Include="Roslynator.Refactorings" Version="4.13.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.6.0" />
-    <PackageVersion Include="tSQLt.Edge" Version="0.9.9" />
+    <!--<PackageVersion Include="tSQLt.Edge" Version="0.9.9" />-->
   </ItemGroup>
 </Project>

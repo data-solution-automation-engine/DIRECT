@@ -4,7 +4,7 @@
  *
  * https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * DIRECT model v2.1.0
  *
  *
  * Purpose:
@@ -42,18 +42,18 @@ PRINT @BatchInstanceId;
  ******************************************************************************/
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
-(
+  (
   -- Mandatory parameters
-  @BatchCode                    NVARCHAR(1000),
+  @BatchCode                    NVARCHAR(1000)
   -- Optional parameters
-  @ParentBatchInstanceId        BIGINT          = 0,
-  @Debug                        CHAR(1)         = 'N',
-  @ExecutionContext             NVARCHAR(4000)  = N'',
+  ,@ParentBatchInstanceId        BIGINT          = 0
+  ,@Debug                        CHAR(1)         = 'N'
+  ,@ExecutionContext             NVARCHAR(4000)  = N''
   -- Output parameters
-  @BatchInstanceId              BIGINT          = NULL OUTPUT,
-  @BatchInstanceStartTimestamp  DATETIME2       = NULL OUTPUT,
-  @SuccessIndicator             CHAR(1)         = 'N' OUTPUT,
-  @MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
+  ,@BatchInstanceId              BIGINT          = NULL OUTPUT
+  ,@BatchInstanceStartTimestamp  DATETIME2       = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN TRY
@@ -98,44 +98,45 @@ BEGIN TRY
 
   -- Local procedure variables
   DECLARE @BatchId INT;
-  SELECT @BatchId = [omd].[GetBatchIdByName](@BatchCode);
+  SELECT
+  @BatchId = [omd].[GetBatchIdByName](@BatchCode);
 
   -- Exception handling
   -- The Batch Id cannot be NULL
   IF @BatchId IS NULL
   BEGIN
-    SET @LogMessage = N'The Batch Id was not found for Batch Code ''' + @BatchCode + '''';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-    SET @EventDetail = LEFT(@LogMessage, 4000);
-    EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
+  SET @LogMessage = N'The Batch Id was not found for Batch Code ''' + @BatchCode + '''';
+  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+  SET @EventDetail = LEFT(@LogMessage, 4000);
+  EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
 
-    GOTO FailureEndOfProcedure;
+  GOTO FailureEndOfProcedure;
 
-  END
+END
 
   SET @LogMessage =  N'For Batch Code ''' + @BatchCode + ''' the following Batch Id was found in omd.BATCH: ' + CONVERT(NVARCHAR(10), @BatchId);
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
   BEGIN TRY
 
     INSERT INTO omd.BATCH_INSTANCE
-    (
-      [BATCH_ID],
-      [PARENT_BATCH_INSTANCE_ID],
-      [START_TIMESTAMP],
-      [EXECUTION_STATUS_CODE],
-      [NEXT_RUN_STATUS_CODE],
-      [INTERNAL_PROCESSING_CODE],
-      [EXECUTION_CONTEXT]
-    )
-    VALUES
-    (
-      @BatchId,
-      @ParentBatchInstanceId,
-      @UtcNow,            -- Start Timestamp (UTC)
-      N'Executing',       -- Execution Status Code
-      N'Proceed',         -- Next Run Indicator
-      N'Abort',           -- Processing Indicator
-      @ExecutionContext   -- Execution Context, runtime information
+  (
+  [BATCH_ID],
+  [PARENT_BATCH_INSTANCE_ID],
+  [START_TIMESTAMP],
+  [EXECUTION_STATUS_CODE],
+  [NEXT_RUN_STATUS_CODE],
+  [INTERNAL_PROCESSING_CODE],
+  [EXECUTION_CONTEXT]
+  )
+VALUES
+  (
+    @BatchId
+    ,@ParentBatchInstanceId
+    ,@UtcNow -- Start Timestamp (UTC)
+    ,N'Executing' -- Execution Status Code
+    ,N'Proceed' -- Next Run Indicator
+    ,N'Abort' -- Processing Indicator
+    ,@ExecutionContext   -- Execution Context, runtime information
     );
 
     SET @BatchInstanceId = SCOPE_IDENTITY();
@@ -208,8 +209,8 @@ BEGIN TRY
 
   IF @Debug = 'Y'
   BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
+  EXEC [omd].[PrintMessageLog] @MessageLog;
+END
 
 END TRY
 BEGIN CATCH
@@ -229,28 +230,28 @@ BEGIN CATCH
   DECLARE @ErrorLine INT;
 
   SELECT
-    @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-    @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-    @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-    @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-    @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-    @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
+  @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
+  ,@ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              )
+  ,@ErrorState     = COALESCE(ERROR_STATE(),       -1              )
+  ,@ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  )
+  ,@ErrorLine      = COALESCE(ERROR_LINE(),        -1              )
+  ,@ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + '''';
-    PRINT 'Error Message: '   + @ErrorMessage;
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
-    PRINT 'Error Procedure: ' + @ErrorProcedure;
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
+  PRINT 'Error in '''       + @SpName + '''';
+  PRINT 'Error Message: '   + @ErrorMessage;
+  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+  PRINT 'Error Procedure: ' + @ErrorProcedure;
+  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+  PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
+  -- Spool message log
+  EXEC [omd].[PrintMessageLog] @MessageLog;
 
-  END
+END
 
   SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
   SET @EventReturnCode = ERROR_NUMBER();

@@ -1,24 +1,22 @@
 /*******************************************************************************
- * [omd].[CreateLoadWindow]
+ * [omd].[SetSourceControlValues]
  *******************************************************************************
  *
  * https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
- *
+ * DIRECT Framework v2.1.0
  *
  * Purpose:
- *   Create a Load Window for a Module Instance.
+ *   Create a Load Window parameter value for source control.
  *
  * Inputs:
  *   - Module Instance Id, the currently involved Module Instance Id
- *   - Load Window Attribute Name, the name of the attribute used to determine the load window
- *   - Module Instance Id Column Name
+ *   - Load Window Attribute Name,
+ *     the name of the attribute used to determine the load window
  *   - Debug Flag (Y/N, defaults to N)
  *
  * Outputs:
- *   - Start Value, can be datetime or identifier, datetime, whatever.
- *   - End Value
+ *   - Source Control Id for the newly created Load Window
  *   - Success Indicator (Y/N)
  *   - Message Log
  *
@@ -27,36 +25,33 @@
  *******************************************************************************
 
 DECLARE
-  @StartValue NVARCHAR(MAX),
-  @EndValue NVARCHAR(MAX)
+  @SourceControlId BIGINT
 
-EXEC [omd].[CreateLoadWindow]
+EXEC [omd].[SetSourceControlValues]
   @ModuleInstanceId = <ModuleInstanceId>,
   @Debug = N'Y',
-  @StartValue = @StartValue OUTPUT,
-  @EndValue = @EndValue OUTPUT
+  @SourceControlId = @SourceControlId OUTPUT
 
 SELECT
-  @StartValue as N'@StartValue',
-  @EndValue as N'@EndValue'
+  @SourceControlId as N'@SourceControlId'
 
  *******************************************************************************
  *
  ******************************************************************************/
 
-CREATE PROCEDURE [omd].[CreateLoadWindow]
+CREATE PROCEDURE [omd].[SetSourceControlValues]
   (
   -- Mandatory parameters
   @ModuleInstanceId             BIGINT
+  ,@StartValue                  NVARCHAR(100) = NULL
+  ,@EndValue                    NVARCHAR(100) = NULL
   -- Optional parameters
-  ,@LoadWindowAttributeName      NVARCHAR(1000) = 'INSCRIPTION_TIMESTAMP'
-  ,@ModuleInstanceIdColumnName   NVARCHAR(1000) = 'MODULE_INSTANCE_ID'
-  ,@Debug                        CHAR(1) = 'N'
+  ,@LoadWindowAttributeName      NVARCHAR(1000)  = 'INSCRIPTION_TIMESTAMP'
+  ,@Debug                        CHAR(1)         = 'N'
   -- Output parameters
-  ,@StartValue                   NVARCHAR(MAX) = NULL OUTPUT
-  ,@EndValue                     NVARCHAR(MAX) = NULL OUTPUT
-  ,@SuccessIndicator             CHAR(1)       = 'N' OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX) = N'' OUTPUT
+  ,@SourceControlId              BIGINT          = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN TRY
@@ -84,27 +79,23 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceId', @LogMessage, @MessageLog)
   SET @LogMessage = @LoadWindowAttributeName;
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
-  SET @LogMessage = @ModuleInstanceIdColumnName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceIdColumnName', @LogMessage, @MessageLog)
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000) = N'';
   DECLARE @EventReturnCode NVARCHAR(100);
-  DECLARE @StartValueDate NVARCHAR(100);
-  DECLARE @EndValueDate NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
  ******************************************************************************/
 
-  SET @LogMessage = 'Start of the Create Load Window process (' + @SpName +').'
+  SET @LogMessage = 'Start of the Set Source Control Value process (' + @SpName + ').'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   -- Local variables (Module Id and source Data Object)
   DECLARE @ModuleId INT = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
 
-  -- Exception handling - The Module Id cannot be NULL
-  IF @ModuleId IS NULL
+  -- Exception handling - The Module Instance Id or Module Id cannot be NULL
+  IF @ModuleInstanceId IS NULL OR @ModuleId IS NULL OR @ModuleId = 0
   BEGIN
   SET @LogMessage = 'The Module Id was not found for Module Instance Id ''' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + '''';
   SET @EventDetail = LEFT(@LogMessage, 4000);
@@ -114,92 +105,8 @@ BEGIN TRY
   GOTO FailureEndOfProcedure
 END
 
-  -- Figure out what the source is.
-  DECLARE @SourceDataObject NVARCHAR(1000);
-  SELECT
-  @SourceDataObject = DATA_OBJECT_SOURCE
-FROM
-  omd.MODULE
-WHERE MODULE_ID = @ModuleId;
-
   SET @LogMessage = 'For Module Instance Id ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' the following Module Id was found in omd.MODULE: ' + CONVERT(NVARCHAR(10), @ModuleId) + '.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-  SET @LogMessage = 'For Module Id ' + CONVERT(NVARCHAR(10), @ModuleId) + ' the Source Data Object is ' + @SourceDataObject + '.'
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-  -- Exception handling
-  IF @ModuleId = NULL OR @ModuleId = 0
-  BEGIN;
-  THROW 50000, 'The Module Id could not be retrieved based on the Module Instance Id.', 1
-END
-
-  -- Parse the start value as input, or revert to default.
-  DECLARE @StartValueSql NVARCHAR(MAX);
-
-  BEGIN
-  IF @StartValue IS NOT NULL
-    BEGIN
-
-    SET @LogMessage =  'A load window start value was provided: ' + CONVERT(NVARCHAR(1000), @StartValue)
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-
-    SET @StartValueSql = '''' + CONVERT(NVARCHAR(1000), @StartValue) + '''';
-  END
-  ELSE
-    BEGIN
-    SET @StartValueSql =
-'SELECT
-  MAX(END_VALUE) AS NEW_START_VALUE
-FROM
-(
-  SELECT
-   ROW_NUMBER() OVER (PARTITION BY A.MODULE_ID ORDER BY INSERT_TIMESTAMP DESC) AS RN
-  ,END_VALUE
-  FROM omd.SOURCE_CONTROL A
-  JOIN omd.MODULE_INSTANCE B ON (A.MODULE_INSTANCE_ID = B.MODULE_INSTANCE_ID)
-  WHERE B.MODULE_ID = ' + CONVERT(NVARCHAR(10), @ModuleId) + '
-  -- Default value
-  UNION
-  SELECT 1,''0001-01-01''
-) sub
-WHERE RN=1';
-
-    SET @LogMessage =  'No load window start value was provided, so the most recent value will be retrieved from the source control table for the source data object.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-    SET @LogMessage =  'The following code will be used to determine the start value: ' + CHAR(10) + @StartValueSql
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-  END
-END
-
-  -- Parse the end value as input, or revert to default.
-  DECLARE @EndValueSql NVARCHAR(MAX);
-  BEGIN
-  IF @EndValue IS NOT NULL
-    BEGIN
-
-    SET @LogMessage =  'A load window end value was provided: ' + CONVERT(NVARCHAR(100), @EndValue)
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-    SET @EndValueSql = '''' + CONVERT(NVARCHAR(100), @EndValue) + '''';
-  END
-    ELSE
-    BEGIN
-
-    SET @EndValueSql =
-'SELECT COALESCE(MAX(' + @LoadWindowAttributeName + '),''0001-01-01'') AS END_VALUE
-FROM ' + @SourceDataObject + ' sdo
-JOIN omd.MODULE_INSTANCE modinst ON sdo.' + @ModuleInstanceIdColumnName + ' = modinst.MODULE_INSTANCE_ID
-WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';
-
-    SET @LogMessage =  'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-    SET @LogMessage =  'The following code will be used to determine the end value: ' + CHAR(10) + @EndValueSql
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-  END
-END
 
   DECLARE @SqlStatement NVARCHAR(MAX);
   SET @SqlStatement = N'
@@ -216,34 +123,24 @@ END
        ' + CONVERT(NVARCHAR(10), @ModuleId) + '
       ,' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + '
       ,SYSUTCDATETIME()
-      ,(
-         '+@StartValueSql+'
-       ) -- Interval Start Value
-       , (
-         '+@EndValueSql+'
-       ) -- Interval End Value
+      ,' + @StartValue + '
+      ,' + @EndValue + '
       )'
 
-  SET @LogMessage =  'Load Window SQL statement is: ' + @SqlStatement
+  SET @LogMessage =  'insert statement is: ' + @SqlStatement
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   EXEC (@SqlStatement);
 
-  -- Retrieve values for return.
-  SELECT
-  @StartValue = [omd].[GetModuleLoadWindowValue](@ModuleId, 1);
-  SELECT
-  @EndValue = [omd].[GetModuleLoadWindowValue](@ModuleId, 2);
-
+  SET @SourceControlId = SCOPE_IDENTITY();
   SET @SuccessIndicator = 'Y';
 
   GOTO EndOfProcedure;
 
   FailureEndOfProcedure:
 
+    SET @SourceControlId = NULL;
     SET @SuccessIndicator = 'N'
-    SET @StartValue = NULL;
-    SET @EndValue = NULL;
 
     SET @LogMessage = N'' + @SpName + ' ended in failure.';
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
@@ -270,6 +167,7 @@ END
 END TRY
 BEGIN CATCH
   -- SP-wide error handler and logging
+  SET @SourceControlId = NULL;
   SET @SuccessIndicator = 'N'
   SET @StartValue = NULL;
   SET @EndValue = NULL;
@@ -294,18 +192,17 @@ BEGIN CATCH
 
   IF @Debug = 'Y'
   BEGIN
-  PRINT 'Error in '''       + @SpName + ''''
-  PRINT 'Error Message: '   + @ErrorMessage
-  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-  PRINT 'Error Procedure: ' + @ErrorProcedure
-  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-  PRINT 'SuccessIndicator: '+ @SuccessIndicator
+  PRINT 'Error in '''       + @SpName + '''';
+  PRINT 'Error Message: '   + @ErrorMessage;
+  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+  PRINT 'Error Procedure: ' + @ErrorProcedure;
+  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+  PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
   -- Spool message log
   EXEC [omd].[PrintMessageLog] @MessageLog;
-
 END
 
   SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
@@ -316,5 +213,4 @@ END
     @EventReturnCode   = @EventReturnCode,
     @ModuleInstanceId  = @ModuleInstanceId;
 
-  THROW
 END CATCH

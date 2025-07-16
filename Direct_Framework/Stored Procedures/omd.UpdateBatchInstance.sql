@@ -37,15 +37,15 @@ PRINT @BatchInstanceId;
  ******************************************************************************/
 
 CREATE PROCEDURE [omd].[UpdateBatchInstance]
-(
+  (
   -- Mandatory parameters
-  @BatchInstanceId        BIGINT,
+  @BatchInstanceId        BIGINT
   -- Optional parameters
-  @EventCode              NVARCHAR(100) = NULL,
-  @Debug                  CHAR(1)       = 'N',
-    -- Output parameters
-  @SuccessIndicator       CHAR(1)       = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX) = N'' OUTPUT
+  ,@EventCode              NVARCHAR(100) = NULL
+  ,@Debug                  CHAR(1)       = 'N'
+  -- Output parameters
+  ,@SuccessIndicator       CHAR(1)       = 'N' OUTPUT
+  ,@MessageLog             NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
 BEGIN TRY
@@ -86,16 +86,16 @@ BEGIN TRY
   -- Exception handling
   IF @EventCode IS NULL OR @EventCode NOT IN ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
   BEGIN
-    ;THROW 50000, 'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure, and Rollback', 1;
-  END
+  ;THROW 50000, 'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure, and Rollback', 1;
+END
   -- Abort event
   -- This is an end-state event (no further processing)
   IF @EventCode = 'Abort'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.';
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.';
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET
       EXECUTION_STATUS_CODE     = 'Aborted',
       INTERNAL_PROCESSING_CODE  = 'Abort',
@@ -103,18 +103,18 @@ BEGIN TRY
       END_TIMESTAMP             = SYSUTCDATETIME()
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- Skip / Cancel event
   -- This is an end-state event (no further processing)
   IF @EventCode = 'Cancel'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode+'.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode+'.'
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET
       EXECUTION_STATUS_CODE     = N'Cancelled',
       INTERNAL_PROCESSING_CODE  = N'Cancel',
@@ -122,18 +122,18 @@ BEGIN TRY
       END_TIMESTAMP             = SYSUTCDATETIME()
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- Success event
   -- This is an end-state event (no further processing)
   IF @EventCode = 'Success'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET
       EXECUTION_STATUS_CODE     = 'Succeeded',
       NEXT_RUN_STATUS_CODE      = 'Proceed',
@@ -141,59 +141,59 @@ BEGIN TRY
       END_TIMESTAMP             = SYSUTCDATETIME()
     WHERE BATCH_INSTANCE_ID     = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- Failure event
   -- This is an end-state event (no further processing)
   IF @EventCode = 'Failure'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    -- Note that the default behaviour is that Next Run Indicator at Batch level is 'Proceed'.
-    -- This will only skip/cancel already successfully completed Modules when a failed Batch is rerun.
+  -- Note that the default behavior is that Next Run Indicator at Batch level is 'Proceed'.
+  -- This will only skip/cancel already successfully completed Modules when a failed Batch is rerun.
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET
       EXECUTION_STATUS_CODE   = 'Failed',
       NEXT_RUN_STATUS_CODE    = 'Proceed',
       END_TIMESTAMP           = SYSUTCDATETIME()
     WHERE  BATCH_INSTANCE_ID = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- Rollback event
   IF @EventCode = 'Rollback'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET
       INTERNAL_PROCESSING_CODE = 'Rollback'
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- Proceed event
   IF @EventCode = 'Proceed'
   BEGIN
-    SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+  SET @LogMessage = 'Setting the Batch Instance ' + CONVERT(NVARCHAR(20), @BatchInstanceId) + ' to ' + @EventCode + '.'
+  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-    UPDATE [omd].[BATCH_INSTANCE]
+  UPDATE [omd].[BATCH_INSTANCE]
     SET INTERNAL_PROCESSING_CODE = 'Proceed'
     WHERE BATCH_INSTANCE_ID = @BatchInstanceId
 
-    GOTO EndOfProcedure
+  GOTO EndOfProcedure
 
-  END
+END
 
   -- End of procedure label
   EndOfProcedure:
@@ -209,8 +209,8 @@ BEGIN TRY
 
   IF @Debug = 'Y'
   BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
+  EXEC [omd].[PrintMessageLog] @MessageLog;
+END
 
 END TRY
 BEGIN CATCH
@@ -227,28 +227,28 @@ BEGIN CATCH
   DECLARE @ErrorLine INT;
 
   SELECT
-    @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-    @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-    @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-    @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-    @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-    @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
+  @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
+  ,@ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              )
+  ,@ErrorState     = COALESCE(ERROR_STATE(),       -1              )
+  ,@ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  )
+  ,@ErrorLine      = COALESCE(ERROR_LINE(),        -1              )
+  ,@ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Error in '''       + @SpName + '''';
-    PRINT 'Error Message: '   + @ErrorMessage;
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
-    PRINT 'Error Procedure: ' + @ErrorProcedure;
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator;
+  PRINT 'Error in '''       + @SpName + '''';
+  PRINT 'Error Message: '   + @ErrorMessage;
+  PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity);
+  PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState);
+  PRINT 'Error Procedure: ' + @ErrorProcedure;
+  PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine);
+  PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber);
+  PRINT 'SuccessIndicator: '+ @SuccessIndicator;
 
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
+  -- Spool message log
+  EXEC [omd].[PrintMessageLog] @MessageLog;
 
-  END
+END
 
   SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
   SET @EventReturnCode = ERROR_NUMBER();

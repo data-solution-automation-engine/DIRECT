@@ -19,39 +19,43 @@ CREATE FUNCTION [omd].[GetModuleLoadWindowValue]
   @ModuleId INT,
   @start_or_end TINYINT
 )
-RETURNS DATETIME2(7) AS
+RETURNS NVARCHAR(100) AS
 
 BEGIN
-  DECLARE @result DATETIME2(7)
+  DECLARE @result NVARCHAR(100) = NULL;
 
   IF @start_or_end = 1
   BEGIN
-    SELECT @result= START_VALUE
+    SELECT
+      @result = START_VALUE
     FROM
-    (
+      (
       SELECT
-      sct.MODULE_INSTANCE_ID,
-      START_VALUE,
-      END_VALUE,
-      ROW_NUMBER() OVER (PARTITION BY modinst.MODULE_ID ORDER BY INSERT_TIMESTAMP DESC) AS ROW_NR
-      FROM [omd].[SOURCE_CONTROL] sct
-      JOIN [omd].[MODULE_INSTANCE] modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
+        sct.MODULE_INSTANCE_ID
+        ,START_VALUE
+        ,END_VALUE
+        ,ROW_NUMBER() OVER (PARTITION BY modinst.MODULE_ID ORDER BY INSERT_TIMESTAMP DESC) AS ROW_NR
+      FROM
+        [omd].[SOURCE_CONTROL] sct
+        JOIN [omd].[MODULE_INSTANCE] modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
       WHERE modinst.MODULE_ID = @ModuleId
     ) ranksub
     WHERE ROW_NR=1
   END
   ELSE IF @start_or_end = 2
   BEGIN
-    SELECT @result= END_VALUE
+    SELECT
+      @result = END_VALUE
     FROM
-    (
+      (
       SELECT
-      sct.MODULE_INSTANCE_ID,
-      START_VALUE,
-      END_VALUE,
-      ROW_NUMBER() OVER (PARTITION BY modinst.MODULE_ID ORDER BY INSERT_TIMESTAMP DESC) AS ROW_NR
-      FROM [omd].[SOURCE_CONTROL] sct
-      JOIN [omd].[MODULE_INSTANCE] modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
+        sct.MODULE_INSTANCE_ID
+        ,START_VALUE
+        ,END_VALUE
+        ,ROW_NUMBER() OVER (PARTITION BY modinst.MODULE_ID ORDER BY INSERT_TIMESTAMP DESC) AS ROW_NR
+      FROM
+        [omd].[SOURCE_CONTROL] sct
+        JOIN [omd].[MODULE_INSTANCE] modinst ON sct.MODULE_INSTANCE_ID = modinst.MODULE_INSTANCE_ID
       WHERE modinst.MODULE_ID = @ModuleId
     ) ranksub
     WHERE ROW_NR=1

@@ -44,10 +44,10 @@ PRINT @ConsistencyDateTime;
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   (
   -- Mandatory parameters
-   @TableList                NVARCHAR(MAX)
+  @TableList                NVARCHAR(MAX)
   -- Optional parameters
   ,@MeasurementDateTime      DATETIME2(7)  = NULL
-  ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
+  -- ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
   ,@Debug                    CHAR(1)       = 'N'
   -- Output parameters
   ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
@@ -88,8 +88,8 @@ BEGIN TRY
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @TableList', @LogMessage, @MessageLog)
   SET @LogMessage = CONVERT(NVARCHAR(33), @MeasurementDateTime, 126);
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @MeasurementDateTime', @LogMessage, @MessageLog)
-  SET @LogMessage = @LoadWindowAttributeName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
+  -- SET @LogMessage = @LoadWindowAttributeName;
+  -- SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
@@ -108,8 +108,8 @@ BEGIN TRY
 
   IF @MeasurementDateTime IS NULL
   BEGIN
-    SET @MeasurementDateTime = SYSUTCDATETIME();
-  END
+  SET @MeasurementDateTime = SYSUTCDATETIME();
+END
 
   DECLARE @NumberOfExpectedTargetTables INT;-- This is the number of tables expected to be loading, based on the input table array (table list).
   DECLARE @NumberOfActualTargetTables INT;-- This is the number of tables found in the load window / module instance list. It needs to be the same as the expected target tables.
@@ -120,10 +120,10 @@ BEGIN TRY
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Measurement timestamp is ' + CONVERT(VARCHAR(27), @MeasurementDateTime, 126);
-    PRINT 'Consistency date time algorithm started for input table array:';
-    PRINT @TableList
-  END
+  PRINT 'Measurement timestamp is ' + CONVERT(VARCHAR(27), @MeasurementDateTime, 126);
+  PRINT 'Consistency date time algorithm started for input table array:';
+  PRINT @TableList
+END
 
   DECLARE @TableNames TABLE (TABLE_NAME NVARCHAR(MAX));
 
@@ -136,55 +136,55 @@ BEGIN TRY
     -- Splitting the Table_List variable array into rows
     -- Would fail if passed a list of more than 100 tables
     WITH
-    cteSplits
-    (
-       starting_position
+  cteSplits
+  (
+    starting_position
       ,end_position
-    )
-    AS
-    (
-      SELECT
+  )
+  AS
+  (
+          SELECT
         CAST(1 AS BIGINT)
         ,CHARINDEX(',', @TableList)
-      UNION ALL
-        SELECT
-          end_position + 1
-          ,charindex(',', @TableList, end_position + 1)
-        FROM
-          cteSplits
-        WHERE end_position > 0
-      -- Another delimiter was found
-    )
-    ,table_names
-    AS
-    (
+    UNION ALL
       SELECT
-        DISTINCT
-        DATA_STORE_CODE = substring(@TableList, starting_position, CASE WHEN end_position = 0 THEN len(@TableList) ELSE end_position - starting_position END)
+        end_position + 1
+          ,charindex(',', @TableList, end_position + 1)
       FROM
         cteSplits
-    )
-  INSERT @TableNames
-  SELECT
-    DATA_STORE_CODE
-  FROM
-    table_names
+      WHERE end_position > 0
+    -- Another delimiter was found
+  )
+    ,table_names
+  AS
+  (
+    SELECT
+      DISTINCT
+      DATA_STORE_CODE = substring(@TableList, starting_position, CASE WHEN end_position = 0 THEN len(@TableList) ELSE end_position - starting_position END)
+    FROM
+      cteSplits
+  )
+INSERT @TableNames
+SELECT
+  DATA_STORE_CODE
+FROM
+  table_names
 
     IF @Debug = 'Y'
     BEGIN
-    PRINT 'The following rows are found interpreting the table array.'
+  PRINT 'The following rows are found interpreting the table array.'
 
-    DECLARE @xmltmp XML = (
+  DECLARE @xmltmp XML = (
       SELECT
-        TABLE_NAME
-      FROM
-        @TableNames
-      FOR XML PATH('')
+    TABLE_NAME
+  FROM
+    @TableNames
+  FOR XML PATH('')
     )
 
-    PRINT CONVERT(NVARCHAR(MAX), @xmltmp)
+  PRINT CONVERT(NVARCHAR(MAX), @xmltmp)
 
-    END
+END
   END TRY
 
   BEGIN CATCH
@@ -201,14 +201,14 @@ BEGIN TRY
   -- Load window interpretation
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Commencing load window retrieval';
-  END
+  PRINT 'Commencing load window retrieval';
+END
 
   DECLARE @LoadWindows TABLE (
-     INTERVAL_END_TIMESTAMP_ORDER    INT
+  INTERVAL_END_TIMESTAMP_ORDER    INT
     ,MODULE_CODE                     NVARCHAR(1000)
-    ,START_VALUE                     DATETIME2
-    ,END_VALUE                       DATETIME2
+    ,START_VALUE                     NVARCHAR(100)
+    ,END_VALUE                       NVARCHAR(100)
     ,DATA_OBJECT_SOURCE              NVARCHAR(1000)
     ,DATA_OBJECT_TARGET              NVARCHAR(1000)
     ,EXECUTION_STATUS_CODE           NVARCHAR(100)
@@ -219,7 +219,8 @@ BEGIN TRY
   );
 
 BEGIN TRY
-  WITH LoadWindowCte
+  WITH
+  LoadWindowCte
   AS
   (
     SELECT
@@ -236,7 +237,7 @@ BEGIN TRY
       ,MODULE_INSTANCE_ID
       ,MODULE_ID
     FROM
-    (
+      (
     SELECT
         module.MODULE_CODE
         ,sct.START_VALUE
@@ -299,7 +300,7 @@ FROM
   -- The exception to manage is when other sources are reported up-to-date (no delta change indicators). In this case we must check if there are any waiting records in the PSA.
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'The following rows are found interpreting the table array.'
+  PRINT 'The following rows are found interpreting the table array.'
 
   DECLARE @xmltmp2 XML = (
      SELECT
@@ -319,9 +320,9 @@ FROM
   FOR XML PATH('')
      )
 
-      PRINT CONVERT(NVARCHAR(MAX), @xmltmp2)
+  PRINT CONVERT(NVARCHAR(MAX), @xmltmp2)
 
-    END
+END
   END TRY
 
   BEGIN CATCH
@@ -333,7 +334,7 @@ FROM
  END CATCH
 
  -- End of load window interpretation
- -- Begin of initialisation interpretation.
+ -- Begin of initialization interpretation.
  -- This means that at least every target table has to be associated with loading processes into it, otherwise the system is still powering up.
  SELECT
   @NumberOfExpectedTargetTables = COUNT(TABLE_NAME)
@@ -353,49 +354,51 @@ END
 
   IF @NumberOfActualTargetTables < @NumberOfExpectedTargetTables
   BEGIN
-    IF @Debug = 'Y'
+  IF @Debug = 'Y'
     BEGIN
-      PRINT 'Difference in actual and expected target table, the Consistency Date/Time is defaulted to NULL';
-    END
+    PRINT 'Difference in actual and expected target table, the Consistency Date/Time is defaulted to NULL';
+  END
 
   SET @ConsistencyDateTime = NULL;
 
   GOTO EndOfProcedure
 END
 
-  -- End of initialisation interpretation
+  -- End of initialization interpretation
   -- Begin of up-to-date interpretation.
-  -- This means that every process has an 'up-to-date' record, meaning the start- and end date/times for the load windows are the same. A closing record.
+  -- This means that every process has an 'up-to-date' record,
+  -- meaning the start- and end date/times for the load windows are the same.
+  -- A closing record.
   SELECT
-    @ChangeModuleCount = SUM(CHANGE_DELTA_INDICATOR)
-  FROM
-    @LoadWindows
+  @ChangeModuleCount = SUM(CHANGE_DELTA_INDICATOR)
+FROM
+  @LoadWindows
 
   IF @Debug = 'Y'
     PRINT 'The number deltas (updated load windows) is: ' + CONVERT(VARCHAR(10), @ChangeModuleCount);
 
   IF @ChangeModuleCount = 0
   BEGIN
-    PRINT 'There are no changed load windows for any of the corresponding modules, so everything is up to date. The max load window can be used.';
+  PRINT 'There are no changed load windows for any of the corresponding modules, so everything is up to date. The max load window can be used.';
 
-    SELECT
-      @ConsistencyDateTime = MAX(END_VALUE)
-    FROM
-      @LoadWindows
+  SELECT
+    @ConsistencyDateTime = MAX(END_VALUE)
+  FROM
+    @LoadWindows
 
-    GOTO EndOfProcedure
-  END
+  GOTO EndOfProcedure
+END
 
   -- End of up-to-date interpretation
   -- Beginning of load window evaluation.
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'Commencing load window evaluation. The lowest load window end date/time denominator is used for further validation. This is the local load window end datetime.' + CHAR(10);
-  END
+  PRINT 'Commencing load window evaluation. The lowest load window end date/time denominator is used for further validation. This is the local load window end datetime.' + CHAR(10);
+END
 
   BEGIN TRY
    --SELECT * FROM @LoadWindows WHERE INTERVAL_END_TIMESTAMP_ORDER=1
-   DECLARE @ConsistencyDateTimeTable TABLE (DATA_OBJECT_SOURCE VARCHAR(1000)
+   DECLARE @ConsistencyDateTimeTable TABLE (DATA_OBJECT_SOURCE   VARCHAR(1000)
     ,UP_TO_DATE_INDICATOR CHAR(1)
     ,CONSISTENCY_DATETIME DATETIME2(7));
   DECLARE @localDataObjectSource VARCHAR(1000);
@@ -406,12 +409,12 @@ END
   DECLARE datetime_cursor CURSOR FAST_FORWARD
   FOR
     SELECT
-       DATA_OBJECT_SOURCE
+  DATA_OBJECT_SOURCE
       ,END_VALUE
       ,CHANGE_FOR_LOGICAL_SOURCE_GROUP
-    FROM
-      @LoadWindows
-    WHERE COALESCE(INTERVAL_END_TIMESTAMP_ORDER, 0) = 1
+FROM
+  @LoadWindows
+WHERE COALESCE(INTERVAL_END_TIMESTAMP_ORDER, 0) = 1
 
   OPEN datetime_cursor
 
@@ -421,24 +424,26 @@ END
 
   WHILE @@FETCH_STATUS = 0
   BEGIN
+  IF @Debug = 'Y'
+  BEGIN
+    PRINT CHAR(10) + 'Working on ' + @localDataObjectSource + ' with change for logical group change indicator ' + @localChangeForLogicalGroup + ' an local load window end datetime ' + CONVERT(VARCHAR(20), @localIntervalEndDatetime);
+  END
+
+  IF @localChangeForLogicalGroup = 'Y'
+  BEGIN
+    INSERT INTO @ConsistencyDateTimeTable
+    VALUES
+      (@localDataObjectSource ,'N' ,@localIntervalEndDatetime)
+
     IF @Debug = 'Y'
     BEGIN
-      PRINT CHAR(10) + 'Working on ' + @localDataObjectSource + ' with change for logical group change indicator ' + @localChangeForLogicalGroup + ' an local load window end datetime ' + CONVERT(VARCHAR(20), @localIntervalEndDatetime);
+      PRINT 'There is a change related to this logical group, so the minium value will be saved for comparison with the other logical groups.';
     END
-
-    IF @localChangeForLogicalGroup = 'Y'
-    BEGIN
-      INSERT INTO @ConsistencyDateTimeTable
-      VALUES
-        (@localDataObjectSource ,'N' ,@localIntervalEndDatetime)
-
-      IF @Debug = 'Y'
-         PRINT 'There is a change related to this logical group, so the miminum value will be saved for comparison with the other logical groups.';
-    END
+  END
 
   -- If the logical group is up to date, e.g. there are no changes then lookups to the sources are required to assert if there are any outstanding rows.
   IF @localChangeForLogicalGroup = 'N'
-   BEGIN
+  BEGIN
     DECLARE @localSourceMaxDateTime DATETIME2(7);
 
     SET @localSqlStatement = 'SELECT @localSourceMaxDateTime=COALESCE(MAX(LOAD_DATETIME),''0001-01-01'')' + 'FROM ' + @localDataObjectSource + ' sdo ' + 'JOIN omd.MODULE_INSTANCE modinst ON sdo.module_instance_id=modinst.MODULE_INSTANCE_ID ' + 'WHERE 1=1 ' + '--AND modinst.EXECUTION_STATUS_CODE=''Succeeded ' + 'AND LOAD_DATETIME <= ''' + CONVERT(VARCHAR(100), @MeasurementDateTime) + ''''
@@ -450,7 +455,8 @@ END
       PRINT @localSqlStatement;
     END
 
-    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT -- DevSkim: ignore DS224000
+    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT
+    -- DevSkim: ignore DS224000
 
     IF @Debug = 'Y'
     BEGIN
@@ -476,14 +482,16 @@ END
         (@localDataObjectSource ,'N' ,@localIntervalEndDatetime)
 
       IF @Debug = 'Y'
-      PRINT 'The high watermark (localSourceMaxDateTime) higher than the load window. There is a lag that needs to be managed.';
+      BEGIN
+        PRINT 'The high watermark (localSourceMaxDateTime) higher than the load window. There is a lag that needs to be managed.';
+      END
     END
   END
 
-    FETCH NEXT
-      FROM datetime_cursor
-      INTO @localDataObjectSource, @localIntervalEndDatetime, @localChangeForLogicalGroup
-    END
+  FETCH NEXT
+    FROM datetime_cursor
+    INTO @localDataObjectSource, @localIntervalEndDatetime, @localChangeForLogicalGroup
+END
 
     CLOSE datetime_cursor
 
@@ -505,10 +513,10 @@ END
   BEGIN TRY
     --SELECT * FROM @ConsistencyDateTimeTable
     SELECT
-      @ConsistencyDateTime = MIN(CONSISTENCY_DATETIME)
-    FROM
-      @ConsistencyDateTimeTable
-    WHERE COALESCE(UP_TO_DATE_INDICATOR, '') = 'N'
+  @ConsistencyDateTime = MIN(CONSISTENCY_DATETIME)
+FROM
+  @ConsistencyDateTimeTable
+WHERE COALESCE(UP_TO_DATE_INDICATOR, '') = 'N'
   END TRY
 
   BEGIN CATCH
@@ -526,9 +534,9 @@ END
 
   IF @Debug = 'Y'
   BEGIN
-    PRINT 'End of procedure GetConsistencyDateTime';
-    PRINT 'Consistency date/time is ' + COALESCE(CONVERT(VARCHAR(20), @ConsistencyDateTime, 126), 'NULL');
-  END
+  PRINT 'End of procedure GetConsistencyDateTime';
+  PRINT 'Consistency date/time is ' + COALESCE(CONVERT(VARCHAR(20), @ConsistencyDateTime, 126), 'NULL');
+END
 
   SET @SuccessIndicator = 'Y'
 
@@ -543,8 +551,8 @@ END
 
   IF @Debug = 'Y'
   BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
+  EXEC [omd].[PrintMessageLog] @MessageLog;
+END
 
 END TRY
 BEGIN CATCH
@@ -562,7 +570,7 @@ BEGIN CATCH
   DECLARE @ErrorLine INT;
 
   SELECT
-   @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
+  @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    )
   ,@ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              )
   ,@ErrorState     = COALESCE(ERROR_STATE(),       -1              )
   ,@ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  )
