@@ -65,7 +65,7 @@ BEGIN TRY
 
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = @UtcNow;
   DECLARE @StartTimestampString NVARCHAR(27) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;

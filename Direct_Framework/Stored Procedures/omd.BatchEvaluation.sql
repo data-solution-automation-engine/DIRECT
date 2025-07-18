@@ -61,7 +61,7 @@ BEGIN TRY
 
   -- Default output logging
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = @UtcNow;
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -168,7 +168,7 @@ BEGIN TRY
   */
   DECLARE @BatchActiveIndicator CHAR(1);
 
-  SET @LogMessage = 'Start of Batch Inactive evalation step.'
+  SET @LogMessage = 'Start of Batch Inactive evaluation step.'
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
   SELECT @BatchActiveIndicator = ACTIVE_INDICATOR
@@ -255,7 +255,7 @@ BEGIN TRY
   END
 
   -- Proceed with RollBack.
-  -- If the previous Batch Instance has failed and the previous next run indicator is not set to skip OR the previous next run indicator is set to rerun the rollback step must be initiatied.
+  -- If the previous Batch Instance has failed and the previous next run indicator is not set to skip OR the previous next run indicator is set to rerun the rollback step must be initiated.
   IF
   (
     (@LastExecutionStatusCode = 'Failed' AND @LastNextRunStatusCode <> 'Cancel') OR
@@ -344,7 +344,7 @@ BEGIN TRY
   END CATCH
   END
 
-  IF @LastNextRunStatusCode = 'Proceed' -- Partial rollback - skip previously succesfull Modules in the Batch.
+  IF @LastNextRunStatusCode = 'Proceed' -- Partial rollback - skip previously successful Modules in the Batch.
   BEGIN
     BEGIN TRY
 

@@ -68,7 +68,7 @@ BEGIN TRY
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -382,7 +382,7 @@ FROM
   PRINT 'There are no changed load windows for any of the corresponding modules, so everything is up to date. The max load window can be used.';
 
   SELECT
-    @ConsistencyDateTime = MAX(END_VALUE)
+    @ConsistencyDateTime = CAST(MAX(END_VALUE) AS DATETIME2)
   FROM
     @LoadWindows
 
@@ -455,8 +455,7 @@ WHERE COALESCE(INTERVAL_END_TIMESTAMP_ORDER, 0) = 1
       PRINT @localSqlStatement;
     END
 
-    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT
-    -- DevSkim: ignore DS224000
+    EXECUTE sp_executesql @localSqlStatement, N'@localSourceMaxDateTime DATETIME2(7) OUTPUT', @localSourceMaxDateTime = @localSourceMaxDateTime OUTPUT -- DevSkim: ignore DS224000
 
     IF @Debug = 'Y'
     BEGIN

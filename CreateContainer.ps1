@@ -1,5 +1,5 @@
 ################################################################################
-# DIRECT Framework Create Container Script.
+# DIRECT Framework Create Container Script 2.1.0
 # https://github.com/data-solution-automation-engine/DIRECT
 ################################################################################
 # Creates a definition for, and spins up, a SQL Server container locally
@@ -84,7 +84,7 @@ $testingFrameworkDacpacFileName = "Reference_Dacpacs/Testing_Framework.dacpac"
 
 # Details for deployment of the Direct Framework DacPac
 $directFrameworkDatabaseName = "Direct_Framework"
-$directFrameworkVersion = "current" # "current"/"next"
+$directFrameworkVersion = "current" # "next"/"next"
 $directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkVersion/db/Direct_Framework.dacpac"
 
 # define valid connection strings for SQL Server

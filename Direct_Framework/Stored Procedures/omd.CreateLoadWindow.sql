@@ -64,7 +64,7 @@ BEGIN TRY
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -190,8 +190,8 @@ END
     SET @EndValueSql =
 'SELECT COALESCE(MAX(' + @LoadWindowAttributeName + '),''0001-01-01'') AS END_VALUE
 FROM ' + @SourceDataObject + ' sdo
-JOIN omd.MODULE_INSTANCE modinst ON sdo.' + @ModuleInstanceIdColumnName + ' = modinst.MODULE_INSTANCE_ID
-WHERE modinst.EXECUTION_STATUS_CODE = ''Succeeded''';
+JOIN omd.MODULE_INSTANCE mi ON sdo.' + @ModuleInstanceIdColumnName + ' = mi.MODULE_INSTANCE_ID
+WHERE mi.EXECUTION_STATUS_CODE = ''Succeeded''';
 
     SET @LogMessage =  'No load window end value was provided, so the maximum date will be retrieved directly from the source data object.'
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)

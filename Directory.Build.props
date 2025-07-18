@@ -2,8 +2,10 @@
 <Project>
   <PropertyGroup>
     <!-- Central Direct Framework versioning -->
+    <!-- SemVer version-->
     <Version>2.1.0-preview.1</Version>
-    <DacVersion>$(Version)</DacVersion>
+    <!-- Dacpac assembly versioning -->
+    <DacVersion>2.1.0.0</DacVersion>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Central SQL Server target versioning -->

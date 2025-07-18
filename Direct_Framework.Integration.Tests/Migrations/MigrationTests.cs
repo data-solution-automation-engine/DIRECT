@@ -7,10 +7,10 @@ namespace Direct_Framework.Integration.Tests.Migrations;
 [TestClass]
 public class MigrationTests
 {
-  private string ConnectionString => SqlServerContainerManager.ConnectionString;
-  private string MasterConnectionString = SqlServerContainerManager.ConnectionString.Replace("Database=Direct_Framework", "Database=master");
+  private static string ConnectionString => SqlServerContainerManager.ConnectionString;
+  private static readonly string MasterConnectionString = SqlServerContainerManager.ConnectionString.Replace("Database=Direct_Framework", "Database=master");
 
-  public void RunSqlCmdScript(string scriptPath, string connectionString)
+  public static void RunSqlCmdScript(string scriptPath, string connectionString)
   {
     // Parse connection string for server and database
     var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
@@ -67,7 +67,6 @@ END
 ", dconn);
 
       await dcmd.ExecuteNonQueryAsync();
-
     }
     catch (Exception ex)
     {

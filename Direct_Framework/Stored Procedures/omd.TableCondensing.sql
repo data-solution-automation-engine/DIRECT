@@ -51,7 +51,7 @@ BEGIN TRY
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
   DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
   DECLARE @EndTimestamp DATETIME2 = NULL;
@@ -102,24 +102,24 @@ BEGIN TRY
                AND COLUMN_NAME NOT IN
                (
                 ''OMD_EVENT_DATETIME'',
-				''SOURCE_TIMESTAMP'',
+                ''SOURCE_TIMESTAMP'',
                 ''OMD_INSERT_DATETIME'',
-				''INSCRIPTION_TIMESTAMP'',
+                ''INSCRIPTION_TIMESTAMP'',
                 ''OMD_INSERT_MODULE_INSTANCE_ID'',
-				''AUDIT_TRAIL_ID'',
+                ''AUDIT_TRAIL_ID'',
                 ''OMD_SOURCE_ROW_ID'',
                 ''INSCRIPTION_RECORD_ID'',
                 ''OMD_HASH_FULL_RECORD'',
-				''CHECKSUM'',
+                ''CHECKSUM'',
                 ''OMD_CHANGE_KEY'',
                 ''OMD_CHANGE_DATETIME'',
-				''CHANGE_DATA_INDICATOR''
+                ''CHANGE_DATA_INDICATOR''
                )
             FOR XML PATH(''''), TYPE).value(''text()[1]'', ''NVARCHAR(MAX)'')
         , 1, 2, ''''
     )';
 
-  EXEC sp_executesql
+  EXEC sp_executesql -- DevSkim: ignore DS224000
     @ColumnListDynamicSQL,
 	N'@Table NVARCHAR(128), @SchemaName NVARCHAR(128), @ColumnListOUT NVARCHAR(MAX) OUTPUT',
 	@Table, @SchemaName, @ColumnList OUTPUT;
@@ -141,7 +141,7 @@ BEGIN TRY
     WHERE COLUMN_NAME NOT LIKE ''OMD_%'';'; -- Must exclude time component e.g. OMD_INSERT_DATETIME. For improvement.
 
   -- Execute dynamic SQL
-  EXEC sp_executesql
+  EXEC sp_executesql -- DevSkim: ignore DS224000
     @KeyListDynamicSQL,
     N'@Table_IN NVARCHAR(128), @KeyList_OUT NVARCHAR(MAX) OUTPUT',
     @Table_IN = @Table,
@@ -218,7 +218,7 @@ BEGIN TRY
   SET @FinalQuery = 'WITH CondensingCTE AS' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
   SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''MD5'',' + CHAR(10);
+  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''SHA2_512'',' + CHAR(10);
   SET @FinalQuery = @FinalQuery + @HashSnippet;
   SET @FinalQuery = @FinalQuery + '  ) AS [TMP_CHECKSUM],' + CHAR(10);
   SET @FinalQuery = @FinalQuery + '  *' + CHAR(10);

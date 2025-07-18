@@ -1,17 +1,15 @@
-CREATE FUNCTION [omd_metadata].[GetFrameworkVersion]()
-
-RETURNS NVARCHAR(100) AS
-
 -- =============================================
 -- Function: Get Framework Version
 -- Description: queries the metadata table to get the current version
 -- =============================================
 
+CREATE FUNCTION [omd_metadata].[GetFrameworkVersion]()
+RETURNS NVARCHAR(4000) AS
 BEGIN
 
-  DECLARE @Version NVARCHAR(100) =
+  DECLARE @Version NVARCHAR(4000) =
   (
-    SELECT md.[VALUE]
+    SELECT TOP 1 md.[VALUE]
     FROM [omd_metadata].[FRAMEWORK_METADATA] md
     WHERE md.[CODE] = 'DIRECT_VERSION'
   )
