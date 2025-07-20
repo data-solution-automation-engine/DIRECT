@@ -136,6 +136,29 @@ BEGIN TRY
       ';
     END
 
+    -- Table: [omd_metadata].[FRAMEWORK_METADATA]
+    -- Migration: set column [ACTIVE_INDICATOR] to NOT NULL
+    -- and populate existing NULL values with 'N'
+    IF EXISTS (
+      SELECT 1
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_SCHEMA = 'omd_metadata'
+        AND TABLE_NAME = 'FRAMEWORK_METADATA'
+        AND COLUMN_NAME = 'ACTIVE_INDICATOR'
+        AND IS_NULLABLE = 'YES'
+    )
+    BEGIN
+      -- Populate any existing NULL values in ACTIVE_INDICATOR with 'N'
+      UPDATE [omd_metadata].[FRAMEWORK_METADATA]
+      SET [ACTIVE_INDICATOR] = 'N'
+      WHERE [ACTIVE_INDICATOR] IS NULL;
+
+      -- Alter column to set it as NOT NULL
+      ALTER TABLE [omd_metadata].[FRAMEWORK_METADATA]
+      ALTER COLUMN [ACTIVE_INDICATOR] CHAR(1) NOT NULL;
+
+    END
+
     -- Set new Direct Framework version as last step
     IF EXISTS (
       SELECT 1
