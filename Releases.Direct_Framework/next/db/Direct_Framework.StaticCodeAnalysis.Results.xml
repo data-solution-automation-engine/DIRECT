@@ -1,11 +1,2 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Problems>
-  <Problem>
-    <Rule>Microsoft.Rules.Data.SR0014</Rule>
-    <ProblemDescription>Data loss might occur when casting from NVarChar(100) to Datetime2(7).</ProblemDescription>
-    <SourceFile>c:\repos\GitHub\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.GetConsistencyTimestamp.sql</SourceFile>
-    <Line>385</Line>
-    <Column>5</Column>
-    <Severity>Warning</Severity>
-  </Problem>
-</Problems>
+<Problems />

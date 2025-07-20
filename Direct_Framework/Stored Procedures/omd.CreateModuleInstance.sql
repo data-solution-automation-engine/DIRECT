@@ -166,12 +166,12 @@ BEGIN TRY
     'Abort',              -- Processing Indicator
     @BatchInstanceId,     -- Batch Instance Id
     @ExecutionContext,    -- Runtime Module Execution System Id or similar
-    CAST(0 AS DECIMAL(38,0)),
-    CAST(0 AS DECIMAL(38,0)),
-    CAST(0 AS DECIMAL(38,0)),
-    CAST(0 AS DECIMAL(38,0)),
-    CAST(0 AS DECIMAL(38,0)),
-    CAST(0 AS DECIMAL(38,0)),
+    CAST(0 AS BIGINT),
+    CAST(0 AS BIGINT),
+    CAST(0 AS BIGINT),
+    CAST(0 AS BIGINT),
+    CAST(0 AS BIGINT),
+    CAST(0 AS BIGINT),
     @QueryHash
   );
 

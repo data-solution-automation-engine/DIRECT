@@ -39,8 +39,8 @@ SELECT
 
 *******************************************************************************/
 
-ALTER PROCEDURE [omd].[SetSourceControlValues]
-  (
+CREATE PROCEDURE [omd].[SetSourceControlValues]
+(
   -- Mandatory parameters
    @ModuleInstanceId    BIGINT
   ,@StartValue          NVARCHAR(100)
