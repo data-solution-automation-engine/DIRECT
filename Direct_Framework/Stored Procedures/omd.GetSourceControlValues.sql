@@ -12,7 +12,6 @@
  * Inputs:
  *   - Module Instance Id, the currently involved Module Instance Id
  *   - Load Window Attribute Name,
- *     the name of the attribute used to determine the load window
  *   - Debug Flag (Y/N, defaults to N)
  *
  * Outputs:
@@ -98,9 +97,11 @@ BEGIN
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
     DECLARE @LogMessage NVARCHAR(MAX);
+    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),
+            N'.', QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
     -- Log standard metadata
-    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure', [omd_metadata].[GetCurrentSpName](), @MessageLog);
+    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure', @SpName, @MessageLog);
     SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Version', [omd_metadata].[GetFrameworkVersion](), @MessageLog);
     SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Start Timestamp', @StartTimestampString, @MessageLog);
 
@@ -134,8 +135,8 @@ BEGIN
       END
     END
 
-
-    IF @ModuleId IS NULL OR @ModuleId <= 0
+    -- If no valid module id is passed try to get the module from the instance id if that is good
+    IF (@ModuleId IS NULL OR @ModuleId <= 0) AND @ModuleInstanceId IS NOT NULL AND @ModuleInstanceId > 0
       SET @ModuleId = [omd].[GetModuleIdByModuleInstanceId](@ModuleInstanceId);
 
     IF @ModuleId IS NOT NULL AND @ModuleId > 0
@@ -210,7 +211,7 @@ BEGIN
 
       SET @SuccessIndicator = 'Y';
       SET @LogMessage = N'Get Source Control Values process completed successfully.';
-      SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
       GOTO EndOfProcedure;
 
@@ -257,7 +258,7 @@ BEGIN
 
     IF @Debug = 'Y'
     BEGIN
-      PRINT 'Error in:         ''' + [omd_metadata].[GetCurrentSpName]() + '''';
+      PRINT 'Error in:         ' + @SpName;
       PRINT 'Error Message:    ' + @ErrorMessage;
       PRINT 'Error Severity:   ' + CONVERT(NVARCHAR(10), @ErrorSeverity);
       PRINT 'Error State:      ' + CONVERT(NVARCHAR(10), @ErrorState);
@@ -271,7 +272,7 @@ BEGIN
     END;
 
     SET @EventDetail =
-      CONCAT('Error in ''', [omd_metadata].[GetCurrentSpName](),
+      CONCAT('Error in ''', @SpName,
       ''' from ''', @ErrorProcedure, ''' at line ''',
       CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')), ''': ', CHAR(10),
       COALESCE(@ErrorMessage,'N/A'));

@@ -8,12 +8,12 @@ CREATE TABLE [omd].[MODULE_INSTANCE] (
   [NEXT_RUN_STATUS_CODE]      NVARCHAR (100)          NOT NULL,
   [EXECUTION_STATUS_CODE]     NVARCHAR (100)          NOT NULL,
   [EXECUTION_CONTEXT]         NVARCHAR (4000)         NULL,
-  [ROWS_INPUT]                NUMERIC(38)             NULL,
-  [ROWS_INSERTED]             NUMERIC(38)             NULL,
-  [ROWS_UPDATED]              NUMERIC(38)             NULL,
-  [ROWS_DELETED]              NUMERIC(38)             NULL,
-  [ROWS_DISCARDED]            NUMERIC(38)             NULL,
-  [ROWS_REJECTED]             NUMERIC(38)             NULL,
+  [ROWS_INPUT]                BIGINT                  NULL,
+  [ROWS_INSERTED]             BIGINT                  NULL,
+  [ROWS_UPDATED]              BIGINT                  NULL,
+  [ROWS_DELETED]              BIGINT                  NULL,
+  [ROWS_DISCARDED]            BIGINT                  NULL,
+  [ROWS_REJECTED]             BIGINT                  NULL,
   [EXECUTED_CODE_CHECKSUM]    VARBINARY(64)           NULL,
 
   CONSTRAINT [PK_MODULE_INSTANCE]

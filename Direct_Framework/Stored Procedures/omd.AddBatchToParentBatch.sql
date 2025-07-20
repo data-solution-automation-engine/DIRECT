@@ -1,30 +1,28 @@
 /*******************************************************************************
- * [omd].[AddBatchToParentBatch]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Assigns a Batch to be associated with a Parent Batch.
- *   Both Batches must already exist.
- *
- * Inputs:
- *   - Batch Code
- *   - Parent Batch Code
- *   - Sequence
- *   - Active Indicator (Y/N defaults to Y)
- *   - Debug Flag (Y/N, defaults to N)
- *   - CheckDag (direction / Directed Acyclic Graph)
- *
- * Outputs:
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+Procedure:      [omd].[AddBatchToParentBatch]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework v2.1.0
+********************************************************************************
+
+Purpose:
+  Assigns a Batch to be associated with a Parent Batch.
+  Both Batches must already exist.
+
+Inputs:
+  - Batch Code
+  - Parent Batch Code
+  - Sequence. Optional ordinal for processing order
+  - Active Indicator (Y/N defaults to Y)
+  - Debug Flag (Y/N, defaults to N)
+  - CheckDag (Y/N, defaults to N). Checks the relationship graph before adding
+
+Outputs:
+  - Success Indicator (Y/N)
+  - Message Log
+
+******************************************************************************
+
+Example Usage:
 
 DECLARE @BatchId          INT;
 DECLARE @SuccessIndicator CHAR(1);
@@ -43,9 +41,7 @@ EXEC [omd].[AddBatchToParentBatch]
 
 PRINT('New hierarchy item registered: ' + @SuccessIndicator)
 
- *******************************************************************************
- *
- ******************************************************************************/
+*******************************************************************************/
 
 CREATE PROCEDURE [omd].[AddBatchToParentBatch]
 (
@@ -102,9 +98,11 @@ BEGIN
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
     DECLARE @LogMessage NVARCHAR(MAX);
+    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),
+            N'.', QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
     -- Log standard metadata
-    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure', [omd_metadata].[GetCurrentSpName](), @MessageLog);
+    SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure', @SpName, @MessageLog);
     SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Version', [omd_metadata].[GetFrameworkVersion](), @MessageLog);
     SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Start Timestamp', @StartTimestampString, @MessageLog);
 
@@ -328,7 +326,7 @@ BEGIN
 
     IF @Debug = 'Y'
     BEGIN
-      PRINT 'Error in:         ''' + [omd_metadata].[GetCurrentSpName]() + '''';
+      PRINT 'Error in:         ' + @SpName;
       PRINT 'Error Message:    ' + @ErrorMessage;
       PRINT 'Error Severity:   ' + CONVERT(NVARCHAR(10), @ErrorSeverity);
       PRINT 'Error State:      ' + CONVERT(NVARCHAR(10), @ErrorState);
@@ -342,7 +340,7 @@ BEGIN
     END;
 
     SET @EventDetail =
-      CONCAT('Error in ''', [omd_metadata].[GetCurrentSpName](),
+      CONCAT('Error in ''', @SpName,
       ''' from ''', @ErrorProcedure, ''' at line ''',
       CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')), ''': ', CHAR(10),
       COALESCE(@ErrorMessage,'N/A'));

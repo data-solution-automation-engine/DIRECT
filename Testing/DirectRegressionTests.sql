@@ -1,5 +1,5 @@
 /*******************************************************************************
-  DIRECT v2 Orchestration Unit Tests
+  DIRECT v2.1.0 Orchestration Unit Tests
   Run after an empty deployment.
   NOTE: This script deletes the current data in the database,
         Please make sure that is an acceptable effect before running
@@ -8,7 +8,7 @@
 -- results
 DECLARE @ResultTable TABLE
 (
-  [Test]        NVARCHAR(100)
+   [Test]        NVARCHAR(100)
   ,[Description] NVARCHAR(1000)
   ,[Result]      NVARCHAR(100)
 )
@@ -18,18 +18,20 @@ DECLARE @Verbose  CHAR(1) = 'Y'
 DECLARE @Debug    CHAR(1) = 'Y'
 
 -- Variables
-DECLARE @ModuleId                       INT;
-DECLARE @CurrentModuleInstanceId        INT;
-DECLARE @CurrentBatchInstanceId         INT;
-DECLARE @CurrentModuleExecutionStatus   NVARCHAR(100);
-DECLARE @CurrentModuleNextRunStatus     NVARCHAR(100);
-DECLARE @CurrentBatchExecutionStatus    NVARCHAR(100);
-DECLARE @CurrentBatchNextRunStatus      NVARCHAR(100);
-DECLARE @Count                          INT;
-DECLARE @EventDetail                    NVARCHAR(MAX);
-DECLARE @SuccessIndicator               CHAR(1);
-DECLARE @MessageLog                     NVARCHAR(MAX);
-DECLARE @Counter                        INT;
+DECLARE
+@ModuleId                       INT,
+@CurrentModuleInstanceId        INT,
+@CurrentBatchInstanceId         INT,
+@CurrentModuleExecutionStatus   NVARCHAR(100),
+@CurrentModuleNextRunStatus     NVARCHAR(100),
+@CurrentBatchExecutionStatus    NVARCHAR(100),
+@CurrentBatchNextRunStatus      NVARCHAR(100),
+@Count                          INT,
+@EventDetail                    NVARCHAR(MAX),
+@SuccessIndicator               CHAR(1),
+@MessageLog                     NVARCHAR(MAX),
+@Counter                        INT,
+@TestCounter                    INT = 1
 
 -- Meta
 DECLARE
@@ -56,7 +58,9 @@ DECLARE
   @RunTest13 CHAR(1) = 'Y',
   @RunTest14 CHAR(1) = 'Y',
   @RunTest15 CHAR(1) = 'Y',
-  @RunTest16 CHAR(1) = 'Y'
+  @RunTest16 CHAR(1) = 'Y',
+  @RunTest17 CHAR(1) = 'Y',
+  @RunTest18 CHAR(1) = 'Y'
 
 -- Reset the environment (for multiple runs)
 DELETE FROM [omd].[BATCH_HIERARCHY]
@@ -67,6 +71,15 @@ DELETE FROM [omd].[MODULE_INSTANCE]   WHERE [MODULE_INSTANCE_ID] <> 0
 DELETE FROM [omd].[MODULE]            WHERE [MODULE_ID] <> 0
 DELETE FROM [omd].[BATCH_INSTANCE]    WHERE [BATCH_INSTANCE_ID] <> 0
 DELETE FROM [omd].[BATCH]             WHERE [BATCH_ID] <> 0
+
+-- reset identity seeds
+DBCC CHECKIDENT ('omd.SOURCE_CONTROL', RESEED, 1);
+DBCC CHECKIDENT ('omd.EVENT_LOG', RESEED, 1);
+DBCC CHECKIDENT ('omd.MODULE_INSTANCE', RESEED, 1);
+DBCC CHECKIDENT ('omd.MODULE', RESEED, 1);
+DBCC CHECKIDENT ('omd.BATCH_INSTANCE', RESEED, 1);
+DBCC CHECKIDENT ('omd.BATCH', RESEED, 1);
+
 
 -- Test Table Contents
 /*
@@ -114,7 +127,8 @@ EXEC [omd].[AddModuleToBatch]
 *******************************************************************************/
 IF @RunTest01 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 01'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'basic module execution'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -136,9 +150,7 @@ BEGIN
   WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @Verbose = 'Y'
-  BEGIN
     PRINT 'The Current Module Instance is ' + CONVERT(VARCHAR(10),@CurrentModuleInstanceId)+' with status '''+@CurrentModuleExecutionStatus +'''.'
-  END
 
   IF @CurrentModuleExecutionStatus = 'Succeeded'
   BEGIN
@@ -158,7 +170,8 @@ END
 *******************************************************************************/
 IF @RunTest02 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 02'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'module execution with custom code'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -166,9 +179,9 @@ BEGIN
   VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
 
   EXEC [omd].[RunModule]
-  @ModuleCode = 'MyNewModule',
-  @Debug      = @Debug,
-  @Query      = 'SELECT SYSDATETIME()'
+    @ModuleCode = 'MyNewModule',
+    @Debug      = @Debug,
+    @Query      = 'SELECT SYSDATETIME()'
 
   SELECT
     @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
@@ -178,7 +191,8 @@ BEGIN
     @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
   FROM
     omd.MODULE_INSTANCE
-  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  WHERE
+    MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
   IF @CurrentModuleExecutionStatus = 'Succeeded'
   BEGIN
@@ -199,7 +213,8 @@ END
 IF @RunTest03 = 'Y'
 BEGIN
   BEGIN TRY
-    SET @CurrentTestName = 'TEST 03'
+    SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+    SET @TestCounter = @TestCounter + 1;
     SET @CurrentTestDescription = 'module execution with failure'
 
     PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -259,10 +274,13 @@ BEGIN
 
   END CATCH
 
-  /*******************************************************************************
-    03a - Failure logging test
+/*******************************************************************************
+    04 - Failure logging test
 *******************************************************************************/
-  SET @CurrentTestName = 'TEST 03a'
+IF @RunTest04 = 'Y'
+BEGIN
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Failure logging test'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -288,15 +306,16 @@ BEGIN
     PRINT '  ' + @CurrentTestName + ' - failed'
     UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
   END
-
+  END
 END
 
 /*******************************************************************************
-    04 - Module Abort test
+    05 - Module Abort test
 *******************************************************************************/
-IF @RunTest04 = 'Y'
+IF @RunTest05 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 04'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Aborting the module because a previous instance is already running'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -344,11 +363,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    05 - Module rollback test after abort (previous instance failed)
+    06 - Module rollback test after abort (previous instance failed)
 *******************************************************************************/
-IF @RunTest05 = 'Y'
+IF @RunTest06 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 05'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Rolling back from failure'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -401,11 +421,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    06 - Module cancel test
+    07 - Module cancel test
 *******************************************************************************/
-IF @RunTest06 = 'Y'
+IF @RunTest07 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 06'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Module Cancelling'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -460,12 +481,13 @@ BEGIN
 END
 
 /*******************************************************************************
-    07 - Failure test,
+    08 - Failure test,
          failing 3 times in a row and then recover using rollback
 *******************************************************************************/
-IF @RunTest07 = 'Y'
+IF @RunTest08 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 07'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Failing multiple times and rolling back'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -534,11 +556,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    08 - Non-existing Module run
+    09 - Non-existing Module run
 *******************************************************************************/
 IF @RunTest08 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 08'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Running a Module Code that does not exist'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -583,11 +606,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    09 - Batch run with single Module
+    10 - Batch run with single Module
 *******************************************************************************/
-IF @RunTest09 = 'Y'
+IF @RunTest10 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 09'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Running a Batch with one Module'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -600,15 +624,11 @@ BEGIN
       @BatchCode = 'MyNewBatch'
      ,@Debug = @Debug
 
-    SELECT
-    @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
-  FROM
-    omd.MODULE_INSTANCE
-    SELECT
-    @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
-  FROM
-    omd.MODULE_INSTANCE
-  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+    FROM omd.MODULE_INSTANCE
+    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+    FROM omd.MODULE_INSTANCE
+    WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
     SELECT
     @CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
   FROM
@@ -659,11 +679,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    10 - Batch run with two modules Module, failing the 2nd.
+TEST - Batch run with two modules Module, failing the 2nd.
 *******************************************************************************/
-IF @RunTest10 = 'Y'
+IF @RunTest11 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 10'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Running a Batch with two Modules, failing the second'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -747,12 +768,13 @@ BEGIN
 END
 
 /*******************************************************************************
-    11 - Batch run with two modules Module of which one failed,
-         cancelling 1st and reloading 2nd.
+TEST - Batch run with two modules Module of which one failed,
+       cancelling 1st and reloading 2nd.
 *******************************************************************************/
-IF @RunTest11 = 'Y'
+IF @RunTest12 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 11'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Running a Batch with two Modules where the 2nd failed on the previous run'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -833,11 +855,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    12 - Add Batch to Parent Batch
+TEST - Add Batch to Parent Batch
 *******************************************************************************/
-IF @RunTest12 = 'Y'
+IF @RunTest13 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 12'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Adding a Batch to the Parent Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -881,11 +904,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    13 - Running a Parent Batch
+TEST - Running a Parent Batch
 *******************************************************************************/
-IF @RunTest13 = 'Y'
+IF @RunTest14 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 13'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Running a parent batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -936,11 +960,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    14 - Attempting to run a disabled Module stand-alone
+TEST - Attempting to run a disabled Module stand-alone
 *******************************************************************************/
-IF @RunTest14 = 'Y'
+IF @RunTest15 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 14'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Attempting to run a disabled Module stand-alone'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -990,11 +1015,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    15 - Attempting to run a disabled Module from a Batch
+TEST - Attempting to run a disabled Module from a Batch
 *******************************************************************************/
-IF @RunTest15 = 'Y'
+IF @RunTest16 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 15'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Attempting to run a disabled Module from a Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -1048,11 +1074,12 @@ BEGIN
 END
 
 /*******************************************************************************
-    16 - Attempting to run a disabled Batch
+TEST - Attempting to run a disabled Batch
 *******************************************************************************/
-IF @RunTest16 = 'Y'
+IF @RunTest17 = 'Y'
 BEGIN
-  SET @CurrentTestName = 'TEST 16'
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
   SET @CurrentTestDescription = 'Attempting to run a disabled Batch'
 
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
@@ -1106,6 +1133,85 @@ BEGIN
     UPDATE @ResultTable SET Result = 'Technical Failure' WHERE Test = @CurrentTestName
   END CATCH
 END
+
+/*******************************************************************************
+TEST - Set and Get some source control values
+*******************************************************************************/
+IF @RunTest18 = 'Y'
+BEGIN
+  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+  SET @TestCounter = @TestCounter + 1;
+  SET @CurrentTestDescription = 'Attempting to Set and Get source control values'
+
+  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
+  INSERT INTO @ResultTable
+  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
+
+  BEGIN TRY
+
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+    FROM omd.MODULE_INSTANCE
+
+    DECLARE @SourceControlId BIGINT,
+      @SetStartValue NVARCHAR(100),
+      @SetEndValue NVARCHAR(100),
+      @GetStartValue NVARCHAR(100),
+      @GetEndValue NVARCHAR(100);
+
+      EXEC [omd].[SetSourceControlValues]
+         @ModuleInstanceId = @CurrentModuleInstanceId
+        ,@StartValue = '2025-01-02 12:34:56'
+        ,@EndValue = NULL
+        ,@Debug = @Debug
+        ,@SuccessIndicator = @SuccessIndicator OUTPUT
+        ,@SourceControlId = @SourceControlId OUTPUT
+        ,@MessageLog = @MessageLog OUTPUT
+
+      SELECT @SetStartValue = START_VALUE, @SetEndValue = END_VALUE
+      FROM omd.SOURCE_CONTROL
+      WHERE SOURCE_CONTROL_ID = @SourceControlId
+
+      -- SELECT * FROM omd.SOURCE_CONTROL
+      IF @Verbose = 'Y'
+      BEGIN
+        PRINT 'The Current Start Value is ' + @SetStartValue + ', End Value is ' + @SetEndValue + '.'
+      END
+
+      -- Get the values through the Get SP
+      EXEC [omd].[GetSourceControlValues]
+         @ModuleInstanceId = @CurrentModuleInstanceId
+        ,@Debug = @Debug
+        ,@SuccessIndicator = @SuccessIndicator OUTPUT
+        ,@SourceControlId = @SourceControlId OUTPUT
+        ,@StartValue = @GetStartValue OUTPUT 
+        ,@EndValue = @GetEndValue OUTPUT 
+        ,@MessageLog = @MessageLog OUTPUT
+
+    IF @Verbose = 'Y'
+      BEGIN
+        PRINT 'The Get returned Start Value is ' + @GetStartValue + ', End Value is ' + @GetEndValue + '.'
+        --PRINT 'The Get returned inputs SuccessIndicator: ' + @SuccessIndicator + ', MessageLog ' + @MessageLog + '.'
+      END
+
+      -- Log Test Results
+      IF @SetStartValue = '2025-01-02 12:34:56' AND @SetEndValue = '2025-01-02 12:34:56'
+      AND @GetStartValue = @SetStartValue AND @GetEndValue = @SetStartValue
+      BEGIN
+        PRINT '  ' + @CurrentTestName + ' - succeeded'
+        UPDATE @ResultTable SET Result = 'Success' WHERE Test = @CurrentTestName
+        END
+      ELSE
+      BEGIN
+        PRINT '  ' + @CurrentTestName + ' - failed'
+        UPDATE @ResultTable SET Result = 'Failure' WHERE Test = @CurrentTestName
+      END
+
+    END TRY
+    BEGIN CATCH
+      PRINT '  ' + @CurrentTestName + ' - unexpected technical error'
+      UPDATE @ResultTable SET Result = 'Technical Failure' WHERE Test = @CurrentTestName
+    END CATCH
+  END
 
 -- Display Results, optionally filter by success etc...
 SELECT

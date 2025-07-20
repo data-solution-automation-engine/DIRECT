@@ -84,26 +84,26 @@ $testingFrameworkDacpacFileName = "Reference_Dacpacs/Testing_Framework.dacpac"
 
 # Details for deployment of the Direct Framework DacPac
 $directFrameworkDatabaseName = "Direct_Framework"
-$directFrameworkVersion = "current" # "next"/"next"
+$directFrameworkVersion = "next" # "current"/"next"
 $directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkVersion/db/Direct_Framework.dacpac"
 
 # define valid connection strings for SQL Server
 
 # to system database "master"
 $masterConnectionString =
-"Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+  "Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # to Testing Framework database
-$testingConnectionString =
-"Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
-
+# $testingConnectionString =
+#   "Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # to Direct Framework database
 $directConnectionString =
-"Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+  "Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
-$tsqltExampleConnectionString =
-"Server=$localAddress,${sqlServerPort};Initial Catalog=tSQLt_Example;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+# to tSQLt Example database
+# $tsqltExampleConnectionString =
+#   "Server=$localAddress,${sqlServerPort};Initial Catalog=tSQLt_Example;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # nap controls, increase or decrease as needed for the current host
 $maxAttempts = 10
@@ -900,16 +900,17 @@ if ($AutoDeploy) {
     elseif ($line -match '\|Failure\|') {
       Write-Host $line -ForegroundColor Red
     }
-
     # Also add the Skipped and Errored cases, check their output codes.
 
+    # Prettify the output for summary with the results colored
+    # Note that the tSQLt example test set has 11 tests, 1 is expected to fail
     elseif ($line -match '^Test Case Summary: (\d+) test case\(s\) executed, (\d+) succeeded, (\d+) skipped, (\d+) failed, (\d+) errored\.') {
       $exec = $matches[1]
       $succ = $matches[2]
       $skip = $matches[3]
       $fail = $matches[4]
       $err = $matches[5]
-      $colored = "Test Case Summary: `e[36m$exec test case(s) executed`e[0m, " +
+      $colored = "Test Case Summary:`n`e[36m$exec test case(s) executed`e[0m, " +
       "`e[32m$succ succeeded`e[0m, " +
       "`e[33m$skip skipped`e[0m, " +
       "`e[31m$fail failed`e[0m, " +

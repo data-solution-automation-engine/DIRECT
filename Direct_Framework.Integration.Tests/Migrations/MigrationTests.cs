@@ -41,7 +41,7 @@ public class MigrationTests
   }
 
   [TestMethod]
-  public async Task Can_Migrate_From_Previous_To_Current()
+  public async Task Can_Migrate_From_Current_To_Next()
   {
     var outputDir = AppContext.BaseDirectory;
 
