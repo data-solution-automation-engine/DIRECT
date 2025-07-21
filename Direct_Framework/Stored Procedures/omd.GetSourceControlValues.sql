@@ -1,29 +1,27 @@
 /*******************************************************************************
- * [omd].[GetSourceControlValues]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT Framework v2.1.0
- *
- * Purpose:
- *   Get a Load Window parameter value for source control.
- *
- * Inputs:
- *   - Module Instance Id, the currently involved Module Instance Id
- *   - Load Window Attribute Name,
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Source Control Id
- *   - Start Value
- *   - End Value
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+Procedure:      [omd].[GetSourceControlValues]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+Purpose:
+  Get a Load Window parameter value for source control.
+
+Inputs:
+  - Module Instance Id, the currently involved Module Instance Id
+  - Load Window Attribute Name,
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Source Control Id
+  - Start Value
+  - End Value
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
+*****************************************************************************
 
 DECLARE
   @SourceControlId BIGINT,

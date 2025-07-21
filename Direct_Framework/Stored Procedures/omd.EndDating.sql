@@ -1,30 +1,28 @@
 /*******************************************************************************
- * [omd].[EndDating]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   End Dating
- *
- * Inputs:
- *   - Data Object Name
- *   - Data Object Schema
- *   - Key Array (list of keys to end-date against)
- *   - Current Record Indicator Column Name (if available)
- *   - Inscripion Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
- *   - Expiry Date Column Name (defaulted to INSCRIPTION_TIMESTAMP)
- *   - Effective Date Column Name (defaulted to INSCRIPTION_BEFORE_TIMESTAMP)
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
+Procedure:      [omd].[EndDating]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+Purpose:
+  End Dating
+
+Inputs:
+  - Data Object Name
+  - Data Object Schema
+  - Key Array (list of keys to end-date against)
+  - Current Record Indicator Column Name (if available)
+  - Inscripion Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
+  - Expiry Date Column Name (defaulted to INSCRIPTION_TIMESTAMP)
+  - Effective Date Column Name (defaulted to INSCRIPTION_BEFORE_TIMESTAMP)
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
  *******************************************************************************
 
 TBA
@@ -51,8 +49,10 @@ CREATE PROCEDURE [omd].[END_DATING]
   @MessageLog                       NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
-BEGIN TRY
-SET NOCOUNT ON
+BEGIN
+  BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
@@ -235,18 +235,19 @@ BEGIN CATCH
     PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
     PRINT 'SuccessIndicator: '+ @SuccessIndicator
 
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
+      -- Spool message log
+      EXEC [omd].[PrintMessageLog] @MessageLog;
 
-  END
+    END
 
-  SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
-  SET @EventReturnCode = ERROR_NUMBER();
+    SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
+    SET @EventReturnCode = ERROR_NUMBER();
 
-  EXEC [omd].[InsertIntoEventLog]
-    @EventDetail       = @EventDetail,
-    @EventReturnCode   = @EventReturnCode,
-    @ModuleInstanceId  = @ModuleInstanceId;
+    EXEC [omd].[InsertIntoEventLog]
+      @EventDetail       = @EventDetail,
+      @EventReturnCode   = @EventReturnCode,
+      @ModuleInstanceId  = @ModuleInstanceId;
 
-  THROW
-END CATCH
+    THROW
+  END CATCH
+END

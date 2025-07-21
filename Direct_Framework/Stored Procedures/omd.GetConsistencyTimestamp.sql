@@ -1,30 +1,28 @@
 /*******************************************************************************
- * [omd].[GetConsistencyTimestamp]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Get a Consistency Timestamp
- *   For a given point in time, data will be consistent up to the lowest load
- *   window end-date of the most-recently successfully completed process
- *   execution instances involved in loading the target tables.
- *
- * Inputs:
- *   - Table list (comma separated array)
- *   - Measurement Date/Time (optional)
- *   - Load Window Attribute (optional)
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Consistency Date/Time
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
+Procedure:      [omd].[GetConsistencyTimestamp]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+Purpose:
+  Get a Consistency Timestamp
+  For a given point in time, data will be consistent up to the lowest load
+  window end-date of the most-recently successfully completed process
+  execution instances involved in loading the target tables.
+
+Inputs:
+  - Table list (comma separated array)
+  - Measurement Date/Time (optional)
+  - Load Window Attribute (optional)
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Consistency Date/Time
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
  *******************************************************************************
 
 DECLARE @ConsistencyTimestamp DATETIME2;
@@ -55,7 +53,10 @@ CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   ,@MessageLog               NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
-BEGIN TRY
+BEGIN
+  BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
   /* Debug block */
   --DECLARE @TableList NVARCHAR(MAX) = '[200_Integration_layer].vdw.HUB_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER_ADDITIONAL_DETAILS';
@@ -599,4 +600,5 @@ END
     @EventDetail       = @EventDetail,
     @EventReturnCode   = @EventReturnCode;
 
-END CATCH
+  END CATCH
+END

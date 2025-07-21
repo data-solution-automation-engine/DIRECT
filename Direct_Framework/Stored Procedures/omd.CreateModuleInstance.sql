@@ -1,30 +1,28 @@
 /*******************************************************************************
- * [omd].[CreateModuleInstance]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Create/Register a new Module Instance/Execution/Run of a Module,
- *   by Module Code and Batch Execution Id.
- *
- * Inputs:
- *   - Module Code, the name of the Module, as identified in the MODULE_CODE attribute in the MODULE table
- *   - Query, the executable that was passed down from the Module, for reference
- *   - Batch Instance Id, the Batch Instance Id, if the Module is run from a Batch
- *   - Execution Context Is (e.g. GUID, SPID)
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Module Instance Id
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+Procedure:      [omd].[CreateModuleInstance]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+Purpose:
+  Create/Register a new Module Instance/Execution/Run of a Module,
+  by Module Code and Batch Execution Id.
+
+Inputs:
+  - Module Code, the name of the Module, as identified in the MODULE_CODE attribute in the MODULE table
+  - Query, the executable that was passed down from the Module, for reference
+  - Batch Instance Id, the Batch Instance Id, if the Module is run from a Batch
+  - Execution Context Is (e.g. GUID, SPID)
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Module Instance Id
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
+*****************************************************************************
 
 DECLARE @ModuleInstanceId BIGINT
 

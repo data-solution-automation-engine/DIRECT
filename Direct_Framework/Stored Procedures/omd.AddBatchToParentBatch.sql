@@ -1,7 +1,7 @@
 /*******************************************************************************
 Procedure:      [omd].[AddBatchToParentBatch]
 Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework v2.1.0
+Version:        DIRECT Framework 2.1.0
 ********************************************************************************
 
 Purpose:

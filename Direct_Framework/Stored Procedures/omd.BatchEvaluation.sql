@@ -1,27 +1,29 @@
 /*******************************************************************************
- * [omd].[BatchEvaluation]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Checks if the provided Batch Instance is able to proceed,
- *   based on the state of all Batch Instances of the related Batch.
- *
- * Inputs:
- *   - Batch Instance Id
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Internal Processing Status Code
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+Procedure:      [omd].[BatchEvaluation]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT model v2.0
+
+Purpose:
+  Checks if the provided Batch Instance is able to proceed,
+  based on the state of all Batch Instances of the related Batch.
+
+Inputs:
+  - Batch Instance Id
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Internal Processing Status Code
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
+*****************************************************************************
 
 DECLARE @InternalProcessingStatusCode NVARCHAR(10);
 
