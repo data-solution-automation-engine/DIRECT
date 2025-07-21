@@ -134,8 +134,8 @@
     <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference> -->
-    <!-- <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" >
+    </PackageReference>
+    <PackageReference Include="ErikEJ.DacFX.TSQLSmellSCA" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> -->

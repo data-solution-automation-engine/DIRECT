@@ -12,6 +12,10 @@
     <ProjectGuid>{1c2116bc-e467-8272-712c-072dc61519d0}</ProjectGuid>
     <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
+  <ItemGroup>
+    <Build Remove="tSQLt\Example.sql" />
+    <Build Remove="tSQLt\tSQLt.class.sql" />
+  </ItemGroup>
 
   <!-- bring in the tSQLt framework during publish -->
   <!--<ItemGroup>
@@ -39,6 +43,14 @@
     <ArtifactReference Include="..\Reference_Dacpacs\tSQLt.2019.dacpac">
       <HintPath>..\Reference_Dacpacs\tSQLt.2019.dacpac</HintPath>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tSQLt\Example.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="tSQLt\tSQLt.class.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>

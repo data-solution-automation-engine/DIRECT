@@ -27,9 +27,9 @@
       },
       "Microsoft.SqlServer.DacFx": {
         "type": "Direct",
-        "requested": "[170.1.47-preview, )",
-        "resolved": "170.1.47-preview",
-        "contentHash": "5ruuZiDx3iBq6wKXShWOg9uvus07KE5ha7m1hso3qPCMPSnKB0dL9fpHv7hhzs/iDCs3GJGUAiuogB4AJAmZqA==",
+        "requested": "[170.1.56-preview, )",
+        "resolved": "170.1.56-preview",
+        "contentHash": "ueaHtRLgr1jj0Oqc3PjGLHL+sZ68rB3B9DwoYYj9iBXppChDMqH5cDlVno4TfByofDq+Cdrngo39YKoeeapehQ==",
         "dependencies": {
           "Azure.Core": "1.41.0",
           "Azure.Storage.Blobs": "12.18.0",
