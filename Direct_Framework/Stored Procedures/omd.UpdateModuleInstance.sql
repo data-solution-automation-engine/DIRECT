@@ -56,14 +56,20 @@ AS
 BEGIN
   BEGIN TRY
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- allow end timestamp to be defined by the caller if needed
+    SET @EndTimestamp = COALESCE(@EndTimestamp, SYSUTCDATETIME());
+    DECLARE @EndTimestampString NVARCHAR(20) = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
 
     -- Default output logging setup
     DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
     DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-    DECLARE @EndTimestamp DATETIME2 = NULL;
-    DECLARE @EndTimestampString NVARCHAR(20) = N'';
+
+
+
     DECLARE @LogMessage NVARCHAR(MAX);
 
     -- Log standard metadata
@@ -111,7 +117,7 @@ BEGIN
         EXECUTION_STATUS_CODE = 'Aborted',
         INTERNAL_PROCESSING_CODE = 'Abort',
         NEXT_RUN_STATUS_CODE = 'Proceed',
-        END_TIMESTAMP = SYSUTCDATETIME()
+        END_TIMESTAMP = @EndTimestamp
         WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
 
     END TRY
@@ -131,7 +137,7 @@ BEGIN
           EXECUTION_STATUS_CODE     = 'Cancelled',
           INTERNAL_PROCESSING_CODE  = 'Cancel',
           NEXT_RUN_STATUS_CODE      = 'Proceed',
-          END_TIMESTAMP             = SYSUTCDATETIME()
+          END_TIMESTAMP             = @EndTimestamp
         WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
 
       END TRY
@@ -152,9 +158,13 @@ BEGIN
           EXECUTION_STATUS_CODE     = 'Succeeded',
           NEXT_RUN_STATUS_CODE      = 'Proceed',
           INTERNAL_PROCESSING_CODE  = 'Proceed',
-          END_TIMESTAMP             = SYSUTCDATETIME(),
+          END_TIMESTAMP             = @EndTimestamp,
           ROWS_INPUT                = @RowCountSelect,
-          ROWS_INSERTED             = @RowCountInsert
+          ROWS_INSERTED             = @RowCountInsert,
+          ROWS_UPDATED              = @RowCountUpdated,
+          ROWS_DELETED              = @RowCountDeleted,
+          ROWS_DISCARDED            = @RowCountDiscarded,
+          ROWS_REJECTED             = @RowCountRejected
         WHERE MODULE_INSTANCE_ID    = @ModuleInstanceId
       END TRY
       BEGIN CATCH
@@ -173,7 +183,7 @@ BEGIN
         SET
           EXECUTION_STATUS_CODE   = 'Failed',
           NEXT_RUN_STATUS_CODE    = 'Rollback',
-          END_TIMESTAMP           = SYSUTCDATETIME()
+          END_TIMESTAMP           = @EndTimestamp
         WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
       END TRY
       BEGIN CATCH
@@ -217,11 +227,13 @@ BEGIN
     -- End procedure label
     EndOfProcedure:
 
-    SET @EndTimestamp = SYSUTCDATETIME();
-    SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-    SET @LogMessage = @EndTimestampString;
+    DECLARE @processEndTimestamp DATETIME2 = SYSUTCDATETIME();
+    DECLARE @processEndTimestampString NVARCHAR(20) = '';
+    SET @processEndTimestampString = FORMAT(@processEndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+
+    SET @LogMessage = @processEndTimestampString;
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
-    SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
+    SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @processEndTimestamp);
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
 
     IF @Debug = 'Y'
