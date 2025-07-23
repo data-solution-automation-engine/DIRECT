@@ -2,7 +2,7 @@
 
 This section contains the DIRECT physical model in Mermaid Entity Relationship diagram format.
 
-In various platforms, including Github, the diagram will be rendered automatically. Otherwise, the contents below can also be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
+In various platforms, including GitHub, the diagram will be rendered automatically. Otherwise, the contents below can also be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
 
 ```mermaid
 ---
@@ -169,14 +169,14 @@ erDiagram
 
     EVENT_TYPE {
         EVENT_TYPE_CODE                 NVARCHAR(100) PK
-        EVENT_TYPE_CODE_DESCRIPTION     NVARCHAR(4000)
+        EVENT_TYPE_DESCRIPTION     NVARCHAR(4000)
     }
 
     EVENT_TYPE ||..|{ EVENT_LOG : states
 
     EXECUTION_STATUS {
         EXECUTION_STATUS_CODE NVARCHAR(100) PK
-        EXECUTION_STATUS_CODE_DESCRIPTION NVARCHAR(4000)
+        EXECUTION_STATUS_DESCRIPTION NVARCHAR(4000)
     }
 
     EXECUTION_STATUS ||..|{ MODULE_INSTANCE : states
@@ -200,7 +200,7 @@ erDiagram
 
     INTERNAL_PROCESSING_STATUS {
         INTERNAL_PROCESSING_STATUS_CODE NVARCHAR(100) PK
-        INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION NVARCHAR(4000)
+        INTERNAL_PROCESSING_STATUS_DESCRIPTION NVARCHAR(4000)
     }
 
     INTERNAL_PROCESSING_STATUS ||..|{ MODULE_INSTANCE : monitors
@@ -215,7 +215,7 @@ erDiagram
 
     NEXT_RUN_STATUS {
         NEXT_RUN_STATUS_CODE NVARCHAR(100) PK
-        NEXT_RUN_STATUS_CODE_DESCRIPTION NVARCHAR(4000)
+        NEXT_RUN_STATUS_DESCRIPTION NVARCHAR(4000)
     }
 
     NEXT_RUN_STATUS ||..|{ MODULE_INSTANCE : defines
