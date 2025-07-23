@@ -3,8 +3,10 @@
 # https://github.com/data-solution-automation-engine/DIRECT
 ################################################################################
 # Creates a definition for, and spins up, a SQL Server container locally
-# in Podman. Optionally, deploys the Engine Testing scaffold and
-# Direct Framework DACPACs
+# in Podman including:
+# - Direct Framework DACPAC
+# - Testing Framework DACPAC (for regression tests)
+#
 # This is a full journey from start to finish for getting a
 # local database environment for development and tests up and running
 ################################################################################
@@ -87,21 +89,21 @@ $directFrameworkDatabaseName = "Direct_Framework"
 $directFrameworkVersion = "next" # "current"/"next"
 $directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkVersion/db/Direct_Framework.dacpac"
 
-# define valid connection strings for SQL Server
+# Define valid connection strings for SQL Server
 
-# to system database "master"
+# The connection string for the system database "master"
 $masterConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
-# to Testing Framework database
+# The connection string to the Testing Framework database
 $testingConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
-# to Direct Framework database
+# The connection string to the Direct Framework database
 $directConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
-# nap controls, increase or decrease as needed for the current host
+# Nap controls, increase or decrease as needed for the current host
 $maxAttempts = 10
 $napLength = 5 # seconds
 
@@ -234,6 +236,7 @@ try {
   podman run -d --name $containerName `
     -e "ACCEPT_EULA=Y" `
     -e "MSSQL_SA_PASSWORD=$sqlPassword" `
+    -e "MSSQL_AGENT_ENABLED=true" `
     -p 0.0.0.0:$portMapping $imageName
 
   Write-Host "Container '$containerName' created successfully." -ForegroundColor Green
