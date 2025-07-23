@@ -1,4 +1,6 @@
-namespace Direct_Framework.Integration.Tests.Tests;
+using IntegrationTests.Infrastructure;
+
+namespace IntegrationTests.StoredProcedureTests;
 
 [TestClass]
 public class OrderProcedureTests

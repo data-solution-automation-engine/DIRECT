@@ -30,25 +30,23 @@ EXEC [omd].[InsertIntoEventLog]
   @EventDetail = '<event or error details>',
   @EventTypeCode = '<2>'
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[InsertIntoEventLog]
 (
   -- Mandatory parameters
-  @ModuleInstanceId   BIGINT          = 0,
-  @EventDetail        NVARCHAR(4000),
+   @ModuleInstanceId   BIGINT
+  ,@EventDetail        NVARCHAR(4000)
   -- Optional parameters
-  @BatchInstanceId    BIGINT          = 0,
-  @EventTimestamp     DATETIME2       = NULL,
-  @EventTypeCode      NVARCHAR(100)   = '2',
-  @EventReturnCode    NVARCHAR(100)   = 'N/A',
-  @ErrorBitmap        NUMERIC(20,0)   = 0,
-  @Debug              CHAR(1)         = 'N',
-  -- Output parameters
-  @SuccessIndicator   CHAR(1)         = 'N' OUTPUT,
-  @MessageLog         NVARCHAR(MAX)   = N'' OUTPUT
+  ,@BatchInstanceId    BIGINT          = 0
+  ,@EventTimestamp     DATETIME2       = NULL
+  ,@EventTypeCode      NVARCHAR(100)   = '2'
+  ,@EventReturnCode    NVARCHAR(100)   = 'N/A'
+  ,@ErrorBitmap        NUMERIC(20,0)   = 0
+  ,@Debug              CHAR(1)         = 'N'
+   -- Output parameters
+  ,@SuccessIndicator   CHAR(1)         OUTPUT
+  ,@MessageLog         NVARCHAR(MAX)   OUTPUT
 )
 AS
 BEGIN

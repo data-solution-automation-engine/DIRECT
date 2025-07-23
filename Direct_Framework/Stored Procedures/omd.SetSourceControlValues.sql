@@ -5,18 +5,19 @@ Version:        DIRECT Framework v2.1.0
 ********************************************************************************
 
 Purpose:
-  Set a Source Control value/Load Window parameter value.
+  Set a Source Control value/Load Window parameter value set for a Module Instance.
+  The Source Control table can maintain the start and end of the load window, or
+  just the start value. The values are data type and usage agnostic, so can be
+  used for any purpose, such as a load window, a data quality check
 
 Inputs:
   - Module Instance Id, the currently involved Module Instance Id
-    or a Module Id for the in-scope Module
-    or a Module Code for the in-scope Module
   - Start Value
   - End Value
   - Debug Flag (Y/N, defaults to N)
 
 Outputs:
-  - Source Control Id for the Load Window
+  - Source Control Id for the created Load Window record
   - Success Indicator (Y/N)
   - Message Log
 
@@ -67,6 +68,7 @@ BEGIN
     SET @SourceControlId = NULL;
 
     -- Standard setup and initialization
+    DECLARE @ReturnCode INT = 0;
     DECLARE @EventDetail NVARCHAR(4000);
     DECLARE @EventReturnCode NVARCHAR(100);
     DECLARE @AddLogsToEventLog CHAR(1) = [omd_metadata].[GetSettingFlag]('LOG_TO_EVENT_LOG');
@@ -74,15 +76,14 @@ BEGIN
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
     DECLARE @LogMessage NVARCHAR(MAX);
-    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),
-        N'.', QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
-
+    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),N'.',QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
     -- Validate input parameters
     IF (@ModuleInstanceId IS NULL OR @ModuleInstanceId <= 0
         OR @StartValue IS NULL OR TRIM(@StartValue) = '')
     BEGIN
       SET @SuccessIndicator = 'N';
+      SET @SourceControlId = NULL;
       SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, N'Missing required parameter.', @MessageLog);
       IF @ThrowOnFailure = 'Y' THROW 50000, 'At least one key parameter is required.', 1;
       ELSE GOTO EndOfProcedureFailure;
@@ -174,6 +175,7 @@ BEGIN
 
       SET @LogMessage = N'Set Source Control Values process encountered errors.';
       SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+      SET @ReturnCode = -1;
 
       GOTO EndOfProcedure;
 
@@ -182,6 +184,7 @@ BEGIN
       SET @SuccessIndicator = 'Y';
       SET @LogMessage = N'Set Source Control Values process completed successfully.';
       SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+      SET @ReturnCode = 0;
 
       GOTO EndOfProcedure;
 
@@ -198,6 +201,7 @@ BEGIN
     BEGIN
       EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
     END;
+    RETURN @ReturnCode;
 
   END TRY
 /*******************************************************************************
@@ -256,6 +260,8 @@ BEGIN
     SET @MessageLog = [omd].[AddLogMessage] ('CRITICAL', DEFAULT, N'Error Details', @EventDetail, @MessageLog);
 
     IF @ThrowOnFailure = 'Y' THROW 50000, @EventDetail, 1;
+
+    RETURN -2;
 
   END CATCH
 END;

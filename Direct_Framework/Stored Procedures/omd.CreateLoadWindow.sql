@@ -38,23 +38,22 @@ SELECT
   @StartValue as N'@StartValue',
   @EndValue as N'@EndValue'
 
- *******************************************************************************
- *
- ******************************************************************************/
+
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[CreateLoadWindow]
   (
   -- Mandatory parameters
-  @ModuleInstanceId             BIGINT
+   @ModuleInstanceId             BIGINT
   -- Optional parameters
   ,@LoadWindowAttributeName      NVARCHAR(1000) = 'INSCRIPTION_TIMESTAMP'
   ,@ModuleInstanceIdColumnName   NVARCHAR(1000) = 'MODULE_INSTANCE_ID'
-  ,@Debug                        CHAR(1) = 'N'
+  ,@Debug                        CHAR(1)        = 'N'
   -- Output parameters
-  ,@StartValue                   NVARCHAR(MAX) = NULL OUTPUT
-  ,@EndValue                     NVARCHAR(MAX) = NULL OUTPUT
-  ,@SuccessIndicator             CHAR(1)       = 'N' OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX) = N'' OUTPUT
+  ,@StartValue                   NVARCHAR(100)  OUTPUT
+  ,@EndValue                     NVARCHAR(100)  OUTPUT
+  ,@SuccessIndicator             CHAR(1)        OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)  OUTPUT
 )
 AS
 BEGIN

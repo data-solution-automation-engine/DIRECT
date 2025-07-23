@@ -1,8 +1,6 @@
-using Direct_Framework.Integration.Tests.Infrastructure;
+using IntegrationTests.Infrastructure;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace Direct_Framework.Integration.Tests;
+namespace IntegrationTests;
 
 /// <summary>
 /// Global test setup that manages a single SQL Server container for all integration tests
@@ -43,4 +41,13 @@ public sealed class GlobalTestSetup
   {
     await SqlServerContainerManager.ResetDatabaseAsync();
   }
+
+  /// <summary>
+  /// Populates the database with initial data
+  /// </summary>
+  public static async Task PopulateDatabaseAsync()
+  {
+    await SqlServerContainerManager.PopulateDatabaseAsync();
+  }
+
 }

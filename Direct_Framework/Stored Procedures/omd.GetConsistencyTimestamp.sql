@@ -35,9 +35,7 @@ EXEC [omd].[GetConsistencyTimestamp]
 
 PRINT @ConsistencyDateTime;
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   (
@@ -48,9 +46,9 @@ CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
   -- ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
   ,@Debug                    CHAR(1)       = 'N'
   -- Output parameters
-  ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
-  ,@SuccessIndicator         CHAR(1)       = 'N' OUTPUT
-  ,@MessageLog               NVARCHAR(MAX) = N'' OUTPUT
+  ,@ConsistencyDateTime      DATETIME2     OUTPUT
+  ,@SuccessIndicator         CHAR(1)       OUTPUT
+  ,@MessageLog               NVARCHAR(MAX)  OUTPUT
 )
 AS
 BEGIN

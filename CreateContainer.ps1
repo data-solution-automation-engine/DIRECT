@@ -94,16 +94,12 @@ $masterConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # to Testing Framework database
-# $testingConnectionString =
-#   "Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+$testingConnectionString =
+  "Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # to Direct Framework database
 $directConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
-
-# to tSQLt Example database
-# $tsqltExampleConnectionString =
-#   "Server=$localAddress,${sqlServerPort};Initial Catalog=tSQLt_Example;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # nap controls, increase or decrease as needed for the current host
 $maxAttempts = 10
@@ -116,6 +112,8 @@ $napLength = 5 # seconds
 ################################################################################
 # Check and validate the environment, clean the target container if needed
 ################################################################################
+
+Write-Heading -Heading "DIRECT Framework Create Container Script 2.1.0`nDeployment Starting"
 
 Write-Host "Container Image Name: $imageName" -ForegroundColor Cyan
 Write-Host "Master Connection String: $masterConnectionString" -ForegroundColor Cyan
@@ -768,40 +766,9 @@ function Deploy-Dacpac {
     }
   }
 }
-
 # End of preamble setup, functions and helpers
-Write-Success "SQL Server container setup completed."
-
 ##############################################################################
 ##############################################################################
-
-################################################################################
-# Reconfigure the server to allow tSQLt executions (clr enable = 1)
-################################################################################
-try {
-  Write-Host "Disabling clr security, enabling clr on server - to support tSQLt" -ForegroundColor Cyan
-  $MasterConnectionString
-  $sqlConnection = New-Object System.Data.SqlClient.SqlConnection($MasterConnectionString)
-  $sqlConnection.Open()
-  $cmd = $sqlConnection.CreateCommand()
-  $cmd.CommandText = "EXEC sp_configure 'show advanced options', 1;
-RECONFIGURE;
-EXEC sp_configure 'clr strict security', 0;
-RECONFIGURE;
-EXEC sp_configure 'clr enabled', 1;
-RECONFIGURE;"
-  $cmd.ExecuteNonQuery()
-
-  Write-Host "reconfigured." -ForegroundColor Green
-}
-catch {
-  Write-Error "Failed to enable clr:`n$_"
-}
-finally {
-  if ($sqlConnection?.State -eq 'Open') {
-    $sqlConnection.Close()
-  }
-}
 
 ################################################################################
 # DEPLOY TESTING FRAMEWORK DACPAC
@@ -842,85 +809,8 @@ else {
   Write-Host "AutoDeploy is off - Skipping Direct Framework deployment."
 }
 
-################################################################################
-# tSQLt SETUP AND DEPLOYMENT
-################################################################################
-# tSQLt is a database unit testing framework for SQL Server. (https://tsqlt.org/)
-# it has its own deployment and setup process using a script approach.
-
-# install and set up in the Direct Framework database to allow tSQLt tests
-if ($AutoDeploy) {
-  try {
-    Write-Heading -Heading "Installing tSQLt Framework into '$directFrameworkDatabaseName'"
-
-    $result = Invoke-SqlCmd `
-      -SqlPath "Direct_Framework.tsqlt.Tests/tSQLt/tSQLt.class.sql" `
-      -ConnectionString $directConnectionString
-
-    if (-not $result) {
-      Write-Error "tSQLt deployment failed. Please review."
-    }
-  }
-  catch {
-    Write-Error "Failed to install tSQLt in '$directFrameworkDatabaseName':`n$_"
-  }
-
-  # Deploy and run the tSQLt example tests in a separate database 'tSQLt_Example'
-  try {
-    Write-Heading -Heading "Installing tSQLt examples into 'tSQLt_Example'"
-
-    $result = Invoke-SqlCmd -SqlPath "Direct_Framework.tsqlt.Tests/tSQLt/Example.sql" `
-      -ConnectionString $masterConnectionString
-
-    if (-not $result) {
-      Write-Error "tSQLt example deployment failed. Please review."
-    }
-  }
-  catch {
-    Write-Error "Failed to install tSQLt examples into 'tSQLt_Example':`n$_"
-  }
-
-  # Build the sqlcmd command
-  $sqlcmdArgs = @(
-    "-S", "$localAddress,$sqlServerPort"
-    "-d", "tSQLt_Example"
-    "-U", "sa"
-    "-P", "$sqlPassword"
-    "-Q", "EXEC tSQLt.RunAll;"
-  )
-
-  # Run sqlcmd and capture output
-  $output = & sqlcmd @sqlcmdArgs
-
-  # Print the output
-  foreach ($line in $output) {
-    if ($line -match '\|Success\|') {
-      Write-Host $line -ForegroundColor Green
-    }
-    elseif ($line -match '\|Failure\|') {
-      Write-Host $line -ForegroundColor Red
-    }
-    # Also add the Skipped and Errored cases, check their output codes.
-
-    # Prettify the output for summary with the results colored
-    # Note that the tSQLt example test set has 11 tests, 1 is expected to fail
-    elseif ($line -match '^Test Case Summary: (\d+) test case\(s\) executed, (\d+) succeeded, (\d+) skipped, (\d+) failed, (\d+) errored\.') {
-      $exec = $matches[1]
-      $succ = $matches[2]
-      $skip = $matches[3]
-      $fail = $matches[4]
-      $err = $matches[5]
-      $colored = "Test Case Summary:`n`e[36m$exec test case(s) executed`e[0m, " +
-      "`e[32m$succ succeeded`e[0m, " +
-      "`e[33m$skip skipped`e[0m, " +
-      "`e[31m$fail failed`e[0m, " +
-      "`e[31m$err errored`e[0m."
-      Write-Output $colored
-    }
-    else {
-      Write-Host $line
-    }
-  }
-}
-
-Write-Success "Container '$containerName' is deployed and ready for use."
+Write-Heading -Heading "Deployment Summary"
+Write-Success "Container '$containerName' is deployed and ready for use.`n"
+Write-Host "Connection String to master:`n-->  $masterConnectionString`n" -ForegroundColor Cyan
+Write-Host "Connection String to Testing Framework:`n-->  $testingConnectionString`n" -ForegroundColor Cyan
+Write-Host "Connection String to Direct Framework:`n-->  $directConnectionString`n" -ForegroundColor Cyan

@@ -1,32 +1,32 @@
 /*******************************************************************************
- * [omd].[RunModule]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   !! THIS IS AN IN-ENGINE EXECUTION PROCEDURE !!
- *   Run a module code in-engine
- *   It will execute a data logistics process / query in a DIRECT wrapper
- *   in the local database context of the DIRECT database.
- *
- * Inputs:
- *   - Module Code
- *   - Query, an input query, which can be custom or calling a procedure. This will override the executable defined for the Module
- *   - Batch Instance Id, if the Module is run from a Batch
- *   - Module Instance Column Name, used as override when the solution use another column name for the module instance Id
- *   - Debug Flag (Y/N, defaults to N)
- *
- * Outputs:
- *   - Module Instance Id
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+[omd].[RunModule]
+*****************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT model v2.0
+
+Purpose:
+  !! THIS IS AN IN-ENGINE EXECUTION PROCEDURE !!
+  Run a module code in-engine
+  It will execute a data logistics process / query in a DIRECT wrapper
+  in the local database context of the DIRECT database.
+
+Inputs:
+  - Module Code
+  - Query, an input query, which can be custom or calling a procedure. This will override the executable defined for the Module
+  - Batch Instance Id, if the Module is run from a Batch
+  - Module Instance Column Name, used as override when the solution use another column name for the module instance Id
+  - Debug Flag (Y/N, defaults to N)
+
+Outputs:
+  - Module Instance Id
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
+*****************************************************************************
 
 DECLARE @SuccessIndicator CHAR(1);
 EXEC [omd].[RunModule]
@@ -42,24 +42,22 @@ EXEC [omd].[RunModule]
   @Debug = 'Y'
   @Query = '<>';
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[RunModule]
 (
-  -- Mandatory parameters
-  @ModuleCode                   NVARCHAR(1000),
-  -- Optional parameters
-  @Query                        NVARCHAR(MAX)   = NULL,
-  @BatchInstanceId              BIGINT          = 0,
-  @ModuleInstanceIdColumnName   NVARCHAR(1000)  = 'MODULE_INSTANCE_ID',
-  @Debug                        CHAR(1)         = 'N',
-  -- Output parameters
-  @ModuleInstanceId             BIGINT          OUTPUT,
-  @ModuleInstanceStartTimestamp DATETIME2       OUTPUT,
-  @SuccessIndicator             CHAR(1)         OUTPUT,
-  @MessageLog                   NVARCHAR(MAX)   OUTPUT
+   -- Mandatory parameters
+   @ModuleCode                   NVARCHAR(500)
+   -- Optional parameters
+  ,@Query                        NVARCHAR(MAX)   = NULL
+  ,@BatchInstanceId              BIGINT          = 0
+  ,@ModuleInstanceIdColumnName   NVARCHAR(128)  = 'MODULE_INSTANCE_ID'
+  ,@Debug                        CHAR(1)         = 'N'
+   -- Output parameters
+  ,@ModuleInstanceId             BIGINT          OUTPUT
+  ,@ModuleInstanceStartTimestamp DATETIME2       OUTPUT
+  ,@SuccessIndicator             CHAR(1)         OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   OUTPUT
 )
 AS
 BEGIN

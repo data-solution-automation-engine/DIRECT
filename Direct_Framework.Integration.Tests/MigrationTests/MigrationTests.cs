@@ -1,5 +1,7 @@
 using System.Diagnostics;
 
+using IntegrationTests.Infrastructure;
+
 using Microsoft.SqlServer.Dac;
 
 namespace Direct_Framework.Integration.Tests.Migrations;

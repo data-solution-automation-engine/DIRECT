@@ -35,19 +35,17 @@ Usage:
 
 EXEC [omd].[GetModule] @ModuleCode = 'MyExistingModule'
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[GetModule]
 (
   -- Mandatory parameters
-  @ModuleCode               NVARCHAR(1000),
+  @ModuleCode               NVARCHAR(500),
   -- Optional parameters
   @Debug                    CHAR(1)         = 'N',
   -- Output parameters
-  @SuccessIndicator         CHAR(1)         = 'N'   OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   = NULL  OUTPUT
+  @SuccessIndicator         CHAR(1)         OUTPUT,
+  @MessageLog               NVARCHAR(MAX)   OUTPUT
 )
 AS
 BEGIN

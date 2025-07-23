@@ -9,6 +9,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <RunSettingsFilePath>$(MSBuildProjectDirectory)\..\default.runsettings</RunSettingsFilePath>
+    <RootNamespace>IntegrationTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Testcontainers.MsSql" />

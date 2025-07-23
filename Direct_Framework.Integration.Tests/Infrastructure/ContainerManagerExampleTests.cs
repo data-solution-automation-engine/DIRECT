@@ -1,6 +1,4 @@
-
-
-namespace Direct_Framework.Integration.Tests.Tests;
+namespace IntegrationTests.Infrastructure;
 
 [TestClass]
 public class ContainerManagerExampleTests

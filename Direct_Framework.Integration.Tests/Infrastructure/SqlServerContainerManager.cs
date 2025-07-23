@@ -4,7 +4,7 @@ using Microsoft.SqlServer.Dac;
 
 using Testcontainers.MsSql;
 
-namespace Direct_Framework.Integration.Tests.Infrastructure;
+namespace IntegrationTests.Infrastructure;
 
 /// <summary>
 /// Manages the lifecycle of a shared SQL Server container for integration tests
@@ -14,7 +14,7 @@ public static class SqlServerContainerManager
 {
   private static MsSqlContainer? _container;
   private static string? _connectionString;
-  private static readonly object _lock = new object();
+  private static readonly Lock _lock = new();
   private static bool _isInitialized = false;
 
   /// <summary>
@@ -57,7 +57,8 @@ public static class SqlServerContainerManager
           .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
           .WithCleanUp(true)
           .Build();
-    }        // Start the container
+    }
+    // Start the container
     Console.WriteLine($"Starting SQL Server Linux container with Podman");
     Console.WriteLine($"Image: {_container.Image}");
 
@@ -105,6 +106,135 @@ public static class SqlServerContainerManager
       throw new InvalidOperationException("Container not initialized.");
 
     await DeployDatabaseSchemaAsync("next");
+  }
+
+  public static async Task PopulateDatabaseAsync()
+  {
+    // add some initial data to the database
+    if (!_isInitialized)
+      throw new InvalidOperationException("Container not initialized.");
+    int moduleId;
+    int batchId;
+    int moduleInstanceId;
+    //int batchInstanceId;
+
+    var batch = new
+    {
+      BatchCode = "b_INGESTION_EXAMPLE",
+      BatchType = "Ingestion",
+      FrequencyCode = "On-demand",
+      ActiveIndicator = "Y",
+      BatchDescription = "Example batch for ingestion",
+    };
+    // insert the batch into the database
+    using var connection = new SqlConnection(_connectionString);
+    await connection.OpenAsync();
+    using var command = new SqlCommand(
+        @"INSERT INTO omd.BATCH (BATCH_CODE, BATCH_TYPE, FREQUENCY_CODE, ACTIVE_INDICATOR, BATCH_DESCRIPTION)
+          VALUES (@BatchCode, @BatchType, @FrequencyCode, @ActiveIndicator, @BatchDescription);
+          SELECT SCOPE_IDENTITY();", connection);
+
+    command.Parameters.AddWithValue("@BatchCode", batch.BatchCode);
+    command.Parameters.AddWithValue("@BatchType", batch.BatchType);
+    command.Parameters.AddWithValue("@FrequencyCode", batch.FrequencyCode);
+    command.Parameters.AddWithValue("@ActiveIndicator", batch.ActiveIndicator);
+    command.Parameters.AddWithValue("@BatchDescription", batch.BatchDescription);
+
+    // Execute the insert and get the identity value
+    var result = await command.ExecuteScalarAsync();
+    batchId = Convert.ToInt32(result);
+
+    Console.WriteLine($"Inserted batch: {batch.BatchCode} with id: {batchId}");
+
+    var module = new
+    {
+      ModuleCode = "M_INGESTION_EXAMPLE",
+      ModuleType = "Ingestion",
+      DataObjectSource = "SourceObject",
+      DataObjectTarget = "TargetObject",
+      AreaCode = "STG",
+      FrequencyCode = "On-demand",
+      ModuleDescription = "Example module for ingestion",
+      ActiveIndicator = "Y",
+      Executable = "SELECT SYSUTCDATETIME() AS NowUtc"
+    };
+    // check if a module with the same code already exists
+    using var checkCommand = new SqlCommand(
+        "SELECT COUNT(*) FROM omd.MODULE WHERE MODULE_CODE = @ModuleCode", connection);
+    checkCommand.Parameters.AddWithValue("@ModuleCode", module.ModuleCode);
+    var exists = (int?)await checkCommand.ExecuteScalarAsync() > 0;
+    if (exists)
+    {
+      Console.WriteLine($"Module with code {module.ModuleCode} already exists. Skipping insert.");
+      // get the id of the existing module
+      using var getModuleIdCommand = new SqlCommand(
+          "SELECT MODULE_ID FROM omd.MODULE WHERE MODULE_CODE = @ModuleCode", connection);
+      getModuleIdCommand.Parameters.AddWithValue("@ModuleCode", module.ModuleCode);
+      moduleId = (int?)await getModuleIdCommand.ExecuteScalarAsync() ?? 0;
+    }
+    else
+    {
+      // insert the module into the database and get the identity value
+      using var moduleCommand = new SqlCommand(
+          @"INSERT INTO omd.MODULE (MODULE_CODE, MODULE_TYPE, DATA_OBJECT_SOURCE, DATA_OBJECT_TARGET, AREA_CODE, FREQUENCY_CODE, MODULE_DESCRIPTION, ACTIVE_INDICATOR, EXECUTABLE) 
+                VALUES (@ModuleCode, @ModuleType, @DataObjectSource, @DataObjectTarget, @AreaCode, @FrequencyCode, @ModuleDescription, @ActiveIndicator, @Executable);
+                SELECT SCOPE_IDENTITY();", connection);
+      moduleCommand.Parameters.AddWithValue("@ModuleCode", module.ModuleCode);
+      moduleCommand.Parameters.AddWithValue("@ModuleType", module.ModuleType);
+      moduleCommand.Parameters.AddWithValue("@DataObjectSource", module.DataObjectSource);
+      moduleCommand.Parameters.AddWithValue("@DataObjectTarget", module.DataObjectTarget);
+      moduleCommand.Parameters.AddWithValue("@AreaCode", module.AreaCode);
+      moduleCommand.Parameters.AddWithValue("@FrequencyCode", module.FrequencyCode);
+      moduleCommand.Parameters.AddWithValue("@ModuleDescription", module.ModuleDescription);
+      moduleCommand.Parameters.AddWithValue("@ActiveIndicator", module.ActiveIndicator);
+      moduleCommand.Parameters.AddWithValue("@Executable", module.Executable);
+      var moduleResult = await moduleCommand.ExecuteScalarAsync();
+      moduleId = Convert.ToInt32(moduleResult);
+      Console.WriteLine($"Inserted module: {module.ModuleCode} with id: {moduleId}");
+    }
+
+    var moduleInstance = new
+    {
+      ModuleId = moduleId,
+      BatchInstanceId = 0,
+      StartTimestamp = DateTime.UtcNow,
+      EndTimestamp = (DateTime?)null,
+      InternalProcessingCode = "Proceed",
+      NextRunStatusCode = "Proceed",
+      ExecutionStatusCode = "Succeeded",
+      ExecutionContext = (string?)null,
+      RowsInput = (long?)10,
+      RowsInserted = (long?)10,
+      RowsUpdated = (long?)0,
+      RowsDeleted = (long?)0,
+      RowsDiscarded = (long?)0,
+      RowsRejected = (long?)0,
+      ExecutedCodeChecksum = new byte[64]
+    };
+
+    // insert the module instance into the database and get the identity value
+    using var moduleInstanceCommand = new SqlCommand(
+        @"INSERT INTO omd.MODULE_INSTANCE (MODULE_ID, BATCH_INSTANCE_ID, START_TIMESTAMP, END_TIMESTAMP, INTERNAL_PROCESSING_CODE, NEXT_RUN_STATUS_CODE, EXECUTION_STATUS_CODE, EXECUTION_CONTEXT, ROWS_INPUT, ROWS_INSERTED, ROWS_UPDATED, ROWS_DELETED, ROWS_DISCARDED, ROWS_REJECTED, EXECUTED_CODE_CHECKSUM) 
+              VALUES (@ModuleId, @BatchInstanceId, @StartTimestamp, @EndTimestamp, @InternalProcessingCode, @NextRunStatusCode, @ExecutionStatusCode, @ExecutionContext, @RowsInput, @RowsInserted, @RowsUpdated, @RowsDeleted, @RowsDiscarded, @RowsRejected, @ExecutedCodeChecksum);
+              SELECT SCOPE_IDENTITY();", connection);
+    moduleInstanceCommand.Parameters.AddWithValue("@ModuleId", moduleInstance.ModuleId);
+    moduleInstanceCommand.Parameters.AddWithValue("@BatchInstanceId", 0);
+    moduleInstanceCommand.Parameters.AddWithValue("@StartTimestamp", moduleInstance.StartTimestamp);
+    moduleInstanceCommand.Parameters.AddWithValue("@EndTimestamp", moduleInstance.EndTimestamp ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@InternalProcessingCode", moduleInstance.InternalProcessingCode);
+    moduleInstanceCommand.Parameters.AddWithValue("@NextRunStatusCode", moduleInstance.NextRunStatusCode);
+    moduleInstanceCommand.Parameters.AddWithValue("@ExecutionStatusCode", moduleInstance.ExecutionStatusCode);
+    moduleInstanceCommand.Parameters.AddWithValue("@ExecutionContext", moduleInstance.ExecutionContext ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsInput", moduleInstance.RowsInput ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsInserted", moduleInstance.RowsInserted ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsUpdated", moduleInstance.RowsUpdated ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsDeleted", moduleInstance.RowsDeleted ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsDiscarded", moduleInstance.RowsDiscarded ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@RowsRejected", moduleInstance.RowsRejected ?? (object)DBNull.Value);
+    moduleInstanceCommand.Parameters.AddWithValue("@ExecutedCodeChecksum", moduleInstance.ExecutedCodeChecksum ?? (object)DBNull.Value);
+    var moduleInstanceResult = await moduleInstanceCommand.ExecuteScalarAsync();
+    moduleInstanceId = Convert.ToInt32(moduleInstanceResult);
+    Console.WriteLine($"Inserted module instance with id: {moduleInstanceId}");
   }
 
   private static async Task DeployDatabaseSchemaAsync(string version = "next")
@@ -188,11 +318,11 @@ public static class SqlServerContainerManager
     {
       try
       {
-        using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
         // Try to execute a simple query to ensure SQL Server is fully ready
-        using var command = new Microsoft.Data.SqlClient.SqlCommand("SELECT 1", connection);
+        using var command = new SqlCommand("SELECT 1", connection);
         await command.ExecuteScalarAsync();
 
         Console.WriteLine($"SQL Server is ready after {i + 1} attempts");

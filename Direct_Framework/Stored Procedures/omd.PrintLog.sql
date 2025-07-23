@@ -1,25 +1,25 @@
 /*******************************************************************************
- * [omd].[PrintMessageLog]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Pretty Prints a message log
- *
- * Inputs:
- *   - Message Log
- *
- * Output:
- *   - Pretty Printed Log
- *     (note: the output is displayed in the Messages tab/output.
- *     It is not delivered to the client as a result set)
- *
- * Usage:
- *
- *******************************************************************************
+[omd].[PrintMessageLog]
+*****************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT model v2.0
+
+Purpose:
+  Pretty Prints a message log
+
+Inputs:
+  - Message Log
+
+Output:
+  - Pretty Printed Log
+    (note: the output is displayed in the Messages tab/output.
+    It is not delivered to the client as a result set)
+
+Usage:
+
+*******************************************************************************
 
 DECLARE @MessageLog NVARCHAR(MAX);
 SET @MessageLog =
@@ -35,9 +35,7 @@ SET @MessageLog =
 EXEC [omd].[PrintMessageLog]
   @MessageLog = @MessageLog
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[PrintMessageLog]
 (

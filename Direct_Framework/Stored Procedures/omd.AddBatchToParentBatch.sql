@@ -46,8 +46,8 @@ PRINT('New hierarchy item registered: ' + @SuccessIndicator)
 CREATE PROCEDURE [omd].[AddBatchToParentBatch]
 (
   -- Mandatory parameters
-  @BatchCode          NVARCHAR(1000),
-  @ParentBatchCode    NVARCHAR(1000),
+  @BatchCode          NVARCHAR(500),
+  @ParentBatchCode    NVARCHAR(500),
   -- Optional parameters
   @Sequence           INT           = 0,
   @ActiveIndicator    CHAR(1)       = 'Y',

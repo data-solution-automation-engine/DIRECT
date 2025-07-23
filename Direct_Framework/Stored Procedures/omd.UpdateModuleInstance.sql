@@ -1,56 +1,54 @@
 /*******************************************************************************
- * [omd].[UpdateModuleInstance]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
- *   Sets the various Module Instance status codes based on input events.
- *
- * Inputs:
- *   - Module Instance Id
- *   - Event Code (Process, Abort, Cancel, Rollback, Success or Failure)
- *   - Row Count for SELECT
- *   - Row Count for INSERT
- *   - Debug flag Y/N (default to N)
- *
- * Outputs:
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
+[omd].[UpdateModuleInstance]
+*****************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT model v2.0
+
+Purpose:
+  Sets the various Module Instance status codes based on input events.
+
+Inputs:
+  - Module Instance Id
+  - Event Code (Process, Abort, Cancel, Rollback, Success or Failure)
+  - Row Count for SELECT
+  - Row Count for INSERT
+  - Debug flag Y/N (default to N)
+
+Outputs:
+  - Success Indicator (Y/N)
+  - Message Log
+
+Usage:
+
+*****************************************************************************
 
 EXEC [omd].[UpdateModuleInstance]
   @ModuleInstanceId = <>,
   @EventCode = '<>'
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[UpdateModuleInstance]
 (
-  -- Mandatory parameters
-  @ModuleInstanceId   BIGINT,
+   -- Mandatory parameters
+   @ModuleInstanceId   BIGINT
+   -- Optional parameters
+  ,@EventCode          NVARCHAR(100) = 'None'
+  -- optional row count updates
+  ,@RowCountSelect     BIGINT   = 0
+  ,@RowCountInsert     BIGINT   = 0
+  ,@RowCountUpdated    BIGINT   = 0
+  ,@RowCountDeleted    BIGINT   = 0
+  ,@RowCountDiscarded  BIGINT   = 0
+  ,@RowCountRejected   BIGINT   = 0
   -- Optional parameters
-  @EventCode          NVARCHAR(100) = 'None',
-
-  -- row count updates
-  @RowCountSelect     BIGINT   = 0,
-  @RowCountInsert     BIGINT   = 0,
-  @RowCountUpdated    BIGINT   = 0,
-  @RowCountDeleted    BIGINT   = 0,
-  @RowCountDiscarded  BIGINT   = 0,
-  @RowCountRejected   BIGINT   = 0,
-  @EndTimestamp       DATETIME2   = NULL,
-  @Debug              CHAR(1)     = 'N',
-  -- Output parameters
-  @SuccessIndicator   CHAR(1)       OUTPUT,
-  @MessageLog         NVARCHAR(MAX) OUTPUT
+  ,@EndTimestamp       DATETIME2   = NULL
+  ,@Debug              CHAR(1)     = 'N'
+   -- Output parameters
+  ,@SuccessIndicator   CHAR(1)       OUTPUT
+  ,@MessageLog         NVARCHAR(MAX) OUTPUT
 )
 AS
 BEGIN
@@ -67,8 +65,6 @@ BEGIN
     DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-
-
 
     DECLARE @LogMessage NVARCHAR(MAX);
 

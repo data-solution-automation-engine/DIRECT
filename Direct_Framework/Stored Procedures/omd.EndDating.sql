@@ -34,19 +34,19 @@ TBA
 CREATE PROCEDURE [omd].[END_DATING]
 (
   -- Mandatory parameters
-  @DataObjectName                   VARCHAR(MAX)
- ,@DataObjectSchema                 VARCHAR(MAX)
- ,@KeyArray                         VARCHAR(MAX)  = NULL
- ,@ModuleInstanceId                 INT           = 0
-  -- Optional parameters
- ,@CurrentRecordIndicatorColumnName VARCHAR(50)   = 'CURRENT_RECORD_INDICATOR'
- ,@InscriptionRecordIdColumnName    VARCHAR(50)   = 'INSCRIPTION_RECORD_ID'
- ,@ExpiryDateColumnName             VARCHAR(50)   = 'INSCRIPTION_TIMESTAMP'
- ,@EffectiveDateColumnName          VARCHAR(50)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
- ,@Debug                            CHAR(1)       = 'N',
-  -- Output parameters
-  @SuccessIndicator                 CHAR(1)       = 'N' OUTPUT,
-  @MessageLog                       NVARCHAR(MAX) = N'' OUTPUT
+   @DataObjectName                   VARCHAR(MAX)
+  ,@DataObjectSchema                 VARCHAR(MAX)
+  ,@KeyArray                         VARCHAR(MAX)
+  ,@ModuleInstanceId                 INT
+   -- Optional parameters
+  ,@CurrentRecordIndicatorColumnName VARCHAR(50)   = 'CURRENT_RECORD_INDICATOR'
+  ,@InscriptionRecordIdColumnName    VARCHAR(50)   = 'INSCRIPTION_RECORD_ID'
+  ,@ExpiryDateColumnName             VARCHAR(50)   = 'INSCRIPTION_TIMESTAMP'
+  ,@EffectiveDateColumnName          VARCHAR(50)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
+  ,@Debug                            CHAR(1)       = 'N'
+   -- Output parameters
+  ,@SuccessIndicator                 CHAR(1)       OUTPUT
+  ,@MessageLog                       NVARCHAR(MAX) OUTPUT
 )
 AS
 BEGIN

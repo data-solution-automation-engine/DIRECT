@@ -31,26 +31,25 @@ Usage:
 EXEC [omd].[GetBatch]
   @BatchCode = 'MyExistingBatch'
 
- *******************************************************************************
- *
- ******************************************************************************/
+******************************************************************************/
 
 CREATE PROCEDURE [omd].[GetBatch]
 (
   -- Mandatory parameters
-  @BatchCode                NVARCHAR(1000),
+  @BatchCode                NVARCHAR(500)
   -- Optional parameters
-  @Debug                    CHAR(1)         = 'N',
+  ,@Debug                    CHAR(1)         = 'N'
   -- Output parameters
-  @BatchDetails             NVARCHAR(MAX)   = N''  OUTPUT,
-  @SuccessIndicator         CHAR(1)         = 'N'  OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   = N''  OUTPUT
+  ,@BatchDetails             NVARCHAR(MAX)   OUTPUT
+  ,@SuccessIndicator         CHAR(1)         OUTPUT
+  ,@MessageLog               NVARCHAR(MAX)   OUTPUT
 )
 AS
 BEGIN
   BEGIN TRY
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
+
     SET @Debug = UPPER(@Debug);
 
     -- Default output logging setup

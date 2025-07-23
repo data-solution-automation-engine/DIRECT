@@ -38,15 +38,15 @@ EXEC [omd].[AddModuleToBatch]
 CREATE PROCEDURE [omd].[AddModuleToBatch]
 (
   -- Mandatory parameters
-  @ModuleCode         NVARCHAR(1000),
-  @BatchCode          NVARCHAR(1000),
+  @ModuleCode         NVARCHAR(500),
+  @BatchCode          NVARCHAR(500),
   -- Optional parameters
   @Sequence           INT           = 0,
   @ActiveIndicator    CHAR(1)       = 'Y',
   @Debug              CHAR(1)       = 'N',
   -- Output parameters
-  @SuccessIndicator   CHAR(1)       = 'N' OUTPUT,
-  @MessageLog         NVARCHAR(MAX) = N'' OUTPUT
+  @SuccessIndicator   CHAR(1)       OUTPUT,
+  @MessageLog         NVARCHAR(MAX) OUTPUT
 )
 AS
 BEGIN

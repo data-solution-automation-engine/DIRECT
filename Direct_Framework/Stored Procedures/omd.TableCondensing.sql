@@ -33,279 +33,282 @@ TBA
 CREATE PROCEDURE [omd].[TableCondensing]
 (
   -- Mandatory parameters
-  @DatabaseName             NVARCHAR(1000),
-  @SchemaName               NVARCHAR(1000),
-  @Table                    NVARCHAR(1000),
+  @DatabaseName             NVARCHAR(128),
+  @SchemaName               NVARCHAR(128),
+  @Table                    NVARCHAR(128),
   -- Optional parameters
   @Debug                    CHAR(1) = 'N',
   -- Output parameters
-  @SuccessIndicator         CHAR(1)        = 'N' OUTPUT,
-  @MessageLog               NVARCHAR(MAX)  = N'' OUTPUT
+  @SuccessIndicator         CHAR(1)        OUTPUT,
+  @MessageLog               NVARCHAR(MAX)  OUTPUT
 )
 AS
+BEGIN
+  BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-BEGIN TRY
+    -- Success indicator will be updated to 'Y' when successfully following the procedure pathways.
+    SET @SuccessIndicator = 'N';
 
-  -- Success indicator will be updated to 'Y' when successfully following the procedure pathways.
-  SET @SuccessIndicator = 'N';
+    -- Default output logging setup
+    DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
+    DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
+    DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
+    DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    DECLARE @EndTimestamp DATETIME2 = NULL;
+    DECLARE @EndTimestampString NVARCHAR(20) = N'';
+    DECLARE @LogMessage NVARCHAR(MAX);
 
-  -- Default output logging setup
-  DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
-  DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME2 = NULL;
-  DECLARE @EndTimestampString NVARCHAR(20) = N'';
-  DECLARE @LogMessage NVARCHAR(MAX);
+    -- Log standard metadata
+    SET @LogMessage = @SpName;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
+    SET @LogMessage = @DirectVersion;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
+    SET @LogMessage = @StartTimestampString;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
 
-  -- Log standard metadata
-  SET @LogMessage = @SpName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
-  SET @LogMessage = @DirectVersion;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
-  SET @LogMessage = @StartTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
+    -- Log parameters
+    SET @LogMessage = @DatabaseName;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @DatabaseName', @LogMessage, @MessageLog)
+    SET @LogMessage = @SchemaName;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SchemaName', @LogMessage, @MessageLog)
+    SET @LogMessage = @Table;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @Table', @LogMessage, @MessageLog)
 
-  -- Log parameters
-  SET @LogMessage = @DatabaseName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @DatabaseName', @LogMessage, @MessageLog)
-  SET @LogMessage = @SchemaName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SchemaName', @LogMessage, @MessageLog)
-  SET @LogMessage = @Table;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @Table', @LogMessage, @MessageLog)
+    -- Process variables
+    DECLARE @EventDetail NVARCHAR(4000);
+    DECLARE @EventReturnCode NVARCHAR(100);
 
-  -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode NVARCHAR(100);
+  /*******************************************************************************
+   * Start of main process
+   ******************************************************************************/
 
-/*******************************************************************************
- * Start of main process
- ******************************************************************************/
+    SET @LogMessage = 'Start of main process';
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
-  SET @LogMessage = 'Start of main process';
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    -- Local procedure variables
+    DECLARE @ColumnListDynamicSQL NVARCHAR(MAX);
+    DECLARE @ColumnList NVARCHAR(MAX);
+    DECLARE @KeyListDynamicSQL NVARCHAR(MAX);
+    DECLARE @KeyList NVARCHAR(MAX);
 
-  -- Local procedure variables
-  DECLARE @ColumnListDynamicSQL NVARCHAR(MAX);
-  DECLARE @ColumnList NVARCHAR(MAX);
-  DECLARE @KeyListDynamicSQL NVARCHAR(MAX);
-  DECLARE @KeyList NVARCHAR(MAX);
-
-  -- Create a list of columns that need to be taken into evaluation for condensing (checksum)
-  SET @ColumnListDynamicSQL = N'
-    SELECT @ColumnListOUT =
-      STUFF(
-             (
-               SELECT DISTINCT '', '' + QUOTENAME(COLUMN_NAME)
-               FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.COLUMNS
-               WHERE TABLE_NAME = @Table AND TABLE_SCHEMA = @SchemaName
-               AND COLUMN_NAME NOT IN
+    -- Create a list of columns that need to be taken into evaluation for condensing (checksum)
+    SET @ColumnListDynamicSQL = N'
+      SELECT @ColumnListOUT =
+        STUFF(
                (
-                ''OMD_EVENT_DATETIME'',
-                ''SOURCE_TIMESTAMP'',
-                ''OMD_INSERT_DATETIME'',
-                ''INSCRIPTION_TIMESTAMP'',
-                ''OMD_INSERT_MODULE_INSTANCE_ID'',
-                ''AUDIT_TRAIL_ID'',
-                ''OMD_SOURCE_ROW_ID'',
-                ''INSCRIPTION_RECORD_ID'',
-                ''OMD_HASH_FULL_RECORD'',
-                ''CHECKSUM'',
-                ''OMD_CHANGE_KEY'',
-                ''OMD_CHANGE_DATETIME'',
-                ''CHANGE_DATA_INDICATOR''
-               )
-            FOR XML PATH(''''), TYPE).value(''text()[1]'', ''NVARCHAR(MAX)'')
-        , 1, 2, ''''
-    )';
+                 SELECT DISTINCT '', '' + QUOTENAME(COLUMN_NAME)
+                 FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.COLUMNS
+                 WHERE TABLE_NAME = @Table AND TABLE_SCHEMA = @SchemaName
+                 AND COLUMN_NAME NOT IN
+                 (
+                  ''OMD_EVENT_DATETIME'',
+                  ''SOURCE_TIMESTAMP'',
+                  ''OMD_INSERT_DATETIME'',
+                  ''INSCRIPTION_TIMESTAMP'',
+                  ''OMD_INSERT_MODULE_INSTANCE_ID'',
+                  ''AUDIT_TRAIL_ID'',
+                  ''OMD_SOURCE_ROW_ID'',
+                  ''INSCRIPTION_RECORD_ID'',
+                  ''OMD_HASH_FULL_RECORD'',
+                  ''CHECKSUM'',
+                  ''OMD_CHANGE_KEY'',
+                  ''OMD_CHANGE_DATETIME'',
+                  ''CHANGE_DATA_INDICATOR''
+                 )
+              FOR XML PATH(''''), TYPE).value(''text()[1]'', ''NVARCHAR(MAX)'')
+          , 1, 2, ''''
+      )';
 
-  EXEC sp_executesql -- DevSkim: ignore DS224000
-    @ColumnListDynamicSQL,
-	N'@Table NVARCHAR(128), @SchemaName NVARCHAR(128), @ColumnListOUT NVARCHAR(MAX) OUTPUT',
-	@Table, @SchemaName, @ColumnList OUTPUT;
+    EXEC sp_executesql -- DevSkim: ignore DS224000
+      @ColumnListDynamicSQL,
+	  N'@Table NVARCHAR(128), @SchemaName NVARCHAR(128), @ColumnListOUT NVARCHAR(MAX) OUTPUT',
+	  @Table, @SchemaName, @ColumnList OUTPUT;
 
-  SELECT @ColumnList = LTRIM(RTRIM(@ColumnList));
+    SELECT @ColumnList = LTRIM(RTRIM(@ColumnList));
 
-  SET @LogMessage = @ColumnList;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Column List', @LogMessage, @MessageLog)
+    SET @LogMessage = @ColumnList;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Column List', @LogMessage, @MessageLog)
 
-  -- Create a list of keys for use in the window functions and joins
-  SET @KeyListDynamicSQL = N'
-    SELECT @KeyList_OUT =
-      STRING_AGG(COLUMN_NAME, '','')
-    FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
-    INNER JOIN ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
-       ON TC.CONSTRAINT_TYPE = ''PRIMARY KEY''
-      AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME
-      AND KU.TABLE_NAME = @Table_IN
-    WHERE COLUMN_NAME NOT LIKE ''OMD_%'';'; -- Must exclude time component e.g. OMD_INSERT_DATETIME. For improvement.
+    -- Create a list of keys for use in the window functions and joins
+    SET @KeyListDynamicSQL = N'
+      SELECT @KeyList_OUT =
+        STRING_AGG(COLUMN_NAME, '','')
+      FROM ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+      INNER JOIN ' + QUOTENAME(@DatabaseName) + N'.INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
+         ON TC.CONSTRAINT_TYPE = ''PRIMARY KEY''
+        AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME
+        AND KU.TABLE_NAME = @Table_IN
+      WHERE COLUMN_NAME NOT LIKE ''OMD_%'';'; -- Must exclude time component e.g. OMD_INSERT_DATETIME. For improvement.
 
-  -- Execute dynamic SQL
-  EXEC sp_executesql -- DevSkim: ignore DS224000
-    @KeyListDynamicSQL,
-    N'@Table_IN NVARCHAR(128), @KeyList_OUT NVARCHAR(MAX) OUTPUT',
-    @Table_IN = @Table,
-    @KeyList_OUT = @KeyList OUTPUT;
+    -- Execute dynamic SQL
+    EXEC sp_executesql -- DevSkim: ignore DS224000
+      @KeyListDynamicSQL,
+      N'@Table_IN NVARCHAR(128), @KeyList_OUT NVARCHAR(MAX) OUTPUT',
+      @Table_IN = @Table,
+      @KeyList_OUT = @KeyList OUTPUT;
 
-  -- Trim spaces if needed
-  SET @KeyList = LTRIM(RTRIM(@KeyList));
+    -- Trim spaces if needed
+    SET @KeyList = LTRIM(RTRIM(@KeyList));
 
-  SET @LogMessage = @KeyList;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Key List', @LogMessage, @MessageLog)
+    SET @LogMessage = @KeyList;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Key List', @LogMessage, @MessageLog)
 
-  -- Translating back
-  DECLARE @HashSnippet NVARCHAR(MAX);
-  SET @HashSnippet = '';
+    -- Translating back
+    DECLARE @HashSnippet NVARCHAR(MAX);
+    SET @HashSnippet = '';
 
-  DECLARE @ColumnName NVARCHAR(MAX);
+    DECLARE @ColumnName NVARCHAR(MAX);
 
-  DECLARE column_cursor CURSOR FOR
+    DECLARE column_cursor CURSOR FOR
 
-  WITH cteSplits(starting_position, end_position)
-  AS
-  (
-    SELECT CAST(1 AS BIGINT), CHARINDEX(',', @ColumnList)
-    UNION ALL
-    SELECT end_position + 1, charindex(',', @ColumnList, end_position + 1)
-    FROM cteSplits
-    WHERE end_position > 0 -- Another delimiter was found
-  ),
-  table_names
-  AS
-  (
-    SELECT LTRIM(RTRIM(REPLACE(DATA_STORE_CODE,'''',''))) AS COLUMN_NAME
-    FROM
+    WITH cteSplits(starting_position, end_position)
+    AS
     (
-      SELECT
-      DISTINCT DATA_STORE_CODE = substring
+      SELECT CAST(1 AS BIGINT), CHARINDEX(',', @ColumnList)
+      UNION ALL
+      SELECT end_position + 1, charindex(',', @ColumnList, end_position + 1)
+      FROM cteSplits
+      WHERE end_position > 0 -- Another delimiter was found
+    ),
+    table_names
+    AS
+    (
+      SELECT LTRIM(RTRIM(REPLACE(DATA_STORE_CODE,'''',''))) AS COLUMN_NAME
+      FROM
       (
-          @ColumnList, starting_position,
-          CASE WHEN end_position = 0
-          THEN len(@ColumnList)
-          ELSE end_position - starting_position
-          END
-      ) FROM cteSplits
-    ) RemoveTrim
-  )
+        SELECT
+        DISTINCT DATA_STORE_CODE = substring
+        (
+            @ColumnList, starting_position,
+            CASE WHEN end_position = 0
+            THEN len(@ColumnList)
+            ELSE end_position - starting_position
+            END
+        ) FROM cteSplits
+      ) RemoveTrim
+    )
 
-  SELECT COLUMN_NAME
-  FROM table_names
+    SELECT COLUMN_NAME
+    FROM table_names
 
-  OPEN column_cursor
+    OPEN column_cursor
 
-    FETCH NEXT FROM column_cursor
-    INTO @ColumnName
+      FETCH NEXT FROM column_cursor
+      INTO @ColumnName
 
-    WHILE @@FETCH_STATUS = 0
+      WHILE @@FETCH_STATUS = 0
+      BEGIN
+
+        SET @HashSnippet = @HashSnippet + '    COALESCE(CONVERT(NVARCHAR(100), ' + @ColumnName + '),''!$-'') + ''#$%'' +' + CHAR(10);
+
+        FETCH NEXT FROM column_cursor INTO @ColumnName
+
+      END
+    CLOSE column_cursor
+    DEALLOCATE column_cursor
+
+    SET @HashSnippet = LEFT(@HashSnippet,DATALENGTH(@HashSnippet)-2)+CHAR(10);
+
+    SET @LogMessage = @HashSnippet;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Hash snippet', @LogMessage, @MessageLog)
+
+    -- Build the dynamic SQL
+    DECLARE @FinalQuery NVARCHAR(MAX);
+
+    SET @FinalQuery = 'WITH CondensingCTE AS' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '  HASHBYTES(''SHA2_512'',' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + @HashSnippet;
+    SET @FinalQuery = @FinalQuery + '  ) AS [TMP_CHECKSUM],' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '  *' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'FROM [' + @DatabaseName + '].' + @SchemaName + '.' + @Table+CHAR(10);
+    SET @FinalQuery = @FinalQuery + '), Subselect AS' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '  *,' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '  LAG([TMP_CHECKSUM]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHECKSUM],' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + '  LAG([CHANGE_DATA_INDICATOR]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'FROM CondensingCTE' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + ')' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'DELETE FROM Subselect' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'WHERE [TMP_CHECKSUM] = [NEXT_CHECKSUM]' + CHAR(10);
+    SET @FinalQuery = @FinalQuery + 'AND [CHANGE_DATA_INDICATOR] = [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
+
+    -- Spool the resulting query
+    SET @LogMessage = @FinalQuery;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Final query', @LogMessage, @MessageLog)
+
+    --EXECUTE sp_executesql @FinalQuery;
+    PRINT @FinalQuery;
+
+    -- End of procedure label
+    EndOfProcedure:
+
+    SET @EndTimestamp = SYSUTCDATETIME();
+    SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    SET @LogMessage = @EndTimestampString;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
+    SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+    SET @LogMessage = @SuccessIndicator;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+
+    IF @Debug = 'Y'
     BEGIN
+      EXEC [omd].[PrintMessageLog] @MessageLog;
+    END
 
-      SET @HashSnippet = @HashSnippet + '    COALESCE(CONVERT(NVARCHAR(100), ' + @ColumnName + '),''!$-'') + ''#$%'' +' + CHAR(10);
+    -- Reached the end of the procedure without issues.
+    SET @SuccessIndicator = 'Y'
 
-      FETCH NEXT FROM column_cursor INTO @ColumnName
+  END TRY
+  BEGIN CATCH
+    -- SP-wide error handler and logging
+    SET @SuccessIndicator = 'N'
+    SET @LogMessage = @SuccessIndicator;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+
+    DECLARE @ErrorMessage NVARCHAR(4000);
+    DECLARE @ErrorSeverity INT;
+    DECLARE @ErrorState INT;
+    DECLARE @ErrorProcedure NVARCHAR(128);
+    DECLARE @ErrorNumber INT;
+    DECLARE @ErrorLine INT;
+
+    SELECT
+      @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
+      @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
+      @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
+      @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
+      @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
+      @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
+
+    IF @Debug = 'Y'
+    BEGIN
+      PRINT 'Error in '''       + @SpName + ''''
+      PRINT 'Error Message: '   + @ErrorMessage
+      PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
+      PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
+      PRINT 'Error Procedure: ' + @ErrorProcedure
+      PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
+      PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
+      PRINT 'SuccessIndicator: '+ @SuccessIndicator
+
+      -- Spool message log
+      EXEC [omd].[PrintMessageLog] @MessageLog;
 
     END
-  CLOSE column_cursor
-  DEALLOCATE column_cursor
 
-  SET @HashSnippet = LEFT(@HashSnippet,DATALENGTH(@HashSnippet)-2)+CHAR(10);
+    SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
+    SET @EventReturnCode = ERROR_NUMBER();
 
-  SET @LogMessage = @HashSnippet;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Hash snippet', @LogMessage, @MessageLog)
+    EXEC [omd].[InsertIntoEventLog]
+      @EventDetail       = @EventDetail,
+      @EventReturnCode   = @EventReturnCode;
 
-  -- Build the dynamic SQL
-  DECLARE @FinalQuery NVARCHAR(MAX);
-
-  SET @FinalQuery = 'WITH CondensingCTE AS' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  HASHBYTES(''SHA2_512'',' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + @HashSnippet;
-  SET @FinalQuery = @FinalQuery + '  ) AS [TMP_CHECKSUM],' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  *' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'FROM [' + @DatabaseName + '].' + @SchemaName + '.' + @Table+CHAR(10);
-  SET @FinalQuery = @FinalQuery + '), Subselect AS' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '(' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'SELECT' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  *,' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  LAG([TMP_CHECKSUM]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHECKSUM],' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + '  LAG([CHANGE_DATA_INDICATOR]) OVER (PARTITION BY ' + @KeyList + ' ORDER BY  ' + @KeyList + ') AS [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'FROM CondensingCTE' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + ')' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'DELETE FROM Subselect' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'WHERE [TMP_CHECKSUM] = [NEXT_CHECKSUM]' + CHAR(10);
-  SET @FinalQuery = @FinalQuery + 'AND [CHANGE_DATA_INDICATOR] = [NEXT_CHANGE_DATA_INDICATOR]' + CHAR(10);
-
-  -- Spool the resulting query
-  SET @LogMessage = @FinalQuery;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Final query', @LogMessage, @MessageLog)
-
-  --EXECUTE sp_executesql @FinalQuery;
-  PRINT @FinalQuery;
-
-  -- End of procedure label
-  EndOfProcedure:
-
-  SET @EndTimestamp = SYSUTCDATETIME();
-  SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  SET @LogMessage = @EndTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
-  SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
-  SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
-
-  IF @Debug = 'Y'
-  BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
-
-  -- Reached the end of the procedure without issues.
-  SET @SuccessIndicator = 'Y'
-
-END TRY
-BEGIN CATCH
-  -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
-  SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
-
-  DECLARE @ErrorMessage NVARCHAR(4000);
-  DECLARE @ErrorSeverity INT;
-  DECLARE @ErrorState INT;
-  DECLARE @ErrorProcedure NVARCHAR(128);
-  DECLARE @ErrorNumber INT;
-  DECLARE @ErrorLine INT;
-
-  SELECT
-    @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-    @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-    @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-    @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-    @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-    @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
-
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
-
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-
-  END
-
-  SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
-  SET @EventReturnCode = ERROR_NUMBER();
-
-  EXEC [omd].[InsertIntoEventLog]
-    @EventDetail       = @EventDetail,
-    @EventReturnCode   = @EventReturnCode;
-
-  THROW
-END CATCH
+    THROW
+  END CATCH
+END

@@ -1,6 +1,6 @@
 CREATE TABLE [omd].[MODULE] (
   [MODULE_ID]           INT IDENTITY (1, 1)             NOT NULL,
-  [MODULE_CODE]         NVARCHAR (1000)                 NOT NULL,
+  [MODULE_CODE]         NVARCHAR (500)                  NOT NULL,
   [MODULE_TYPE]         NVARCHAR (100)                  NOT NULL,
   [DATA_OBJECT_SOURCE]  NVARCHAR (1000)                 NULL,
   [DATA_OBJECT_TARGET]  NVARCHAR (1000)                 NULL,
