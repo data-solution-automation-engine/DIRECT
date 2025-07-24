@@ -51,6 +51,11 @@ if ([string]::IsNullOrWhiteSpace($FrameworkVersion)) {
 # AutoPurge: If true, the script will force remove existing container/database
 $AutoPurge = $true
 
+# AutoSqlAgentScripts: If true, the script will include SQL that is dependent
+# on SQL Agent being available, which excludes Azure instances (on-premise or
+# managed-instance only)
+$AutoSqlAgentScripts = $true
+
 # AutoDeploy: If true, the script will automatically deploy Testing Framework
 # and Direct Framework DACPACs to the container
 $AutoDeploy = $true
@@ -365,6 +370,43 @@ if ($AutoDeploy) {
 else {
   Write-Host "AutoDeploy is off - Skipping Direct Framework deployment."
 }
+
+<# =============================================================================
+POST-DACPAC SCRIPTING
+----------------------------------------------------------------------------- #>
+
+if ($AutoSqlAgentScripts) {
+  $scriptRoot = Split-Path $PSScriptRoot -Parent
+
+  $sqlScripts = @(
+    "Direct_Framework\DeploymentScripts\3-PostDeployment\Queue_Job_Batch.sql",
+    "Direct_Framework\DeploymentScripts\3-PostDeployment\Queue_Job_Module.sql"
+  )
+
+  foreach ($relativePath in $sqlScripts) {
+    $sqlScriptPath = Join-Path $scriptRoot $relativePath
+
+    if (Test-Path $sqlScriptPath) {
+      $result = Invoke-SqlCmd -SqlPath $sqlScriptPath -ConnectionString $masterConnectionString
+
+      if ($result) {
+        Write-Host "Successfully executed SQL script: $sqlScriptPath"
+      }
+      else {
+        Write-Error "Script execution failed for: $sqlScriptPath"
+        break
+      }
+    }
+    else {
+      Write-Error "SQL script not found at: $sqlScriptPath"
+      break
+    }
+  }
+}
+else {
+  Write-Host "AutoSqlAgentScripts is off - Skipping Direct Framework post-deployment scripting."
+}
+
 
 <# =============================================================================
 END OF TRIP, THANK YOU FOR COMING ALONG
