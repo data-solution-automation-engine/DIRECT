@@ -1,5 +1,8 @@
 # WIP, help with setup of local environment and prerequisites.
 
+# Set cwd to the repo root folder.
+Set-Location -Path (Split-Path $PSScriptRoot -Parent)
+
 # Restore the local dotnet tools as defined in `.config/dotnet-tools.json`
 # n.b. Local tools are called through the `dotnet run tool` command
 # the global alias is for globally installed tools
