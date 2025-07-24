@@ -19,10 +19,10 @@ SET NOCOUNT ON;
 
 DECLARE @tblMerge TABLE(
   [INTERNAL_PROCESSING_STATUS_CODE]             NVARCHAR (100)  NOT NULL PRIMARY KEY CLUSTERED,
-  [INTERNAL_PROCESSING_STATUS_DESCRIPTION]      NVARCHAR (4000) NULL
+  [INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION]      NVARCHAR (4000) NULL
 );
 
-INSERT INTO @tblMerge([INTERNAL_PROCESSING_STATUS_CODE], [INTERNAL_PROCESSING_STATUS_DESCRIPTION])
+INSERT INTO @tblMerge([INTERNAL_PROCESSING_STATUS_CODE], [INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION])
 VALUES
   (N'Abort',     N'This exception case indicates that the instance in question was executed, but that another instance of the same Batch or Module is already running (see also the equivalent Execution Status Code for additional detail). This is one of the checks performed before the regular process (Module and/or Batch) can continue. If this situation occurs, all processing should stop; no data should be processed. The process will use the Internal Processing Status `Abort` to trigger the Module/Batch `Abort` event which sets the Execution Status Code to `Cancelled`, ending the process gracefully.'),
   (N'Cancel',    N'The instance evaluation has determined that it is not necessary to run this process (see also the equivalent Execution Status Code for additional detail). As with Abort, if the Internal Process Status code is `Cancel` then all further processing should stop after the Execution Status Code has also been updated to `Cancel`.'),
@@ -34,11 +34,11 @@ USING @tblMerge AS src
   ON  TARGET.[INTERNAL_PROCESSING_STATUS_CODE] = src.[INTERNAL_PROCESSING_STATUS_CODE]
 WHEN MATCHED THEN
   UPDATE
-  SET      [INTERNAL_PROCESSING_STATUS_DESCRIPTION] = src.[INTERNAL_PROCESSING_STATUS_DESCRIPTION]
+  SET      [INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION] = src.[INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION]
 WHEN NOT MATCHED THEN
   INSERT  ([INTERNAL_PROCESSING_STATUS_CODE]
-          ,[INTERNAL_PROCESSING_STATUS_DESCRIPTION])
+          ,[INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION])
   VALUES  ([INTERNAL_PROCESSING_STATUS_CODE]
-          ,[INTERNAL_PROCESSING_STATUS_DESCRIPTION]);
+          ,[INTERNAL_PROCESSING_STATUS_CODE_DESCRIPTION]);
 
 GO
