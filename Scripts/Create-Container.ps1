@@ -11,10 +11,24 @@ in Podman including:
 
 This is a full journey from start to finish for getting a
 local database environment for development and tests up and running
+
+Prerequisites:
+- Podman must be installed and running, with direct access to the Podman CLI
+- The Podman service must be up and running and working
+- The script expects PowerShell 7.5 or higher
+- The script expects to run from its repo folder,
+  or with cwd set to repo root
+- For dacpac deployment, the script expects the dacpac for current/next
+  versions of the DIRECT Framework to be built and be available
+- For dacpac deployment, the script expects the Testing Framework dacpac
+  to be available
+- local dotnet tools must be restored/installed and available
+- Modern sqlcmd must be installed and available in the PATH
+
 --------------------------------------------------------------------------------
 ============================================================================= #>
 
-# Set the working directory to the repo root folder.
+# Set cwd to the repo root folder.
 Set-Location -Path (Split-Path $PSScriptRoot -Parent)
 
 <# =============================================================================
@@ -30,15 +44,12 @@ if (Test-Path $versionFile) {
     $FrameworkVersion = $FrameworkVersion.Trim()
 }
 if ([string]::IsNullOrWhiteSpace($FrameworkVersion)) {
-    Write-Error "DIRECT Framework Version is not specified."
+    Write-Error "DIRECT Framework Version not found."
     $FrameworkVersion = "0.0.0"
 }
 
-Write-Host "DIRECT Framework Version: $FrameworkVersion" -ForegroundColor Cyan
-
 # AutoPurge: If true, the script will force remove existing container/database
 $AutoPurge = $true
-Exit
 
 # AutoDeploy: If true, the script will automatically deploy Testing Framework
 # and Direct Framework DACPACs to the container
@@ -85,7 +96,7 @@ $portMapping = "${sqlServerPort}:1433"
 # localhost, 127.0.0.1 (v4), or ::1 (v6) etc
 # a host might map "localhost" to ::1 (IPv6) by default
 # which doesn't automatically work in Podman,
-# so this defines the v4 loopback ip address as the default
+# so this defines and uses the v4 loopback ip as the default
 $localAddress = "127.0.0.1"
 
 # Details for deployment of the Testing Framework DacPac
@@ -99,7 +110,7 @@ $directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkMoni
 
 # Define valid connection strings for SQL Server
 
-# The connection string for the system database "master"
+# The connection string to the system database "master"
 $masterConnectionString =
   "Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
@@ -115,12 +126,11 @@ $directConnectionString =
 $maxAttempts = 10
 $napLength = 5 # seconds
 
-# ------------------------------------------------------------------------------
-# END - Define script behavior and config - change or refine as needed above.
-# ==============================================================================
+<# -----------------------------------------------------------------------------
+END - Define script behavior and config - change or refine as needed above.
+============================================================================= #>
 
-
-# Make sure we run in modern pwsh
+# SETUP - Make sure we run in modern pwsh
 if (
   ($PSVersionTable.PSVersion.Major -lt 7) -or
   ($PSVersionTable.PSVersion.Major -eq 7 -and $PSVersionTable.PSVersion.Minor -lt 5)
@@ -131,11 +141,11 @@ if (
   Exit 1
 }
 
-# ==============================================================================
-# Helpers and Utilities
-# ------------------------------------------------------------------------------
+<# =============================================================================
+FOLD IN HELPERS AND UTILITIES
+Load required utility functions and helpers from the Utils folder
+----------------------------------------------------------------------------- #>
 
-# Load utility functions and helpers from the Utils folder
 . "Scripts/Utils/Deploy-Dacpac.ps1"
 . "Scripts/Utils/Get-DacpacVersion.ps1"
 . "Scripts/Utils/Invoke-SqlCmd.ps1"
@@ -144,9 +154,9 @@ if (
 . "Scripts/Utils/Test-PortInUse.ps1"
 . "Scripts/Utils/Write-Utils.ps1"
 
-# ==============================================================================
-# Check and validate the environment, clean the target container if needed
-# ------------------------------------------------------------------------------
+<# =============================================================================
+CHECK AND VALIDATE THE ENVIRONMENT, CLEAN THE TARGET CONTAINER IF NEEDED
+----------------------------------------------------------------------------- #>
 
 Write-Heading -Heading "DIRECT Framework Create Container Script $FrameworkVersion`nDeployment Starting"
 
@@ -249,19 +259,9 @@ if ($existingContainer) {
     }
 }
 
-# WIP, doesn't work all that well yet
-# Check if the port is available or already in use,
-# wait for Podman to release the port if needed
-# Start-Sleep -Seconds $napLength
-# if (Test-PortInUse -LocalAddress $localAddress -LocalPort $sqlServerPort) {
-#   Write-Error "Port '$sqlServerPort' on '$localAddress' is already in use on the host."
-#   Write-Error "Exiting: Please define an available local port."
-#   exit 1
-# }
-
-################################################################################
-# Create SQL Server container
-################################################################################
+<# =============================================================================
+CREATE SQL SERVER CONTAINER IN PODMAN
+----------------------------------------------------------------------------- #>
 
 try {
   podman run -d --name $containerName `
@@ -270,7 +270,7 @@ try {
     -e "MSSQL_AGENT_ENABLED=true" `
     -p 0.0.0.0:$portMapping $imageName
 
-  Write-Host "Container '$containerName' created successfully." -ForegroundColor Green
+  Write-Success "Container '$containerName' created successfully."
 }
 catch {
   Write-Error "Exiting: Failed to create container '$containerName':`n$_"
@@ -290,9 +290,9 @@ else {
 Write-Host "Container '$containerName' status: $containerStatus" -ForegroundColor Yellow
 
 # Example command, display the container logs
-Write-Host "Container '$containerName' logs start:" -ForegroundColor Cyan
-podman logs $containerName
-Write-Host "Container '$containerName' logs end" -ForegroundColor Cyan
+# Write-Host "Container '$containerName' logs start:" -ForegroundColor Cyan
+# podman logs $containerName
+# Write-Host "Container '$containerName' logs end" -ForegroundColor Cyan
 
 # Display the SQL Server connection information
 Write-Host "You can connect to SQL Server using the following connection string:" -ForegroundColor Blue
@@ -301,9 +301,9 @@ Write-Host "$masterConnectionString" -ForegroundColor Blue
 # Reminder to change the sa use password as needed if needed
 Write-Host "Change the sa user password as needed to meet security requirements." -ForegroundColor Yellow
 
-################################################################################
-# WAIT UNTIL THE SQL SERVER IS UP AND READY TO GO
-################################################################################
+<# =============================================================================
+WAIT UNTIL THE SQL SERVER IS UP AND READY TO GO
+----------------------------------------------------------------------------- #>
 
 Write-Host "Waiting for server to start, running SQL Server connection tests..." -ForegroundColor Cyan
 $sqlServerStarted = Invoke-WithRetry -ScriptBlock {
@@ -327,9 +327,9 @@ if (-not $sqlServerStarted) {
 
 Write-Success "SQL Server is up and running. Ready for deployment or usage."
 
-################################################################################
-# DEPLOY TESTING FRAMEWORK DACPAC
-################################################################################
+<# =============================================================================
+DEPLOY TESTING FRAMEWORK DACPAC
+----------------------------------------------------------------------------- #>
 
 if ($AutoDeploy) {
   $result = Deploy-Dacpac -DacpacPath $testingFrameworkDacpacFileName `
@@ -347,9 +347,9 @@ else {
   Write-Host "AutoDeploy is off - Skipping Testing Framework deployment."
 }
 
-################################################################################
-# DIRECT FRAMEWORK DACPAC DEPLOYMENT
-################################################################################
+<# =============================================================================
+DEPLOY DIRECT FRAMEWORK DACPAC
+----------------------------------------------------------------------------- #>
 
 if ($AutoDeploy) {
   $result = Deploy-Dacpac -DacpacPath $directFrameworkDacpacFileName `
@@ -365,6 +365,10 @@ if ($AutoDeploy) {
 else {
   Write-Host "AutoDeploy is off - Skipping Direct Framework deployment."
 }
+
+<# =============================================================================
+END OF TRIP, THANK YOU FOR COMING ALONG
+----------------------------------------------------------------------------- #>
 
 Write-Heading "Deployment Summary"
 Write-Success "Framework deployment for version '$FrameworkVersion' completed."

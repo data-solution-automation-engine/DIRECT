@@ -26,3 +26,13 @@ function Test-PortInUse {
     return $result.Count -gt 0
   }
 }
+
+# WIP, doesn't work all that well yet
+# Check if the port is available or already in use,
+# wait for Podman to release the port if needed
+# Start-Sleep -Seconds $napLength
+# if (Test-PortInUse -LocalAddress $localAddress -LocalPort $sqlServerPort) {
+#   Write-Error "Port '$sqlServerPort' on '$localAddress' is already in use on the host."
+#   Write-Error "Exiting: Please define an available local port."
+#   exit 1
+# }
