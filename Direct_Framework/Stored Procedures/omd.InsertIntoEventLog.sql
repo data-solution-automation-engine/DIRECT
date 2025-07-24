@@ -35,8 +35,8 @@ EXEC [omd].[InsertIntoEventLog]
 CREATE PROCEDURE [omd].[InsertIntoEventLog]
 (
   -- Mandatory parameters
-   @ModuleInstanceId   BIGINT
-  ,@EventDetail        NVARCHAR(4000)
+   @ModuleInstanceId   BIGINT          = 0
+  ,@EventDetail        NVARCHAR(4000)  = N''
   -- Optional parameters
   ,@BatchInstanceId    BIGINT          = 0
   ,@EventTimestamp     DATETIME2       = NULL
@@ -45,8 +45,8 @@ CREATE PROCEDURE [omd].[InsertIntoEventLog]
   ,@ErrorBitmap        NUMERIC(20,0)   = 0
   ,@Debug              CHAR(1)         = 'N'
    -- Output parameters
-  ,@SuccessIndicator   CHAR(1)         OUTPUT
-  ,@MessageLog         NVARCHAR(MAX)   OUTPUT
+  ,@SuccessIndicator   CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog         NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN
@@ -66,6 +66,14 @@ BEGIN
 
     SET @EventTimestamp = COALESCE(@EventTimestamp, SYSUTCDATETIME());
     SET @EventTimestampString = CONVERT(NVARCHAR(33), @EventTimestamp, 126);
+
+    -- clean parameters
+    SET @ModuleInstanceId = COALESCE(@ModuleInstanceId, 0);
+    SET @BatchInstanceId = COALESCE(@BatchInstanceId, 0);
+    SET @EventDetail = COALESCE(@EventDetail, N'');
+    SET @EventTypeCode = COALESCE(@EventTypeCode, N'2');
+    SET @SuccessIndicator = 'N';
+    SET @MessageLog = N'';
 
     -- Log standard metadata
     SET @LogMessage = @SpName;
@@ -95,6 +103,12 @@ BEGIN
    * Start of main process
    ******************************************************************************/
 
+   -- Validate input parameters
+   -- if neither module instance, batch instance and event detail are set, then exit
+   -- TODO...
+
+   -- else log what we have to make sure its not lost, however might be harder to make use of
+
     SET @LogMessage = 'Inserting record in Event Log for Module Instance Id ''' + CONVERT(NVARCHAR(20), COALESCE(@ModuleInstanceId, 0)) + ''''
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
     SET @LogMessage = 'Batch Instance Id ''' + CONVERT(NVARCHAR(20), COALESCE(@BatchInstanceId, 0)) + ''''
@@ -104,23 +118,23 @@ BEGIN
 
     INSERT INTO [omd].[EVENT_LOG]
     (
-      [MODULE_INSTANCE_ID],
-      [BATCH_INSTANCE_ID],
-      [EVENT_TYPE_CODE],
-      [EVENT_TIMESTAMP],
-      [EVENT_RETURN_CODE],
-      [EVENT_DETAIL],
-      [ERROR_BITMAP]
+       [MODULE_INSTANCE_ID]
+      ,[BATCH_INSTANCE_ID]
+      ,[EVENT_TYPE_CODE]
+      ,[EVENT_TIMESTAMP]
+      ,[EVENT_RETURN_CODE]
+      ,[EVENT_DETAIL]
+      ,[ERROR_BITMAP]
     )
     VALUES
     (
-      COALESCE(@ModuleInstanceId, 0),
-      COALESCE(@BatchInstanceId, 0),
-      @EventTypeCode,
-      @EventTimestamp,
-      @EventReturnCode,
-      @EventDetail,
-      @ErrorBitmap
+       @ModuleInstanceId
+      ,@BatchInstanceId
+      ,@EventTypeCode
+      ,@EventTimestamp
+      ,@EventReturnCode
+      ,@EventDetail
+      ,@ErrorBitmap
     )
 
     -- End of procedure label
@@ -140,7 +154,9 @@ BEGIN
     IF @Debug = 'Y'
     BEGIN
       EXEC [omd].[PrintMessageLog] @MessageLog;
-    END
+    END;
+
+    RETURN 0;
 
   END TRY
   BEGIN CATCH
@@ -180,6 +196,7 @@ BEGIN
 
     END;
 
-    THROW;
+    RETURN -2;
+
   END CATCH
 END

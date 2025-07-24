@@ -43,15 +43,15 @@ SELECT
 CREATE PROCEDURE [omd].[SetSourceControlValues]
 (
   -- Mandatory parameters
-   @ModuleInstanceId    BIGINT
-  ,@StartValue          NVARCHAR(100)
+   @ModuleInstanceId    BIGINT          = NULL
+  ,@StartValue          NVARCHAR(100)   = NULL
   -- Optional parameters
   ,@EndValue            NVARCHAR(100)   = NULL
   ,@Debug               CHAR(1)         = 'N'
   -- Output parameters
-  ,@SourceControlId     BIGINT          OUTPUT
-  ,@SuccessIndicator    CHAR(1)         OUTPUT
-  ,@MessageLog          NVARCHAR(MAX)   OUTPUT
+  ,@SourceControlId     BIGINT          = NULL  OUTPUT
+  ,@SuccessIndicator    CHAR(1)         = 'N'   OUTPUT
+  ,@MessageLog          NVARCHAR(MAX)   = N''   OUTPUT
 )
 AS
 BEGIN
@@ -111,7 +111,7 @@ BEGIN
     BEGIN
       SET @LogMessage = 'The Module Id was not found for Module Instance Id ''' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + '''';
       SET @EventDetail = LEFT(@LogMessage, 4000);
-      EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
+      IF @AddLogsToEventLog = 'Y' EXEC [omd].[InsertIntoEventLog] @ModuleInstanceId = 0, @EventDetail = @EventDetail;
       SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter Error', @LogMessage, @MessageLog);
       SET @SuccessIndicator = 'N';
       IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
@@ -122,28 +122,29 @@ BEGIN
     SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
     -- If the End Value is NULL, set it to the Start Value
-    IF @EndValue IS NULL OR TRIM(@EndValue) = ''
-    BEGIN
-      SET @EndValue = @StartValue;
-      SET @LogMessage = 'The End Value was not provided, so it is set to the Start Value: ' + @StartValue + '.';
-      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-    END
+    -- TODO - Rethink that
+    --IF @EndValue IS NULL OR TRIM(@EndValue) = ''
+    --BEGIN
+    --  SET @EndValue = @StartValue;
+    --  SET @LogMessage = 'The End Value was not provided, so it is set to the Start Value: ' + @StartValue + '.';
+    --  SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+    --END
 
     BEGIN TRY
       BEGIN TRANSACTION
         INSERT INTO omd.[SOURCE_CONTROL]
         (
-         [MODULE_ID]
-        ,[MODULE_INSTANCE_ID]
-        ,[INSERT_TIMESTAMP]
-        ,[START_VALUE]
-        ,[END_VALUE]
+           [MODULE_ID]
+          ,[MODULE_INSTANCE_ID]
+          ,[INSERT_TIMESTAMP]
+          ,[START_VALUE]
+          ,[END_VALUE]
         )
         VALUES
         (
            @ModuleId
           ,@ModuleInstanceId
-          ,SYSUTCDATETIME()
+          ,@StartTimestamp
           ,@StartValue
           ,@EndValue
         );
@@ -197,10 +198,7 @@ BEGIN
     SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Elapsed Time (s)', @DurationSeconds, @MessageLog);
     SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator', @SuccessIndicator, @MessageLog);
 
-    IF @Debug = 'Y'
-    BEGIN
-      EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
-    END;
+    IF @Debug = 'Y' EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
     RETURN @ReturnCode;
 
   END TRY
@@ -210,7 +208,6 @@ BEGIN
   BEGIN CATCH
     -- Reset output parameters
     SET @SuccessIndicator = 'N'
-
     SET @SourceControlId = NULL;
 
     SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator Exit Value', @SuccessIndicator, @MessageLog);
@@ -245,20 +242,23 @@ BEGIN
       -- Spool full message log
       EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
     END;
+    IF @AddLogsToEventLog = 'Y'
+      BEGIN
+      SET @EventDetail =
+        CONCAT('Error in ''', @SpName,
+        ''' from ''', @ErrorProcedure, ''' at line ''',
+        CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')), ''': ', CHAR(10),
+        COALESCE(@ErrorMessage,'N/A'));
+      SET @EventReturnCode = ERROR_NUMBER();
 
-    SET @EventDetail =
-      CONCAT('Error in ''', @SpName,
-      ''' from ''', @ErrorProcedure, ''' at line ''',
-      CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')), ''': ', CHAR(10),
-      COALESCE(@ErrorMessage,'N/A'));
-    SET @EventReturnCode = ERROR_NUMBER();
+      EXEC [omd].[InsertIntoEventLog]
+         @ModuleInstanceId  = @ModuleInstanceId
+        ,@EventDetail       = @EventDetail
+        ,@EventReturnCode   = @EventReturnCode
+        ,@Debug             = @Debug
 
-    EXEC [omd].[InsertIntoEventLog]
-      @EventDetail       = @EventDetail,
-      @EventReturnCode   = @EventReturnCode;
-
-    SET @MessageLog = [omd].[AddLogMessage] ('CRITICAL', DEFAULT, N'Error Details', @EventDetail, @MessageLog);
-
+      SET @MessageLog = [omd].[AddLogMessage] ('CRITICAL', DEFAULT, N'Error Details', @EventDetail, @MessageLog);
+    END
     IF @ThrowOnFailure = 'Y' THROW 50000, @EventDetail, 1;
 
     RETURN -2;

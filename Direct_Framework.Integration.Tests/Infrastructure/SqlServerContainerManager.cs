@@ -287,7 +287,7 @@ public static class SqlServerContainerManager
     }
   }
 
-  private static string FindDacpacPath(string version = "current")
+  private static string FindDacpacPath(string version = "next")
   {
     // Get the output directory (e.g., bin\Debug\net10.0)
     var outputDir = AppContext.BaseDirectory;
