@@ -59,12 +59,12 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    -- Prepare/clean standard parameters
+    -- Prepare/clean standard process/output parameters
     SET @Debug = CASE WHEN UPPER(@Debug) = 'Y' THEN 'Y' ELSE 'N' END;
     SET @SuccessIndicator = 'N';
     SET @MessageLog = N'[]';
 
-    -- Prepare/clean process parameters
+    -- Prepare/clean process/output parameters
     SET @SourceControlId = NULL;
 
     -- Standard setup and initialization
@@ -76,7 +76,8 @@ BEGIN
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
     DECLARE @LogMessage NVARCHAR(MAX);
-    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),N'.',QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
+    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')), N'.',
+        QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
     -- Validate input parameters
     IF (@ModuleInstanceId IS NULL OR @ModuleInstanceId <= 0
@@ -84,9 +85,9 @@ BEGIN
     BEGIN
       SET @SuccessIndicator = 'N';
       SET @SourceControlId = NULL;
-      SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, N'Missing required parameter.', @MessageLog);
-      IF @ThrowOnFailure = 'Y' THROW 50000, 'At least one key parameter is required.', 1;
-      ELSE GOTO EndOfProcedureFailure;
+      SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, N'x1 Missing required parameters.', @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, 'Missing required parameters.', 1;
+      GOTO EndOfProcedureFailure;
     END;
 
     -- Log standard metadata
@@ -163,7 +164,7 @@ BEGIN
     END CATCH
 
     SET @SuccessIndicator = 'Y';
-    GOTO EndOfProcedure;
+    GOTO EndOfProcedureSuccess;
 
 /*******************************************************************************
 * Start of end state management
@@ -171,35 +172,28 @@ BEGIN
 
     EndOfProcedureFailure:
       SET @SuccessIndicator = 'N';
-
       SET @SourceControlId = NULL;
-
       SET @LogMessage = N'Set Source Control Values process encountered errors.';
       SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
       SET @ReturnCode = -1;
-
       GOTO EndOfProcedure;
 
     EndOfProcedureSuccess:
-
       SET @SuccessIndicator = 'Y';
       SET @LogMessage = N'Set Source Control Values process completed successfully.';
       SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
       SET @ReturnCode = 0;
-
       GOTO EndOfProcedure;
 
     EndOfProcedure:
-
-    DECLARE @EndTimestamp DATETIME2 = SYSUTCDATETIME();
-    DECLARE @EndTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@EndTimestamp);
-    DECLARE @DurationSeconds NVARCHAR(10) = CONVERT(NVARCHAR(10), COALESCE(DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp), 0));
-    SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'End Timestamp', @EndTimestampString, @MessageLog);
-    SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Elapsed Time (s)', @DurationSeconds, @MessageLog);
-    SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator', @SuccessIndicator, @MessageLog);
-
-    IF @Debug = 'Y' EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
-    RETURN @ReturnCode;
+      DECLARE @EndTimestamp DATETIME2 = SYSUTCDATETIME();
+      DECLARE @EndTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@EndTimestamp);
+      DECLARE @DurationSeconds NVARCHAR(10) = CONVERT(NVARCHAR(10), COALESCE(DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp), 0));
+      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'End Timestamp', @EndTimestampString, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Elapsed Time (s)', @DurationSeconds, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator', @SuccessIndicator, @MessageLog);
+      IF @Debug = 'Y' EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+      RETURN @ReturnCode;
 
   END TRY
 /*******************************************************************************
