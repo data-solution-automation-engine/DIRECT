@@ -1,18 +1,19 @@
 /*******************************************************************************
- * https://github.com/data-solution-automation-engine/DIRECT
- * Reference data insert and update script
- * DIRECT Framework v2.0
- *
- * Reference metadata table NEXT_RUN_STATUS stores next run status codes and descriptions.
- * This script is used to insert and update reference data on deployment.
- * Any bespoke next run status codes added manually to the target will be retained,
- * as long as the keys differ.
- * To maintain a clean CI/CD process, consider using this script to manage
- * all reference data for next run status codes.
- *
- * [omd_metadata].[NEXT_RUN_STATUS]
- *
- ******************************************************************************/
+Process:        DACPAC Post-Deployment Script
+                Reference data insert and update script
+Target Table:   [omd_metadata].[NEXT_RUN_STATUS]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+********************************************************************************
+
+This reference metadata table stores next run status codes and descriptions.
+This script is used to insert and update system reference data on deployment.
+Any bespoke next run status codes added manually to the target will be retained,
+as long as the keys differ.
+To maintain a clean CI/CD process, consider using this or a similar script
+to manage all reference data for next run status codes.
+
+*******************************************************************************/
 
 SET NOCOUNT ON;
 
