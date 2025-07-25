@@ -1,34 +1,34 @@
 /*******************************************************************************
- * [omd].[Queue_Job_Batch]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT Framework v2.0 Stored Procedures
- *
- *******************************************************************************
- * !! THIS IS A MSDB-BASED PROCESS,                 !!
- * !! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
- *******************************************************************************
- *
- * Process:
- *   TODO: tba
- *
- * Purpose:
- *   TODO: tba
- *
- * Input:
- *   - TODO: tba
- *
- * Returns:
- *   - TODO: tba
- *
- * Usage:
+[omd].[Queue_Job_Batch]
+********************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT Framework v2.0 Stored Procedures
+
+********************************************************************************
+!! THIS IS A MSDB-BASED PROCESS,                 !!
+!! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
+********************************************************************************
+
+Process:
+  TODO: tba
+
+Purpose:
+   TODO: tba
+
+Input:
+   - TODO: tba
+
+Returns:
+  - TODO: tba
+
+Usage:
 
 TODO: tba
 
- *
- ******************************************************************************/
+
+*******************************************************************************/
 
 USE [msdb]
 GO
@@ -126,7 +126,7 @@ BEGIN
   SELECT TOP 1 @PROCESS_NAME  = BATCH_CODE
   FROM
   (
-    -- Select the Batch that hasn''t run the longest (oldest age)
+    -- Select the Batch that hasn''t run for the longest period (oldest age)
     SELECT BATCH_CODE, END_TIMESTAMP
     FROM [Direct_Framework].[omd_processing].[vw_QUEUE_BATCH_PROCESSING]
   ) batchQueue

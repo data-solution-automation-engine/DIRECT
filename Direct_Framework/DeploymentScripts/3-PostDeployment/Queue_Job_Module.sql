@@ -1,34 +1,34 @@
 /*******************************************************************************
- * [omd].[Queue_Job_Module]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT Framework v2.0 Stored Procedures
- *
- *******************************************************************************
- * !! THIS IS A MSDB-BASED PROCESS,                 !!
- * !! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
- *******************************************************************************
- *
- * Process:
- *   TODO: tba
- *
- * Purpose:
- *   TODO: tba
- *
- * Input:
- *   - TODO: tba
- *
- * Returns:
- *   - TODO: tba
- *
- * Usage:
+[omd].[Queue_Job_Module]
+********************************************************************************
+
+https://github.com/data-solution-automation-engine/DIRECT
+
+DIRECT Framework v2.0 Stored Procedures
+
+********************************************************************************
+!! THIS IS A MSDB-BASED PROCESS,                 !!
+!! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
+********************************************************************************
+
+Process:
+  TODO: tba
+
+Purpose:
+  TODO: tba
+
+Input:
+  - TODO: tba
+
+Returns:
+  - TODO: tba
+
+Usage:
 
 TODO: tba
 
- *
- ******************************************************************************/
+
+*******************************************************************************/
 
 USE [msdb]
 GO
