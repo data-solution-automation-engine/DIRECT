@@ -19,7 +19,7 @@ public class OmdSetSourceControlValuesTests
     parameters.Add("@SourceControlId", dbType: System.Data.DbType.Int64, direction: System.Data.ParameterDirection.Output);
     parameters.Add("@SuccessIndicator", dbType: System.Data.DbType.String, direction: System.Data.ParameterDirection.Output, size: 1);
     parameters.Add("@MessageLog", dbType: System.Data.DbType.String, direction: System.Data.ParameterDirection.Output, size: -1);
-    parameters.Add("ReturnValue", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.ReturnValue);
+    parameters.Add("@ReturnCode", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.ReturnValue);
     return parameters;
   }
 
@@ -53,18 +53,12 @@ public class OmdSetSourceControlValuesTests
     };
 
     using var conn = new SqlConnection(ConnectionString);
-    await conn.OpenAsync();
-
     var dapperParams = ToDynamicParameters(param);
-
-    await conn.ExecuteAsync(
-        $"EXEC {SpName} @ModuleInstanceId, @StartValue, @EndValue, @Debug, @SourceControlId OUTPUT, @SuccessIndicator OUTPUT, @MessageLog OUTPUT",
-        dapperParams);
-
+    await conn.ExecuteAsync(SpName, dapperParams, commandType: System.Data.CommandType.StoredProcedure);
     MapOutputParameters(dapperParams, param);
-    var returnValue = dapperParams.Get<int>("ReturnValue");
+    int returnCode = dapperParams.Get<int>("@ReturnCode");
 
-    Assert.AreEqual(0, returnValue, $"Stored procedure should return 0 on success. MessageLog: {param.MessageLog}");
+    Assert.AreEqual(0, returnCode, $"Stored procedure should return 0 on success. MessageLog: {param.MessageLog}");
     Assert.AreEqual("Y", param.SuccessIndicator, $"Expected SuccessIndicator 'Y'. MessageLog: {param.MessageLog}");
     Assert.IsTrue(param.SourceControlId > 0, "SourceControlId should be a valid long integer.");
 
@@ -98,25 +92,19 @@ public class OmdSetSourceControlValuesTests
   {
     var param = new OmdSetSourceControlValuesParams
     {
-      ModuleInstanceId = 0, // Invalid
+      ModuleInstanceId = 999, // Invalid
       StartValue = "2025-01-01",
       EndValue = "2025-01-02",
       Debug = "N"
     };
 
     using var conn = new SqlConnection(ConnectionString);
-    await conn.OpenAsync();
-
     var dapperParams = ToDynamicParameters(param);
-
-    await conn.ExecuteAsync(
-        $"EXEC {SpName} @ModuleInstanceId, @StartValue, @EndValue, @Debug, @SourceControlId OUTPUT, @SuccessIndicator OUTPUT, @MessageLog OUTPUT",
-        dapperParams);
-
+    await conn.ExecuteAsync(SpName, dapperParams, commandType: System.Data.CommandType.StoredProcedure);
     MapOutputParameters(dapperParams, param);
-    var returnValue = dapperParams.Get<int>("ReturnValue");
+    int returnCode = dapperParams.Get<int>("@ReturnCode");
 
-    Assert.AreNotEqual(0, returnValue, $"Should not return 0 for invalid ModuleInstanceId. MessageLog: {param.MessageLog}");
+    Assert.AreNotEqual(0, returnCode, $"Should not return 0 for invalid ModuleInstanceId. MessageLog: {param.MessageLog}");
     Assert.AreEqual("N", param.SuccessIndicator, $"Expected SuccessIndicator 'N' for invalid ModuleInstanceId. MessageLog: {param.MessageLog}");
     Assert.IsNull(param.SourceControlId, "SourceControlId should be null for invalid ModuleInstanceId.");
   }
@@ -133,18 +121,12 @@ public class OmdSetSourceControlValuesTests
     };
 
     using var conn = new SqlConnection(ConnectionString);
-    await conn.OpenAsync();
-
     var dapperParams = ToDynamicParameters(param);
-
-    await conn.ExecuteAsync(
-        $"EXEC {SpName} @ModuleInstanceId, @StartValue, @EndValue, @Debug, @SourceControlId OUTPUT, @SuccessIndicator OUTPUT, @MessageLog OUTPUT",
-        dapperParams);
-
+    await conn.ExecuteAsync(SpName, dapperParams, commandType: System.Data.CommandType.StoredProcedure);
     MapOutputParameters(dapperParams, param);
-    var returnValue = dapperParams.Get<int>("ReturnValue");
+    int returnCode = dapperParams.Get<int>("@ReturnCode");
 
-    Assert.AreNotEqual(0, returnValue, $"Should not return 0 for null StartValue. MessageLog: {param.MessageLog}");
+    Assert.AreNotEqual(0, returnCode, $"Should not return 0 for null StartValue. MessageLog: {param.MessageLog}");
     Assert.AreEqual("N", param.SuccessIndicator, $"Expected SuccessIndicator 'N' for null StartValue. MessageLog: {param.MessageLog}");
     Assert.IsNull(param.SourceControlId, "SourceControlId should be null for null StartValue.");
   }
@@ -161,18 +143,12 @@ public class OmdSetSourceControlValuesTests
     };
 
     using var conn = new SqlConnection(ConnectionString);
-    await conn.OpenAsync();
-
     var dapperParams = ToDynamicParameters(param);
-
-    await conn.ExecuteAsync(
-        $"EXEC {SpName} @ModuleInstanceId, @StartValue, @EndValue, @Debug, @SourceControlId OUTPUT, @SuccessIndicator OUTPUT, @MessageLog OUTPUT",
-        dapperParams);
-
+    await conn.ExecuteAsync(SpName, dapperParams, commandType: System.Data.CommandType.StoredProcedure);
     MapOutputParameters(dapperParams, param);
-    var returnValue = dapperParams.Get<int>("ReturnValue");
+    int returnCode = dapperParams.Get<int>("@ReturnCode");
 
-    Assert.AreNotEqual(0, returnValue, $"Should not return 0 for non-existent ModuleInstanceId. MessageLog: {param.MessageLog}");
+    Assert.AreNotEqual(0, returnCode, $"Should not return 0 for non-existent ModuleInstanceId. MessageLog: {param.MessageLog}");
     Assert.AreEqual("N", param.SuccessIndicator, $"Expected SuccessIndicator 'N' for non-existent ModuleInstanceId. MessageLog: {param.MessageLog}");
     Assert.IsNull(param.SourceControlId, "SourceControlId should be null for non-existent ModuleInstanceId.");
   }

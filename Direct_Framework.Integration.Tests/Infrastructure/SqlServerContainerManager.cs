@@ -279,7 +279,7 @@ public static class SqlServerContainerManager
     catch (Exception ex)
     {
       Console.WriteLine($"DACPAC deployment failed: {ex.GetType().Name}: {ex.Message}");
-      if (ex.InnerException != null)
+      if (ex.InnerException is not null)
       {
         Console.WriteLine($"Inner exception: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
       }
