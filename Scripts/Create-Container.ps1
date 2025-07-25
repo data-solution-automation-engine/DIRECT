@@ -1,6 +1,7 @@
 <# =============================================================================
-DIRECT Framework Create-Container Script 2.1.0
-https://github.com/data-solution-automation-engine/DIRECT
+Script:         DIRECT Framework Create-Container Script
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
 --------------------------------------------------------------------------------
 
 Creates a definition for, and spins up, a SQL Server container locally
@@ -38,9 +39,9 @@ controlled by these definitions.
 ----------------------------------------------------------------------------- #>
 
 # FrameworkVersion: The version of the DIRECT Framework used
-$versionFile = '.direct-version'
-if (Test-Path $versionFile) {
-    $FrameworkVersion = Get-Content $versionFile | Select-Object -First 1
+$VersionFile = '.direct-version'
+if (Test-Path $VersionFile) {
+    $FrameworkVersion = Get-Content $VersionFile | Select-Object -First 1
     $FrameworkVersion = $FrameworkVersion.Trim()
 }
 if ([string]::IsNullOrWhiteSpace($FrameworkVersion)) {
@@ -52,7 +53,7 @@ if ([string]::IsNullOrWhiteSpace($FrameworkVersion)) {
 $AutoPurge = $true
 
 # AutoSqlAgentScripts: If true, the script will include SQL that is dependent
-# on SQL Agent being available, which excludes Azure instances (on-premise or
+# on SQL Agent being available, which excludes Azure instances (on-premises or
 # managed-instance only)
 $AutoSqlAgentScripts = $true
 
@@ -69,63 +70,63 @@ $AutoDeploy = $true
 # More information:
 # https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker
 # https://mcr.microsoft.com/artifact/mar/mssql/server/about
-$sqlVersion = "2022"
+$SqlVersion = "2022"
 
 # imageVersion: container image version to use
-$imageVersion = "$sqlVersion-latest"
+$ImageVersion = "$SqlVersion-latest"
 
 # containerName: name of the container to create locally in Podman
-$containerName = "direct-dev-$sqlVersion"
+$ContainerName = "direct-dev-$SqlVersion"
 
 # imageBase: identifying Microsoft's registry for SQL Server images
 # This is the base address to Microsoft's container images for SQL Server
-$imageBase = "mcr.microsoft.com/mssql/server"
+$ImageBase = "mcr.microsoft.com/mssql/server"
 
 # imageName: Full container image name to pull
-$imageName = "${imageBase}:${imageVersion}"
+$ImageName = "${ImageBase}:${ImageVersion}"
 
 # sqlServerPort: The port to use for connections from your host
 # to the SQL Server instance in the container
 # Change this if something is already using this port on the host
-$sqlServerPort = 1433
+$SqlServerPort = 1433
 
 # sqlPassword: the 'sa' user password for the SQL Server
 # This must match the default password policy for the active SQL Server version
-$sqlPassword = "Awesome!Passw0rd"
+$SqlPassword = "Awesome!Passw0rd"
 
 # portMapping: Define the port mapping for the SQL Server container
 # This maps the SQL Server port in the container to the host port
-$portMapping = "${sqlServerPort}:1433"
+$PortMapping = "${SqlServerPort}:1433"
 
 # localAddress: a valid address to the exposed container:
 # localhost, 127.0.0.1 (v4), or ::1 (v6) etc
 # a host might map "localhost" to ::1 (IPv6) by default
 # which doesn't automatically work in Podman,
 # so this defines and uses the v4 loopback ip as the default
-$localAddress = "127.0.0.1"
+$LocalAddress = "127.0.0.1"
 
 # Details for deployment of the Testing Framework DacPac
-$testingFrameworkDatabaseName = "Testing_Framework"
+$TestingFrameworkDatabaseName = "Testing_Framework"
 $testingFrameworkDacpacFileName = "Reference_Dacpacs/Testing_Framework.dacpac"
 
 # Details for deployment of the Direct Framework DacPac
 $directFrameworkDatabaseName = "Direct_Framework"
-$directFrameworkMoniker = "next" # "current"/"next"
-$directFrameworkDacpacFileName = "Releases.Direct_Framework/$directFrameworkMoniker/db/Direct_Framework.dacpac"
+$DirectFrameworkMoniker = "next" # "current"/"next"
+$directFrameworkDacpacFileName = "Releases.Direct_Framework/$DirectFrameworkMoniker/db/Direct_Framework.dacpac"
 
 # Define valid connection strings for SQL Server
 
 # The connection string to the system database "master"
 $masterConnectionString =
-  "Server=$localAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Testing Framework database
 $testingConnectionString =
-  "Server=$localAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Direct Framework database
 $directConnectionString =
-  "Server=$localAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
 
 # Nap controls, increase or decrease as needed for the current host
 $maxAttempts = 10
@@ -273,7 +274,7 @@ try {
     -e "ACCEPT_EULA=Y" `
     -e "MSSQL_SA_PASSWORD=$sqlPassword" `
     -e "MSSQL_AGENT_ENABLED=true" `
-    -p 0.0.0.0:$portMapping $imageName
+    -p 0.0.0.0:$PortMapping $imageName
 
   Write-Success "Container '$containerName' created successfully."
 }
@@ -340,7 +341,7 @@ if ($AutoDeploy) {
   $result = Deploy-Dacpac -DacpacPath $testingFrameworkDacpacFileName `
     -ConnectionString $masterConnectionString `
     -Description "Testing Framework DACPAC" `
-    -DatabaseName $testingFrameworkDatabaseName `
+    -DatabaseName $TestingFrameworkDatabaseName `
     -AutoDeploy $AutoDeploy `
     -AutoPurge $autoPurge
 
@@ -349,7 +350,7 @@ if ($AutoDeploy) {
   }
 }
 else {
-  Write-Host "AutoDeploy is off - Skipping Testing Framework deployment."
+  Write-Host "AutoDeploy is off - Skipping Testing Framework DACPAC deployment."
 }
 
 <# =============================================================================
@@ -357,18 +358,18 @@ DEPLOY DIRECT FRAMEWORK DACPAC
 ----------------------------------------------------------------------------- #>
 
 if ($AutoDeploy) {
-  $result = Deploy-Dacpac -DacpacPath $directFrameworkDacpacFileName `
-    -ConnectionString $masterConnectionString `
-    -Description "Direct Framework DACPAC ('${directFrameworkVersion}')" `
-    -DatabaseName $directFrameworkDatabaseName `
-    -AutoDeploy $AutoDeploy -AutoPurge $autoPurge
+  $result = Deploy-Dacpac -DacpacPath $DirectFrameworkDacpacFileName `
+    -ConnectionString $MasterConnectionString `
+    -Description "Direct Framework DACPAC ('${DirectFrameworkMoniker}')" `
+    -DatabaseName $DirectFrameworkDatabaseName `
+    -AutoDeploy $AutoDeploy -AutoPurge $AutoPurge
 
   if (-not $result) {
     Write-Error "Direct Framework DACPAC deployment failed. Please review."
   }
 }
 else {
-  Write-Host "AutoDeploy is off - Skipping Direct Framework deployment."
+  Write-Host "AutoDeploy is off - Skipping Direct Framework DACPAC deployment."
 }
 
 <# =============================================================================
@@ -376,37 +377,22 @@ POST-DACPAC SCRIPTING
 ----------------------------------------------------------------------------- #>
 
 if ($AutoSqlAgentScripts) {
-  $scriptRoot = Split-Path $PSScriptRoot -Parent
-
   $sqlScripts = @(
-    "Direct_Framework\DeploymentScripts\3-PostDeployment\Queue_Job_Batch.sql",
-    "Direct_Framework\DeploymentScripts\3-PostDeployment\Queue_Job_Module.sql"
+    "Direct_Framework/DeploymentScripts/3-PostDeployment/Queue_Job_Batch.sql",
+    "Direct_Framework/DeploymentScripts/3-PostDeployment/Queue_Job_Module.sql"
   )
 
   foreach ($relativePath in $sqlScripts) {
     $sqlScriptPath = Join-Path $scriptRoot $relativePath
-
-    if (Test-Path $sqlScriptPath) {
-      $result = Invoke-SqlCmd -SqlPath $sqlScriptPath -ConnectionString $masterConnectionString
-
-      if ($result) {
-        Write-Host "Successfully executed SQL script: $sqlScriptPath"
-      }
-      else {
-        Write-Error "Script execution failed for: $sqlScriptPath"
-        break
-      }
-    }
-    else {
-      Write-Error "SQL script not found at: $sqlScriptPath"
-      break
+    $result = Invoke-SqlCmd -SqlPath $sqlScriptPath -ConnectionString $masterConnectionString
+    if (-not $result) {
+      Write-Error "SqlCmd script execution failed for:`n$sqlScriptPath"
     }
   }
 }
 else {
-  Write-Host "AutoSqlAgentScripts is off - Skipping Direct Framework post-deployment scripting."
+  Write-Host "AutoSqlAgentScripts is off - Skipping Agent scripts deployment."
 }
-
 
 <# =============================================================================
 END OF TRIP, THANK YOU FOR COMING ALONG

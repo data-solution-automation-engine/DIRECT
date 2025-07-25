@@ -40,6 +40,27 @@ function Invoke-SqlCmd {
     # Parse the connection string
     $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder($ConnectionString)
 
+    # Validate required properties
+    if (-not $builder["Server"]) {
+      Write-Error "Returning: Connection string property 'Server' for the SQL Server address not found."
+      return $false
+    }
+    if (-not $builder["Initial Catalog"]) {
+      Write-Error "Returning: Connection string property 'Initial Catalog' for the Database name not found."
+      return $false
+    }
+    if (-not $builder["User ID"]) {
+      Write-Error "Returning: Connection string property 'User ID' for the login not found."
+      return $false
+    }
+    if (-not $builder["Password"]) {
+      Write-Error "Returning: Connection string property 'Password' for the login not found."
+      return $false
+    }
+
+    Write-Heading "SqlCmd is executing a SQL script"
+    Write-Host "SQL script file:`n$SqlPath"
+
     # Map to sqlcmd parameters
     $sqlcmdArgs = @(
       "-S", $builder["Server"]
@@ -52,20 +73,24 @@ function Invoke-SqlCmd {
     # Run the sqlcmd command
     $sqlcmdOutput = & sqlcmd @sqlcmdArgs
 
-    Write-Heading -Heading "process results"
-    Write-Host ($sqlcmdOutput -join "`n")  -ForegroundColor Cyan
+    Write-Heading -Heading "SqlCmd process results"
+
+    if ($sqlcmdOutput -and ($sqlcmdOutput | Where-Object { $_.Trim() -ne "" })) {
+      Write-Host ($sqlcmdOutput -join "`n") -ForegroundColor Cyan
+    } else {
+      Write-Host "No output was produced by the provided SQL script or sqlcmd." -ForegroundColor Yellow
+    }
 
     if ($LASTEXITCODE -eq 0) {
-      Write-Host "Deployed successfully." -ForegroundColor Green
-      return $true
-    }
-    else {
-      Write-Error "Deployment failed."
-      return $false
+        Write-Success "SQL script executed successfully."
+        return $true
+    } else {
+        Write-Error "SQL script execution failed."
+        return $false
     }
   }
   catch {
-    Write-Error "An error occurred while executing the SQL file:`n$_"
+    Write-Error "An error occurred while executing the SQL script:`n$_"
     return $false
   }
 }
