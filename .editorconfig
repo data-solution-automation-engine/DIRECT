@@ -15,7 +15,7 @@ trim_trailing_whitespace = false
 # Goes with the SQL formatter extensions for Visual Studio and VS Code
 # and the guidelines extensions
 [*.sql]
-guidelines = 80 dotted, 160 solid
+guidelines = 80 dotted, 120 solid
 SqlServer.Rules.SRN0007.severity = none
 
 align_clause_bodies                                 = true

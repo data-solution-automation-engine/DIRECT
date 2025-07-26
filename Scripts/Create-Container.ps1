@@ -14,11 +14,10 @@ This is a full journey from start to finish for getting a
 local database environment for development and tests up and running
 
 Prerequisites:
-- Podman must be installed and running, with direct access to the Podman CLI
-- The Podman service must be up and running and working
+- Podman must be installed and running, script needs direct access to the Podman CLI
+- The Podman service must be up, and running, and working
 - The script expects PowerShell 7.5 or higher
-- The script expects to run from its repo folder,
-  or with cwd set to repo root
+- The script expects to run from its repo folder, with cwd set to repo root
 - For dacpac deployment, the script expects the dacpac for current/next
   versions of the DIRECT Framework to be built and be available
 - For dacpac deployment, the script expects the Testing Framework dacpac
@@ -26,6 +25,12 @@ Prerequisites:
 - local dotnet tools must be restored/installed and available
 - Modern sqlcmd must be installed and available in the PATH
 
+Disclaimer:
+- This script creates the container with the parameter: `ACCEPT_EULA=Y`
+  By running this script, you accept the EULA for SQL Server
+  as defined in the container image.
+- Released as part of the DIRECT Framework project,
+  see documentation link above for more information.
 --------------------------------------------------------------------------------
 ============================================================================= #>
 
@@ -82,27 +87,27 @@ $ContainerName = "direct-dev-$SqlVersion"
 # This is the base address to Microsoft's container images for SQL Server
 $ImageBase = "mcr.microsoft.com/mssql/server"
 
-# imageName: Full container image name to pull
+# ImageName: Full container image name to pull
 $ImageName = "${ImageBase}:${ImageVersion}"
 
-# sqlServerPort: The port to use for connections from your host
+# SqlServerPort: The port to use for connections from your host
 # to the SQL Server instance in the container
 # Change this if something is already using this port on the host
 $SqlServerPort = 1433
 
-# sqlPassword: the 'sa' user password for the SQL Server
-# This must match the default password policy for the active SQL Server version
+# SqlPassword: the 'sa' user password for the SQL Server
+# This must satisfy the password policy for the defined SQL Server version
 $SqlPassword = "Awesome!Passw0rd"
 
-# portMapping: Define the port mapping for the SQL Server container
+# PortMapping: Define the port mapping for the SQL Server container
 # This maps the SQL Server port in the container to the host port
 $PortMapping = "${SqlServerPort}:1433"
 
-# localAddress: a valid address to the exposed container:
+# LocalAddress: a valid address/hostname to the exposed container:
 # localhost, 127.0.0.1 (v4), or ::1 (v6) etc
-# a host might map "localhost" to ::1 (IPv6) by default
+# some hosts might map "localhost" to ::1 (IPv6) by default
 # which doesn't automatically work in Podman,
-# so this defines and uses the v4 loopback ip as the default
+# so this script defines and uses the v4 loopback ip as the default
 $LocalAddress = "127.0.0.1"
 
 # Details for deployment of the Testing Framework DacPac
@@ -110,27 +115,27 @@ $TestingFrameworkDatabaseName = "Testing_Framework"
 $testingFrameworkDacpacFileName = "Reference_Dacpacs/Testing_Framework.dacpac"
 
 # Details for deployment of the Direct Framework DacPac
-$directFrameworkDatabaseName = "Direct_Framework"
+$DirectFrameworkDatabaseName = "Direct_Framework"
 $DirectFrameworkMoniker = "next" # "current"/"next"
-$directFrameworkDacpacFileName = "Releases.Direct_Framework/$DirectFrameworkMoniker/db/Direct_Framework.dacpac"
+$DirectFrameworkDacpacFileName = "Releases.Direct_Framework/$DirectFrameworkMoniker/db/Direct_Framework.dacpac"
 
 # Define valid connection strings for SQL Server
 
 # The connection string to the system database "master"
-$masterConnectionString =
-  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=master;User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+$MasterConnectionString =
+  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=master;User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Testing Framework database
-$testingConnectionString =
-  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=${testingFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+$TestingConnectionString =
+  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=${TestingFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Direct Framework database
-$directConnectionString =
-  "Server=$LocalAddress,${sqlServerPort};Initial Catalog=${directFrameworkDatabaseName};User Id=sa;Password=${sqlPassword};TrustServerCertificate=true;"
+$DirectConnectionString =
+  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=${DirectFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # Nap controls, increase or decrease as needed for the current host
-$maxAttempts = 10
-$napLength = 5 # seconds
+$MaxAttempts = 10
+$NapLength = 5 # seconds
 
 <# -----------------------------------------------------------------------------
 END - Define script behavior and config - change or refine as needed above.
@@ -141,9 +146,10 @@ if (
   ($PSVersionTable.PSVersion.Major -lt 7) -or
   ($PSVersionTable.PSVersion.Major -eq 7 -and $PSVersionTable.PSVersion.Minor -lt 5)
 ) {
+  Write-Warn "Not running a required Powershell version, 7.5+."
+  Write-Info "Run 'winget install Microsoft.Powershell --source winget'."
+  Write-Info "or download the latest version of PowerShell from https://aka.ms/powershell"
   Write-Error "Exiting: this script expects PowerShell 7.5 or higher."
-  Write-Host "Run 'winget install Microsoft.Powershell --source winget'."
-  Write-Host "or download the latest version of PowerShell from https://aka.ms/powershell"
   Exit 1
 }
 
@@ -152,22 +158,22 @@ FOLD IN HELPERS AND UTILITIES
 Load required utility functions and helpers from the Utils folder
 ----------------------------------------------------------------------------- #>
 
-. "Scripts/Utils/Deploy-Dacpac.ps1"
-. "Scripts/Utils/Get-DacpacVersion.ps1"
-. "Scripts/Utils/Invoke-SqlCmd.ps1"
+. "Scripts/Utils/Write-Utils.ps1"
 . "Scripts/Utils/Invoke-WithRetry.ps1"
 . "Scripts/Utils/Test-DotnetTool.ps1"
 . "Scripts/Utils/Test-PortInUse.ps1"
-. "Scripts/Utils/Write-Utils.ps1"
+. "Scripts/Utils/Deploy-Dacpac.ps1"
+. "Scripts/Utils/Get-DacpacVersion.ps1"
+. "Scripts/Utils/Invoke-Sqlcmd.ps1"
 
 <# =============================================================================
 CHECK AND VALIDATE THE ENVIRONMENT, CLEAN THE TARGET CONTAINER IF NEEDED
 ----------------------------------------------------------------------------- #>
 
-Write-Heading -Heading "DIRECT Framework Create Container Script $FrameworkVersion`nDeployment Starting"
+Write-Heading "DIRECT Framework Create Container Script $FrameworkVersion`nDeployment Starting"
 
-Write-Host "Container Image Name: $imageName" -ForegroundColor Cyan
-Write-Host "Master Connection String: $masterConnectionString" -ForegroundColor Cyan
+Write-Info "Container Image Name: $ImageName"
+Write-Info "Master Connection String: $MasterConnectionString"
 
 # Prerequisites:
 # - Podman must be installed and running, with direct access to the Podman CLI
@@ -175,33 +181,32 @@ Write-Host "Master Connection String: $masterConnectionString" -ForegroundColor 
 
 # Check Podman, install if not available
 if (-not (Get-Command podman -ErrorAction SilentlyContinue)) {
-  Write-Warning "Podman is not installed. Please allow install of Podman"
+  Write-Warn "Podman is not installed. Please allow install of Podman"
   try {
     # Run the winget installations for Podman
     Start-Process "winget install RedHat.Podman" -Wait
     Start-Process "winget install RedHat.Podman-Desktop" -Wait
-    Write-Host "Podman installation seems complete." -ForegroundColor Green
-    Write-Host "Please complete and validate Podman configuration and restart the script." -ForegroundColor Blue
+    Write-Result "Podman installation seems complete."
+    Write-Info "Please complete and validate Podman configuration and restart the script." -ForegroundColor Blue
   }
   catch {
     Write-Error "Installation Failure:`n$_"
-
     Write-Error "Failed to install Podman. Please install it manually."
-    Write-Host "More information on installing Podman: https://podman.io/getting-started/installation"
-    Write-Host "If you have installed Podman, please ensure it is running and accessible."
+    Write-Info "More information on installing Podman: https://podman.io/getting-started/installation"
+    Write-Info "If you have installed Podman, please ensure it is running and accessible."
   }
-  Write-Error "Exiting: Please configure Podman and restart the script."
+  Write-Error "Exiting: Please install/configure Podman and restart the script."
   exit 1
 }
 else {
-  Write-Host "Podman seems to be installed and available." -ForegroundColor Green
+  Write-Result "Podman seems to be installed and available."
 }
 
-# Check if the Podman machine is running
-$machineStatus = podman machine list | Select-String "Running"
+# Check if a Podman machine is running
+$MachineStatus = podman machine list | Select-String "Running"
 
-if (-not $machineStatus) {
-  Write-Host "Podman machine is not running. Starting it now..." -ForegroundColor Yellow
+if (-not $MachineStatus) {
+  Write-Warn "Podman machine is not running. Starting it now..."
 
   try {
     podman machine start
@@ -212,88 +217,100 @@ if (-not $machineStatus) {
   }
 
   # Wait for the machine to start
-  $machineStarted = Invoke-WithRetry -ScriptBlock {
-    $machineStatus = podman machine list | Select-String "Running"
-    if ($machineStatus) {
-      Write-Host "Podman machine is now running." -ForegroundColor Green
+  $MachineStarted = Invoke-WithRetry -ScriptBlock {
+    $MachineStatus = podman machine list | Select-String "Running"
+    if ($MachineStatus) {
+      Write-Result "Podman machine is now running."
       return $true
     }
     else {
-      $currentAttempt = $script:attempt ?? 1
-      Write-Host "Wait period ${currentAttempt}/${maxAttempts}: Waiting for Podman machine to start..." -ForegroundColor Yellow
+      $CurrentAttempt = $script:attempt ?? 1
+      Write-Warn "Wait period ${CurrentAttempt}/${MaxAttempts}: Waiting for Podman machine to start..."
       return $false
     }
-  } -MaxAttempts $maxAttempts -NapLength $napLength
+  } -MaxAttempts $MaxAttempts -NapLength $NapLength
 
-  if (-not $machineStarted) {
+  if (-not $MachineStarted) {
     Write-Error "Exiting: Failed to find a running Podman machine. Please review."
     Exit 1
   }
 }
 
-# Check if the container already exists
-$existingContainer = podman ps -a --filter "name=$containerName" --format "{{.Names}}"
-if ($existingContainer) {
-  if ($AutoPurge) {
-      Write-Host "Container '$containerName' already exists. Removing it..." -ForegroundColor Yellow
-      try {
-        podman rm -f $containerName
-        Write-Host "Container '$containerName' removed." -ForegroundColor Green
-      }
-      catch {
-        Write-Error "Exiting: Failed to remove container '$containerName':`n$_"
-        Exit 1
-      }
-    }
-    else {
-      Write-Host "Container '$containerName' already exists." -ForegroundColor Red
-      $remove = Read-Host "Do you want to remove the existing container? (y/n)"
-      if ($remove -ieq 'y') {
-        try {
-          podman rm -f $containerName
-          Write-Host "Container '$containerName' removed." -ForegroundColor Yellow
-        }
-        catch {
-          Write-Error "Exiting: Failed to remove container '$containerName':`n$_"
-          Exit 1
-        }
-      }
-      else {
-        Write-Error "Exiting: Please remove the container manually before running script."
-        Exit 1
-      }
-    }
+# with a machine running, check if the container (by name) already exists.
+# This script creates the container, so if it already exists we must remove it.
+$ExistingContainer = podman ps -a --filter "name=$ContainerName" --format "{{.Names}}"
+
+if ($ExistingContainer -and -not $AutoPurge) {
+  # check if we should remove the existing container
+  Write-Warn "Container '$ContainerName' already exists."
+  $Remove = Read-Host "Do you want to remove the existing container? (y/n)"
 }
 
-<# =============================================================================
-CREATE SQL SERVER CONTAINER IN PODMAN
------------------------------------------------------------------------------ #>
-
-try {
-  podman run -d --name $containerName `
-    -e "ACCEPT_EULA=Y" `
-    -e "MSSQL_SA_PASSWORD=$sqlPassword" `
-    -e "MSSQL_AGENT_ENABLED=true" `
-    -p 0.0.0.0:$PortMapping $imageName
-
-  Write-Success "Container '$containerName' created successfully."
+if ($ExistingContainer -and ($AutoPurge -or ($Remove -ieq 'y'))) {
+  # If container exists, and it should be removed, then make it so.
+  Write-Warn "Removing existing container '$ContainerName'"
+  try {
+    podman rm -f $ContainerName
+    Write-Result "Container '$ContainerName' removed."
+  }
+  catch {
+    Write-Error "Exiting: Failed to remove container '$ContainerName':`n$_"
+    Exit 1
+  }
 }
-catch {
-  Write-Error "Exiting: Failed to create container '$containerName':`n$_"
+else {
+  # If the container exists and we are not removing it, then exit.
+  # The script creates the container, which can't be done if it already exists.
+  Write-Warn "Container '$ContainerName' already exists."
+  Write-Info "Please remove it, or configure a different name to use."
+  Write-Error "Exiting: container exists, please remove it before running script."
   Exit 1
 }
 
-# Check if the container is running
-$containerStatus = podman ps --filter "name=$containerName" --format "{{.Status}}"
-if ($containerStatus -match "Up") {
-  Write-Host "Container '$containerName' is running." -ForegroundColor Green
+<# =============================================================================
+CREATE THE SQL SERVER CONTAINER IN PODMAN
+----------------------------------------------------------------------------- #>
+
+try {
+  $ContainerId = podman run -d --name $ContainerName `
+    -e "ACCEPT_EULA=Y" `
+    -e "MSSQL_SA_PASSWORD=$SqlPassword" `
+    -e "MSSQL_AGENT_ENABLED=true" `
+    -p 0.0.0.0:$PortMapping $ImageName
+
+  # check if the container was created successfully
+  if ($LASTEXITCODE -ne 0 -or $ContainerId -match "Error|failed|unable") {
+    Write-Error "Exiting: Podman container creation failed:`n$containerId"
+    Exit 1
+  } else {
+    Write-Result "Container '$ContainerName' created successfully"
+    Write-Result "Container id: '$ContainerId'"
+  }
 }
-else {
-  Write-Host "Container '$containerName' is not running." -ForegroundColor Red
+catch {
+  Write-Error "Exiting: Failed to create container '$ContainerName':`n$_"
+  Exit 1
 }
 
-# Display the container status
-Write-Host "Container '$containerName' status: $containerStatus" -ForegroundColor Yellow
+# Wait for the container to start/up
+$ContainerUp = Invoke-WithRetry -ScriptBlock {
+  $ContainerStatus = podman ps --filter "name=$ContainerName" --format "{{.Status}}"
+
+  if ($ContainerStatus) {
+    Write-Result "Container '$ContainerName' is running."
+    return $true
+  }
+  else {
+    $CurrentAttempt = $script:attempt ?? 1
+    Write-Info "Wait period ${CurrentAttempt}/${MaxAttempts}: Waiting for container..."
+    return $false
+  }
+} -MaxAttempts $MaxAttempts -NapLength $NapLength
+
+if (-not $ContainerUp) {
+  Write-Error "Exiting: Failed to start the container. Please review."
+  Exit 1
+}
 
 # Example command, display the container logs
 # Write-Host "Container '$containerName' logs start:" -ForegroundColor Cyan
@@ -301,56 +318,56 @@ Write-Host "Container '$containerName' status: $containerStatus" -ForegroundColo
 # Write-Host "Container '$containerName' logs end" -ForegroundColor Cyan
 
 # Display the SQL Server connection information
-Write-Host "You can connect to SQL Server using the following connection string:" -ForegroundColor Blue
-Write-Host "$masterConnectionString" -ForegroundColor Blue
+Write-Info "You can connect to SQL Server using the following connection string:"
+Write-Info "$MasterConnectionString"
 
 # Reminder to change the sa use password as needed if needed
-Write-Host "Change the sa user password as needed to meet security requirements." -ForegroundColor Yellow
+Write-Warn "Change the sa user password as needed to meet security requirements."
 
 <# =============================================================================
-WAIT UNTIL THE SQL SERVER IS UP AND READY TO GO
+WAIT UNTIL THE SQL SERVER INSTANCE INSIDE THE CONTAINER IS UP AND READY TO GO
 ----------------------------------------------------------------------------- #>
 
-Write-Host "Waiting for server to start, running SQL Server connection tests..." -ForegroundColor Cyan
-$sqlServerStarted = Invoke-WithRetry -ScriptBlock {
+Write-Info "Waiting for server to start, running SQL Server connection tests..."
+$SqlServerStarted = Invoke-WithRetry -ScriptBlock {
   try {
-    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection($masterConnectionString)
-    $sqlConnection.Open()
-    Write-Host "SQL Server connection test successful." -ForegroundColor Green
-    $sqlConnection.Close()
+    $SqlConnection = New-Object System.Data.SqlClient.SqlConnection($MasterConnectionString)
+    $SqlConnection.Open()
+    Write-Result "SQL Server connection test successful."
+    $SqlConnection.Close()
     return $true
   }
   catch {
-    Write-Host "SQL Server connection test failed. Retrying in $napLength seconds..." -ForegroundColor Yellow
+    Write-Result "SQL Server connection test failed. Retrying in $NapLength seconds..."
     return $false
   }
-} -MaxAttempts $maxAttempts -NapLength $napLength
+} -MaxAttempts $MaxAttempts -NapLength $NapLength
 
-if (-not $sqlServerStarted) {
-  Write-Error "Exiting: SQL Server connection test failed after $maxAttempts attempts."
+if (-not $SqlServerStarted) {
+  Write-Error "Exiting: SQL Server connection test failed after $MaxAttempts attempts."
   Exit 1
 }
 
-Write-Success "SQL Server is up and running. Ready for deployment or usage."
+Write-Success "Container and SQL Server is up and running.`nReady for deployment or usage."
 
 <# =============================================================================
 DEPLOY TESTING FRAMEWORK DACPAC
 ----------------------------------------------------------------------------- #>
 
 if ($AutoDeploy) {
-  $result = Deploy-Dacpac -DacpacPath $testingFrameworkDacpacFileName `
-    -ConnectionString $masterConnectionString `
+  $Result = Deploy-Dacpac -DacpacPath $TestingFrameworkDacpacFileName `
+    -ConnectionString $MasterConnectionString `
     -Description "Testing Framework DACPAC" `
     -DatabaseName $TestingFrameworkDatabaseName `
     -AutoDeploy $AutoDeploy `
-    -AutoPurge $autoPurge
+    -AutoPurge $AutoPurge
 
-  if (-not $result) {
+  if (-not $Result) {
     Write-Error "Testing Framework DACPAC deployment failed. Please review."
   }
 }
 else {
-  Write-Host "AutoDeploy is off - Skipping Testing Framework DACPAC deployment."
+  Write-Info "AutoDeploy is off - Skipping Testing Framework DACPAC deployment."
 }
 
 <# =============================================================================
@@ -358,18 +375,18 @@ DEPLOY DIRECT FRAMEWORK DACPAC
 ----------------------------------------------------------------------------- #>
 
 if ($AutoDeploy) {
-  $result = Deploy-Dacpac -DacpacPath $DirectFrameworkDacpacFileName `
+  $Result = Deploy-Dacpac -DacpacPath $DirectFrameworkDacpacFileName `
     -ConnectionString $MasterConnectionString `
-    -Description "Direct Framework DACPAC ('${DirectFrameworkMoniker}')" `
+    -Description "Direct Framework DACPAC (version: '${DirectFrameworkMoniker}')" `
     -DatabaseName $DirectFrameworkDatabaseName `
     -AutoDeploy $AutoDeploy -AutoPurge $AutoPurge
 
-  if (-not $result) {
+  if (-not $Result) {
     Write-Error "Direct Framework DACPAC deployment failed. Please review."
   }
 }
 else {
-  Write-Host "AutoDeploy is off - Skipping Direct Framework DACPAC deployment."
+  Write-Info "AutoDeploy is off - Skipping Direct Framework DACPAC deployment."
 }
 
 <# =============================================================================
@@ -377,21 +394,20 @@ POST-DACPAC SCRIPTING
 ----------------------------------------------------------------------------- #>
 
 if ($AutoSqlAgentScripts) {
-  $sqlScripts = @(
+  $SqlScripts = @(
     "Direct_Framework/DeploymentScripts/3-PostDeployment/Queue_Job_Batch.sql",
     "Direct_Framework/DeploymentScripts/3-PostDeployment/Queue_Job_Module.sql"
   )
 
-  foreach ($relativePath in $sqlScripts) {
-    $sqlScriptPath = Join-Path $scriptRoot $relativePath
-    $result = Invoke-SqlCmd -SqlPath $sqlScriptPath -ConnectionString $masterConnectionString
-    if (-not $result) {
-      Write-Error "SqlCmd script execution failed for:`n$sqlScriptPath"
+  foreach ($ScriptFile in $SqlScripts) {
+    $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString
+    if (-not $Result) {
+      Write-Error "Sqlcmd script execution failed for:`n$ScriptFile"
     }
   }
 }
 else {
-  Write-Host "AutoSqlAgentScripts is off - Skipping Agent scripts deployment."
+  Write-Info "AutoSqlAgentScripts is off - Skipping Agent scripts deployment."
 }
 
 <# =============================================================================
@@ -399,9 +415,9 @@ END OF TRIP, THANK YOU FOR COMING ALONG
 ----------------------------------------------------------------------------- #>
 
 Write-Heading "Deployment Summary"
-Write-Success "Framework deployment for version '$FrameworkVersion' completed."
-Write-Success "Container '$containerName' is deployed and ready for use.`n"
+Write-Result "Framework deployment for version '$FrameworkVersion' completed."
+Write-Success "Container '$ContainerName' is deployed and ready for use.`n"
 
-Write-Host "Connection String to master:`n-->  $masterConnectionString`n" -ForegroundColor Cyan
-Write-Host "Connection String to Testing Framework:`n-->  $testingConnectionString`n" -ForegroundColor Cyan
-Write-Host "Connection String to Direct Framework:`n-->  $directConnectionString`n" -ForegroundColor Cyan
+Write-Info "Connection String to master:`n-->  $MasterConnectionString`n"
+Write-Info "Connection String to Testing Framework:`n-->  $TestingConnectionString`n"
+Write-Info "Connection String to Direct Framework:`n-->  $DirectConnectionString`n"
