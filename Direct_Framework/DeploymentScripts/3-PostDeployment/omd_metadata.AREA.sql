@@ -1,56 +1,84 @@
-/*******************************************************************************
- * https://github.com/data-solution-automation-engine/DIRECT
- * Reference data insert and update script
- * DIRECT Framework v2.0
- *
- * Reference metadata table AREA stores areas and layers information.
- *
- * This script is used to insert and update reference data on deployment.
- * Any bespoke event types added manually to the target will be retained,
- * as long as the keys differ.
- *
- * To maintain a clean CI/CD process, consider using this script to manage
- * all reference data for event types.
- *
- * [omd_metadata].[AREA]
- *
- ******************************************************************************/
+/* -----------------------------------------------------------------------------
+Process:        DACPAC Post-Deployment Script
+                Reference data insert and update script
+Target Table:   [omd_metadata].[AREA]
+Documentation:  https://github.com/data-solution-automation-engine/DIRECT
+Version:        DIRECT Framework 2.1.0
+--------------------------------------------------------------------------------
 
-SET NOCOUNT ON;
+This reference metadata table stores area codes and descriptions.
+This script is used to insert and update system reference data on deployment.
+Any bespoke area codes added manually to the target will be retained,
+as long as the keys differ.
+To maintain a clean CI/CD process, consider using this or a similar script
+to manage all reference data for area codes.
 
-DECLARE @tblMerge TABLE(
-  [AREA_CODE]             NVARCHAR (100)  NOT NULL PRIMARY KEY CLUSTERED,
-  [LAYER_CODE]            NVARCHAR (100)  NOT NULL,
-  [AREA_DESCRIPTION]      NVARCHAR (4000) NULL
-);
+----------------------------------------------------------------------------- */
 
-INSERT INTO @tblMerge([AREA_CODE], [LAYER_CODE], [AREA_DESCRIPTION])
-VALUES
-  (N'HELPER',       N'Presentation',  N'The Helper Area'),
-  (N'INT',          N'Integration',   N'The Base Integration Area'),
-  (N'INTPR',        N'Integration',   N'The Derived Integration Area'),
-  (N'LND',          N'Staging',       N'The Landing Area of the Staging Layer'),
-  (N'Maintenance',  N'Maintenance',   N'Internal Data Solution'),
-  (N'PRES',         N'Presentation',  N'The Access Area'),
-  (N'PSA',          N'Staging',       N'The Persistent Staging Area'),
-  (N'STG',          N'Staging',       N'The Staging Area of the Staging Layer'),
-  (N'SYNC',         N'Staging',       N'Synchronization of the production History Area of the Staging Layer for build and test')
+BEGIN TRY
+  BEGIN TRANSACTION
+    SET NOCOUNT ON;
 
- MERGE [omd_metadata].[AREA] AS TARGET
-  USING @tblMerge AS src
-      ON  TARGET.[AREA_CODE] = src.[AREA_CODE]
+    -- temporary update table
+    DECLARE @tblMerge TABLE(
+      [AREA_CODE]             NVARCHAR (100)  NOT NULL PRIMARY KEY CLUSTERED,
+      [LAYER_CODE]            NVARCHAR (100)  NOT NULL,
+      [AREA_DESCRIPTION]      NVARCHAR (4000) NULL
+    );
 
-  WHEN MATCHED THEN
-      UPDATE
-      SET      [LAYER_CODE] = src.[LAYER_CODE],
-               [AREA_DESCRIPTION] = src.[AREA_DESCRIPTION]
+    -- populate temporary table with framework reference data
+    INSERT INTO @tblMerge([AREA_CODE], [LAYER_CODE], [AREA_DESCRIPTION])
+    VALUES
+      (N'HELPER',       N'Presentation',  N'The Helper Area'),
+      (N'INT',          N'Integration',   N'The Base Integration Area'),
+      (N'INTPR',        N'Integration',   N'The Derived Integration Area'),
+      (N'LND',          N'Staging',       N'The Landing Area of the Staging Layer'),
+      (N'MAINT',        N'Maintenance',   N'Internal Data Solution'),
+      (N'PRES',         N'Presentation',  N'The Access Area'),
+      (N'PSA',          N'Staging',       N'The Persistent Staging Area'),
+      (N'STG',          N'Staging',       N'The Staging Area of the Staging Layer'),
+      (N'SYNC',         N'Staging',       N'Synchronization of the production History Area of the Staging Layer for build and test');
 
-  WHEN NOT MATCHED THEN
-      INSERT  ([AREA_CODE]
-              ,[LAYER_CODE]
-              ,[AREA_DESCRIPTION])
-      VALUES  ([AREA_CODE]
-              ,[LAYER_CODE]
-              ,[AREA_DESCRIPTION]);
+    -- add new or update existing reference data into the omd_metadata.AREA table
+    MERGE [omd_metadata].[AREA] AS tgt
+      USING @tblMerge AS src
+          ON  tgt.[AREA_CODE] = src.[AREA_CODE]
+      WHEN MATCHED THEN
+          UPDATE
+          SET      [LAYER_CODE] = src.[LAYER_CODE],
+                   [AREA_DESCRIPTION] = src.[AREA_DESCRIPTION]
+      WHEN NOT MATCHED THEN
+          INSERT  ([AREA_CODE]
+                  ,[LAYER_CODE]
+                  ,[AREA_DESCRIPTION])
+          VALUES  ([AREA_CODE]
+                  ,[LAYER_CODE]
+                  ,[AREA_DESCRIPTION]);
+
+  -- commit or rollback based on transaction state
+  IF XACT_STATE() = 1
+  BEGIN
+    -- file processing completed successfully
+    COMMIT TRANSACTION;
+  END
+  ELSE
+  BEGIN
+    -- file processing failed
+    PRINT('Post-deployment of ''omd_metadata.AREA.sql'' failed: ' +
+          'Error during merge operation, rolling back transaction.');
+    ROLLBACK TRANSACTION;
+  END;
+END TRY
+BEGIN CATCH
+  IF XACT_STATE() <> 0
+  BEGIN
+    ROLLBACK TRANSACTION;
+  END;
+  PRINT FORMATMESSAGE(
+      'Post-deployment of ''omd_metadata.AREA.sql'' failed. Error %d, Severity %d, State %d: %s',
+      ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_MESSAGE()
+    );
+  THROW; -- Rethrow original error with full context
+END CATCH
 
 GO

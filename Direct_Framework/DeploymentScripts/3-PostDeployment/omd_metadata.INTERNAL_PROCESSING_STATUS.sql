@@ -1,10 +1,10 @@
-/*******************************************************************************
+/* -----------------------------------------------------------------------------
 Process:        DACPAC Post-Deployment Script
                 Reference data insert and update script
 Target Table:   [omd_metadata].[INTERNAL_PROCESSING_STATUS]
 Documentation:  https://github.com/data-solution-automation-engine/DIRECT
 Version:        DIRECT Framework 2.1.0
-********************************************************************************
+--------------------------------------------------------------------------------
 
 This reference metadata table stores internal processing status codes and
 descriptions.
@@ -14,7 +14,7 @@ be retained, as long as the keys differ.
 To maintain a clean CI/CD process, consider using this or a similar script
 to manage all reference data for internal processing status codes.
 
-*******************************************************************************/
+----------------------------------------------------------------------------- */
 
 SET NOCOUNT ON;
 
