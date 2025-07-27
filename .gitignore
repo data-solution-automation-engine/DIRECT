@@ -397,6 +397,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# include the main vscode definitions/settings files
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
