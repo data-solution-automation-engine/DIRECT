@@ -4,7 +4,7 @@ Documentation:  https://github.com/data-solution-automation-engine/DIRECT
 Version:        DIRECT Framework 2.1.0
 --------------------------------------------------------------------------------
 
-Creates a definition for, and spins up, a SQL Server container locally
+Creates a definition for, and spins up, a SQL Server linux container locally
 in Podman including:
 
 - Direct Framework DACPAC
@@ -14,7 +14,8 @@ This is a full journey from start to finish for getting a
 local database environment for development and tests up and running
 
 Prerequisites:
-- Podman must be installed and running, script needs direct access to the Podman CLI
+- Podman must be installed and running, script needs direct access to the
+  Podman CLI
 - The Podman service must be up, and running, and working
 - The script expects PowerShell 7.5 or higher
 - The script expects to run from its repo folder, with cwd set to repo root
@@ -66,15 +67,16 @@ $AutoSqlAgentScripts = $true
 # and Direct Framework DACPACs to the container
 $AutoDeploy = $true
 
-# sqlVersion: The numeric generation/version of SQL Server to use
-# This must match an available image name.
-# Direct Framework is currently mainly tested against SQL Server 2022
-# but is expected to work across all currently supported versions, including
-# non-on-premises versions like Azure SQL Database and Fabric SQL.
-# Once SQL Server 2025 is in full preview, DIRECT will be updated to that version.
-# More information:
-# https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker
-# https://mcr.microsoft.com/artifact/mar/mssql/server/about
+<# SqlVersion: The numeric generation/version of SQL Server to use
+This must match an available image name.
+Direct Framework is currently mainly tested against SQL Server 2022,
+but is expected to work across all currently mainstream supported versions,
+including non-on-premises versions like Azure SQL Database and Fabric SQL.
+Once SQL Server 2025 is in rc-state, DIRECT testing will be updated to match.
+More information:
+https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker
+https://mcr.microsoft.com/artifact/mar/mssql/server/about
+#>
 $SqlVersion = "2022"
 
 # imageVersion: container image version to use
@@ -103,11 +105,11 @@ $SqlPassword = "Awesome!Passw0rd"
 # This maps the SQL Server port in the container to the host port
 $PortMapping = "${SqlServerPort}:1433"
 
-# LocalAddress: a valid address/hostname to the exposed container:
-# localhost, 127.0.0.1 (v4), or ::1 (v6) etc
-# some hosts might map "localhost" to ::1 (IPv6) by default
-# which doesn't automatically work in Podman,
-# so this script defines and uses the v4 loopback ip as the default
+<# LocalAddress: a valid address/hostname to the exposed container:
+localhost, 127.0.0.1 (v4), or ::1 (v6) etc
+some hosts might map "localhost" to ::1 (IPv6) by default
+which doesn't always automatically work in Podman,
+so this script defines and uses the v4 loopback ip as the default #>
 $LocalAddress = "127.0.0.1"
 
 # Details for deployment of the Testing Framework DacPac
