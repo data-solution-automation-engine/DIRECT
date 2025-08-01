@@ -1,47 +1,51 @@
-/*******************************************************************************
-Procedure:      [omd].[AddBatchToParentBatch]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
+/**
+ * @procedure [omd].[AddBatchToParentBatch]
+ * @description Assigns a Batch to be associated with a Parent Batch.
+ *   Both Batches must already exist.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)} @BatchCode (Mandatory) The code of the batch to
+ *   associate.
+ * @param {NVARCHAR(500)} @ParentBatchCode (Mandatory) The parent batch code to
+ *   associate the batch with.
+ * @param {INT} [@Sequence=0] (Optional) Ordinal used for processing order.
+ * @param {CHAR(1)} [@ActiveIndicator='Y'] (Optional) Active indicator ('Y' or
+ *   'N').
+ * @param {CHAR(1)} [@Debug='N'] (Optional) Debug flag ('Y' or 'N').
+ * @param {CHAR(1)} [@CheckDag='N'] (Optional) Checks the relationship graph for
+ *   cycles before adding ('Y' or 'N').
+ * @param {CHAR(1)} @SuccessIndicator OUTPUT 'Y' if successful, 'N' otherwise.
+ * @param {NVARCHAR(MAX)} @MessageLog OUTPUT Log of internal messages and
+ *   diagnostics.
+ *
+ * @returns {INT} Return code indicating success (0), failure (non-zero),
+ *   defined error states: -1 = generic error, -2 = global catch block error.
+ *
+ * @lineage
+ * - Reads: [omd_metadata].[GetSetting], [omd_metadata].[GetSettingFlag],
+ *     [omd].[GetBatchIdByName]
+ * - Writes: [omd].[BATCH_HIERARCHY], [omd].[InsertIntoEventLog]
+ *
+ * @example
 
-Purpose:
-  Assigns a Batch to be associated with a Parent Batch.
-  Both Batches must already exist.
+DECLARE @RC INT
+  ,@SuccessIndicator CHAR(1)
+  ,@MessageLog NVARCHAR(MAX);
 
-Inputs:
-  - Batch Code
-  - Parent Batch Code
-  - Sequence. Optional ordinal for processing order
-  - Active Indicator (Y/N defaults to Y)
-  - Debug Flag (Y/N, defaults to N)
-  - CheckDag (Y/N, defaults to N). Checks the relationship graph before adding
-
-Outputs:
-  - Success Indicator (Y/N)
-  - Message Log
-
-********************************************************************************
-
-Example Usage:
-
-DECLARE @BatchId          INT;
-DECLARE @SuccessIndicator CHAR(1);
-DECLARE @MessageLog       NVARCHAR(MAX);
-
-EXEC [omd].[AddBatchToParentBatch]
-  -- Mandatory parameters
-  @BatchCode        = 'MyBatch',
-  @ParentBatchCode  = 'MyParentBatch',
-  -- Optional parameters
-  @ActiveIndicator  = 'Y',
-  @Debug            = 'Y',
-  -- Output parameters
+@RC = EXEC [omd].[AddBatchToParentBatch]
+  @BatchCode = 'MyBatch',
+  @ParentBatchCode = 'MyParentBatch',
+  @ActiveIndicator = 'Y',
+  @Debug = 'Y',
   @SuccessIndicator = @SuccessIndicator OUTPUT,
-  @MessageLog       = @MessageLog OUTPUT;
+  @MessageLog = @MessageLog OUTPUT;
 
-PRINT('New hierarchy item registered: ' + @SuccessIndicator)
+PRINT('New hierarchy item registered: ' + @SuccessIndicator);
 
-*******************************************************************************/
+ */
 
 CREATE PROCEDURE [omd].[AddBatchToParentBatch]
 (
