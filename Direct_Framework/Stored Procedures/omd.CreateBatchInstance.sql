@@ -40,17 +40,17 @@ PRINT @BatchInstanceId;
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
 (
-  -- Mandatory parameters
-  @BatchCode                    NVARCHAR(500)
-  -- Optional parameters
+   -- Required parameters
+   @BatchCode                    NVARCHAR(500)  = NULL
+   -- Optional parameters
   ,@ParentBatchInstanceId        BIGINT          = 0
   ,@Debug                        CHAR(1)         = 'N'
   ,@ExecutionContext             NVARCHAR(4000)  = N''
-  -- Output parameters
-  ,@BatchInstanceId              BIGINT          OUTPUT
-  ,@BatchInstanceStartTimestamp  DATETIME2       OUTPUT
-  ,@SuccessIndicator             CHAR(1)         OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX)   OUTPUT
+   -- Output parameters
+  ,@BatchInstanceId              BIGINT          = NULL OUTPUT
+  ,@BatchInstanceStartTimestamp  DATETIME2       = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

@@ -136,6 +136,22 @@ BEGIN TRY
       ';
     END
 
+    -- Table omd_metadata.AREA, predefined area code Maintenance
+    -- Pre-upgrade standard code = 'Maintenance'
+    -- Post-upgrade standard code = 'MAINT'
+    -- This is to adhere to the code naming convention in the table
+    IF EXISTS (
+      SELECT 1
+      FROM [omd_metadata].[AREA]
+      WHERE [CODE] = 'Maintenance'
+    )
+    BEGIN
+      UPDATE [omd_metadata].[AREA]
+      SET [CODE] = 'MAINT'
+      WHERE [CODE] = 'Maintenance';
+    END
+
+
     -- Table: [omd_metadata].[FRAMEWORK_METADATA]
     -- Migration: set column [ACTIVE_INDICATOR] to NOT NULL
     -- and populate existing NULL values with 'N'

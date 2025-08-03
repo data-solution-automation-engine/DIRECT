@@ -47,18 +47,18 @@ PRINT @ModuleInstanceId;
 
 CREATE PROCEDURE [omd].[CreateModuleInstance]
 (
-  -- Mandatory parameters
-  @ModuleCode           NVARCHAR(1000),
-  -- Optional parameters
-  @Query                NVARCHAR(MAX)   = NULL,
-  @BatchInstanceId      BIGINT          = 0,
-  @ExecutionContext     NVARCHAR(1000)  = N'',
-  @Debug                CHAR(1)         = 'N',
-  -- Output parameters
-  @ModuleInstanceId             BIGINT          OUTPUT,
-  @ModuleInstanceStartTimestamp DATETIME2       OUTPUT,
-  @SuccessIndicator             CHAR(1)         OUTPUT,
-  @MessageLog                   NVARCHAR(MAX)   OUTPUT
+   /* Required parameters */
+   @ModuleCode                    NVARCHAR(1000)  = NULL
+   /* Optional parameters */
+  ,@Query                         NVARCHAR(MAX)   = NULL
+  ,@BatchInstanceId               BIGINT          = 0
+  ,@ExecutionContext              NVARCHAR(1000)  = N''
+  ,@Debug                         CHAR(1)         = 'N'
+   /* Output parameters */
+  ,@ModuleInstanceId              BIGINT          = NULL OUTPUT
+  ,@ModuleInstanceStartTimestamp  DATETIME2       = NULL OUTPUT
+  ,@SuccessIndicator              CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                    NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

@@ -44,18 +44,18 @@ SELECT
 
 CREATE PROCEDURE [omd].[GetSourceControlValues]
 (
-  -- Alternative key parameters, one of these are required
+  /* Alternative key parameters, one of these are required */
    @ModuleInstanceId    BIGINT          = NULL
   ,@ModuleId            INT             = NULL
   ,@ModuleCode          NVARCHAR(1000)  = NULL
   -- Optional parameters
   ,@Debug               CHAR(1)         = 'N'
   -- Output parameters
-  ,@SourceControlId     BIGINT          OUTPUT
-  ,@StartValue          NVARCHAR(100)   OUTPUT
-  ,@EndValue            NVARCHAR(100)   OUTPUT
-  ,@SuccessIndicator    CHAR(1)         OUTPUT
-  ,@MessageLog          NVARCHAR(MAX)   OUTPUT
+  ,@SourceControlId     BIGINT          = NULL OUTPUT
+  ,@StartValue          NVARCHAR(100)   = NULL OUTPUT
+  ,@EndValue            NVARCHAR(100)   = NULL OUTPUT
+  ,@SuccessIndicator    CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog          NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

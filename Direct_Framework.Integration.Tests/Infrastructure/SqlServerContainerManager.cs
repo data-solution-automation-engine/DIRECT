@@ -99,6 +99,7 @@ public static class SqlServerContainerManager
 
   /// <summary>
   /// Resets the database to a clean state by redeploying the DACPAC
+  /// and resetting all tables and identities
   /// </summary>
   public static async Task ResetDatabaseAsync()
   {
@@ -106,6 +107,26 @@ public static class SqlServerContainerManager
       throw new InvalidOperationException("Container not initialized.");
 
     await DeployDatabaseSchemaAsync("next");
+
+    //    --Reset the environment(for multiple runs)
+    //      DELETE FROM[omd].[BATCH_HIERARCHY]
+    //    DELETE FROM[omd].[SOURCE_CONTROL]
+    //    DELETE FROM[omd].[EVENT_LOG]
+    //    DELETE FROM[omd].[BATCH_MODULE]
+    //    DELETE FROM[omd].[MODULE_INSTANCE] WHERE[MODULE_INSTANCE_ID] <> 0
+    //DELETE FROM[omd].[MODULE] WHERE[MODULE_ID] <> 0
+    //DELETE FROM[omd].[BATCH_INSTANCE] WHERE[BATCH_INSTANCE_ID] <> 0
+    //DELETE FROM[omd].[BATCH] WHERE[BATCH_ID] <> 0
+
+    //-- reset identity seeds
+    //DBCC CHECKIDENT('omd.SOURCE_CONTROL', RESEED, 1);
+    //    DBCC CHECKIDENT('omd.EVENT_LOG', RESEED, 1);
+    //    DBCC CHECKIDENT('omd.MODULE_INSTANCE', RESEED, 1);
+    //    DBCC CHECKIDENT('omd.MODULE', RESEED, 1);
+    //    DBCC CHECKIDENT('omd.BATCH_INSTANCE', RESEED, 1);
+    //    DBCC CHECKIDENT('omd.BATCH', RESEED, 1);
+
+
   }
 
   public static async Task PopulateDatabaseAsync()
@@ -352,8 +373,12 @@ public static class SqlServerContainerManager
       using var connection = new SqlConnection(_connectionString);
       await connection.OpenAsync();
 
-      // Check databases
-      using var dbCommand = new SqlCommand("SELECT name FROM sys.databases WHERE name != 'master' AND name != 'tempdb' AND name != 'model' AND name != 'msdb'", connection);
+      // Check non-system databases
+      using var dbCommand = new SqlCommand(@"
+        SELECT [name]
+        FROM [sys].[databases]
+        WHERE [name] NOT IN ('master', 'tempdb', 'model', 'msdb')
+      ", connection);
       using var dbReader = await dbCommand.ExecuteReaderAsync();
       Console.WriteLine("Databases found:");
       while (await dbReader.ReadAsync())
@@ -366,7 +391,11 @@ public static class SqlServerContainerManager
       connection.ChangeDatabase("Direct_Framework");
 
       // Check schemas
-      using var schemaCommand = new SqlCommand("SELECT name FROM sys.schemas WHERE name IN ('omd', 'omd_metadata', 'omd_processing', 'omd_reporting')", connection);
+      using var schemaCommand = new SqlCommand(@"
+        SELECT name
+        FROM sys.schemas
+        WHERE name IN ('omd', 'omd_metadata', 'omd_processing', 'omd_reporting')
+      ", connection);
       using var schemaReader = await schemaCommand.ExecuteReaderAsync();
       Console.WriteLine("Expected schemas found:");
       while (await schemaReader.ReadAsync())
@@ -377,10 +406,11 @@ public static class SqlServerContainerManager
 
       // Check for the specific stored procedure
       using var procCommand = new SqlCommand(@"
-                SELECT s.name as schema_name, p.name as procedure_name
-                FROM sys.procedures p
-                JOIN sys.schemas s ON p.schema_id = s.schema_id
-                WHERE s.name = 'omd' AND p.name = 'GetBatch'", connection);
+        SELECT s.name as schema_name, p.name as procedure_name
+        FROM sys.procedures p
+        JOIN sys.schemas s ON p.schema_id = s.schema_id
+        WHERE s.name = 'omd' AND p.name = 'GetBatch'
+      ", connection);
       using var procReader = await procCommand.ExecuteReaderAsync();
       Console.WriteLine("omd.GetBatch procedure check:");
       if (await procReader.ReadAsync())
@@ -395,10 +425,10 @@ public static class SqlServerContainerManager
 
       // List all procedures in omd schema
       using var allProcCommand = new SqlCommand(@"
-                SELECT s.name as schema_name, p.name as procedure_name
-                FROM sys.procedures p
-                JOIN sys.schemas s ON p.schema_id = s.schema_id
-                WHERE s.name = 'omd'", connection);
+        SELECT s.name as schema_name, p.name as procedure_name
+        FROM sys.procedures p
+        JOIN sys.schemas s ON p.schema_id = s.schema_id
+        WHERE s.name = 'omd'", connection);
       using var allProcReader = await allProcCommand.ExecuteReaderAsync();
       Console.WriteLine("All procedures in omd schema:");
       while (await allProcReader.ReadAsync())

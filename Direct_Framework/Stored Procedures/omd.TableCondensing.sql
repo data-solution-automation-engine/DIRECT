@@ -32,15 +32,15 @@ TBA
 
 CREATE PROCEDURE [omd].[TableCondensing]
 (
-  -- Mandatory parameters
-  @DatabaseName             NVARCHAR(128),
-  @SchemaName               NVARCHAR(128),
-  @Table                    NVARCHAR(128),
-  -- Optional parameters
-  @Debug                    CHAR(1) = 'N',
-  -- Output parameters
-  @SuccessIndicator         CHAR(1)        OUTPUT,
-  @MessageLog               NVARCHAR(MAX)  OUTPUT
+   -- Required parameters
+   @DatabaseName             NVARCHAR(128)  = NULL
+  ,@SchemaName               NVARCHAR(128)  = NULL
+  ,@Table                    NVARCHAR(128)  = NULL
+   -- Optional parameters
+  ,@Debug                    CHAR(1)        = 'N'
+   -- Output parameters
+  ,@SuccessIndicator         CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog               NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

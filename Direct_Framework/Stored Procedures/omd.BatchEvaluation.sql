@@ -42,14 +42,14 @@ PRINT @InternalProcessingStatusCode;
 
 CREATE PROCEDURE [omd].[BatchEvaluation]
 (
-  -- Mandatory parameters
-  @BatchInstanceId                BIGINT,
-  -- Optional parameters
-  @Debug                          CHAR(1)       = 'N',
-  -- Output parameters
-  @InternalProcessingStatusCode   NVARCHAR(100) OUTPUT,
-  @SuccessIndicator               CHAR(1)       OUTPUT,
-  @MessageLog                     NVARCHAR(MAX) OUTPUT
+   -- Required parameters
+   @BatchInstanceId                BIGINT         = NULL
+   -- Optional parameters
+  ,@Debug                          CHAR(1)        = 'N'
+   -- Output parameters
+  ,@InternalProcessingStatusCode   NVARCHAR(100)  = NULL OUTPUT
+  ,@SuccessIndicator               CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog                     NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

@@ -35,14 +35,14 @@ EXEC [omd].[GetBatch]
 
 CREATE PROCEDURE [omd].[GetBatch]
 (
-  -- Mandatory parameters
-  @BatchCode                NVARCHAR(500)
-  -- Optional parameters
-  ,@Debug                    CHAR(1)         = 'N'
-  -- Output parameters
-  ,@BatchDetails             NVARCHAR(MAX)   OUTPUT
-  ,@SuccessIndicator         CHAR(1)         OUTPUT
-  ,@MessageLog               NVARCHAR(MAX)   OUTPUT
+   -- Mandatory parameters
+   @BatchCode         NVARCHAR(500)   = NULL
+   -- Optional parameters
+  ,@Debug             CHAR(1)         = 'N'
+   -- Output parameters
+  ,@BatchDetails      NVARCHAR(MAX)   = NULL OUTPUT
+  ,@SuccessIndicator  CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog        NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

@@ -50,21 +50,21 @@ PRINT 'The new Modules Id is: ''' + CONVERT(NVARCHAR(10), @ModuleId) + '''.';
 CREATE PROCEDURE [omd].[RegisterModule]
 (
    -- Mandatory parameters
-   @ModuleCode               NVARCHAR(500)
-  ,@ModuleAreaCode           NVARCHAR(100)
+   @ModuleCode               NVARCHAR(500)  = NULL
+  ,@ModuleAreaCode           NVARCHAR(100)  = NULL
    -- Optional parameters
-  ,@ModuleType               NVARCHAR(100)   = N'SQL'
-  ,@Executable               NVARCHAR(MAX)   = N''
-  ,@ModuleDescription        NVARCHAR(4000)  = N''
-  ,@ModuleSourceDataObject   NVARCHAR(1000)  = N'N/A'
-  ,@ModuleTargetDataObject   NVARCHAR(1000)  = N'N/A'
-  ,@ModuleFrequency          NVARCHAR(100)   = N'On-demand'
-  ,@ModuleActiveIndicator    CHAR(1)         = 'Y'
-  ,@Debug                    CHAR(1)         = 'N'
+  ,@ModuleType               NVARCHAR(100)  = N'SQL'
+  ,@Executable               NVARCHAR(MAX)  = N''
+  ,@ModuleDescription        NVARCHAR(4000) = N''
+  ,@ModuleSourceDataObject   NVARCHAR(1000) = N'N/A'
+  ,@ModuleTargetDataObject   NVARCHAR(1000) = N'N/A'
+  ,@ModuleFrequency          NVARCHAR(100)  = N'On-demand'
+  ,@ModuleActiveIndicator    CHAR(1)        = 'Y'
+  ,@Debug                    CHAR(1)        = 'N'
    -- Output parameters
-  ,@ModuleId                 INT             OUTPUT
-  ,@SuccessIndicator         CHAR(1)         OUTPUT
-  ,@MessageLog               NVARCHAR(MAX)   OUTPUT
+  ,@ModuleId                 INT            = NULL OUTPUT
+  ,@SuccessIndicator         CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog               NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

@@ -34,14 +34,14 @@ PRINT @InternalProcessingStatusCode;
 CREATE PROCEDURE [omd].[ModuleEvaluation]
 (
    -- Mandatory parameters
-   @ModuleInstanceId             BIGINT
+   @ModuleInstanceId             BIGINT         = NULL
    -- Optional parameters
   ,@ModuleInstanceIdColumnName   NVARCHAR(1000) = 'MODULE_INSTANCE_ID'
   ,@Debug                        CHAR(1)        = 'N'
    -- Output parameters
-  ,@InternalProcessingStatusCode NVARCHAR(100)  OUTPUT
-  ,@SuccessIndicator             CHAR(1)        OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX)  OUTPUT
+  ,@InternalProcessingStatusCode NVARCHAR(100)  = 'Cancel' OUTPUT
+  ,@SuccessIndicator             CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

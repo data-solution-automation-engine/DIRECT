@@ -19,6 +19,7 @@
  *   - Debug Flag (Y/N, defaults to N)
  *
  * Outputs:
+ *   - Result - InternalProcessingStatusCode
  *   - Success Indicator (Y/N)
  *   - Message Log
  *
@@ -43,15 +44,15 @@ EXEC [omd].[RunBatch] @BatchCode = '<>',
 CREATE PROCEDURE [omd].[RunBatch]
 (
    -- Mandatory parameters
-   @BatchCode                    NVARCHAR(500)
+   @BatchCode                    NVARCHAR(500)  = NULL
    -- Optional parameters
   ,@ParentBatchInstanceId        BIGINT          = 0
   ,@ModuleInstanceIdColumnName   NVARCHAR(128)   = 'MODULE_INSTANCE_ID'
   ,@Debug                        CHAR(1)         = 'N'
    -- Output parameters
-  ,@Result                       NVARCHAR(100)   OUTPUT
-  ,@SuccessIndicator             CHAR(1)         OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX)   OUTPUT
+  ,@Result                       NVARCHAR(100)   = 'Failure' OUTPUT -- InternalProcessingStatusCode
+  ,@SuccessIndicator             CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

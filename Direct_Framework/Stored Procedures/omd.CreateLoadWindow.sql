@@ -43,17 +43,17 @@ SELECT
 
 CREATE PROCEDURE [omd].[CreateLoadWindow]
   (
-  -- Mandatory parameters
-   @ModuleInstanceId             BIGINT
-  -- Optional parameters
+   -- Required parameters
+   @ModuleInstanceId             BIGINT         = NULL
+   -- Optional parameters
   ,@LoadWindowAttributeName      NVARCHAR(1000) = 'INSCRIPTION_TIMESTAMP'
   ,@ModuleInstanceIdColumnName   NVARCHAR(1000) = 'MODULE_INSTANCE_ID'
   ,@Debug                        CHAR(1)        = 'N'
-  -- Output parameters
-  ,@StartValue                   NVARCHAR(100)  OUTPUT
-  ,@EndValue                     NVARCHAR(100)  OUTPUT
-  ,@SuccessIndicator             CHAR(1)        OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX)  OUTPUT
+   -- Output parameters
+  ,@StartValue                   NVARCHAR(100)  = NULL OUTPUT
+  ,@EndValue                     NVARCHAR(100)  = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

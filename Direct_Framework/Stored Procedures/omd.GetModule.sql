@@ -39,13 +39,13 @@ EXEC [omd].[GetModule] @ModuleCode = 'MyExistingModule'
 
 CREATE PROCEDURE [omd].[GetModule]
 (
-  -- Mandatory parameters
-  @ModuleCode               NVARCHAR(500),
-  -- Optional parameters
-  @Debug                    CHAR(1)         = 'N',
-  -- Output parameters
-  @SuccessIndicator         CHAR(1)         OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   OUTPUT
+   -- Mandatory parameters
+   @ModuleCode          NVARCHAR(500)   = NULL
+   -- Optional parameters
+  ,@Debug               CHAR(1)         = 'N'
+   -- Output parameters
+  ,@SuccessIndicator    CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog          NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

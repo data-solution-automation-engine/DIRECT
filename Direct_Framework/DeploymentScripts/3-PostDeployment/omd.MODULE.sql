@@ -44,15 +44,15 @@ VALUES
   N'DataLogistics',
   N'N/A',
   N'N/A',
-  N'Maintenance',
+  N'MAINT',
   N'On-demand',
   'Y',
   N'SELECT NULL'
 )
 
-MERGE [omd].[MODULE] AS TARGET
+MERGE [omd].[MODULE] AS tgt
 USING @tblMerge AS src
-    ON  TARGET.[MODULE_ID] = src.[MODULE_ID]
+    ON  tgt.[MODULE_ID] = src.[MODULE_ID]
 
 WHEN MATCHED THEN
     UPDATE

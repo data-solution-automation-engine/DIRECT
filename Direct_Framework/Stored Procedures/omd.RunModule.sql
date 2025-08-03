@@ -46,18 +46,18 @@ EXEC [omd].[RunModule]
 
 CREATE PROCEDURE [omd].[RunModule]
 (
-   -- Mandatory parameters
-   @ModuleCode                   NVARCHAR(500)
+   /* Required parameters */
+   @ModuleCode                   NVARCHAR(500)    = NULL
    -- Optional parameters
-  ,@Query                        NVARCHAR(MAX)   = NULL
-  ,@BatchInstanceId              BIGINT          = 0
-  ,@ModuleInstanceIdColumnName   NVARCHAR(128)  = 'MODULE_INSTANCE_ID'
-  ,@Debug                        CHAR(1)         = 'N'
+  ,@Query                        NVARCHAR(MAX)    = NULL
+  ,@BatchInstanceId              BIGINT           = 0
+  ,@ModuleInstanceIdColumnName   NVARCHAR(128)    = 'MODULE_INSTANCE_ID'
+  ,@Debug                        CHAR(1)          = 'N'
    -- Output parameters
-  ,@ModuleInstanceId             BIGINT          OUTPUT
-  ,@ModuleInstanceStartTimestamp DATETIME2       OUTPUT
-  ,@SuccessIndicator             CHAR(1)         OUTPUT
-  ,@MessageLog                   NVARCHAR(MAX)   OUTPUT
+  ,@ModuleInstanceId             BIGINT           = NULL OUTPUT
+  ,@ModuleInstanceStartTimestamp DATETIME2        = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)          = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)    = N'' OUTPUT
 )
 AS
 BEGIN

@@ -38,17 +38,17 @@ PRINT @ConsistencyDateTime;
 ******************************************************************************/
 
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
-  (
-  -- Mandatory parameters
-  @TableList                NVARCHAR(MAX)
-  -- Optional parameters
+(
+   -- Mandatory parameters
+   @TableList                NVARCHAR(MAX) = NULL
+   -- Optional parameters
   ,@MeasurementDateTime      DATETIME2(7)  = NULL
-  -- ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
+   -- ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
   ,@Debug                    CHAR(1)       = 'N'
-  -- Output parameters
-  ,@ConsistencyDateTime      DATETIME2     OUTPUT
-  ,@SuccessIndicator         CHAR(1)       OUTPUT
-  ,@MessageLog               NVARCHAR(MAX)  OUTPUT
+   -- Output parameters
+  ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
+  ,@SuccessIndicator         CHAR(1)       = 'N' OUTPUT
+  ,@MessageLog               NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
 BEGIN

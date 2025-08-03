@@ -12,7 +12,7 @@ Inputs:
   - Data Object Schema
   - Key Array (list of keys to end-date against)
   - Current Record Indicator Column Name (if available)
-  - Inscripion Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
+  - Inscription Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
   - Expiry Date Column Name (defaulted to INSCRIPTION_TIMESTAMP)
   - Effective Date Column Name (defaulted to INSCRIPTION_BEFORE_TIMESTAMP)
   - Debug Flag (Y/N, defaults to N)
@@ -33,20 +33,20 @@ TBA
 
 CREATE PROCEDURE [omd].[END_DATING]
 (
-  -- Mandatory parameters
-   @DataObjectName                   VARCHAR(MAX)
-  ,@DataObjectSchema                 VARCHAR(MAX)
-  ,@KeyArray                         VARCHAR(MAX)
-  ,@ModuleInstanceId                 INT
+   /* Required parameters */
+   @DataObjectName                    NVARCHAR(500)   = NULL
+  ,@DataObjectSchema                  NVARCHAR(500)   = NULL
+  ,@KeyArray                          NVARCHAR(4000)  = NULL
+  ,@ModuleInstanceId                  INT             = 0
    -- Optional parameters
-  ,@CurrentRecordIndicatorColumnName VARCHAR(50)   = 'CURRENT_RECORD_INDICATOR'
-  ,@InscriptionRecordIdColumnName    VARCHAR(50)   = 'INSCRIPTION_RECORD_ID'
-  ,@ExpiryDateColumnName             VARCHAR(50)   = 'INSCRIPTION_TIMESTAMP'
-  ,@EffectiveDateColumnName          VARCHAR(50)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
-  ,@Debug                            CHAR(1)       = 'N'
+  ,@CurrentRecordIndicatorColumnName  NVARCHAR(500)   = 'CURRENT_RECORD_INDICATOR'
+  ,@InscriptionRecordIdColumnName     NVARCHAR(500)   = 'INSCRIPTION_RECORD_ID'
+  ,@ExpiryDateColumnName              NVARCHAR(500)   = 'INSCRIPTION_TIMESTAMP'
+  ,@EffectiveDateColumnName           NVARCHAR(500)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
+  ,@Debug                             CHAR(1)         = 'N'
    -- Output parameters
-  ,@SuccessIndicator                 CHAR(1)       OUTPUT
-  ,@MessageLog                       NVARCHAR(MAX) OUTPUT
+  ,@SuccessIndicator                  CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                        NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
 BEGIN

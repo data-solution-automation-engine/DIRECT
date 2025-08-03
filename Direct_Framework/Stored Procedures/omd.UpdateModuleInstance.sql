@@ -33,22 +33,22 @@ EXEC [omd].[UpdateModuleInstance]
 CREATE PROCEDURE [omd].[UpdateModuleInstance]
 (
    -- Mandatory parameters
-   @ModuleInstanceId   BIGINT
+   @ModuleInstanceId   BIGINT         = NULL
    -- Optional parameters
-  ,@EventCode          NVARCHAR(100) = 'None'
+  ,@EventCode          NVARCHAR(100)  = 'None'
   -- optional row count updates
-  ,@RowCountSelect     BIGINT   = 0
-  ,@RowCountInsert     BIGINT   = 0
-  ,@RowCountUpdated    BIGINT   = 0
-  ,@RowCountDeleted    BIGINT   = 0
-  ,@RowCountDiscarded  BIGINT   = 0
-  ,@RowCountRejected   BIGINT   = 0
+  ,@RowCountSelect     BIGINT         = 0
+  ,@RowCountInsert     BIGINT         = 0
+  ,@RowCountUpdated    BIGINT         = 0
+  ,@RowCountDeleted    BIGINT         = 0
+  ,@RowCountDiscarded  BIGINT         = 0
+  ,@RowCountRejected   BIGINT         = 0
   -- Optional parameters
-  ,@EndTimestamp       DATETIME2   = NULL
-  ,@Debug              CHAR(1)     = 'N'
+  ,@EndTimestamp       DATETIME2      = NULL
+  ,@Debug              CHAR(1)        = 'N'
    -- Output parameters
-  ,@SuccessIndicator   CHAR(1)       OUTPUT
-  ,@MessageLog         NVARCHAR(MAX) OUTPUT
+  ,@SuccessIndicator   CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog         NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

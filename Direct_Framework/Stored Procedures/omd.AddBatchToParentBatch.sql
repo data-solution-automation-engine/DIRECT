@@ -3,6 +3,7 @@
  * @description
  *   Assigns a Batch to be associated with a Parent Batch.
  *   Both Batches must already exist.
+ *   Register new Batches using [omd].[RegisterBatch].
  *
  * @package DIRECT Framework
  * @version 2.1.0
@@ -61,17 +62,17 @@ EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 
 CREATE PROCEDURE [omd].[AddBatchToParentBatch]
 (
-  /* Required parameters */
-  @BatchCode          NVARCHAR(500) = NULL,
-  @ParentBatchCode    NVARCHAR(500) = NULL,
-  /* Optional parameters with defaults */
-  @Sequence           INT           = 0,
-  @ActiveIndicator    CHAR(1)       = 'Y',
-  @Debug              CHAR(1)       = 'N',
-  @CheckDag           CHAR(1)       = 'N',
-  /* Output parameters */
-  @SuccessIndicator   CHAR(1)       = 'N' OUTPUT,
-  @MessageLog         NVARCHAR(MAX) = N'' OUTPUT
+   /* Required parameters */
+   @BatchCode           NVARCHAR(500) = NULL
+  ,@ParentBatchCode     NVARCHAR(500) = NULL
+   /* Optional parameters with defaults */
+  ,@Sequence            INT           = 0
+  ,@ActiveIndicator     CHAR(1)       = 'Y'
+  ,@Debug               CHAR(1)       = 'N'
+  ,@CheckDag            CHAR(1)       = 'N'
+   /* Output parameters */
+  ,@SuccessIndicator    CHAR(1)       = 'N' OUTPUT
+  ,@MessageLog          NVARCHAR(MAX) = N'' OUTPUT
 )
 AS
 BEGIN
@@ -107,7 +108,7 @@ BEGIN
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
         [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
       IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
-      ELSE GOTO EndOfProcedureFailure;
+      GOTO EndOfProcedureFailure;
     END;
 
     IF @ParentBatchCode IS NULL OR TRIM(@ParentBatchCode) = ''
@@ -117,7 +118,7 @@ BEGIN
       IF @ProcessMessageLog = 'Y'
         SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
       IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
-      ELSE GOTO EndOfProcedureFailure;
+      GOTO EndOfProcedureFailure;
     END;
 
     IF @Sequence IS NULL OR @Sequence < 0
@@ -125,16 +126,17 @@ BEGIN
       SET @Sequence = 0;
       IF @ProcessMessageLog = 'Y'
         SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @Sequence', N'Default value 0 applied.', @MessageLog);
-    END
-    SET @ActiveIndicator = CASE WHEN UPPER(@ActiveIndicator) = 'Y' THEN 'Y' ELSE 'N' END;
-    SET @CheckDag = CASE WHEN UPPER(@CheckDag) = 'Y' THEN 'Y' ELSE 'N' END;
+    END;
+    SET @ActiveIndicator = CASE WHEN TRIM(UPPER(@ActiveIndicator)) = 'Y' THEN 'Y' ELSE 'N' END;
+    SET @CheckDag = CASE WHEN TRIM(UPPER(@CheckDag)) = 'Y' THEN 'Y' ELSE 'N' END;
 
 /* ----- Default logging setup ---------------------------------------------- */
 
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
-    DECLARE @SpName NVARCHAR(300) = CONCAT(QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')),
-      N'.', QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
+    DECLARE @SpName NVARCHAR(300) = CONCAT(
+      QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')), N'.',
+      QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
     IF @ProcessMessageLog = 'Y'
     BEGIN
@@ -173,9 +175,9 @@ BEGIN
         SET @LogMessage = 'No Valid Batch Id was found for Batch Code ''' + @BatchCode + '''.';
         IF @ProcessMessageLog = 'Y' SET @MessageLog =
           [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
-        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-        ELSE GOTO EndOfProcedureFailure;
-      END
+        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+        GOTO EndOfProcedureFailure;
+      END;
       ELSE
       BEGIN
         SET @LogMessage = 'Batch Id ''' + CONVERT(NVARCHAR(10), @BatchId) + ''' has been retrieved for @BatchCode ''' +
@@ -189,8 +191,8 @@ BEGIN
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
         [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
       SET @SuccessIndicator = 'N';
-      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-      ELSE GOTO EndOfProcedureFailure;
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
     END CATCH;
 
     /* Find the Parent Batch Id from the Parent Batch Code */
@@ -202,9 +204,9 @@ BEGIN
         SET @LogMessage = 'No Valid Batch Id was found for @ParentBatchCode ''' + @ParentBatchCode + '''.';
         IF @ProcessMessageLog = 'Y' SET @MessageLog =
           [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
-        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-        ELSE GOTO EndOfProcedureFailure;
-      END
+        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+        GOTO EndOfProcedureFailure;
+      END;
       ELSE
       BEGIN
         SET @LogMessage = 'Parent Batch Id ''' + CONVERT(NVARCHAR(10), @ParentBatchId) +
@@ -218,11 +220,22 @@ BEGIN
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
         [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
       SET @SuccessIndicator = 'N';
-      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-      ELSE GOTO EndOfProcedureFailure;
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
     END CATCH;
 
 /* ----- Start of dag validation process ------------------------------------ */
+
+    /* Always prevent a batch from being its own parent */
+    IF @BatchId = @ParentBatchId
+    BEGIN
+      SET @LogMessage = CONCAT('A batch cannot be its own parent. ',
+        'BatchId and ParentBatchId are both: ''', @BatchId, '''.');
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END
 
     /*
       Validate the relationship DAG
@@ -261,9 +274,9 @@ BEGIN
           IF @ProcessMessageLog = 'Y' SET @MessageLog =
             [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
           DROP TABLE IF EXISTS #DagViolation;
-          IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-          ELSE GOTO EndOfProcedureFailure;
-        END
+          IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+          GOTO EndOfProcedureFailure;
+        END;
       DROP TABLE IF EXISTS #DagViolation;
       END TRY
       BEGIN CATCH
@@ -272,16 +285,16 @@ BEGIN
         IF @ProcessMessageLog = 'Y' SET @MessageLog =
           [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
         SET @SuccessIndicator = 'N';
-        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-        ELSE GOTO EndOfProcedureFailure;
-      END CATCH
+        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+        GOTO EndOfProcedureFailure;
+      END CATCH;
     END
 
 /* ----- Start of "Batch - Parent Batch" Registration ----------------------- */
 
     BEGIN TRY
       BEGIN TRANSACTION;
-
+        DECLARE @MergeActions TABLE (Action NVARCHAR(10));
         DECLARE @MergeAction NVARCHAR(10);
 
         MERGE [omd].[BATCH_HIERARCHY] AS target
@@ -297,7 +310,9 @@ BEGIN
         WHEN NOT MATCHED THEN
           INSERT ([PARENT_BATCH_ID], [BATCH_ID], [SEQUENCE], [ACTIVE_INDICATOR])
           VALUES (source.[PARENT_BATCH_ID], source.[BATCH_ID], source.[SEQUENCE], source.[ACTIVE_INDICATOR])
-        OUTPUT $action INTO @MergeAction;
+        OUTPUT $action INTO @MergeActions(Action);
+
+        SELECT TOP 1 @MergeAction = Action FROM @MergeActions;
 
         IF @MergeAction = 'INSERT'
         BEGIN
@@ -333,12 +348,14 @@ BEGIN
     BEGIN CATCH
       IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
       SET @SuccessIndicator = 'N';
+      IF COALESCE(TRIM(@MessageLog), '') = '' SET @MessageLog = N'[]';
+
       SET @LogMessage = 'Unknown Transaction Processing Error';
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
         [omd].[AddLogMessage]('ERROR', DEFAULT, 'Process Output', @LogMessage, @MessageLog);
-      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1
-      ELSE GOTO EndOfProcedureFailure;
-    END CATCH
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END CATCH;
 
 /* ----- Start of end state management -------------------------------------- */
 
@@ -390,7 +407,8 @@ BEGIN
     SET @SuccessIndicator = 'N';
     SET @ReturnCode = -2;
 
-    IF @ProcessMessageLog = 'Y' SET @MessageLog =
+    IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
+    ELSE SET @MessageLog =
       [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Parameter @SuccessIndicator',
       @SuccessIndicator, @MessageLog);
 
@@ -454,5 +472,5 @@ BEGIN
     IF @ThrowOnFailure = 'Y' THROW;
     RETURN @ReturnCode;
 
-  END CATCH
+  END CATCH;
 END;

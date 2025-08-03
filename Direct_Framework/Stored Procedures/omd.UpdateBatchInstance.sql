@@ -36,14 +36,14 @@ PRINT @BatchInstanceId;
 
 CREATE PROCEDURE [omd].[UpdateBatchInstance]
 (
-   -- Mandatory parameters
-   @BatchInstanceId        BIGINT
+   -- Required parameters
+   @BatchInstanceId        BIGINT         = NULL
    -- Optional parameters
-  ,@EventCode              NVARCHAR(100) = NULL
-  ,@Debug                  CHAR(1)       = 'N'
+  ,@EventCode              NVARCHAR(100)  = NULL
+  ,@Debug                  CHAR(1)        = 'N'
   -- Output parameters
-  ,@SuccessIndicator       CHAR(1)       OUTPUT
-  ,@MessageLog             NVARCHAR(MAX) OUTPUT
+  ,@SuccessIndicator       CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog             NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN

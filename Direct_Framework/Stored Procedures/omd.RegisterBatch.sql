@@ -1,7 +1,12 @@
-/*******************************************************************************
-[omd].[RegisterBatch]
-*****************************************************************************
-
+/**
+ * @procedure [omd].[RegisterBatch]
+ * @description
+ *   Assigns a Batch to be associated with a Parent Batch.
+ *   Both Batches must already exist.
+ *   Create new Batches using [omd].[RegisterBatch].
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
 https://github.com/data-solution-automation-engine/DIRECT
 
 DIRECT model v2.0
@@ -53,7 +58,7 @@ EXEC [omd].[RegisterBatch]
 CREATE PROCEDURE [omd].[RegisterBatch]
 (
    -- Mandatory parameters
-   @BatchCode              NVARCHAR(500)
+   @BatchCode              NVARCHAR(500)  = NULL
    -- Optional parameters
   ,@BatchType              NVARCHAR(100)  = NULL
   ,@BatchFrequency         NVARCHAR(100)  = 'On-demand'
@@ -61,9 +66,9 @@ CREATE PROCEDURE [omd].[RegisterBatch]
   ,@BatchDescription       NVARCHAR(4000) = NULL
   ,@Debug                  CHAR(1)        = 'N'
   -- Output parameters
-  ,@BatchId                INT            OUTPUT
-  ,@SuccessIndicator       CHAR(1)        OUTPUT
-  ,@MessageLog             NVARCHAR(MAX)  OUTPUT
+  ,@BatchId                INT            = NULL OUTPUT
+  ,@SuccessIndicator       CHAR(1)        = 'N' OUTPUT
+  ,@MessageLog             NVARCHAR(MAX)  = N'' OUTPUT
 )
 AS
 BEGIN
