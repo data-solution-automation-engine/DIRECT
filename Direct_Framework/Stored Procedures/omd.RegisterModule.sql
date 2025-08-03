@@ -35,7 +35,7 @@ DECLARE @ModuleId INT
 
 EXEC [omd].[RegisterModule]
   @ModuleCode = 'MyNewModule',
-  @ModuleAreaCode = 'Maintenance',
+  @ModuleAreaCode = 'MAINT',
   @Executable = 'SELECT SYSUTCDATETIME()',
   -- Optional parameters
   @ModuleDescription = 'Data logistics Example',
