@@ -47,12 +47,12 @@ controlled by these definitions.
 # FrameworkVersion: The version of the DIRECT Framework used
 $VersionFile = '.direct-version'
 if (Test-Path $VersionFile) {
-    $FrameworkVersion = Get-Content $VersionFile | Select-Object -First 1
-    $FrameworkVersion = $FrameworkVersion.Trim()
+  $FrameworkVersion = Get-Content $VersionFile | Select-Object -First 1
+  $FrameworkVersion = $FrameworkVersion.Trim()
 }
 if ([string]::IsNullOrWhiteSpace($FrameworkVersion)) {
-    Write-Error "DIRECT Framework Version not found."
-    $FrameworkVersion = "0.0.0"
+  Write-Error "DIRECT Framework Version not found."
+  $FrameworkVersion = "0.0.0"
 }
 
 # AutoPurge: If true, the script will force remove existing container/database
@@ -125,15 +125,15 @@ $DirectFrameworkDacpacFileName = "Releases.Direct_Framework/$DirectFrameworkMoni
 
 # The connection string to the system database "master"
 $MasterConnectionString =
-  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=master;User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
+"Server=$LocalAddress,${SqlServerPort};Initial Catalog=master;User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Testing Framework database
 $TestingConnectionString =
-  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=${TestingFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
+"Server=$LocalAddress,${SqlServerPort};Initial Catalog=${TestingFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # The connection string to the Direct Framework database
 $DirectConnectionString =
-  "Server=$LocalAddress,${SqlServerPort};Initial Catalog=${DirectFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
+"Server=$LocalAddress,${SqlServerPort};Initial Catalog=${DirectFrameworkDatabaseName};User Id=sa;Password=${SqlPassword};TrustServerCertificate=true;"
 
 # Nap controls, increase or decrease as needed for the current host
 $MaxAttempts = 10
@@ -142,6 +142,10 @@ $NapLength = 5 # seconds
 <# -----------------------------------------------------------------------------
 END - Define script behavior and config - change or refine as needed above.
 ============================================================================= #>
+
+# Initialize global variables for feedback messages
+$SuccessMessages = @()
+$ErrorMessages = @()
 
 # SETUP - Make sure we run in modern pwsh
 if (
@@ -153,6 +157,9 @@ if (
   Write-Info "or download the latest version of PowerShell from https://aka.ms/powershell"
   Write-Error "Exiting: this script expects PowerShell 7.5 or higher."
   Exit 1
+}
+else {
+  $SuccessMessages += "Check: Running PowerShell version: $($PSVersionTable.PSVersion.ToString())"
 }
 
 <# =============================================================================
@@ -201,7 +208,10 @@ if (-not (Get-Command podman -ErrorAction SilentlyContinue)) {
   exit 1
 }
 else {
+  $PodmanVersion = podman --version
   Write-Result "Podman seems to be installed and available."
+  Write-Host "Podman version: $PodmanVersion"
+  $SuccessMessages += "Check: Podman installed and running: $PodmanVersion"
 }
 
 # Check if a Podman machine is running
@@ -237,6 +247,7 @@ if (-not $MachineStatus) {
     Exit 1
   }
 }
+$SuccessMessages += "Check: Podman machine running"
 
 # with a machine running, check if the container (by name) already exists.
 # This script creates the container, so if it already exists we must remove it.
@@ -284,9 +295,12 @@ try {
   if ($LASTEXITCODE -ne 0 -or $ContainerId -match "Error|failed|unable") {
     Write-Error "Exiting: Podman container creation failed:`n$containerId"
     Exit 1
-  } else {
+  }
+  else {
     Write-Result "Container '$ContainerName' created successfully"
     Write-Result "Container id: '$ContainerId'"
+    $SuccessMessages += "Task: Container '$ContainerName' created with id:"
+    $SuccessMessages += "      '$ContainerId'"
   }
 }
 catch {
@@ -313,6 +327,7 @@ if (-not $ContainerUp) {
   Write-Error "Exiting: Failed to start the container. Please review."
   Exit 1
 }
+$SuccessMessages += "Check: Container is up and running."
 
 # Example command, display the container logs
 # Write-Host "Container '$containerName' logs start:" -ForegroundColor Cyan
@@ -351,6 +366,7 @@ if (-not $SqlServerStarted) {
 }
 
 Write-Success "Container and SQL Server is up and running.`nReady for deployment or usage."
+$SuccessMessages += "Check: SQL Server service is running."
 
 <# =============================================================================
 DEPLOY TESTING FRAMEWORK DACPAC
@@ -366,6 +382,10 @@ if ($AutoDeploy) {
 
   if (-not $Result) {
     Write-Error "Testing Framework DACPAC deployment failed. Please review."
+    $ErrorMessages += "Task: Testing Framework DACPAC deployment failed."
+  }
+  else {
+    $SuccessMessages += "Task: Testing Framework DACPAC deployment completed."
   }
 }
 else {
@@ -379,12 +399,16 @@ DEPLOY DIRECT FRAMEWORK DACPAC
 if ($AutoDeploy) {
   $Result = Deploy-Dacpac -DacpacPath $DirectFrameworkDacpacFileName `
     -ConnectionString $MasterConnectionString `
-    -Description "Direct Framework DACPAC (version: '${DirectFrameworkMoniker}')" `
+    -Description "DIRECT Framework DACPAC (version: '${DirectFrameworkMoniker}')" `
     -DatabaseName $DirectFrameworkDatabaseName `
     -AutoDeploy $AutoDeploy -AutoPurge $AutoPurge
 
   if (-not $Result) {
-    Write-Error "Direct Framework DACPAC deployment failed. Please review."
+    Write-Error "DIRECT Framework DACPAC deployment failed. Please review."
+    $ErrorMessages += "Task: DIRECT Framework DACPAC deployment failed."
+  }
+  else {
+    $SuccessMessages += "Task: DIRECT Framework DACPAC deployment completed."
   }
 }
 else {
@@ -405,6 +429,13 @@ if ($AutoSqlAgentScripts) {
     $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString
     if (-not $Result) {
       Write-Error "Sqlcmd script execution failed for:`n$ScriptFile"
+      $ErrorMessages += "Task: Sqlcmd script execution failed for:"
+      $ErrorMessages += "      '$ScriptFile'"
+    }
+    else {
+      Write-Result "Sqlcmd script executed successfully:`n$ScriptFile"
+      $SuccessMessages += "Task: Sqlcmd script executed successfully:"
+      $SuccessMessages += "      '$ScriptFile'"
     }
   }
 }
@@ -423,3 +454,26 @@ Write-Success "Container '$ContainerName' is deployed and ready for use.`n"
 Write-Info "Connection String to master:`n-->  $MasterConnectionString`n"
 Write-Info "Connection String to Testing Framework:`n-->  $TestingConnectionString`n"
 Write-Info "Connection String to Direct Framework:`n-->  $DirectConnectionString`n"
+
+if ($SuccessMessages.Count -eq 0 -and $ErrorMessages.Count -eq 0) {
+  Write-Info "No tasks were executed or all tasks were skipped."
+}
+if ($SuccessMessages.Count -gt 0) {
+  Write-Heading "Successful Tasks"
+  foreach ($Message in $SuccessMessages) {
+    Write-Success $Message
+  }
+}
+else {
+  Write-Info "`nNo successful tasks."
+}
+
+if ($ErrorMessages.Count -gt 0) {
+  Write-Heading "Failed Tasks"
+  foreach ($Message in $ErrorMessages) {
+    Write-Error $Message
+  }
+}
+else {
+  Write-Info "`nNo failed tasks."
+}
