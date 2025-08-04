@@ -25,14 +25,81 @@
   "workbench.colorCustomizations": {
     "editorWhitespace.foreground": "#555555"
   },
+  "commentAnchors.workspace.matchFiles": "Direct_Framework/**/*.sql",
+  "commentAnchors.tags.displayInRuler": false,
+  "commentAnchors.tags.displayInGutter": false,
+  "commentAnchors.tags.anchors": {
+    "@procedure": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@package": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@description": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@version": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@see": {
+      "scope": "hidden",
+      "highlightColor": "#9cdcfe",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@param": {
+      "scope": "hidden",
+      "highlightColor": "#9cdcfe",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@resultset": {
+      "scope": "hidden",
+      "highlightColor": "#ce9178",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@returns": {
+      "scope": "hidden",
+      "highlightColor": "#ce9178",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@lineage": {
+      "scope": "hidden",
+      "highlightColor": "#d16969",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@example": {
+      "scope": "hidden",
+      "highlightColor": "#b5cea8",
+      "isBold": true,
+      "isItalic": false
+    }
+  },
   "mssql.connections": [],
   "cSpell.words": [
+    "azurepowershell",
     "Dacpac",
     "Dacpacs",
     "FORMATMESSAGE",
     "HASHBYTES",
     "INTPR",
     "ISJSON",
+    "ISNULL",
     "LASTEXITCODE",
     "MAINT",
     "modinst",

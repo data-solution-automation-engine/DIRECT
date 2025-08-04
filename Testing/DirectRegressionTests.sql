@@ -18,8 +18,8 @@ INSERT INTO @Tests ([Active])
 SELECT TOP (20) 'Y'
 FROM sys.all_objects
 
--- filter testruns
---UPDATE @Tests SET Active = 'N' WHERE TestId IN (3,4)
+-- optionally filter testruns
+-- UPDATE @Tests SET Active = 'N' WHERE TestId NOT IN (4,5)
 
 -- capture rest results
 DECLARE @Results TABLE
@@ -92,6 +92,10 @@ SELECT * FROM [omd].[BATCH_INSTANCE] ORDER BY 1 DESC
 SELECT * FROM [omd].[BATCH] ORDER BY 1 DESC
 */
 
+/* -----------------------------------------------------------------------------
+  test fixtures/context
+----------------------------------------------------------------------------- */
+
 -- Register test module
 PRINT CONCAT('Register test Module ', @ModuleCode)
 EXEC @RC = [omd].[RegisterModule]
@@ -134,7 +138,7 @@ EXEC @RC = [omd].[AddModuleToBatch]
   ,@MessageLog        = @MessageLog OUTPUT;
 
 /*******************************************************************************
-    01 - Basic test
+  basic module execution
 *******************************************************************************/
 SET @TestCounter = @TestCounter + 1;
 SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
@@ -177,7 +181,7 @@ BEGIN
 END
 
 /*******************************************************************************
-    02 - Custom code execution test
+  module execution with custom code
 *******************************************************************************/
 SET @TestCounter = @TestCounter + 1;
 SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
@@ -202,7 +206,7 @@ BEGIN
 
   SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
   FROM omd.MODULE_INSTANCE
-  WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
 
   IF @CurrentModuleExecutionStatus = 'Succeeded' AND @SuccessIndicator = 'Y'
   BEGIN
@@ -217,11 +221,11 @@ BEGIN
 END
 
 /*******************************************************************************
-    03 - Module failure test - with THROW_ON_FAILURE = Y
+  module execution with failure and throw
 *******************************************************************************/
 SET @TestCounter = @TestCounter + 1;
 SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
-SET @CurrentTestDescription = 'module execution with failure'
+SET @CurrentTestDescription = 'module execution with failure and throw'
 INSERT INTO @Results VALUES(@TestCounter, 'N', @CurrentTestName ,@CurrentTestDescription, 'Not run')
 
 IF EXISTS (SELECT 1 FROM @Tests WHERE TestId = @TestCounter AND Active = 'Y')
@@ -229,6 +233,13 @@ BEGIN
   PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
   UPDATE @Results SET Active = 'Y', Result = 'Running' WHERE TestId = @TestCounter
 
+  -- Clean earlier module instances so they don't interfere with this test
+  -- in case it has failed elsewhere and a slot is still kept open
+  UPDATE omd.MODULE_INSTANCE
+  SET END_TIMESTAMP = SYSUTCDATETIME(), EXECUTION_STATUS_CODE = 'Aborted'
+  WHERE END_TIMESTAMP IS NULL
+
+  -- make sure setting is correct
   UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'Y' WHERE [CODE] = 'THROW_ON_FAILURE'
 
   -- get ready to catch the throw
@@ -252,7 +263,7 @@ BEGIN
 
     -- Execution Status Failed is the expected outcome.
     -- Depending on settings for throw the end result/external outcome is different
-    IF @CurrentModuleExecutionStatus = 'Failed' AND @SuccessIndicator = 'Y'
+    IF @CurrentModuleExecutionStatus = 'Failed' AND @SuccessIndicator = 'N'
     BEGIN
       PRINT '  ' + @CurrentTestName + ' - succeeded'
       UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
@@ -264,97 +275,122 @@ BEGIN
     END
   END TRY
   BEGIN CATCH
-    PRINT 'THROW CAUGHT' -- TODO: Add proper test assert on throw/raise
+    -- Throw/raise expected here, so interpret as success
+    PRINT '  ' + @CurrentTestName + ' - succeeded'
+    UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
   END CATCH
 END
 
 /*******************************************************************************
-    03 - Module failure test - with THROW_ON_FAILURE = N
+  module execution with failure and no throw
 *******************************************************************************/
+
 SET @TestCounter = @TestCounter + 1;
 SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
-SET @CurrentTestDescription = 'module execution with failure'
+SET @CurrentTestDescription = 'module execution with failure and no throw'
 INSERT INTO @Results VALUES(@TestCounter, 'N', @CurrentTestName ,@CurrentTestDescription, 'Not run')
 
 IF EXISTS (SELECT 1 FROM @Tests WHERE TestId = @TestCounter AND Active = 'Y')
 BEGIN
-  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
-  UPDATE @Results SET Active = 'Y', Result = 'Running' WHERE TestId = @TestCounter
+  BEGIN TRY
+    PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
+    UPDATE @Results SET Active = 'Y', Result = 'Running' WHERE TestId = @TestCounter
 
-  -- Test config
-  UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'N' WHERE [CODE] = 'THROW_ON_FAILURE'
+    -- Clean earlier module instances so they don't interfere with this test
+    -- in case it has failed elsewhere and a slot is still kept open
+    UPDATE omd.MODULE_INSTANCE
+    SET END_TIMESTAMP = SYSUTCDATETIME(), EXECUTION_STATUS_CODE = 'Aborted'
+    WHERE END_TIMESTAMP IS NULL
 
-  -- Run Test Code
-  EXEC @RC = [omd].[RunModule]
-     @ModuleCode        = 'MyNewModule'
-    ,@Query             = 'SELECT 1/0 AS [MyNewModule_FailedExecutionResult]'
-    ,@Debug             = @Debug
-    ,@SuccessIndicator  = @SuccessIndicator OUTPUT
-    ,@MessageLog        = @MessageLog OUTPUT
+    -- Test config
+    UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'N' WHERE [CODE] = 'THROW_ON_FAILURE'
 
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
-    FROM omd.MODULE_INSTANCE
+    -- Run Test Code
+    EXEC @RC = [omd].[RunModule]
+       @ModuleCode        = 'MyNewModule'
+      ,@Query             = 'SELECT 1/0 AS [MyNewModule_FailedExecutionResult]'
+      ,@Debug             = @Debug
+      ,@SuccessIndicator  = @SuccessIndicator OUTPUT
+      ,@MessageLog        = @MessageLog OUTPUT
 
-    SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
-    FROM omd.MODULE_INSTANCE
-    WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
+      SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+      FROM omd.MODULE_INSTANCE
 
-  PRINT @CurrentModuleExecutionStatus + ' - ' + @SuccessIndicator
+      SELECT @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
+      FROM omd.MODULE_INSTANCE
+      WHERE MODULE_INSTANCE_ID=@CurrentModuleInstanceId;
 
-  -- Execution Status Failed is the expected outcome.
-  -- Depending on settings for throw the end result/external outcome is different
-  IF @CurrentModuleExecutionStatus = 'Failed' AND @SuccessIndicator = 'Y'
-  BEGIN
-    PRINT '  ' + @CurrentTestName + ' - succeeded'
-    UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
-  END
-  ELSE
-  BEGIN
+    PRINT @CurrentModuleExecutionStatus + ' - ' + @SuccessIndicator
+
+    -- Execution Status Failed is the expected outcome.
+    -- Depending on settings for throw the end result/external outcome is different
+    IF @CurrentModuleExecutionStatus = 'Failed' AND @SuccessIndicator = 'N'
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - succeeded'
+      UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
+    END
+    ELSE
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - failed'
+      UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
+    END
+  END TRY
+  BEGIN CATCH
+    -- Throw/raise not expected here, so interpret as complete failure
     PRINT '  ' + @CurrentTestName + ' - failed'
     UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
-  END
+  END CATCH
 END
 
 -- RESET THROW to Default OOB Setting
-UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'Y' WHERE [CODE] = 'THROW_ON_FAILURE'
+UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'Y' WHERE [CODE] = 'THROW_ON_FAILURE';
 
-SELECT * FROM omd.MODULE_INSTANCE ORDER BY 1 DESC
+-- SELECT * FROM omd.MODULE_INSTANCE ORDER BY 1 DESC
 
 /*******************************************************************************
-    04 - Failure logging test
+  Failure logging test
 *******************************************************************************/
 
---IF @RunTest04 = 'Y'
---BEGIN
---  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
---  SET @TestCounter = @TestCounter + 1;
---  SET @CurrentTestDescription = 'Failure logging test'
+SET @TestCounter = @TestCounter + 1;
+SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+SET @CurrentTestDescription = 'Failure logging test'
+INSERT INTO @Results VALUES(@TestCounter, 'N', @CurrentTestName ,@CurrentTestDescription, 'Not run')
 
---  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
---  INSERT INTO @Results
---  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
+IF EXISTS (SELECT 1 FROM @Tests WHERE TestId = @TestCounter AND Active = 'Y')
+BEGIN
+  BEGIN TRY
+    PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription;
+    UPDATE @Results SET Active = 'Y', Result = 'Running' WHERE TestId = @TestCounter;
 
---  -- Check if the event log is populated.
---  -- There should be 1 error in the log now.
---  SELECT
---    @Count = COUNT(*)
---  FROM
---    omd.EVENT_LOG
---  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId
+    -- Run Test Code
+    -- N/A - This test validates that the previous test logged expected event to the event log.
 
---  -- Log Test Results
---  IF @Count = 1
---  BEGIN
---    PRINT '  ' + @CurrentTestName + ' - succeeded'
---    UPDATE @Results SET Result = 'Success' WHERE Test = @CurrentTestName
---  END
---  ELSE
---  BEGIN
---    PRINT '  ' + @CurrentTestName + ' - failed'
---    UPDATE @Results SET Result = 'Failure' WHERE Test = @CurrentTestName
---  END
---  END
---END
+    -- Collect Test results
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+    FROM omd.MODULE_INSTANCE
+
+    SELECT @Count = COUNT(*)
+    FROM [omd].[EVENT_LOG]
+    WHERE [MODULE_INSTANCE_ID] = @CurrentModuleInstanceId
+
+    -- Assert Test Results
+    IF @Count = 1
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - succeeded'
+      UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
+    END
+    ELSE
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - failed'
+      UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
+    END
+  END TRY
+  BEGIN CATCH
+    -- Throw/raise not expected here, so interpret as complete failure
+    PRINT '  UNEXPECTED CATCH - Test failure - ' + @CurrentTestName + ' - failed'
+    UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
+  END CATCH
+END
 
 --/*******************************************************************************
 --    05 - Module Abort test
