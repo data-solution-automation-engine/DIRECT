@@ -3,8 +3,8 @@ namespace IntegrationTests.StoredProcedureValueParams;
 public class OmdSetSourceControlValuesParams
 {
   // Input parameters
-  public long? ModuleInstanceId { get; set; } // not nullable in the procedure, but can be null in tests
-  public string? StartValue { get; set; } // not nullable in the procedure, but can be null in tests
+  public long? ModuleInstanceId { get; set; }
+  public string? StartValue { get; set; }
   public string? EndValue { get; set; }
   public string Debug { get; set; } = "N";
 

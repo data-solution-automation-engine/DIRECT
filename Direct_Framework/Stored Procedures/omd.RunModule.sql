@@ -322,8 +322,7 @@ BEGIN
         @EventCode        = 'Failure';
     END
 
-    IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
-    ELSE SET @MessageLog =
+    IF @ProcessMessageLog = 'Y' SET @MessageLog =
       [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Parameter @SuccessIndicator',
       @SuccessIndicator, @MessageLog);
 

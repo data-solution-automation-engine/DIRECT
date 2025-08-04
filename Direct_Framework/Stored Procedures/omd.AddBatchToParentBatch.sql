@@ -267,9 +267,9 @@ BEGIN
         BEGIN
           SET @LogMessage = CONCAT(
             'Circular relationship detected: adding BatchId ',
-            CONVERT(NVARCHAR(10), @BatchId),
+            @BatchId,
             ' under ParentBatchId ',
-            CONVERT(NVARCHAR(10), @ParentBatchId),
+            @ParentBatchId,
             ' would create a cycle.');
           IF @ProcessMessageLog = 'Y' SET @MessageLog =
             [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
