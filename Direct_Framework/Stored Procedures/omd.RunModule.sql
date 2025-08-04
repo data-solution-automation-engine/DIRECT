@@ -95,21 +95,23 @@ CREATE PROCEDURE [omd].[RunModule]
 )
 AS
 BEGIN
+  SET NOCOUNT ON;
+  SET XACT_ABORT ON;
+
+  /* standard setup and initialization */
+  SET @Debug = CASE WHEN TRIM(UPPER(@Debug)) = 'Y' THEN 'Y' ELSE 'N' END;
+  SET @SuccessIndicator = 'N';
+  SET @MessageLog = N'[]';
+  SET @ModuleInstanceId = NULL;
+  SET @ModuleInstanceStartTimestamp = NULL;
+
   BEGIN TRY
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-
-    /* standard setup and initialization */
-    SET @Debug = CASE WHEN TRIM(UPPER(@Debug)) = 'Y' THEN 'Y' ELSE 'N' END;
-    SET @SuccessIndicator = 'N';
-    SET @MessageLog = N'[]';
-    DECLARE @LogMessage NVARCHAR(2048);
-
     /* Event and return codes */
     DECLARE @ReturnCode INT = 0;
     DECLARE @EventTypeCode NVARCHAR(100) = N'2';
     DECLARE @EventDetail NVARCHAR(4000) = N'';
     DECLARE @EventReturnCode NVARCHAR(100) = N'';
+    DECLARE @LogMessage NVARCHAR(2048);
 
     /* Load framework settings */
     DECLARE @AddLogsToEventLog CHAR(1)      = [omd_metadata].[GetSettingFlag]('LOG_TO_EVENT_LOG');
@@ -120,7 +122,7 @@ BEGIN
 
 /* ----- Validate input parameters ------------------------------------------ */
 
-    IF @ModuleCode IS NULL OR TRIM(@ModuleCode) = ''
+    IF TRIM(COALESCE(@ModuleCode, '')) = ''
     BEGIN
       SET @SuccessIndicator = 'N';
       SET @LogMessage = N'Parameter @ModuleCode is required.'
@@ -189,7 +191,6 @@ BEGIN
     BEGIN
       -- If not, raise a soft error.
       SET @SuccessIndicator = 'N';
-      SET @ModuleInstanceId = NULL;
       SET @ModuleInstanceStartTimestamp = NULL;
       SET @LogMessage = N'Failed to register module instance.'
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
@@ -231,6 +232,7 @@ BEGIN
       EXEC [omd].[UpdateModuleInstance]
         @ModuleInstanceId = @ModuleInstanceId,
         @RowCountInsert   = @RowCount,
+        @RowCountSelect   = 0,
         @Debug            = @Debug,
         @EventCode        = 'Success'
 
@@ -242,8 +244,8 @@ BEGIN
       -- Nothing is done because the internal processing code is either Abort or Cancel.
       -- The process completes successfully.
       SET @SuccessIndicator = 'Y';
-      SET @ModuleInstanceId = NULL;
-      SET @ModuleInstanceStartTimestamp = NULL;
+      -- SET @ModuleInstanceId = NULL;
+      -- SET @ModuleInstanceStartTimestamp = NULL;
 
       SET @LogMessage = 'Nothing is done, the process reported Abort or Cancel.';
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog);
@@ -305,7 +307,7 @@ BEGIN
 /* ----- Common, standardized, Procedure-wrapping error handling ------------ */
 
   BEGIN CATCH
-    /* reset all return/output values except the message log */
+    /* reset relevant return/output values */
     SET @SuccessIndicator = 'N';
     SET @ReturnCode = -2;
 
@@ -319,9 +321,6 @@ BEGIN
         @Debug            = @Debug,
         @EventCode        = 'Failure';
     END
-
-    SET @ModuleInstanceId = NULL;
-    SET @ModuleInstanceStartTimestamp = NULL;
 
     IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
     ELSE SET @MessageLog =
@@ -368,7 +367,8 @@ BEGIN
     SET @EventReturnCode = ERROR_NUMBER();
 
     EXEC [omd].[InsertIntoEventLog]
-       @EventTypeCode     = @EventTypeCode
+       @ModuleInstanceId  = @ModuleInstanceId
+      ,@EventTypeCode     = @EventTypeCode
       ,@EventDetail       = @EventDetail
       ,@EventReturnCode   = @EventReturnCode;
 

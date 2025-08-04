@@ -19,7 +19,7 @@ SELECT TOP (20) 'Y'
 FROM sys.all_objects
 
 -- optionally filter testruns
--- UPDATE @Tests SET Active = 'N' WHERE TestId NOT IN (4)
+-- UPDATE @Tests SET Active = 'N' WHERE TestId NOT IN (4,5)
 
 -- capture rest results
 DECLARE @Results TABLE
@@ -343,45 +343,54 @@ BEGIN
 END
 
 -- RESET THROW to Default OOB Setting
-UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'Y' WHERE [CODE] = 'THROW_ON_FAILURE'
+UPDATE [omd_metadata].[FRAMEWORK_METADATA] SET [VALUE] = 'Y' WHERE [CODE] = 'THROW_ON_FAILURE';
 
-SELECT * FROM omd.MODULE_INSTANCE ORDER BY 1 DESC
+-- SELECT * FROM omd.MODULE_INSTANCE ORDER BY 1 DESC
 
 /*******************************************************************************
-    04 - Failure logging test
+  Failure logging test
 *******************************************************************************/
 
---IF @RunTest04 = 'Y'
---BEGIN
---  SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
---  SET @TestCounter = @TestCounter + 1;
---  SET @CurrentTestDescription = 'Failure logging test'
+SET @TestCounter = @TestCounter + 1;
+SET @CurrentTestName = CONCAT('TEST ', FORMAT(@TestCounter, '000'))
+SET @CurrentTestDescription = 'Failure logging test'
+INSERT INTO @Results VALUES(@TestCounter, 'N', @CurrentTestName ,@CurrentTestDescription, 'Not run')
 
---  PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription
---  INSERT INTO @Results
---  VALUES(@CurrentTestName ,@CurrentTestDescription ,@DefaultRunStatus)
+IF EXISTS (SELECT 1 FROM @Tests WHERE TestId = @TestCounter AND Active = 'Y')
+BEGIN
+  BEGIN TRY
+    PRINT CHAR(10) + @CurrentTestName + ' - ' + @CurrentTestDescription;
+    UPDATE @Results SET Active = 'Y', Result = 'Running' WHERE TestId = @TestCounter;
 
---  -- Check if the event log is populated.
---  -- There should be 1 error in the log now.
---  SELECT
---    @Count = COUNT(*)
---  FROM
---    omd.EVENT_LOG
---  WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId
+    -- Run Test Code
+    -- N/A - This test validates that the previous test logged expected event to the event log.
 
---  -- Log Test Results
---  IF @Count = 1
---  BEGIN
---    PRINT '  ' + @CurrentTestName + ' - succeeded'
---    UPDATE @Results SET Result = 'Success' WHERE Test = @CurrentTestName
---  END
---  ELSE
---  BEGIN
---    PRINT '  ' + @CurrentTestName + ' - failed'
---    UPDATE @Results SET Result = 'Failure' WHERE Test = @CurrentTestName
---  END
---  END
---END
+    -- Collect Test results
+    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+    FROM omd.MODULE_INSTANCE
+
+    SELECT @Count = COUNT(*)
+    FROM [omd].[EVENT_LOG]
+    WHERE [MODULE_INSTANCE_ID] = @CurrentModuleInstanceId
+
+    -- Assert Test Results
+    IF @Count = 1
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - succeeded'
+      UPDATE @Results SET Result = 'Success' WHERE TestId = @TestCounter
+    END
+    ELSE
+    BEGIN
+      PRINT '  ' + @CurrentTestName + ' - failed'
+      UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
+    END
+  END TRY
+  BEGIN CATCH
+    -- Throw/raise not expected here, so interpret as complete failure
+    PRINT '  UNEXPECTED CATCH - Test failure - ' + @CurrentTestName + ' - failed'
+    UPDATE @Results SET Result = 'Failure' WHERE TestId = @TestCounter
+  END CATCH
+END
 
 --/*******************************************************************************
 --    05 - Module Abort test
