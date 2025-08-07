@@ -19,12 +19,12 @@ DECLARE @TestId INT;
 EXEC [Testing_Framework].[ut].[RegisterTest]
   /* Mandatory */
    @TemplateId = @TemplateId
-  ,@Name = 'test-1-basic-module-execution'
+  ,@Name = 'test-2-basic-module-execution-with-customer-code'
   ,@TestObject = 'DIRECT'
   /* Test procedure */
 	,@Debug = 'Y'
   ,@TestCode = '/*
-* test-1-basic-module-execution
+* test-2-basic-module-execution-with-custom-code
 * Expected outcomes:
 * - Module execution is succesfull
 * - EXECUTION_STATUS_CODE = ''Succeeded''
@@ -50,24 +50,25 @@ BEGIN
 
 	  /* Register the module */
     EXEC [Direct_Framework].[omd].[RegisterModule]
-       @ModuleCode = ''test-1-basic-module-execution''
+       @ModuleCode = ''test-2-basic-module-execution-with-custom-code''
       ,@ModuleAreaCode = ''MAINT''
       ,@Executable = ''SELECT SYSUTCDATETIME()''
       /* Optional parameters */
-      ,@ModuleDescription = ''test-1-basic-module-execution''
+      ,@ModuleDescription = ''test-2-basic-module-execution-with-custom-code''
       ,@Debug = ''N''
       /* Output parameters */
       ,@ModuleId = @ModuleId OUTPUT;
 
     /* Execute the module */
     EXEC [Direct_Framework].[omd].[RunModule]
-       @ModuleCode = ''test-1-basic-module-execution''
+       @ModuleCode = ''test-2-basic-module-execution-with-custom-code''
+      ,@Query = ''SELECT 1 AS [ExecutionResult]''
       ,@Debug = ''N'';
 
     /* Review the outcomes */
     SELECT @ModuleInstanceId = MAX(MODULE_INSTANCE_ID)
     FROM [Direct_Framework].omd.MODULE_INSTANCE
-    WHERE MODULE_ID = (SELECT MODULE_ID FROM [Direct_Framework].omd.MODULE WHERE MODULE_CODE = ''test-1-basic-module-execution'')
+    WHERE MODULE_ID = (SELECT MODULE_ID FROM [Direct_Framework].omd.MODULE WHERE MODULE_CODE = ''test-2-basic-module-execution-with-custom-code'')
 
     /* Module execution results */
     SELECT
@@ -92,7 +93,7 @@ BEGIN
     IF @ModuleExecutionStatus = ''Succeeded'' AND
        @ModuleInternalProcessingCode = ''Proceed'' AND
        @ModuleNextRunStatus = ''Proceed'' AND
-       @ModuleExecutedCode = ''SELECT SYSUTCDATETIME()''
+       @ModuleExecutedCode = ''SELECT 1 AS [ExecutionResult]''
       BEGIN
         PRINT ''Succeeded''
       END
@@ -125,7 +126,7 @@ END'
 /* Run the test */
 
 EXEC [Testing_Framework].[ut].[RunTest]
-   @TestName = 'test-1-basic-module-execution'
+   @TestName = 'test-2-basic-module-execution-with-customer-code'
   ,@PlanId = NULL
   ,@Debug = 'Y';
 
