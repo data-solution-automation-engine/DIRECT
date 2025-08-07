@@ -63,6 +63,10 @@ $AutoPurge = $true
 # managed-instance only)
 $AutoSqlAgentScripts = $true
 
+# AutoTestingFrameworkScripts: If true, the script will run SQL for
+# testing framework tests.
+$AutoTestingFrameworkScripts = $true
+
 # AutoDeploy: If true, the script will automatically deploy Testing Framework
 # and Direct Framework DACPACs to the container
 $AutoDeploy = $true
@@ -419,6 +423,7 @@ else {
 POST-DACPAC SCRIPTING
 ----------------------------------------------------------------------------- #>
 
+# Scripts that depend on SQL Agent being available
 if ($AutoSqlAgentScripts) {
   $SqlScripts = @(
     "Direct_Framework/DeploymentScripts/3-PostDeployment/Queue_Job_Batch.sql",
@@ -441,6 +446,60 @@ if ($AutoSqlAgentScripts) {
 }
 else {
   Write-Info "AutoSqlAgentScripts is off - Skipping Agent scripts deployment."
+}
+
+# Testing framework content scripts (tests)
+if ($AutoTestingFrameworkScripts) {
+
+  Write-Host "AutoTestingFrameworkScripts is on - compiling and running tests."
+  # Refresh the test scripts
+  $CompileScript = Join-Path $PSScriptRoot '../testing/compile-tests.ps1'
+
+  if (Test-Path $CompileScript) {
+    Write-Host "Running compile-tests.ps1..."
+    & $CompileScript
+  }
+  else {
+    Write-Host "Compile-tests.ps1 not found at $CompileScript"
+  }
+
+  # Select all test scripts in the testing directory (the output from the previous step)
+  $SqlScripts = Get-ChildItem -Path "compiled-tests" -Filter "test*.sql" -File | ForEach-Object {
+    $_.FullName
+  }
+
+  foreach ($ScriptFile in $SqlScripts) {
+    $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString
+    if (-not $Result) {
+      Write-Error "Sqlcmd script execution failed for:`n$ScriptFile"
+      $ErrorMessages += "Task: Sqlcmd script execution failed for:"
+      $ErrorMessages += "      '$ScriptFile'"
+    }
+    else {
+      Write-Result "Sqlcmd script executed successfully:`n$ScriptFile"
+      $SuccessMessages += "Task: Sqlcmd script executed successfully:"
+      $SuccessMessages += "      '$ScriptFile'"
+    }
+  }
+
+  # Run a final check and spool the results to the test output
+  $outputDir = "test-output"
+  if (!(Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
+  }
+
+  $Query = "SELECT [TEST_ID], [TEST_TIMESTAMP], [RESULT] FROM [Testing_Framework].[ut].[TEST_RESULTS];"
+  $OutputPath = Join-Path $outputDir "overview-results.json"
+
+  Invoke-Sqlcmd -Query $Query -ConnectionString $MasterConnectionString |
+  ConvertTo-Json -Depth 10 | Out-File -FilePath $OutputPath -Encoding UTF8
+
+
+  Write-Host "Test overview results saved to $OutputPath"
+
+}
+else {
+  Write-Info "AutoTestingFrameworkScripts is off - testing framework scripts deployment."
 }
 
 <# =============================================================================

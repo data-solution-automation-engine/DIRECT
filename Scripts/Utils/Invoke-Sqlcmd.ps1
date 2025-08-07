@@ -16,13 +16,19 @@
 #>
 function Invoke-Sqlcmd {
   param(
-    [Parameter(Mandatory = $true)][string]$SqlPath,
+    [string]$SqlPath,
+    [string]$Query,
     [Parameter(Mandatory = $true)][string]$ConnectionString,
     [bool]$ShowResult = $true
   )
   try {
 
-    if (-not (Test-Path $SqlPath)) {
+    if (-not $SqlPath -and -not $Query) {
+      Write-Error "Returning: either -SqlPath or -Query must be provided."
+      return $false
+    }
+
+    if ($SqlPath -and -not (Test-Path $SqlPath)) {
       Write-Error "Returning: '$SqlPath' file not found"
       return $false
     }
@@ -62,7 +68,12 @@ function Invoke-Sqlcmd {
     }
 
     Write-Heading "Sqlcmd is executing a SQL script"
-    Write-Info "SQL script file:`n$SqlPath"
+    if ($SqlPath) {
+      Write-Info "SQL script file:`n$SqlPath"
+    }
+    elseif ($Query) {
+      Write-Info "Inline SQL query:`n$Query"
+    }
 
     # Map to sqlcmd parameters
     $SqlcmdArgs = @(
@@ -70,8 +81,14 @@ function Invoke-Sqlcmd {
       "-d", $Builder["Initial Catalog"]
       "-U", $Builder["User ID"]
       "-P", $Builder["Password"]
-      "-i", $SqlPath
     )
+
+    if ($Query) {
+      $SqlcmdArgs += @("-Q", $Query)
+    }
+    else {
+      $SqlcmdArgs += @("-i", $SqlPath)
+    }
 
     # Run the sqlcmd command
     $SqlcmdOutput = & sqlcmd @SqlcmdArgs
@@ -82,15 +99,17 @@ function Invoke-Sqlcmd {
       if ($SqlcmdOutput -and ($SqlcmdOutput | Where-Object { $_.Trim() -ne "" })) {
         Write-Info "Script output:`n"
         Write-Result ($SqlcmdOutput -join "`n")
-      } else {
+      }
+      else {
         Write-Info "No output was produced by the provided SQL script or sqlcmd."
       }
     }
 
     if ($LASTEXITCODE -eq 0) {
       Write-Success "`nSQL script executed successfully."
-      return $true
-    } else {
+      return $SqlcmdOutput
+    }
+    else {
       Write-Error "`nSQL script execution failed."
       return $false
     }
