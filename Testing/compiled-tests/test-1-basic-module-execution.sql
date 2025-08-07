@@ -34,10 +34,7 @@ EXEC [Testing_Framework].[ut].[RegisterTest]
 */
 
 BEGIN
-  /* Required for testing framework */
-  DECLARE
-     @TestResult CHAR(4) = ''Fail''
-    ,@TestOutput VARCHAR(MAX);
+  
 
   /* Local */
   DECLARE
@@ -119,8 +116,7 @@ BEGIN
   END CATCH
 
   SELECT @TestOutput AS [OUTPUT], @TestResult AS [RESULT]
-END
-'
+END'
 
 /* Review
   SELECT * FROM [Testing_Framework].[ut].[TEST]
