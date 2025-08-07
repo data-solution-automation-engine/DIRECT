@@ -7,15 +7,15 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 160
 trim_trailing_whitespace = true
+guidelines = 80 1px dotted DarkGreen, 120 1px dotted Purple
 
-# Make sure to not trim trailing whitespace when it might have actual meaning
-[*.{md, handlebars}]
+# Make sure to not trim trailing whitespace where it might have meaning
+[*.{md,mdx,handlebars,hbs}]
 trim_trailing_whitespace = false
 
 # Goes with the SQL formatter extensions for Visual Studio and VS Code
 # and the guidelines extensions
 [*.sql]
-guidelines = 80 dotted, 120 solid
 SqlServer.Rules.SRN0007.severity = none
 
 align_clause_bodies                                 = true
