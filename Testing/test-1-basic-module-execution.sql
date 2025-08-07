@@ -1,10 +1,11 @@
 /*
 * test-1-basic-module-execution
 * Expected outcomes:
-* - Module execution is succesfull.
+* - Module execution is succesfull
 * - EXECUTION_STATUS_CODE = 'Succeeded'
 * - INTERNAL_PROCESSING_CODE = 'Proceed'
 * - NEXT_RUN_STATUS_CODE = 'Proceed'
+* - Executed code is correctly saved in the MODULE_INSTANCE_EXECUTED_CODE table
 */
 
 BEGIN
@@ -16,10 +17,11 @@ BEGIN
   /* Local */
   DECLARE
      @Issues INT = 0
-    ,@CurrentModuleInstanceId                 INT
-    ,@CurrentModuleExecutionStatus            NVARCHAR(100)
-    ,@CurrentModuleInternalProcessingCode     NVARCHAR(100)
-    ,@CurrentModuleNextRunStatus              NVARCHAR(100)
+    ,@ModuleInstanceId                 INT
+    ,@ModuleExecutionStatus            NVARCHAR(100)
+    ,@ModuleInternalProcessingCode     NVARCHAR(100)
+    ,@ModuleNextRunStatus              NVARCHAR(100)
+    ,@ModuleExecutedCode               NVARCHAR(MAX)
 
   BEGIN TRY
     DECLARE @ModuleId INT
@@ -31,29 +33,44 @@ BEGIN
       ,@Executable = 'SELECT SYSUTCDATETIME()'
       /* Optional parameters */
       ,@ModuleDescription = 'test-1-basic-module-execution'
-      ,@Debug = 'Y'
+      ,@Debug = 'N'
       /* Output parameters */
       ,@ModuleId = @ModuleId OUTPUT;
 
     /* Execute the module */
     EXEC [Direct_Framework].[omd].[RunModule]
        @ModuleCode = 'test-1-basic-module-execution'
-      ,@Debug = 'Y';
+      ,@Debug = 'N';
 
     /* Review the outcomes */
-    SELECT @CurrentModuleInstanceId = MAX(MODULE_INSTANCE_ID)
+    SELECT @ModuleInstanceId = MAX(MODULE_INSTANCE_ID)
     FROM [Direct_Framework].omd.MODULE_INSTANCE
     WHERE MODULE_ID = (SELECT MODULE_ID FROM [Direct_Framework].omd.MODULE WHERE MODULE_CODE = 'test-1-basic-module-execution')
 
+    /* Module execution results */
     SELECT
-       @CurrentModuleExecutionStatus = EXECUTION_STATUS_CODE
-      ,@CurrentModuleInternalProcessingCode = INTERNAL_PROCESSING_CODE
-      ,@CurrentModuleNextRunStatus = NEXT_RUN_STATUS_CODE
+       @ModuleExecutionStatus = EXECUTION_STATUS_CODE
+      ,@ModuleInternalProcessingCode = INTERNAL_PROCESSING_CODE
+      ,@ModuleNextRunStatus = NEXT_RUN_STATUS_CODE
     FROM [Direct_Framework].omd.MODULE_INSTANCE
-    WHERE MODULE_INSTANCE_ID = @CurrentModuleInstanceId;
+    WHERE MODULE_INSTANCE_ID = @ModuleInstanceId;
 
-    IF @CurrentModuleExecutionStatus = 'Succeeded' AND
-       @
+    /* Check that the executed code is correctly stored */
+    SELECT
+        @ModuleExecutedCode = EXECUTED_CODE
+    FROM [Direct_Framework].omd.MODULE_INSTANCE_EXECUTED_CODE
+    WHERE [CHECKSUM] = (SELECT [CHECKSUM] FROM [Direct_Framework].omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID = @ModuleInstanceId);
+
+    /* Spool */
+        PRINT '@ModuleExecutionStatus: '+@ModuleExecutionStatus;
+        PRINT '@ModuleInternalProcessingCode: '+@ModuleInternalProcessingCode;
+        PRINT '@ModuleNextRunStatus: '+@ModuleNextRunStatus;
+        PRINT '@ModuleExecutedCode: '+@ModuleExecutedCode;
+
+    IF @ModuleExecutionStatus = 'Succeeded' AND
+       @ModuleInternalProcessingCode = 'Proceed' AND
+       @ModuleNextRunStatus = 'Proceed' AND
+       @ModuleExecutedCode = 'SELECT SYSUTCDATETIME()'
       BEGIN
         PRINT 'Succeeded'
       END

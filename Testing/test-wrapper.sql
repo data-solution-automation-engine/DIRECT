@@ -19,10 +19,11 @@ DECLARE @TestId INT;
 EXEC [Testing_Framework].[ut].[RegisterTest]
   /* Mandatory */
    @TemplateId = @TemplateId
-  ,@Name = @@TEST-NAME
+  ,@Name = <<TEST-NAME>>
+  ,@TestObject = 'DIRECT'
   /* Test procedure */
 	,@Debug = 'Y'
-  ,@TestCode = @@TEST-CODE
+  ,@TestCode = <<TEST-CODE>>
 
 /* Review
   SELECT * FROM [Testing_Framework].[ut].[TEST]
@@ -31,10 +32,11 @@ EXEC [Testing_Framework].[ut].[RegisterTest]
 /* Run the test */
 
 EXEC [Testing_Framework].[ut].[RunTest]
-   @TestName = @@TEST-NAME,
-  ,@PlanId = NULL,
+   @TestName = <<TEST-NAME>>
+  ,@PlanId = NULL
   ,@Debug = 'Y';
 
 /* Review
+SELECT * FROM [Testing_Framework].[ut].[TEST]
 SELECT * FROM [Testing_Framework].[ut].[TEST_RESULTS]
 */
