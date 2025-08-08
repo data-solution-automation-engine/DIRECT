@@ -23,7 +23,8 @@ Prerequisites:
   versions of the DIRECT Framework to be built and be available
 - For dacpac deployment, the script expects the Testing Framework dacpac
   to be available
-- local dotnet tools must be restored/installed and available
+- Local dotnet tools must be restored/installed and available
+- Relevant PowerShell modules must be installed and available
 - Modern sqlcmd must be installed and available in the PATH
 
 Disclaimer:
@@ -178,6 +179,8 @@ Load required utility functions and helpers from the Utils folder
 . "Scripts/Utils/Deploy-Dacpac.ps1"
 . "Scripts/Utils/Get-DacpacVersion.ps1"
 . "Scripts/Utils/Invoke-Sqlcmd.ps1"
+. "Scripts/Utils/ConvertTo-MarkdownTable.ps1"
+. "Scripts/Utils/Install-SqlServerModule.ps1"
 
 <# =============================================================================
 CHECK AND VALIDATE THE ENVIRONMENT, CLEAN THE TARGET CONTAINER IF NEEDED
@@ -451,25 +454,30 @@ else {
 # Testing framework content scripts (tests)
 if ($AutoTestingFrameworkScripts) {
 
-  Write-Host "AutoTestingFrameworkScripts is on - compiling and running tests."
-  # Refresh the test scripts
+  Write-Heading "AutoTestingFrameworkScripts is on - compiling and running tests."
+
+  # Recompile the test scripts
   $CompileScript = Join-Path $PSScriptRoot '../testing/compile-tests.ps1'
 
   if (Test-Path $CompileScript) {
-    Write-Host "Running compile-tests.ps1..."
+    Write-Info "Running compile-tests.ps1..."
     & $CompileScript
   }
   else {
-    Write-Host "Compile-tests.ps1 not found at $CompileScript"
+    Write-Error "Compile-tests.ps1 not found at '$CompileScript'"
   }
 
   # Select all test scripts in the testing directory (the output from the previous step)
-  $SqlScripts = Get-ChildItem -Path "compiled-tests" -Filter "test*.sql" -File | ForEach-Object {
+  $SqlScripts = Get-ChildItem -Path "Compiled_Tests" -Filter "test*.sql" -File | ForEach-Object {
     $_.FullName
   }
 
+  # Get-ChildItem -Path "Compiled_Tests" -Filter "test*.sql" -File | ForEach-Object {
+  #   Write-Host "  -- looping over test script: $($_.Name)" -ForegroundColor Magenta
+  # }
+
   foreach ($ScriptFile in $SqlScripts) {
-    $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString
+    $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString -Silent
     if (-not $Result) {
       Write-Error "Sqlcmd script execution failed for:`n$ScriptFile"
       $ErrorMessages += "Task: Sqlcmd script execution failed for:"
@@ -483,20 +491,75 @@ if ($AutoTestingFrameworkScripts) {
   }
 
   # Run a final check and spool the results to the test output
-  $outputDir = "test-output"
+  $outputDir = "TestResults"
   if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
   }
 
+  # Test results query
   $Query = "SELECT [TEST_ID], [TEST_TIMESTAMP], [RESULT] FROM [Testing_Framework].[ut].[TEST_RESULTS];"
-  $OutputPath = Join-Path $outputDir "overview-results.json"
 
-  Invoke-Sqlcmd -Query $Query -ConnectionString $MasterConnectionString |
-  ConvertTo-Json -Depth 10 | Out-File -FilePath $OutputPath -Encoding UTF8
+  # Output files for test results in different colors
+  $JsonOutputPath = Join-Path $outputDir "overview-results.json"
+  $MdOutputPath = Join-Path $outputDir "overview-results.md"
+  $TxtOutputPath = Join-Path $outputDir "overview-results.txt"
 
+  # Invoke-Sqlcmd -Query $Query -ConnectionString $MasterConnectionString |
+  # ConvertTo-Json -Depth 10 | Out-File -FilePath $OutputPath -Encoding UTF8
 
-  Write-Host "Test overview results saved to $OutputPath"
+  # Ensure SqlServer module is present and up to date (without prompts)
+  # TODO: wrap in autodeploy check on the switches
+  $moduleVersion = Install-SqlServerModule
+  if (-not $moduleVersion) {
+    Write-Error "SqlServer module not available."
+    # TODO: Skip to next leg if SqlServer module is not available
+  }
+  Write-Result "SqlServer module ready (version $moduleVersion)."
 
+  # Run direct query on database through SqlServer module
+  # Requires: Install-Module SqlServer
+  $rows = SqlServer\Invoke-Sqlcmd -ConnectionString $MasterConnectionString -Query $Query
+
+  # $rows | Format-Table -AutoSize
+
+  # Project SQL results to plain pscustomobject objects
+  $rowsClean =
+    $rows |
+    Select-Object TEST_ID, TEST_TIMESTAMP, RESULT |
+    ForEach-Object {
+      [pscustomobject]@{
+        TEST_ID        = $_.TEST_ID
+        TEST_TIMESTAMP = ([datetime]$_.TEST_TIMESTAMP)  # normalize
+        RESULT         = $_.RESULT
+      }
+    }
+
+  <# ========== JSON START ========== #>
+  if ($rowsClean -and $rowsClean.Count -gt 0) {
+    $rowsClean | ConvertTo-Json -Depth 5 | Set-Content -Path $JsonOutputPath -Encoding UTF8
+    Write-Host "Test overview results saved to $JsonOutputPath"
+  } else {
+    Set-Content -Path $JsonOutputPath -Value "[]" -Encoding UTF8
+    Write-Host "No rows returned; wrote empty JSON array to $JsonOutputPath"
+  }
+  <# ========== JSON END ========== #>
+
+  <# ========== MD START ========== #>
+  $markdown = $rowsClean | ConvertTo-MarkdownTable -Property TEST_ID, TEST_TIMESTAMP, RESULT
+  Set-Content -Path $MdOutputPath -Value $markdown -Encoding UTF8
+  <# ========== MD END ========== #>
+
+  <# ========== TXT START ========== #>
+  $rowsClean |
+    Select-Object TEST_ID,
+                  @{ Name='TEST_TIMESTAMP'; Expression = { $_.TEST_TIMESTAMP.ToString('yyyy-MM-dd HH:mm:ss') } },
+                  RESULT |
+    Format-Table -AutoSize |
+    Out-String |
+    Set-Content -Path $TxtOutputPath -Encoding UTF8
+  <# ========== TXT END ========== #>
+
+  Write-Host "Test results saved to $outputDir" -ForegroundColor Green
 }
 else {
   Write-Info "AutoTestingFrameworkScripts is off - testing framework scripts deployment."

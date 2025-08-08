@@ -1,7 +1,7 @@
 /*
-* test-2-basic-module-execution-with-custom-code
+* test-1-basic-module-execution
 * Expected outcomes:
-* - Module execution is succesfull
+* - Module execution is successful
 * - EXECUTION_STATUS_CODE = 'Succeeded'
 * - INTERNAL_PROCESSING_CODE = 'Proceed'
 * - NEXT_RUN_STATUS_CODE = 'Proceed'
@@ -28,25 +28,24 @@ BEGIN
 
 	  /* Register the module */
     EXEC [Direct_Framework].[omd].[RegisterModule]
-       @ModuleCode = 'test-2-basic-module-execution-with-custom-code'
+       @ModuleCode = 'test-1-basic-module-execution'
       ,@ModuleAreaCode = 'MAINT'
       ,@Executable = 'SELECT SYSUTCDATETIME()'
       /* Optional parameters */
-      ,@ModuleDescription = 'test-2-basic-module-execution-with-custom-code'
+      ,@ModuleDescription = 'test-1-basic-module-execution'
       ,@Debug = 'N'
       /* Output parameters */
       ,@ModuleId = @ModuleId OUTPUT;
 
     /* Execute the module */
     EXEC [Direct_Framework].[omd].[RunModule]
-       @ModuleCode = 'test-2-basic-module-execution-with-custom-code'
-      ,@Query = 'SELECT 1 AS [ExecutionResult]'
+       @ModuleCode = 'test-1-basic-module-execution'
       ,@Debug = 'N';
 
     /* Review the outcomes */
     SELECT @ModuleInstanceId = MAX(MODULE_INSTANCE_ID)
     FROM [Direct_Framework].omd.MODULE_INSTANCE
-    WHERE MODULE_ID = (SELECT MODULE_ID FROM [Direct_Framework].omd.MODULE WHERE MODULE_CODE = 'test-2-basic-module-execution-with-custom-code')
+    WHERE MODULE_ID = (SELECT MODULE_ID FROM [Direct_Framework].omd.MODULE WHERE MODULE_CODE = 'test-1-basic-module-execution')
 
     /* Module execution results */
     SELECT
@@ -71,7 +70,7 @@ BEGIN
     IF @ModuleExecutionStatus = 'Succeeded' AND
        @ModuleInternalProcessingCode = 'Proceed' AND
        @ModuleNextRunStatus = 'Proceed' AND
-       @ModuleExecutedCode = 'SELECT 1 AS [ExecutionResult]'
+       @ModuleExecutedCode = 'SELECT SYSUTCDATETIME()'
       BEGIN
         PRINT 'Succeeded'
       END

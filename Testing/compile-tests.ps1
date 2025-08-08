@@ -1,21 +1,28 @@
-# Set cwd to the testing directory.
-Set-Location -Path (Join-Path $PSScriptRoot '')
+# Set cwd to the script location, the RepoRoot/Testing directory.
+Set-Location $PSScriptRoot
 
-# Set paths
-$wrapperPath = "test-wrapper.sql"
-$testDirectory = Get-Location
-$outputDirectory = Join-Path $testDirectory "compiled-tests"
+# Set paths and locations for inputs and outputs
+$wrapperPath = Join-Path $PSScriptRoot "Templates/test-wrapper.sql"
+$testDirectory = Join-Path $PSScriptRoot "Tests"
+$outputDirectory = Join-Path $PSScriptRoot "Compiled_Tests"
 
 # Ensure output directory exists
 if (!(Test-Path $outputDirectory)) {
   New-Item -ItemType Directory -Path $outputDirectory | Out-Null
 }
 
+# Ensure wrapper file exists
+if (!(Test-Path $wrapperPath)) {
+    Write-Error "Wrapper template file '$wrapperPath' not found. Exiting."
+    Exit 1
+}
+
 # Load wrapper content
 $wrapperTemplate = Get-Content $wrapperPath -Raw
 
-# Process each test SQL file
-Get-ChildItem -Path $testDirectory -Filter "*.sql" | Where-Object { $_.Name -ne "test-wrapper.sql" } | ForEach-Object {
+# Process each test SQL file in the tests directory
+Get-ChildItem -Path $testDirectory -Filter "*.sql" |
+ForEach-Object {
   $testFile = $_
   $testName = [System.IO.Path]::GetFileNameWithoutExtension($testFile.Name)
 
@@ -52,4 +59,4 @@ Get-ChildItem -Path $testDirectory -Filter "*.sql" | Where-Object { $_.Name -ne 
   Set-Content -Path $outputPath -Value $compiledContent -Encoding UTF8
 }
 
-Write-Host "Compiled tests written to '$outputDirectory'."
+Write-Host "Compiled tests written to '$outputDirectory'." -ForegroundColor Green

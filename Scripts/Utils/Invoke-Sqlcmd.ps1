@@ -19,7 +19,8 @@ function Invoke-Sqlcmd {
     [string]$SqlPath,
     [string]$Query,
     [Parameter(Mandatory = $true)][string]$ConnectionString,
-    [bool]$ShowResult = $true
+    [bool]$ShowResult = $true,
+    [switch]$Silent # true if -Silent is added as flag to call
   )
   try {
 
@@ -67,12 +68,14 @@ function Invoke-Sqlcmd {
       return $false
     }
 
-    Write-Heading "Sqlcmd is executing a SQL script"
-    if ($SqlPath) {
-      Write-Info "SQL script file:`n$SqlPath"
-    }
-    elseif ($Query) {
-      Write-Info "Inline SQL query:`n$Query"
+    if (-not $Silent) {
+      Write-Heading "Invoking SQL script using sqlcmd"
+      if ($SqlPath) {
+        Write-Info "SQL script file:`n$SqlPath"
+      }
+      elseif ($Query) {
+        Write-Info "Inline SQL query:`n$Query"
+      }
     }
 
     # Map to sqlcmd parameters
@@ -93,20 +96,24 @@ function Invoke-Sqlcmd {
     # Run the sqlcmd command
     $SqlcmdOutput = & sqlcmd @SqlcmdArgs
 
-    Write-Heading -Heading "Sqlcmd process results"
+    if (-not $Silent) {
+      Write-Heading -Heading "Sqlcmd process results"
 
-    if ($ShowResult) {
-      if ($SqlcmdOutput -and ($SqlcmdOutput | Where-Object { $_.Trim() -ne "" })) {
-        Write-Info "Script output:`n"
-        Write-Result ($SqlcmdOutput -join "`n")
-      }
-      else {
-        Write-Info "No output was produced by the provided SQL script or sqlcmd."
+      if ($ShowResult) {
+        if ($SqlcmdOutput -and ($SqlcmdOutput | Where-Object { $_.Trim() -ne "" })) {
+          Write-Info "Script output:`n"
+          Write-Result ($SqlcmdOutput -join "`n")
+        }
+        else {
+          Write-Info "No output was produced by the provided SQL script or sqlcmd."
+        }
       }
     }
 
     if ($LASTEXITCODE -eq 0) {
-      Write-Success "`nSQL script executed successfully."
+      if (-not $Silent) {
+        Write-Success "`nSQL script executed successfully."
+      }
       return $SqlcmdOutput
     }
     else {

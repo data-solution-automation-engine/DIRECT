@@ -26,7 +26,7 @@ EXEC [Testing_Framework].[ut].[RegisterTest]
   ,@TestCode = '/*
 * test-1-basic-module-execution
 * Expected outcomes:
-* - Module execution is succesfull
+* - Module execution is successful
 * - EXECUTION_STATUS_CODE = ''Succeeded''
 * - INTERNAL_PROCESSING_CODE = ''Proceed''
 * - NEXT_RUN_STATUS_CODE = ''Proceed''
