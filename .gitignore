@@ -403,3 +403,6 @@ FodyWeavers.xsd
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# include the main Testing/TestResults files
+!Testing/TestResults/overview-results.*
