@@ -2,7 +2,11 @@
 
 This section contains the DIRECT physical model in Mermaid Entity Relationship diagram format.
 
-In various platforms, including GitHub, the diagram will be rendered automatically. Otherwise, the contents below can also be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
+In various platforms, including GitHub, the diagram will be rendered automatically.
+
+Most modern text and code editors can preview or display both markdown and mermaid, either directly or through a plugin or extension. This could be a convenient option when opening the source file, such as from a cloned repo.
+
+Otherwise, the contents below can also be rendered through mermaid [https://mermaid.js.org/](https://mermaid.js.org/) and [https://github.com/mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), using any supported method, or pasted in an online editor such as [https://www.mermaidchart.com](https://www.mermaidchart.com).
 
 ```mermaid
 ---
@@ -12,18 +16,20 @@ title: Direct Framework
 erDiagram
 
 %% All dates are SYSUTCDATETIME()
-%% Codes are NVARCHAR(100)
+%% String Keys and Codes are NVARCHAR(100) or NVARCHAR(500)
+%% Identity column/sequence identifiers are INT for reference tables
+%% Identity column/sequence identifiers are BIGINT for transactional tables
 %% Descriptions are NVARCHAR(4000)
 
 %% Processing objects
 
     BATCH {
-        BATCH_ID INT PK
-        BATCH_CODE NVARCHAR(1000) UK
-        BATCH_TYPE NVARCHAR(100)
-        FREQUENCY_CODE NVARCHAR(1000) FK
-        ACTIVE_INDICATOR CHAR(1)
-        BATCH_DESCRIPTION NVARCHAR(1000)
+        BATCH_ID            INT PK
+        BATCH_CODE          NVARCHAR(500) UK
+        BATCH_TYPE          NVARCHAR(100)
+        FREQUENCY_CODE      NVARCHAR(1000) FK
+        ACTIVE_INDICATOR    CHAR(1)
+        BATCH_DESCRIPTION   NVARCHAR(1000)
     }
 
     BATCH ||..o{ BATCH_INSTANCE : instantiates
@@ -64,9 +70,9 @@ erDiagram
     }
 
     BATCH_PARAMETER {
-        BATCH_ID INT PK
-        PARAMETER_ID INT PK
-        ACTIVE_INDICATOR CHAR(1)
+        BATCH_ID          INT PK
+        PARAMETER_ID      INT PK
+        ACTIVE_INDICATOR  CHAR(1)
     }
 
     BATCH_PARAMETER }o--|| BATCH : specifies
@@ -74,14 +80,14 @@ erDiagram
 
     MODULE {
         MODULE_ID               INT PK
-        MODULE_CODE             NVARCHAR(1000) UK
+        MODULE_CODE             NVARCHAR(500) UK
         MODULE_TYPE             NVARCHAR(100)
         DATA_OBJECT_SOURCE      NVARCHAR(1000)
         DATA_OBJECT_TARGET      NVARCHAR(1000)
         AREA_CODE               NVARCHAR(100) FK
         FREQUENCY_CODE          NVARCHAR(100) FK
         ACTIVE_INDICATOR        CHAR(1)
-        MODULE_DESCRIPTION      NVARCHAR(4000)        
+        MODULE_DESCRIPTION      NVARCHAR(4000)
         EXECUTABLE              NVARCHAR(MAX)
     }   
 
@@ -128,29 +134,29 @@ erDiagram
     EVENT_LOG }o..o{ BATCH_INSTANCE : describes
 
     PARAMETER {
-        PARAMETER_ID INT PK
-        PARAMETER_DESCRIPTION NVARCHAR(4000)
-        PARAMETER_KEY_CODE NVARCHAR(100)
-        PARAMETER_VALUE_CODE NVARCHAR(100)
-        ACTIVE_INDICATOR CHAR(1)
+        PARAMETER_ID            INT PK
+        PARAMETER_DESCRIPTION   NVARCHAR(4000)
+        PARAMETER_KEY_CODE      NVARCHAR(100)
+        PARAMETER_VALUE_CODE    NVARCHAR(100)
+        ACTIVE_INDICATOR        CHAR(1)
     }
 
     MODULE_PARAMETER {
-        MODULE_ID INT PK
-        PARAMETER_ID INT PK
-        ACTIVE_INDICATOR CHAR(1)
+        MODULE_ID         INT PK
+        PARAMETER_ID      INT PK
+        ACTIVE_INDICATOR  CHAR(1)
     }
 
     MODULE_PARAMETER }o--|| MODULE : specifies
     MODULE_PARAMETER }o--|| PARAMETER : specifies
 
     SOURCE_CONTROL {
-        MODULE_SOURCE_CONTROL_ID BIGINT PK
-        MODULE_ID   INT FK
-        MODULE_INSTANCE_ID BIGINT FK
-        INSERT_TIMESTAMP DATETIME2
-        START_VALUE DATETIME2
-        END_VALUE DATETIME2
+        SOURCE_CONTROL_ID   BIGINT PK
+        MODULE_ID           INT FK
+        MODULE_INSTANCE_ID  BIGINT FK
+        INSERT_TIMESTAMP    DATETIME2
+        START_VALUE         DATETIME2
+        END_VALUE           DATETIME2
     }
 
     SOURCE_CONTROL }o--|| MODULE : specifies
@@ -168,15 +174,15 @@ erDiagram
     AREA ||..|{ MODULE : contains
 
     EVENT_TYPE {
-        EVENT_TYPE_CODE                 NVARCHAR(100) PK
+        EVENT_TYPE_CODE            NVARCHAR(100) PK
         EVENT_TYPE_DESCRIPTION     NVARCHAR(4000)
     }
 
     EVENT_TYPE ||..|{ EVENT_LOG : states
 
     EXECUTION_STATUS {
-        EXECUTION_STATUS_CODE NVARCHAR(100) PK
-        EXECUTION_STATUS_DESCRIPTION NVARCHAR(4000)
+        EXECUTION_STATUS_CODE         NVARCHAR(100) PK
+        EXECUTION_STATUS_DESCRIPTION  NVARCHAR(4000)
     }
 
     EXECUTION_STATUS ||..|{ MODULE_INSTANCE : states
@@ -199,22 +205,22 @@ erDiagram
     FREQUENCY ||..|{ BATCH : specifies
 
     INTERNAL_PROCESSING_STATUS {
-        INTERNAL_PROCESSING_STATUS_CODE NVARCHAR(100) PK
-        INTERNAL_PROCESSING_STATUS_DESCRIPTION NVARCHAR(4000)
+        INTERNAL_PROCESSING_STATUS_CODE         NVARCHAR(100) PK
+        INTERNAL_PROCESSING_STATUS_DESCRIPTION  NVARCHAR(4000)
     }
 
     INTERNAL_PROCESSING_STATUS ||..|{ MODULE_INSTANCE : monitors
     INTERNAL_PROCESSING_STATUS ||..|{ BATCH_INSTANCE : monitors
 
     LAYER {
-        LAYER_CODE NVARCHAR(100) PK
-        LAYER_DESCRIPTION NVARCHAR(4000)
+        LAYER_CODE          NVARCHAR(100) PK
+        LAYER_DESCRIPTION   NVARCHAR(4000)
     }
 
     LAYER ||..|{ AREA : contains
 
     NEXT_RUN_STATUS {
-        NEXT_RUN_STATUS_CODE NVARCHAR(100) PK
+        NEXT_RUN_STATUS_CODE        NVARCHAR(100) PK
         NEXT_RUN_STATUS_DESCRIPTION NVARCHAR(4000)
     }
 
