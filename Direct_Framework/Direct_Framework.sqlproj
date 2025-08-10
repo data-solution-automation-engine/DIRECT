@@ -37,39 +37,31 @@
     <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Build Remove="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-vNext.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <!-- Dacpac internal pre and post-deployments -->
     <PreDeploy Include="DeploymentScripts\2-PreDeployment\Script.PreDeployment.sql" />
     <PostDeploy Include="DeploymentScripts\3-PostDeployment\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <!-- Pre-deployment migration scripts -->
-    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-vNext.sql">
+    <!-- Pre-deployment migration scripts, exclude from build, copy to output -->
+    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DeploymentScripts\1-PreDacpacDeployment\PreDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-2.0.0.0.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-1.9.2.0.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\Migration-1.9.1.0.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <!-- Post-deployment maintenance scripts -->
+    <!-- Post-deployment maintenance scripts, exclude from build, copy to output -->
     <None Include="DeploymentScripts\4-PostDacpacDeployment\PostDacpacDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <!-- auxiliary files and scripts not part of dacpac database package -->
+    <!--
+      auxiliary files and scripts not "compiled"/built into dacpac database package
+      make sure all files not intended to be built into dacpac are managed as
+      none, or as pre/post deployment scripts or as build none copy to output etc
+    -->
     <None Include="StaticCodeAnalysis.SuppressMessages.xml" />
     <None Include="BuildScripts\PostBuild.cmd" />
     <None Include="BuildScripts\PostBuild.ps1" />
@@ -94,27 +86,6 @@
     <None Include="DeploymentScripts\3-PostDeployment\Queue_Job_Module.sql" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
-    <Folder Include="BuildScripts\" />
-    <Folder Include="DeploymentScripts\" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\" />
-    <Folder Include="DeploymentScripts\1-PreDacpacDeployment\Migrations\" />
-    <Folder Include="DeploymentScripts\2-PreDeployment\" />
-    <Folder Include="DeploymentScripts\3-PostDeployment\" />
-    <Folder Include="DeploymentScripts\4-PostDacpacDeployment\" />
-    <Folder Include="Functions\" />
-    <Folder Include="Schemas\" />
-    <Folder Include="Stored Procedures\" />
-    <Folder Include="Tables\" />
-    <Folder Include="Views\" />
-  </ItemGroup> -->
-  <!-- <ItemGroup>
-    <Build Include="Functions/*" />
-    <Build Include="Schemas/*" />
-    <Build Include="Stored Procedures/*" />
-    <Build Include="Tables/*" />
-    <Build Include="Views/*" />
-  </ItemGroup> -->
   <Target Name="RunPreBuild" BeforeTargets="Build">
     <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot; $(Configuration)" />
   </Target>
@@ -145,6 +116,7 @@
     </PackageReference>
     </ItemGroup>
       <PropertyGroup>
+    <!-- Remove once we're on stable dotnet10, until next lts release preview -->
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 </Project>

@@ -33,7 +33,7 @@ try {
     # Change active folder to the reference project
     Set-Location "$PSScriptRoot\..\DeploymentScripts\1-PreDacpacDeployment"
 
-    # Target server and Database *NOT* parameterised here...
+    # Target server and Database *NOT* parameterized here...
     Get-Location | Write-Host
     sqlcmd -S . -d DIRECT_Framework -E -Q "SELECT @@VERSION;"
     sqlcmd -S . -d DIRECT_Framework -E -i PreDacpacDeployment.sql
