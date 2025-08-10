@@ -7,17 +7,22 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 160
 trim_trailing_whitespace = true
+# Use Guidelines extension for guidelines
 guidelines = 80 1px dotted DarkGreen, 120 1px dotted Purple
 
 # Make sure to not trim trailing whitespace where it might have meaning
 [*.{md,mdx,handlebars,hbs}]
 trim_trailing_whitespace = false
 
-# Goes with the SQL formatter extensions for Visual Studio and VS Code
-# and the guidelines extensions
 [*.sql]
 SqlServer.Rules.SRN0007.severity = none
 
+# Formatting rules goes with the SQL formatter extension for Visual Studio
+# https://marketplace.visualstudio.com/items?itemName=MadsKristensen.SqlFormatter
+# https://github.com/madskristensen/SqlFormatter
+# Automatic formatting of DIRECT Framework is (currently) not employed
+# due to the current quality of formatting output. Awaiting improvements from the
+# SqlScriptDom evolution to enable more formatter options
 align_clause_bodies                                 = true
 align_column_definition_fields                      = true
 align_set_clause_item                               = true
