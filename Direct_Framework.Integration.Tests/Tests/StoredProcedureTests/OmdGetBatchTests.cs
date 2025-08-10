@@ -1,11 +1,21 @@
 using IntegrationTests.Infrastructure;
 
-namespace IntegrationTests.StoredProcedureTests;
+namespace IntegrationTests.Tests.StoredProcedureTests;
 
 [TestClass]
-public class OrderProcedureTests
+public class OmdGetBatchTests : BaseTestContainer
 {
-  private string ConnectionString => SqlServerContainerManager.ConnectionString;
+  [TestInitialize]
+  public async Task TestInitialize()
+  {
+    await ContainerManager.InitializeAsync();
+  }
+
+  [TestCleanup]
+  public async Task TestCleanup()
+  {
+    await ContainerManager.DisposeAsync();
+  }
 
   [ClassInitialize]
   public static async Task ClassInitialize(TestContext context)
@@ -17,9 +27,9 @@ public class OrderProcedureTests
   }
 
   [TestMethod]
-  public async Task OmdBatch_returns_y_on_success()
+  public async Task OmdBatch_ReturnsY_OnSuccess()
   {
-    using var conn = new SqlConnection(ConnectionString);
+    using var conn = new SqlConnection(ContainerManager.DirectConnectionString);
 
     var parameters = new DynamicParameters();
     parameters.Add("@BatchCode", "Default Batch");

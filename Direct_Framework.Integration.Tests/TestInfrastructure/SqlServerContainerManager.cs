@@ -1,139 +1,171 @@
+using System.Diagnostics;
+
 using DotNet.Testcontainers.Builders;
 
 using Microsoft.SqlServer.Dac;
+using Microsoft.SqlServer.Dac.Model;
 
 using Testcontainers.MsSql;
 
 namespace IntegrationTests.Infrastructure;
 
 /// <summary>
-/// Manages the lifecycle of a shared SQL Server container for integration tests
-/// Uses Podman with Microsoft SQL Server Linux images
+/// Manages the lifecycle of a test-class scoped SQL Server container for integration tests
+/// Uses Podman (as default) with Microsoft SQL Server Linux images through the `Testcontainers`
+/// and the `DotNet.Testcontainers` libraries.
 /// </summary>
-public static class SqlServerContainerManager
+public class SqlServerContainerManager
 {
-  private static MsSqlContainer? _container;
-  private static string? _connectionString;
-  private static readonly Lock _lock = new();
-  private static bool _isInitialized = false;
+  //private string? _directVersion;
+  private MsSqlContainer? _container;
+  private string? _directConnectionString;
+  private string? _masterConnectionString;
 
   /// <summary>
-  /// Gets the connection string for the shared SQL Server container
+  /// Gets the master database connection string for the SQL Server container
   /// </summary>
-  public static string ConnectionString
+  public string MasterConnectionString
   {
     get
     {
-      if (!_isInitialized)
+      if (_masterConnectionString is null)
         throw new InvalidOperationException("Container not initialized. Call InitializeAsync first.");
-      return _connectionString!;
+      return _masterConnectionString!;
     }
   }
 
   /// <summary>
-  /// Gets whether the container is initialized and ready for use
+  /// Gets the master database connection string for the SQL Server container
   /// </summary>
-  public static bool IsInitialized => _isInitialized;
+  public string DirectConnectionString
+  {
+    get
+    {
+      if (_directConnectionString is null)
+        throw new InvalidOperationException("Container not initialized. Call InitializeAsync first.");
+      return _directConnectionString!;
+    }
+  }
 
   /// <summary>
   /// Initializes the SQL Server container and deploys the database schema
   /// This method is thread-safe and can be called multiple times
   /// </summary>
-  public static async Task InitializeAsync()
+  public async Task InitializeAsync(string? version = "next")
   {
-    if (_isInitialized) return;
+    version = string.IsNullOrWhiteSpace(version) | version != "current" ? "next" : "current";
 
-    lock (_lock)
-    {
-      if (_isInitialized) return;
+    // Create the container for Linux SQL Server
+    _container = new MsSqlBuilder()
+        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+        .WithPassword("P@ssword123!")
+        .WithEnvironment("ACCEPT_EULA", "Y")
+        .WithEnvironment("MSSQL_SA_PASSWORD", "P@ssword123!")
+        .WithPortBinding(0, 1433) // Random host port
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
+        .WithCleanUp(true)
+        .Build();
 
-      // Create the container for Linux SQL Server
-      _container = new MsSqlBuilder()
-          .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-          .WithPassword("P@ssword123!")
-          .WithEnvironment("ACCEPT_EULA", "Y")
-          .WithEnvironment("MSSQL_SA_PASSWORD", "P@ssword123!")
-          .WithPortBinding(0, 1433) // Random host port
-          .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
-          .WithCleanUp(true)
-          .Build();
-    }
     // Start the container
     Console.WriteLine($"Starting SQL Server Linux container with Podman");
     Console.WriteLine($"Image: {_container.Image}");
 
     await _container.StartAsync();
-    _connectionString = _container.GetConnectionString();
+    _masterConnectionString = _container.GetConnectionString();
 
     var hostPort = _container.GetMappedPublicPort(1433);
     Console.WriteLine($"SQL Server container started on host port: {hostPort}");
     Console.WriteLine($"Container ID: {_container.Id}");
-    Console.WriteLine($"Initial connection string: {_connectionString}");
+    Console.WriteLine($"Initial connection string: {_masterConnectionString}");
 
     // Wait for SQL Server to be fully ready for connections
     await WaitForSqlServerReadyAsync();
 
     // Deploy the database schema
-    await DeployDatabaseSchemaAsync("next");
+    Console.WriteLine($"Deploying DIRECT DACPAC version: '{version}'");
+    await DeployDacpacAsync(version);
 
-    // Update connection string to point to the deployed database
-    _connectionString = _connectionString.Replace("Database=master", "Database=Direct_Framework");
-    Console.WriteLine($"Updated connection string: {_connectionString}");
-
-    _isInitialized = true;
+    // also add connection string to point to Direct_Framework database
+    _directConnectionString = _masterConnectionString.Replace("Database=master", "Database=Direct_Framework");
+    Console.WriteLine($"_directConnectionString : {_directConnectionString}");
   }
 
   /// <summary>
   /// Disposes the SQL Server container
   /// </summary>
-  public static async Task DisposeAsync()
+  public async Task DisposeAsync()
   {
-    if (_container != null)
+    if (_container is not null)
     {
       await _container.DisposeAsync();
       _container = null;
-      _connectionString = null;
-      _isInitialized = false;
+      _masterConnectionString = null;
+      _directConnectionString = null;
+      Console.WriteLine("SQL Server container disposed.");
     }
   }
 
   /// <summary>
-  /// Resets the database to a clean state by redeploying the DACPAC
-  /// and resetting all tables and identities
+  /// Resets the database to a cleaner state by deleting data and
+  /// resetting all tables and identities. This will restore state
+  /// to clean as long as nothing else, like the metadata tables, has changed.
+  /// For a full reset, drop and redeploy the dacpac
   /// </summary>
-  public static async Task ResetDatabaseAsync()
+  public async Task ResetDatabaseAsync()
   {
-    if (!_isInitialized)
+    if (_container is null)
       throw new InvalidOperationException("Container not initialized.");
 
-    await DeployDatabaseSchemaAsync("next");
+    // Reset the database data
+    // delete in fk dependency order to avoid constraint violations
+    using var connection = new SqlConnection(_directConnectionString);
+    await connection.OpenAsync();
+    using var command = new SqlCommand(
+@"
+DELETE FROM omd.BATCH_HIERARCHY;
+DELETE FROM omd.SOURCE_CONTROL;
+DELETE FROM omd.EVENT_LOG;
+DELETE FROM omd.BATCH_MODULE;
+DELETE FROM omd.MODULE_INSTANCE WHERE MODULE_INSTANCE_ID <> 0;
+DELETE FROM omd.MODULE WHERE MODULE_ID <> 0;
+DELETE FROM omd.BATCH_INSTANCE WHERE BATCH_INSTANCE_ID <> 0;
+DELETE FROM omd.BATCH WHERE BATCH_ID <> 0;
+", connection);
 
-    //    --Reset the environment(for multiple runs)
-    //      DELETE FROM[omd].[BATCH_HIERARCHY]
-    //    DELETE FROM[omd].[SOURCE_CONTROL]
-    //    DELETE FROM[omd].[EVENT_LOG]
-    //    DELETE FROM[omd].[BATCH_MODULE]
-    //    DELETE FROM[omd].[MODULE_INSTANCE] WHERE[MODULE_INSTANCE_ID] <> 0
-    //DELETE FROM[omd].[MODULE] WHERE[MODULE_ID] <> 0
-    //DELETE FROM[omd].[BATCH_INSTANCE] WHERE[BATCH_INSTANCE_ID] <> 0
-    //DELETE FROM[omd].[BATCH] WHERE[BATCH_ID] <> 0
+    Console.WriteLine("Database data reset completed. (1/2)");
 
-    //-- reset identity seeds
-    //DBCC CHECKIDENT('omd.SOURCE_CONTROL', RESEED, 1);
-    //    DBCC CHECKIDENT('omd.EVENT_LOG', RESEED, 1);
-    //    DBCC CHECKIDENT('omd.MODULE_INSTANCE', RESEED, 1);
-    //    DBCC CHECKIDENT('omd.MODULE', RESEED, 1);
-    //    DBCC CHECKIDENT('omd.BATCH_INSTANCE', RESEED, 1);
-    //    DBCC CHECKIDENT('omd.BATCH', RESEED, 1);
+    // reset identity seeds for all tables with sequence identifiers
+    using var resetCommand = new SqlCommand(
+@"
+DBCC CHECKIDENT('omd.BATCH', RESEED, 1);
+DBCC CHECKIDENT('omd.BATCH_INSTANCE', RESEED, 1);
+DBCC CHECKIDENT('omd.EVENT_LOG', RESEED, 1);
+DBCC CHECKIDENT('omd.MODULE', RESEED, 1);
+DBCC CHECKIDENT('omd.MODULE_INSTANCE', RESEED, 1);
+DBCC CHECKIDENT('omd.SOURCE_CONTROL', RESEED, 1);
+", connection);
+    await resetCommand.ExecuteNonQueryAsync();
 
+    await connection.CloseAsync();
 
+    Console.WriteLine("Database identity reseeding completed. (2/2)");
   }
 
-  public static async Task PopulateDatabaseAsync()
+  /// <summary>
+  /// Populate the DIRECT database with sample data for testing purposes.
+  /// Population can be done in 2 main ways, by table row insertion, and
+  /// by running the corresponding stored procedure.
+  /// as we might be testing changes in stored procedures, this process uses
+  /// direct inserts instead. This might show some additional scenarios with
+  /// improvement potential
+  /// </summary>
+  /// <exception cref="InvalidOperationException"></exception>
+  public async Task PopulateDatabaseAsync()
   {
     // add some initial data to the database
-    if (!_isInitialized)
+    if (_container is null)
       throw new InvalidOperationException("Container not initialized.");
+
     int moduleId;
     int batchId;
     int moduleInstanceId;
@@ -148,7 +180,7 @@ public static class SqlServerContainerManager
       BatchDescription = "Example batch for ingestion",
     };
     // insert the batch into the database
-    using var connection = new SqlConnection(_connectionString);
+    using var connection = new SqlConnection(_directConnectionString);
     await connection.OpenAsync();
     using var command = new SqlCommand(
         @"INSERT INTO omd.BATCH (BATCH_CODE, BATCH_TYPE, FREQUENCY_CODE, ACTIVE_INDICATOR, BATCH_DESCRIPTION)
@@ -258,8 +290,11 @@ public static class SqlServerContainerManager
     Console.WriteLine($"Inserted module instance with id: {moduleInstanceId}");
   }
 
-  private static async Task DeployDatabaseSchemaAsync(string version = "next")
+  private async Task DeployDacpacAsync(string version, bool dropExistingDb = true)
   {
+    if (_container is null)
+      throw new InvalidOperationException("Container not initialized.");
+
     var dacpacPath = FindDacpacPath(version);
 
     if (!File.Exists(dacpacPath))
@@ -269,8 +304,19 @@ public static class SqlServerContainerManager
           "Ensure the Direct_Framework project is built before running tests.");
     }
 
+    // If dropExisting is true, we will drop the existing database
+    if (dropExistingDb)
+    {
+      Console.WriteLine("Dropping existing Direct_Framework database...");
+      using var connection = new SqlConnection(_masterConnectionString);
+      await connection.OpenAsync();
+      using var command = new SqlCommand("DROP DATABASE IF EXISTS Direct_Framework", connection);
+      await command.ExecuteNonQueryAsync();
+      Console.WriteLine("Existing database dropped.");
+    }
+
     Console.WriteLine($"Deploying DACPAC '{version}' from: {dacpacPath}");
-    Console.WriteLine($"Target connection: {_connectionString}");
+    Console.WriteLine($"Target connection: {_masterConnectionString}");
 
     try
     {
@@ -278,7 +324,7 @@ public static class SqlServerContainerManager
       Console.WriteLine($"DACPAC loaded successfully: {dacpac.Name}");
       Console.WriteLine($"DACPAC version: {dacpac.Version}");
 
-      var dacServices = new DacServices(_connectionString);
+      var dacServices = new DacServices(_masterConnectionString);
 
       // Configure deployment options
       var deployOptions = new DacDeployOptions
@@ -287,7 +333,7 @@ public static class SqlServerContainerManager
         CreateNewDatabase = true,
         DropObjectsNotInSource = true,
         VerifyDeployment = true,
-        CommandTimeout = 300 // 5 minutes timeout
+        CommandTimeout = 120 // 2 minutes timeout
       };
 
       Console.WriteLine("Starting DACPAC deployment...");
@@ -308,9 +354,10 @@ public static class SqlServerContainerManager
     }
   }
 
-  private static string FindDacpacPath(string version = "next")
+  private static string FindDacpacPath(string version)
   {
-    // Get the output directory (e.g., bin\Debug\net10.0)
+    version = version == "current" ? "current" : "next";
+    // Get the cwd/output directory (e.g., bin\Debug\net10.0)
     var outputDir = AppContext.BaseDirectory;
 
     // Traverse up to the project folder
@@ -330,7 +377,7 @@ public static class SqlServerContainerManager
   /// <summary>
   /// Waits for SQL Server to be fully ready to accept connections and execute commands
   /// </summary>
-  private static async Task WaitForSqlServerReadyAsync()
+  private async Task WaitForSqlServerReadyAsync()
   {
     const int maxRetries = 30;
     const int delayMs = 5000;
@@ -339,7 +386,7 @@ public static class SqlServerContainerManager
     {
       try
       {
-        using var connection = new SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_masterConnectionString);
         await connection.OpenAsync();
 
         // Try to execute a simple query to ensure SQL Server is fully ready
@@ -366,11 +413,11 @@ public static class SqlServerContainerManager
   /// <summary>
   /// Verifies that the DACPAC deployment was successful by checking for expected schemas and objects
   /// </summary>
-  private static async Task VerifyDeploymentAsync()
+  private async Task VerifyDeploymentAsync()
   {
     try
     {
-      using var connection = new SqlConnection(_connectionString);
+      using var connection = new SqlConnection(_masterConnectionString);
       await connection.OpenAsync();
 
       // Check non-system databases
@@ -441,4 +488,42 @@ public static class SqlServerContainerManager
       Console.WriteLine($"Verification failed: {ex.Message}");
     }
   }
+
+  /// <summary>
+  /// Start external sqlcmd process to run a stand-alone SQL script file
+  /// This mimics the ci dacpac deployment pre/post-processing of the database
+  /// </summary>
+  /// <param name="scriptPath"></param>
+  /// <param name="ConnectionString"></param>
+  /// <exception cref="Exception"></exception>
+  public void RunSqlCmdScript(string scriptPath, string ConnectionString)
+  {
+    var builder = new SqlConnectionStringBuilder(ConnectionString);
+
+    var process = new Process
+    {
+      StartInfo = new ProcessStartInfo
+      {
+        FileName = "sqlcmd",
+        Arguments = $"-S {builder.DataSource} -d {builder.InitialCatalog} -U {builder.UserID} -P {builder.Password} -i \"{scriptPath}\" -b -I",
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true,
+        WorkingDirectory = Path.GetDirectoryName(scriptPath)
+      }
+    };
+
+    process.Start();
+    string output = process.StandardOutput.ReadToEnd();
+    string error = process.StandardError.ReadToEnd();
+    process.WaitForExit();
+
+    if (process.ExitCode != 0)
+    {
+      throw new Exception($"sqlcmd failed: {error}\n{output}");
+    }
+  }
+
+
 }

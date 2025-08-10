@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Path relative to directory that contains .runsettings file-->
+    <ResultsDirectory>.\TestResults</ResultsDirectory>
+  </RunConfiguration>
+
+  <MSTest>
+    <MapInconclusiveToFailed>True</MapInconclusiveToFailed>
+    <CaptureTraceOutput>false</CaptureTraceOutput>
+    <DeleteDeploymentDirectoryAfterTestRunIsComplete>False</DeleteDeploymentDirectoryAfterTestRunIsComplete>
+    <DeploymentEnabled>False</DeploymentEnabled>
+    <CaptureTraceOutput>true</CaptureTraceOutput>
+  </MSTest>
+</RunSettings>

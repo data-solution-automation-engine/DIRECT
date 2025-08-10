@@ -1,23 +1,31 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <RootNamespace>IntegrationTests</RootNamespace>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <RunSettingsFilePath>$(MSBuildProjectDirectory)\..\default.runsettings</RunSettingsFilePath>
-    <RootNamespace>IntegrationTests</RootNamespace>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)/test.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <ItemGroup>
+    <!--
+      MSTest meta package is the recommended way to reference MSTest.
+      It's equivalent to referencing:
+          Microsoft.NET.Test.Sdk
+          MSTest.TestAdapter
+          MSTest.TestFramework
+          MSTest.Analyzers
+      Starting with 3.8, it also includes:
+          Microsoft.Testing.Extensions.TrxReport
+          Microsoft.Testing.Extensions.CodeCoverage
+    -->
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Microsoft.SqlServer.DacFx" />
     <PackageReference Include="MSTest" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" />
