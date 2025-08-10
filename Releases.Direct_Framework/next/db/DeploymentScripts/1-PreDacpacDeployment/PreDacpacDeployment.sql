@@ -146,7 +146,7 @@ BEGIN
     IF @DirectVersion = '2.0.0.0'
     BEGIN
       PRINT 'Running migration 2.0.0 to version 2.1.0'
-      :r ./Migrations/Migration-vNext.sql
+      :r ./Migrations/Migration-2.1.0.0.sql
       -- Check that upgrade was successful
     END
 

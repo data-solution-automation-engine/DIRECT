@@ -85,7 +85,7 @@ BEGIN
   BEGIN
     PRINT 'Database is already at a higher version ' + @CurrentVersion
     PRINT 'this script is an older version than the current database'
-    PRINT 'Downgrading throught this script is not possible'
+    PRINT 'Downgrading through this script is not possible'
     PRINT 'Aborting pre-processing'
 
     GOTO EndOfProcedure
@@ -144,7 +144,7 @@ BEGIN
 END
 ELSE
 BEGIN
-  PRINT 'Metadata table or framerwork version function not found'
+  PRINT 'Metadata table or framework version function not found'
   PRINT 'Assume this is an incremental deploy on v1 or a non-DIRECT database'
   PRINT 'Automated upgrades from v1 currently not supported'
   PRINT 'Please add the required migration code to the GitHub repo'
