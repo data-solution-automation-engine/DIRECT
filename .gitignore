@@ -405,7 +405,7 @@ FodyWeavers.xsd
 !.vscode/extensions.json
 
 # include the main Direct Testing/TestResults files
-Testing/*
+# Testing/*
 !Testing/TestResults
 Testing/TestResults/*
 !Testing/TestResults/overview-results.*

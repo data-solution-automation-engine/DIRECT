@@ -1,0 +1,81 @@
+/* Testing Framework - DIRECT regression tests */
+
+/* Register a new test template */
+
+DECLARE @TemplateId INT;
+EXEC [Testing_Framework].[ut].[RegisterTestTemplate]
+    @TemplateName = 'DIRECT Regression Tests',
+    @TemplateNotes = 'Ensuring that DIRECT operation continues to meet expectations.',
+    @Debug = 'Y',
+    @TemplateId = @TemplateId OUTPUT;
+PRINT concat('The Test Template Id is: ', @TemplateId, '.');
+
+/*
+  Register a test for this template.
+  The test (code) must report back if the test has passed or failed.
+*/
+
+DECLARE @TestId INT;
+EXEC [Testing_Framework].[ut].[RegisterTest]
+  /* Mandatory */
+   @TemplateId = @TemplateId
+  ,@Name = 'test-14-add-batch-to-parent-batch'
+  ,@TestObject = 'DIRECT'
+  /* Test procedure */
+	,@Debug = 'Y'
+  ,@TestCode = '/*
+* test-14-add-batch-to-parent-batch
+* Expected outcomes:
+* - Framework allows and correctly adds a batch to a parent batch relationship
+* - ReturnCode/@RC is 0
+* - @SuccessIndicator OUT Parameter is ''Y''
+*/
+
+BEGIN
+  
+
+  /* Local */
+  DECLARE
+     @Issues INT = 0
+    ,@ModuleInstanceId                 BIGINT
+    ,@ModuleExecutionStatus            NVARCHAR(100)
+    ,@ModuleInternalProcessingCode     NVARCHAR(100)
+    ,@ModuleNextRunStatus              NVARCHAR(100)
+    ,@ModuleExecutedCode               NVARCHAR(MAX)
+
+  BEGIN TRY
+    -- TODO
+    SET @Issues = 1; -- issue is there is no test code yet
+
+    SET @TestOutput = CONCAT(@Issues, '' issues were found.'');
+
+    IF @Issues = 0
+    BEGIN
+      SET @TestResult = ''Pass''
+    END
+
+  END TRY
+  BEGIN CATCH
+    SET @TestOutput = ERROR_MESSAGE();
+    SET @TestResult = ''Fail''
+  END CATCH
+
+  SELECT @TestOutput AS [OUTPUT], @TestResult AS [RESULT]
+END'
+
+/* Review
+  SELECT * FROM [Testing_Framework].[ut].[TEST]
+*/
+
+/* Run the test */
+
+EXEC [Testing_Framework].[ut].[RunTest]
+   @TestName = 'test-14-add-batch-to-parent-batch'
+  ,@PlanId = NULL
+  ,@Debug = 'Y';
+
+/* Review
+SELECT * FROM [Testing_Framework].[ut].[TEST]
+SELECT * FROM [Testing_Framework].[ut].[TEST_RESULTS]
+*/
+
