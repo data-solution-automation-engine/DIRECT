@@ -1,3 +1,25 @@
+/**
+ * @view [omd_processing].[vw_QUEUE_MODULE_PROCESSING]
+ * @description Compute module processing queue order per data store, prioritizing executing modules.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - MODULE_ID: Module identifier.
+ *   - MODULE_CODE: Module code.
+ *   - END_TIMESTAMP: Last end timestamp or 0001-01-01 if none.
+ *   - QUEUE_ORDER: Order across modules by end time and execution status.
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *
+ * @example
+ * SELECT TOP 100 * FROM [omd_processing].[vw_QUEUE_MODULE_PROCESSING];
+ */
 CREATE VIEW [omd_processing].[vw_QUEUE_MODULE_PROCESSING]
 AS
 

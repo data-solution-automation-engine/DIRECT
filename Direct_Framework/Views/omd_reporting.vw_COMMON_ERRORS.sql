@@ -1,15 +1,28 @@
-/*******************************************************************************
- * [omd_reporting].[vw_COMMON_ERRORS]
- *******************************************************************************
+/**
+ * @view [omd_reporting].[vw_COMMON_ERRORS]
+ * @description Aggregate recent error messages per module to identify common errors.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @resultset Columns:
+ *   - MODULE_CODE: Module code.
+ *   - MODULE_DESCRIPTION: Module description.
+ *   - ERROR_MSG: Concatenated error message text (last month).
+ *   - ERROR_COUNT: Number of error rows aggregated per message.
  *
- * Purpose:
- *   Report on common errors in the system by aggregating error messages.
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[EVENT_LOG]
  *
- ******************************************************************************/
+ * @example
+
+SELECT TOP 100 * FROM [omd_reporting].[vw_COMMON_ERRORS];
+
+ */
 
 CREATE VIEW [omd_reporting].[vw_COMMON_ERRORS]
 AS

@@ -1,3 +1,31 @@
+/**
+ * @view [omd_reporting].[vw_EXCEPTIONS_MODULE]
+ * @description Latest module instances that did not succeed and are active.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - MODULE_CODE: Module code.
+ *   - EXECUTION_STATUS_CODE: Status code of the latest instance.
+ *   - BATCH_INSTANCE_ID: Associated batch instance id.
+ *   - BATCH_CODE: Batch code.
+ *   - MOST_RECENT_MODULE_INSTANCE_ID: Latest module instance id.
+ *   - MODULE_ID: Module id.
+ *   - START_TIMESTAMP: Start timestamp of latest instance.
+ *   - END_TIMESTAMP: End timestamp of latest instance.
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[BATCH]
+ *     table [omd].[BATCH_INSTANCE]
+ *
+ * @example
+ * SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_MODULE];
+ */
 CREATE VIEW omd_reporting.vw_EXCEPTIONS_MODULE
 
 AS

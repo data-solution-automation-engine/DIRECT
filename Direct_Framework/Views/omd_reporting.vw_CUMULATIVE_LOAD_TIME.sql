@@ -1,16 +1,26 @@
-/*******************************************************************************
- * [omd_reporting].[vw_CUMULATIVE_LOAD_TIME]
- *******************************************************************************
+/**
+ * @view [omd_reporting].[vw_CUMULATIVE_LOAD_TIME]
+ * @description Accumulated load times and row counts per module across all instances.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT Framework v2.0 reporting views
+ * @resultset Columns:
+ *   - MODULE_CODE: Module code.
+ *   - INSTANCES_RUN: Number of times the module has run.
+ *   - DURATION_SEC: Total duration in seconds across runs.
+ *   - DURATION: Human-readable duration composed from DURATION_SEC.
+ *   - ROWS_TRANSFERRED: Total rows inserted.
  *
- * Purpose:
- *   List accumulated load times for all modules.
- *   Handles if a table has been reloaded.
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
  *
- ******************************************************************************/
+ * @example
+ * SELECT TOP 100 * FROM [omd_reporting].[vw_CUMULATIVE_LOAD_TIME];
+ */
 
 CREATE VIEW [omd_reporting].[vw_CUMULATIVE_LOAD_TIME]
 AS
