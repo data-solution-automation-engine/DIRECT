@@ -24,14 +24,16 @@
  *     table [omd].[BATCH_INSTANCE]
  *
  * @example
- * SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_MODULE];
+
+SELECT TOP 100 *
+FROM [omd_reporting].[vw_EXCEPTIONS_MODULE];
+
  */
+
 CREATE VIEW omd_reporting.vw_EXCEPTIONS_MODULE
-
 AS
-
 -- Exception check Module level
-SELECT
+  SELECT
     module.MODULE_CODE,
     main.EXECUTION_STATUS_CODE,
     main.BATCH_INSTANCE_ID,

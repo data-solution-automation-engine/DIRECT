@@ -24,12 +24,13 @@
  *     table [omd].[BATCH_INSTANCE]
  *
  * @example
- * SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES];
+
+SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES];
+
  */
+
 CREATE VIEW [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES]
-
 AS
-
 -- Module level
 SELECT
   module.MODULE_CODE,

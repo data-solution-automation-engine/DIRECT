@@ -21,12 +21,13 @@
  *     table [omd].[BATCH_INSTANCE]
  *
  * @example
- * SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_NON_RUNNING_BATCHES];
+
+SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_NON_RUNNING_BATCHES];
+
  */
+
 CREATE VIEW [omd_reporting].[vw_EXCEPTIONS_NON_RUNNING_BATCHES]
-
 AS
-
 SELECT
   BATCH.BATCH_CODE,
   BATCH.BATCH_ID,
