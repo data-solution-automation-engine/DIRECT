@@ -1,45 +1,61 @@
-/*******************************************************************************
-Procedure:      [omd].[CreateLoadWindow]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Create a Load Window for a Module Instance.
-
-Inputs:
-  - Module Instance Id, the currently involved Module Instance Id
-  - Load Window Attribute Name,
-    the name of the attribute used to determine the load window
-  - Module Instance Id Column Name
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Start Value, can be datetime or identifier, datetime, whatever.
-  - End Value
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE
-  @StartValue NVARCHAR(MAX),
-  @EndValue NVARCHAR(MAX)
+/**
+ * @procedure [omd].[CreateLoadWindow]
+ * @description
+ *   Creates a new Load Window entry for a Module Instance, determining
+ *   start/end values either from inputs or from source control and source data.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}        @ModuleInstanceId             [in]  (required)
+ *   The current Module Instance Id.
+ * @param {NVARCHAR(1000)}@LoadWindowAttributeName      [in]  (optional, default='INSCRIPTION_TIMESTAMP')
+ *   Source attribute determining the load window end value.
+ * @param {NVARCHAR(1000)}@ModuleInstanceIdColumnName   [in]  (optional, default='MODULE_INSTANCE_ID')
+ *   Name of the column linking source rows to module instances.
+ * @param {CHAR(1)}       @Debug                        [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(100)} @StartValue                   [out] (optional)
+ *   Computed start value for the interval.
+ * @param {NVARCHAR(100)} @EndValue                     [out] (optional)
+ *   Computed end value for the interval.
+ * @param {CHAR(1)}       @SuccessIndicator             [out] (optional)
+ *   'Y' if successful, otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog                   [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[SOURCE_CONTROL]
+ *     function [omd].[GetModuleIdByModuleInstanceId]
+ *     function [omd].[GetModuleLoadWindowValue]
+ * - writes:
+ *     table [omd].[SOURCE_CONTROL]
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+DECLARE @StartValue NVARCHAR(100),
+        @EndValue NVARCHAR(100),
+        @SuccessIndicator CHAR(1),
+        @MessageLog NVARCHAR(MAX);
 
 EXEC [omd].[CreateLoadWindow]
-  @ModuleInstanceId = <ModuleInstanceId>,
-  @Debug = N'Y',
+  @ModuleInstanceId = 42,
+  @Debug = 'Y',
   @StartValue = @StartValue OUTPUT,
-  @EndValue = @EndValue OUTPUT
+  @EndValue = @EndValue OUTPUT,
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
 
-SELECT
-  @StartValue as N'@StartValue',
-  @EndValue as N'@EndValue'
-
-
-******************************************************************************/
+SELECT @StartValue AS [StartValue], @EndValue AS [EndValue];
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[CreateLoadWindow]
   (

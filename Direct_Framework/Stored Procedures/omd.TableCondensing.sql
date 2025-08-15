@@ -1,34 +1,50 @@
-/*******************************************************************************
- * [omd].[TableCondensing]
- *******************************************************************************
+/**
+ * @procedure [omd].[TableCondensing]
+ * @description Condense a table by removing consecutive duplicate records over a timeline using hash comparison.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {NVARCHAR(128)} @DatabaseName     [in]  (required)
+ *   Database name of the target table.
+ * @param {NVARCHAR(128)} @SchemaName       [in]  (required)
+ *   Schema name of the target table.
+ * @param {NVARCHAR(128)} @Table            [in]  (required)
+ *   Table name of the target table.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
  *
- * Purpose:
- *   Condenses tables in SQL Server by removing duplicate subsequent
- *   rows in a timeline.
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
  *
- * Inputs:
- *   - Database Name
- *   - Schema Name
- *   - Table Name
- *   - Debug Flag (Y/N, defaults to N)
+ * @resultset none
  *
- * Outputs:
- *   - Success Indicator (Y/N)
- *   - Message Log
+ * @lineage
+ * - reads:
+ *     view INFORMATION_SCHEMA.COLUMNS (from @DatabaseName)
+ *     views INFORMATION_SCHEMA.TABLE_CONSTRAINTS, KEY_COLUMN_USAGE (from @DatabaseName)
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     target table @DatabaseName.@SchemaName.@Table (DELETE via dynamic SQL)
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
  *
- * Usage:
- *
- *******************************************************************************
-
-TBA
-
- *******************************************************************************
- *
- ******************************************************************************/
+ * @example
+ * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[TableCondensing]
+ *   @DatabaseName = DB_NAME(),
+ *   @SchemaName = N'dbo',
+ *   @Table = N'MyTemporalTable',
+ *   @Debug = 'Y',
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[TableCondensing]
 (

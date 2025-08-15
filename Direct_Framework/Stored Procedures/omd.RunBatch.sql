@@ -1,45 +1,57 @@
-/*******************************************************************************
- * [omd].[RunBatch]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT model v2.0
- *
- * Purpose:
+/**
+ * @procedure [omd].[RunBatch]
+ * @description
  *   !! THIS IS AN IN-ENGINE EXECUTION PROCEDURE !!
- *   Run a Batch code in-engine
- *   It will execute a data logistics process / query in a DIRECT wrapper.
- *   in the local database context of the DIRECT database.
+ *   Execute a Batch by code within the engine, orchestrating its modules and child batches.
  *
- * Inputs:
- *   - Batch Code
- *   - Parent Batch Instance Id (in case when called by a parent batch)
- *   - Module Instance Id Column Name (to pass the alternate name of the audit trail id / module instance to child modules when using RunModule)
- *   - Debug Flag (Y/N, defaults to N)
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * Outputs:
- *   - Result - InternalProcessingStatusCode
- *   - Success Indicator (Y/N)
- *   - Message Log
+ * @param {NVARCHAR(500)} @BatchCode                  [in]  (required)
+ *   Code of the batch to execute.
+ * @param {BIGINT}        @ParentBatchInstanceId      [in]  (optional, default=0)
+ *   If called by a parent batch, the parent Batch Instance Id.
+ * @param {NVARCHAR(128)} @ModuleInstanceIdColumnName [in]  (optional, default='MODULE_INSTANCE_ID')
+ *   Column name to pass as the Module Instance Id to child modules when using RunModule.
+ * @param {CHAR(1)}       @Debug                      [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(100)} @Result                     [out] (optional)
+ *   Internal Processing Status Code: 'Success', 'Failure', 'Abort', 'Cancel', etc.
+ * @param {CHAR(1)}       @SuccessIndicator           [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog                 [out] (optional)
+ *   Structured JSON-format log for diagnostics.
  *
- * Usage:
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
  *
- *******************************************************************************
-
-DECLARE @Result NVARCHAR(10);
-EXEC [omd].[RunBatch]
-  @BatchCode = '<>',
-  @Result = @Result OUTPUT;
-PRINT @Result;
-
-or
-
-EXEC [omd].[RunBatch] @BatchCode = '<>',
-
- *******************************************************************************
+ * @resultset none
  *
- ******************************************************************************/
+ * @lineage
+ * - reads:
+ *     tables [omd].[BATCH], [omd].[BATCH_MODULE], [omd].[MODULE]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[BATCH_INSTANCE]
+ *     procedure [omd].[InsertIntoEventLog]
+ *     procedure [omd].[UpdateBatchInstance]
+ *     procedure [omd].[CreateBatchInstance]
+ *     procedure [omd].[RunModule]
+ *     procedure [omd].[RunBatch]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @Result NVARCHAR(10), @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[RunBatch]
+ *   @BatchCode = 'MyBatch',
+ *   @Result = @Result OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * PRINT @Result;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[RunBatch]
 (

@@ -1,54 +1,39 @@
-/*******************************************************************************
- * [omd].[AddLogMessage]
- *******************************************************************************
+/**
+ * @function [omd].[AddLogMessage]
+ * @description
+ *   Appends a severity/timestamp/key/message JSON entry to a JSON array log.
+ *   Ensures valid JSON and injects an error entry when malformed.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT Framework v2.1.0
+ * @param {NVARCHAR(100)} @Severity  [in] (required)
+ *   One of DEBUG, INFO, WARNING, ERROR, CRITICAL.
+ * @param {DATETIME2} @Timestamp  [in] (optional)
+ *   Defaults to current UTC time when NULL.
+ * @param {NVARCHAR(1000)} @LogMessageKey  [in] (optional)
+ *   Message category key; defaults to 'Info' when NULL/empty.
+ * @param {NVARCHAR(MAX)} @LogMessage  [in] (required)
+ *   The message to append; defaults to 'N/A' when NULL.
+ * @param {NVARCHAR(MAX)} @MessageLog  [in] (optional)
+ *   The existing JSON array log; defaults to '[]' if NULL/invalid.
  *
- * Purpose:
- *   Add a row to the Message Log, by concatenating the input message with
- *   a severity and timestamp as a JSON object in the MessageLog JSON array.
+ * @returns {NVARCHAR(MAX)} Updated JSON array log.
  *
- * Input:
- *   - Severity - valid severity values are:
- *                DEBUG, INFO, WARNING, ERROR, CRITICAL
- *   - Timestamp - Defaults to the current UTC time if not provided
- *   - Log Message Key (a key to identify the message)
- *                      Defaults to 'Info' if not provided
- *   - Log Message (the message to add to the log)
- *   - Message Log (the existing message log)
+ * @resultset none
  *
- * Returns:
- *   - An updated Message Log (with the new message appended)
+ * @lineage
+ * - reads: none
  *
- * Notes:
- *   - Any DEFAULT parameter values will be replaced in the function body.
- *   - The function will ensure that the Message Log is a valid JSON array.
- *   - If the incoming Message Log Parameter is NULL or empty or not valid JSON,
- *        it will default to an empty JSON array
- *   - If the Log Message is NULL, it will default to 'N/A'.
- *   - If the Severity is NULL or not valid, it will default to 'INFO'.
- *   - If the Timestamp is NULL, it will default to the current UTC time.
- *   - If the Log Message Key is NULL or empty, it will default to 'Info'.
- *   - The function will escape the input parameters to ensure they are valid JSON.
- *   - The function will return the updated Message Log as a JSON array.
- *   - If the new log entry is not valid JSON, it will inject an error message.
- *
- * Usage:
- *
+ * @example
 
-DECLARE @LogMessage NVARCHAR(MAX);
+DECLARE @LogMessage NVARCHAR(MAX) = N'The parsing of ''2319'' as event code failed';
 DECLARE @MessageLog NVARCHAR(MAX);
-
-SET @LogMessage = 'The parsing of ''2319'' as event code failed';
-SET @MessageLog =
-  [omd].[AddLogMessage]
-  ('WARNING', DEFAULT, N'Value Parsing', @LogMessage, @MessageLog)
-
+SET @MessageLog = [omd].[AddLogMessage]('WARNING', DEFAULT, N'Value Parsing', @LogMessage, @MessageLog);
 SELECT @MessageLog;
 
-******************************************************************************/
+ */
 
 CREATE FUNCTION [omd].[AddLogMessage]
 (

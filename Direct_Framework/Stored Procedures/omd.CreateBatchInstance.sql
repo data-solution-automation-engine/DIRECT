@@ -1,42 +1,58 @@
-/*******************************************************************************
-Procedure:      [omd].[CreateBatchInstance]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Create/Register a new Batch Instance/Execution/Run of a Batch, by Batch Code.
-
-Inputs:
-  - Batch Code, the name of the batch (from BATCH_CODE in omd.BATCH)
-  - Execution runtime Is (e.g. GUID, SPID)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Batch Instance Id
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @BatchInstanceId BIGINT
+/**
+ * @procedure [omd].[CreateBatchInstance]
+ * @description
+ *   Creates/registers a new Batch Instance (execution/run) for a Batch by its code.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)}  @BatchCode                     [in]  (required)
+ *   The Batch Code (BATCH.BATCH_CODE) for which to create an instance.
+ * @param {BIGINT}         @ParentBatchInstanceId         [in]  (optional, default=0)
+ *   Parent Batch Instance when creating hierarchical runs; 0 for none.
+ * @param {CHAR(1)}        @Debug                         [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(4000)} @ExecutionContext              [in]  (optional, default='')
+ *   Runtime context (e.g., GUID, SPID) for traceability.
+ * @param {BIGINT}         @BatchInstanceId               [out] (optional)
+ *   Newly created Batch Instance Id.
+ * @param {DATETIME2}      @BatchInstanceStartTimestamp   [out] (optional)
+ *   Start timestamp captured at creation.
+ * @param {CHAR(1)}        @SuccessIndicator              [out] (optional)
+ *   'Y' if creation succeeded, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                    [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd].[GetBatchIdByName]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[BATCH_INSTANCE]
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+DECLARE @BatchInstanceId BIGINT,
+        @BatchInstanceStartTimestamp DATETIME2,
+        @SuccessIndicator CHAR(1),
+        @MessageLog NVARCHAR(MAX);
 
 EXEC [omd].[CreateBatchInstance]
-  -- Mandatory parameters
-  @BatchCode = N'<Batch Code / Name>',
-  -- Optional parameters
+  @BatchCode = N'MyBatch',
   @Debug = 'Y',
-  @ExecutionRuntimeId = N'<GUID, SPID>',
-  -- Output parameters
-  @BatchInstanceId = @BatchInstanceId OUTPUT;
+  @ExecutionContext = N'MyContext',
+  @BatchInstanceId = @BatchInstanceId OUTPUT,
+  @BatchInstanceStartTimestamp = @BatchInstanceStartTimestamp OUTPUT,
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
 
 PRINT @BatchInstanceId;
-
- *******************************************************************************
- *
- ******************************************************************************/
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
 (

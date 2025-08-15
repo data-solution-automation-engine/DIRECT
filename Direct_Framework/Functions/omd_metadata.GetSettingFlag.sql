@@ -1,12 +1,29 @@
--- =============================================
--- Function: Get Setting Flag
--- Description: Queries the metadata table to get
--- a setting flag-type value for a given code.
--- Returns 'Y' if the stored value is 'y'/'Y' else 'N'.
--- Parameters:
---  @SettingCode NVARCHAR(100):
---    The code of the setting flag to retrieve from metadata.
--- =============================================
+/**
+ * @function [omd_metadata].[GetSettingFlag]
+ * @description
+ *   Returns a 'Y'/'N' flag from the metadata table for the given setting code.
+ *   If the stored value equals 'Y' (case-insensitive), returns 'Y'; otherwise 'N'.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(100)} @SettingCode  [in] (required)
+ *   The metadata setting code for which to retrieve a flag.
+ *
+ * @returns {CHAR(1)} 'Y' or 'N'.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd_metadata].[FRAMEWORK_METADATA]
+ *
+ * @example
+
+SELECT [omd_metadata].[GetSettingFlag](N'FEATURE_TOGGLE');
+
+ */
 
 CREATE FUNCTION [omd_metadata].[GetSettingFlag](@SettingCode NVARCHAR(100))
 RETURNS CHAR(1) AS

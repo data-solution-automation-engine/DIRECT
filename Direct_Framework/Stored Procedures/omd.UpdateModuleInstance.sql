@@ -1,34 +1,62 @@
-/*******************************************************************************
-[omd].[UpdateModuleInstance]
-*****************************************************************************
-
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Sets the various Module Instance status codes based on input events.
-
-Inputs:
-  - Module Instance Id
-  - Event Code (Process, Abort, Cancel, Rollback, Success or Failure)
-  - Row Count for SELECT
-  - Row Count for INSERT
-  - Debug flag Y/N (default to N)
-
-Outputs:
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-EXEC [omd].[UpdateModuleInstance]
-  @ModuleInstanceId = <>,
-  @EventCode = '<>'
-
-******************************************************************************/
+/**
+ * @procedure [omd].[UpdateModuleInstance]
+ * @description Set Module Instance status codes and row counts based on event inputs.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}  @ModuleInstanceId   [in]  (required)
+ *   The Module Instance identifier to update.
+ * @param {NVARCHAR(100)} @EventCode    [in]  (optional, default='None')
+ *   One of: 'Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure'.
+ * @param {BIGINT}  @RowCountSelect     [in]  (optional, default=0)
+ *   Rows read during processing.
+ * @param {BIGINT}  @RowCountInsert     [in]  (optional, default=0)
+ *   Rows inserted during processing.
+ * @param {BIGINT}  @RowCountUpdated    [in]  (optional, default=0)
+ *   Rows updated during processing.
+ * @param {BIGINT}  @RowCountDeleted    [in]  (optional, default=0)
+ *   Rows deleted during processing.
+ * @param {BIGINT}  @RowCountDiscarded  [in]  (optional, default=0)
+ *   Rows discarded during processing.
+ * @param {BIGINT}  @RowCountRejected   [in]  (optional, default=0)
+ *   Rows rejected during processing.
+ * @param {DATETIME2} @EndTimestamp     [in]  (optional)
+ *   Override end timestamp for the instance.
+ * @param {CHAR(1)} @Debug              [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)} @SuccessIndicator   [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog   [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[MODULE_INSTANCE]
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[UpdateModuleInstance]
+ *   @ModuleInstanceId = 1001,
+ *   @EventCode = 'Success',
+ *   @RowCountSelect = 100,
+ *   @RowCountInsert = 100,
+ *   @Debug = 'Y',
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[UpdateModuleInstance]
 (

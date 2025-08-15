@@ -1,51 +1,67 @@
-/*******************************************************************************
-[omd].[RegisterModule]
-*****************************************************************************
-
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Creates (registers) a new Module by name (Module Code)
-  Updates any existing Module if the checksums are different.
-
-Inputs:
-  - Module Code
-  - Module Area Code
-  - Executable
-  - Module Description
-  - Module Type
-  - Module Source DataObject
-  - Module Target DataObject
-  - Module Frequency
-  - Module Active Indicator
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Module Id (for the created module)
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @ModuleId INT
-
-EXEC [omd].[RegisterModule]
-  @ModuleCode = 'MyNewModule',
-  @ModuleAreaCode = 'MAINT',
-  @Executable = 'SELECT SYSUTCDATETIME()',
-  -- Optional parameters
-  @ModuleDescription = 'Data logistics Example',
-  @Debug = 'Y',
-  -- Output parameters
-  @ModuleId = @ModuleId OUTPUT;
-
-PRINT 'The new Modules Id is: ''' + CONVERT(NVARCHAR(10), @ModuleId) + '''.';
-
-******************************************************************************/
+/**
+ * @procedure [omd].[RegisterModule]
+ * @description Create (register) a new Module by code, or update existing attributes if changed.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)}  @ModuleCode             [in]  (required)
+ *   Unique code/name of the module.
+ * @param {NVARCHAR(100)}  @ModuleAreaCode         [in]  (required)
+ *   Area code for the module (e.g., 'MAINT', 'INT').
+ * @param {NVARCHAR(100)}  @ModuleType             [in]  (optional, default='SQL')
+ *   Type/category of the module.
+ * @param {NVARCHAR(MAX)}  @Executable             [in]  (optional, default='')
+ *   Executable SQL or procedure call for the module.
+ * @param {NVARCHAR(4000)} @ModuleDescription      [in]  (optional, default='')
+ *   Description of the module.
+ * @param {NVARCHAR(1000)} @ModuleSourceDataObject [in]  (optional, default='N/A')
+ *   Source object name.
+ * @param {NVARCHAR(1000)} @ModuleTargetDataObject [in]  (optional, default='N/A')
+ *   Target object name.
+ * @param {NVARCHAR(100)}  @ModuleFrequency        [in]  (optional, default='On-demand')
+ *   Execution frequency.
+ * @param {CHAR(1)}        @ModuleActiveIndicator  [in]  (optional, default='Y')
+ *   Whether the module is active.
+ * @param {CHAR(1)}        @Debug                  [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {INT}            @ModuleId               [out] (optional)
+ *   Identifier of the created or existing module.
+ * @param {CHAR(1)}        @SuccessIndicator       [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog             [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[MODULE]
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @ModuleId INT, @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[RegisterModule]
+ *   @ModuleCode = 'MyNewModule',
+ *   @ModuleAreaCode = 'MAINT',
+ *   @Executable = 'SELECT SYSUTCDATETIME()',
+ *   @ModuleDescription = 'Data logistics Example',
+ *   @Debug = 'Y',
+ *   @ModuleId = @ModuleId OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * PRINT CONCAT('Module Id: ', @ModuleId);
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[RegisterModule]
 (

@@ -1,3 +1,31 @@
+/**
+ * @function [omd].[GetBatchModuleActiveIndicatorValue]
+ * @description
+ *   Returns the ACTIVE_INDICATOR flag for a Batch/Module combination.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {INT} @BatchId  [in] (required)
+ *   The batch identifier.
+ * @param {INT} @ModuleId  [in] (required)
+ *   The module identifier.
+ *
+ * @returns {CHAR(1)} 'Y', 'N', or 'U' when unknown.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     [omd].[BATCH_MODULE]
+ *
+ * @example
+
+SELECT [omd].[GetBatchModuleActiveIndicatorValue](10, 20);
+
+ */
+
 CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
 (
   @BatchId INT,
@@ -5,14 +33,8 @@ CREATE FUNCTION [omd].[GetBatchModuleActiveIndicatorValue]
 )
 RETURNS CHAR(1) AS
 
--- =============================================
--- Function: Get the Batch/Module active/inactive flag.
--- Description: Retrieve the Active Indicator (flag)
---              for a Batch / Module combination.
--- =============================================
-
 BEGIN
-  -- Declare ouput variable
+  -- Declare output variable
 
   DECLARE @ActiveIndicator CHAR(1)
 

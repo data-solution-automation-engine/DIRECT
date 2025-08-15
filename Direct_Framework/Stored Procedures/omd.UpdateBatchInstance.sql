@@ -1,38 +1,46 @@
-/*******************************************************************************
-[omd].[UpdateBatchInstance]
-*****************************************************************************
-
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Update the status of a Batch Instance based on the input event code.
-
-Inputs:
-  - Batch Instance Id
-  - Event Code (Process, Abort, Cancel, Rollback, Success, or Failure)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @BatchInstanceId INT
-
-EXEC [omd].[UpdateBatchInstance]
-  @BatchInstanceId = <>,
-  @EventCode = '<>'
-  -- Output parameters
-  @BatchInstanceId = @BatchInstanceId OUTPUT;
-
-PRINT @BatchInstanceId;
-
-******************************************************************************/
+/**
+ * @procedure [omd].[UpdateBatchInstance]
+ * @description Update the status of a Batch Instance based on an input event code.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}        @BatchInstanceId  [in]  (required)
+ *   The Batch Instance identifier to update.
+ * @param {NVARCHAR(100)} @EventCode        [in]  (optional)
+ *   One of: 'Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure'.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[BATCH_INSTANCE]
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[UpdateBatchInstance]
+ *   @BatchInstanceId = 42,
+ *   @EventCode = 'Success',
+ *   @Debug = 'Y',
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[UpdateBatchInstance]
 (

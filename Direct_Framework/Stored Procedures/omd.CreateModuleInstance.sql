@@ -1,49 +1,64 @@
-/*******************************************************************************
-Procedure:      [omd].[CreateModuleInstance]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Create/Register a new Module Instance/Execution/Run of a Module,
-  by Module Code and Batch Execution Id.
-
-Inputs:
-  - Module Code, the name of the Module, as identified in the MODULE_CODE attribute in the MODULE table
-  - Query, the executable that was passed down from the Module, for reference
-  - Batch Instance Id, the Batch Instance Id, if the Module is run from a Batch
-  - Execution Context Is (e.g. GUID, SPID)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Module Instance Id
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @ModuleInstanceId BIGINT
+/**
+ * @procedure [omd].[CreateModuleInstance]
+ * @description
+ *   Creates/registers a new Module Instance (execution/run) for a Module by code,
+ *   optionally linked to a Batch Instance, and captures executed code hash.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(1000)} @ModuleCode                    [in]  (required)
+ *   Module Code as defined in [omd].[MODULE].
+ * @param {NVARCHAR(MAX)}  @Query                         [in]  (optional, default=NULL)
+ *   Executable text for reference and hashing; NULL allowed.
+ * @param {BIGINT}         @BatchInstanceId               [in]  (optional, default=0)
+ *   Parent Batch Instance Id if invoked from a Batch; 0 for none.
+ * @param {NVARCHAR(1000)} @ExecutionContext              [in]  (optional, default='')
+ *   Runtime context (e.g., GUID, SPID) for traceability.
+ * @param {CHAR(1)}        @Debug                         [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {BIGINT}         @ModuleInstanceId              [out] (optional)
+ *   Newly created Module Instance Id.
+ * @param {DATETIME2}      @ModuleInstanceStartTimestamp  [out] (optional)
+ *   Start timestamp captured at creation.
+ * @param {CHAR(1)}        @SuccessIndicator              [out] (optional)
+ *   'Y' if creation succeeded, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                    [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd].[GetModuleIdByName]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[MODULE_INSTANCE_EXECUTED_CODE]
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+DECLARE @ModuleInstanceId BIGINT,
+        @ModuleInstanceStartTimestamp DATETIME2,
+        @SuccessIndicator CHAR(1),
+        @MessageLog NVARCHAR(MAX);
 
 EXEC [omd].[CreateModuleInstance]
-  -- Mandatory parameters
-  -- The name of the Module, as identified in the MODULE_CODE attribute in the MODULE table.
-  @ModuleCode = N'<Module Code / Name>',
-  -- The query that was passed down from the Module, for reference
-  @Query = N'<Query from Module>',
-  -- The Batch Instance Id, if the Module is run from a Batch.
-  @BatchInstanceId = <Batch Instance Id>,
-  -- Optional parameters
+  @ModuleCode = N'MyModule',
+  @Query = N'SELECT 1',
+  @BatchInstanceId = 0,
+  @ExecutionContext = N'CTX-123',
   @Debug = 'Y',
-  @ExecutionRuntimeId = N'<GUID, SPID>',
-  -- Output parameters
-  @ModuleInstanceId = @ModuleInstanceId OUTPUT;
-
+  @ModuleInstanceId = @ModuleInstanceId OUTPUT,
+  @ModuleInstanceStartTimestamp = @ModuleInstanceStartTimestamp OUTPUT,
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
 
 PRINT @ModuleInstanceId;
-
-******************************************************************************/
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[CreateModuleInstance]
 (

@@ -1,41 +1,34 @@
-/*******************************************************************************
-[omd].[PrintMessageLog]
-*****************************************************************************
-
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Pretty Prints a message log
-
-Inputs:
-  - Message Log
-
-Output:
-  - Pretty Printed Log
-    (note: the output is displayed in the Messages tab/output.
-    It is not delivered to the client as a result set)
-
-Usage:
-
-*******************************************************************************
-
-DECLARE @MessageLog NVARCHAR(MAX);
-SET @MessageLog =
-  N'[{"severity":"INFO",' +
-  N'"timestamp":"2001-12-26T12:23:18",' +
-  N'"key":"Parameter Parsing",' +
-  N'"message":"Starting special parameter parsing process"},'+
-  N'{"severity":"WARNING",' +
-  N'"timestamp":"2001-12-26T12:23:19",' +
-  N'"key":"Value Parsing",' +
-  N'"message":"The parsing of ''2319'' as event code failed"}]'
-
-EXEC [omd].[PrintMessageLog]
-  @MessageLog = @MessageLog
-
-******************************************************************************/
+/**
+ * @procedure [omd].[PrintMessageLog]
+ * @description Pretty-print a structured JSON message log to the Messages output pane.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(MAX)} @MessageLog [in] (required)
+ *   JSON array of log entries with keys: severity, timestamp, key, message.
+ *
+ * @returns {VOID}
+ *
+ * @resultset none (prints to Messages output)
+ *
+ * @lineage
+ * - utilities only; no data reads/writes.
+ *
+ * @example
+ * DECLARE @MessageLog NVARCHAR(MAX);
+ * SET @MessageLog =
+ *   N'[{"severity":"INFO",' +
+ *   N'"timestamp":"2001-12-26T12:23:18",' +
+ *   N'"key":"Parameter Parsing",' +
+ *   N'"message":"Starting special parameter parsing process"},' +
+ *   N'{"severity":"WARNING",' +
+ *   N'"timestamp":"2001-12-26T12:23:19",' +
+ *   N'"key":"Value Parsing",' +
+ *   N'"message":"The parsing of ''2319'' as event code failed"}]';
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[PrintMessageLog]
 (

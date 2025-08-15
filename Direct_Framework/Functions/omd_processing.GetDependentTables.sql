@@ -1,27 +1,49 @@
+/**
+ * @function [omd_processing].[GetDependentTables]
+ * @description
+ *   Returns user tables and synonyms referenced by a given object, traversing
+ *   dependencies recursively when intermediate objects are not tables.
+ *   If the input object is itself a table/synonym, it is included.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {SYSNAME} @schema_name  [in] (required)
+ *   The schema of the object to inspect.
+ * @param {SYSNAME} @object_name  [in] (required)
+ *   The name of the object to inspect.
+ *
+ * @returns {TABLE}
+ *   referenced_schema_name sysname NOT NULL,
+ *   referenced_object_name sysname NOT NULL
+ *
+ * @resultset table
+ *
+ * @lineage
+ * - reads:
+ *     sys.sql_expression_dependencies, sys.objects, sys.tables, sys.synonyms
+ *
+ * @example
+
+SELECT * FROM [omd_processing].[GetDependentTables](N'dbo', N'MyView');
+
+ */
+
 CREATE FUNCTION [omd_processing].[GetDependentTables]
 (
   @schema_name sysname,
   @object_name sysname
 )
-
 RETURNS @rtnTbl TABLE
 (
   referenced_schema_name sysname NOT NULL,
   referenced_object_name sysname NOT NULL
 )
-
--- =============================================
--- Function:    Returns the underlying tables on which the specified object depends.
---              - If the provided object is a table, then will simply reflect that table name.
--- Description: - Works recursively where found dependencies which are not a table.
---              - As this procedure does not traverse dependencies through packages. Only local tables
---                which are accessed by the query which loads the specified target are returned.
--- =============================================
-
 AS
 
 BEGIN
------------------------------------------------------------------------------------------------------------
+
   WITH allDeps
   AS
   (
@@ -99,5 +121,5 @@ BEGIN
   WHERE synonyms.[object_id] = object_id(@schema_name + N'.' + @object_name);
 
   RETURN;
-  -----------------------------------------------------------------------------------------------------------
+
 END

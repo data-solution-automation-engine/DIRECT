@@ -1,46 +1,63 @@
-/*******************************************************************************
-Procedure:      [omd].[GetSourceControlValues]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
+/**
+ * @procedure [omd].[GetSourceControlValues]
+ * @description
+ *   Retrieves the most recent Source Control start/end values for a Module
+ *   based on a module key (instance id, id, or code), if present.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}         @ModuleInstanceId  [in]  (optional, default=NULL)
+ *   Module Instance key; takes precedence when provided.
+ * @param {INT}            @ModuleId          [in]  (optional, default=NULL)
+ *   Module Id key, used if instance id not provided.
+ * @param {NVARCHAR(1000)} @ModuleCode        [in]  (optional, default=NULL)
+ *   Module Code key, used if neither instance id nor id provided.
+ * @param {CHAR(1)}        @Debug             [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {BIGINT}         @SourceControlId   [out] (optional)
+ *   Source control record identifier (latest).
+ * @param {NVARCHAR(100)}  @StartValue        [out] (optional)
+ *   Latest start value.
+ * @param {NVARCHAR(100)}  @EndValue          [out] (optional)
+ *   Latest end value.
+ * @param {CHAR(1)}        @SuccessIndicator  [out] (optional)
+ *   'Y' if values found, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog        [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[SOURCE_CONTROL]
+ *     function [omd].[GetModuleIdByModuleInstanceId]
+ *     function [omd].[GetModuleIdByName]
+ *     function [omd_metadata].[GetTimestampString]
+ * - writes:
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+DECLARE @SourceControlId BIGINT,
+        @StartValue NVARCHAR(100),
+        @EndValue NVARCHAR(100),
+        @SuccessIndicator CHAR(1),
+        @MessageLog NVARCHAR(MAX);
 
-Purpose:
-  Get a Load Window parameter value for source control.
-
-Inputs:
-  - Module Instance Id, the currently involved Module Instance Id
-  - Load Window Attribute Name,
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Source Control Id
-  - Start Value
-  - End Value
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE
-  @SourceControlId BIGINT,
-  @StartValue NVARCHAR(100),
-  @EndValue NVARCHAR(100)
-
-EXEC [omd].[SetSourceControlValues]
-  @ModuleInstanceId = <ModuleInstanceId>,
-  @Debug = N'Y',
+EXEC [omd].[GetSourceControlValues]
+  @ModuleCode = N'MyModule',
+  @Debug = 'Y',
   @SourceControlId = @SourceControlId OUTPUT,
   @StartValue = @StartValue OUTPUT,
-  @EndValue = @EndValue OUTPUT
+  @EndValue = @EndValue OUTPUT,
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
 
-SELECT
-  @SourceControlId as N'@SourceControlId',
-  @StartValue as N'@StartValue',
-  @EndValue as N'@EndValue'
-
-******************************************************************************/
+SELECT @SourceControlId AS [SourceControlId], @StartValue AS [StartValue], @EndValue AS [EndValue];
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[GetSourceControlValues]
 (

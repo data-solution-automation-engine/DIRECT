@@ -1,44 +1,53 @@
-/*******************************************************************************
-Procedure:      [omd].[BatchEvaluation]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Checks if the provided Batch Instance is able to proceed,
-  based on the state of all Batch Instances of the related Batch.
-
-Inputs:
-  - Batch Instance Id
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Internal Processing Status Code
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @InternalProcessingStatusCode NVARCHAR(10);
+/**
+ * @procedure [omd].[BatchEvaluation]
+ * @description
+ *   Evaluates whether the provided Batch Instance can proceed based on the
+ *   state of related Batch Instances for the same Batch, and updates the
+ *   instance status accordingly (Abort/Cancel/Proceed).
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}         @BatchInstanceId               [in]  (required)
+ *   The Batch Instance to evaluate.
+ * @param {CHAR(1)}        @Debug                         [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(100)}  @InternalProcessingStatusCode  [out] (optional)
+ *   Final internal processing status code (e.g., Abort, Cancel, Proceed).
+ * @param {CHAR(1)}        @SuccessIndicator              [out] (optional)
+ *   'Y' if evaluation completed successfully, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                    [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[BATCH]
+ *     table [omd].[BATCH_INSTANCE]
+ *     function [omd].[GetBatchIdByBatchInstanceId]
+ *     function [omd].[GetPreviousBatchInstanceDetails]
+ * - writes:
+ *     procedure [omd].[UpdateBatchInstance]
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+DECLARE @InternalProcessingStatusCode NVARCHAR(100)
+  ,@SuccessIndicator CHAR(1)
+  ,@MessageLog NVARCHAR(MAX);
 
 EXEC [omd].[BatchEvaluation]
-  -- Mandatory parameters
-  @BatchInstanceId = <Id>,
-  -- Optional parameters
+  @BatchInstanceId = 12345,
   @Debug = 'Y',
-  -- Output parameters
   @InternalProcessingStatusCode = @InternalProcessingStatusCode OUTPUT,
   @SuccessIndicator = @SuccessIndicator OUTPUT,
   @MessageLog = @MessageLog OUTPUT;
 
 PRINT @InternalProcessingStatusCode;
-******************************************************************************/
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[BatchEvaluation]
 (

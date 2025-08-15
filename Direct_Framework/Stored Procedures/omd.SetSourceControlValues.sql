@@ -1,44 +1,60 @@
-/*******************************************************************************
-Procedure:      [omd].[SetSourceControlValues]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework v2.1.0
-********************************************************************************
-
-Purpose:
-  Set a Source Control value/Load Window parameter value set for a Module Instance.
-  The Source Control table can maintain the start and end of the load window, or
-  just the start value. The values are data type and usage agnostic, so can be
-  used for any purpose, such as a load window, a data quality check
-
-Inputs:
-  - Module Instance Id, the currently involved Module Instance Id
-  - Start Value
-  - End Value
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Source Control Id for the created Load Window record
-  - Success Indicator (Y/N)
-  - Message Log
-
-******************************************************************************
-
-Example Usage:
-
-DECLARE
-  @SourceControlId BIGINT
-
-EXEC [omd].[SetSourceControlValues]
-  @ModuleInstanceId = <ModuleInstanceId>,
-  @StartValue = N'<StartValue>',
-  @EndValue = N'<EndValue>',
-  @Debug = N'Y',
-  @SourceControlId = @SourceControlId OUTPUT
-
-SELECT
-  @SourceControlId as N'@SourceControlId'
-
-*******************************************************************************/
+/**
+ * @procedure [omd].[SetSourceControlValues]
+ * @description
+ *   Set a Source Control value (Load Window parameter set) for a Module Instance.
+ *   The Source Control table can store a start and end value (or only start), and is agnostic to data type and usage.
+ *   It can be used for load windows, data quality checks, or any other parameterization.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}        @ModuleInstanceId [in]  (required)
+ *   The Module Instance Id to associate with the Source Control entry.
+ * @param {NVARCHAR(100)} @StartValue       [in]  (required)
+ *   Start value of the parameter window.
+ * @param {NVARCHAR(100)} @EndValue         [in]  (optional)
+ *   End value of the parameter window.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {BIGINT}        @SourceControlId  [out] (optional)
+ *   The identifier of the created Source Control record.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd].[GetModuleIdByModuleInstanceId]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ *     function [omd_metadata].[GetTimestampString]
+ *     function [omd_metadata].[GetSettingFlag]
+ * - writes:
+ *     table [omd].[SOURCE_CONTROL]
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @SourceControlId BIGINT,
+ *         @SuccessIndicator CHAR(1),
+ *         @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[SetSourceControlValues]
+ *   @ModuleInstanceId = 123,
+ *   @StartValue = N'2025-01-01T00:00:00Z',
+ *   @EndValue   = N'2025-01-31T23:59:59Z',
+ *   @Debug = 'Y',
+ *   @SourceControlId = @SourceControlId OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[SetSourceControlValues]
 (

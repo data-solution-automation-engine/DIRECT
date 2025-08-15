@@ -1,35 +1,59 @@
-/*******************************************************************************
-Procedure:      [omd].[EndDating]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  End Dating
-
-Inputs:
-  - Data Object Name
-  - Data Object Schema
-  - Key Array (list of keys to end-date against)
-  - Current Record Indicator Column Name (if available)
-  - Inscription Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
-  - Expiry Date Column Name (defaulted to INSCRIPTION_TIMESTAMP)
-  - Effective Date Column Name (defaulted to INSCRIPTION_BEFORE_TIMESTAMP)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
- *******************************************************************************
-
-TBA
-
- *******************************************************************************
+/**
+ * @procedure [omd].[END_DATING]
+ * @description End-date non-latest records in a historized table by clearing current-record flags based on key(s).
  *
- ******************************************************************************/
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)}  @DataObjectName                    [in]  (required)
+ *   Target table name.
+ * @param {NVARCHAR(500)}  @DataObjectSchema                  [in]  (required)
+ *   Target schema name.
+ * @param {NVARCHAR(4000)} @KeyArray                          [in]  (required)
+ *   Comma-separated list of key columns.
+ * @param {INT}            @ModuleInstanceId                  [in]  (optional, default=0)
+ *   Module instance context for logging.
+ * @param {NVARCHAR(500)}  @CurrentRecordIndicatorColumnName  [in]  (optional, default='CURRENT_RECORD_INDICATOR')
+ *   Column name marking current records.
+ * @param {NVARCHAR(500)}  @InscriptionRecordIdColumnName     [in]  (optional, default='INSCRIPTION_RECORD_ID')
+ *   Column name for record identity.
+ * @param {NVARCHAR(500)}  @ExpiryDateColumnName              [in]  (optional, default='INSCRIPTION_TIMESTAMP')
+ *   Column name for expiry date.
+ * @param {NVARCHAR(500)}  @EffectiveDateColumnName           [in]  (optional, default='INSCRIPTION_BEFORE_TIMESTAMP')
+ *   Column name for the effective date.
+ * @param {CHAR(1)}        @Debug                             [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}        @SuccessIndicator                  [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                        [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     target table [@DataObjectSchema].[@DataObjectName] via dynamic SQL UPDATE/DELETE
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[END_DATING]
+ *   @DataObjectName = N'PSA_CUSTOMER',
+ *   @DataObjectSchema = N'dbo',
+ *   @KeyArray = N'CustomerId, CountryCode',
+ *   @Debug = 'Y',
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[END_DATING]
 (

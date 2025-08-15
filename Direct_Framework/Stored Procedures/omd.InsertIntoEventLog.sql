@@ -1,36 +1,48 @@
-/*******************************************************************************
-Procedure:      [omd].[InsertIntoEventLog]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Inserts a single event log entry capturing failures or other noteworthy events.
-
-Input:
-  - Batch Instance Id (0 if not set)
-  - Module Instance Id (0 if not set)
-  - Event Details
-  - Event Datetime (defaults to SYSUTCDATETIME() if not set)
-  - Event Type Code (see omd.EVENT_TYPE table contents for options)
-  - Error Return Code
-  - Error Bitmap
-  - Debug flag Y/N (default to N)
-
-Outputs:
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
+/**
+ * @procedure [omd].[InsertIntoEventLog]
+ * @description
+ *   Inserts a single event log entry capturing failures or other noteworthy events.
  *
- *******************************************************************************
-
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}         @ModuleInstanceId  [in]  (optional, default=0)
+ *   Module Instance Id; 0 when not applicable.
+ * @param {NVARCHAR(4000)} @EventDetail       [in]  (required)
+ *   Event/error detail message (truncated to 4000 for insert).
+ * @param {BIGINT}         @BatchInstanceId   [in]  (optional, default=0)
+ *   Batch Instance Id; 0 when not applicable.
+ * @param {DATETIME2}      @EventTimestamp    [in]  (optional, default=NULL)
+ *   Event timestamp; defaults to SYSUTCDATETIME() when NULL.
+ * @param {NVARCHAR(100)}  @EventTypeCode     [in]  (optional, default='2')
+ *   Event type classification (see [omd].[EVENT_TYPE]).
+ * @param {NVARCHAR(100)}  @EventReturnCode   [in]  (optional, default='N/A')
+ *   Error/return code where applicable.
+ * @param {NUMERIC(20,0)}  @ErrorBitmap       [in]  (optional, default=0)
+ *   Optional error bitmask for categorization.
+ * @param {CHAR(1)}        @Debug             [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}        @SuccessIndicator  [out] (optional)
+ *   'Y' if insert succeeded, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog        [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[EVENT_LOG]
+ *
+ * @example
+ *
 EXEC [omd].[InsertIntoEventLog]
-  @ModuleInstanceId = <123>,
-  @EventDetail = '<event or error details>',
-  @EventTypeCode = '<2>'
-
-******************************************************************************/
+  @ModuleInstanceId = 123,
+  @EventDetail = N'Unexpected error occurred while processing',
+  @EventTypeCode = N'2';
+ */
 
 CREATE PROCEDURE [omd].[InsertIntoEventLog]
 (

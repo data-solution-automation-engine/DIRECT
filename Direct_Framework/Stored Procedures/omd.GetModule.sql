@@ -1,41 +1,39 @@
-/*******************************************************************************
-Procedure:      [omd].[GetModule]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Gets attributes for an existing Module by name (Module Code)
-  Supports easier retrieval of longer Module attributes than selection
-  for certain clients.
-
-Inputs:
-  - Module Code
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs as resultset 0:
-  - Module Id
-  - Module Code
-  - Module Type
-  - Data Object Source
-  - Data Object Target
-  - Area Code
-  - Frequency Code
-  - Active Indicator
-  - Module Description
-  - Executable
-
-Output variables:
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-EXEC [omd].[GetModule] @ModuleCode = 'MyExistingModule'
-
-******************************************************************************/
+/**
+ * @procedure [omd].[GetModule]
+ * @description
+ *   Retrieves attributes for an existing Module by code and returns a
+ *   resultset with a selection of columns for client consumption.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)} @ModuleCode       [in]  (required)
+ *   Module Code to retrieve.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if found, otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {Resultset}
+ *   Columns: [MODULE_ID], [MODULE_CODE], [MODULE_TYPE], [DATA_OBJECT_SOURCE],
+ *   [DATA_OBJECT_TARGET], [AREA_CODE], [FREQUENCY_CODE], [ACTIVE_INDICATOR],
+ *   [MODULE_DESCRIPTION], [EXECUTABLE]
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
+EXEC [omd].[GetModule]
+  @ModuleCode = N'MyExistingModule';
+ */
 
 CREATE PROCEDURE [omd].[GetModule]
 (

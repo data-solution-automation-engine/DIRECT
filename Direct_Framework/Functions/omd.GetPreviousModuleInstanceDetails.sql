@@ -1,35 +1,40 @@
-/*******************************************************************************
- * [omd].[GetPreviousModuleInstanceDetails]
- *******************************************************************************
+/**
+ * @function [omd].[GetPreviousModuleInstanceDetails]
+ * @description
+ *   Returns details about the most recent completed execution of a module
+ *   within a batch context. Provides last instance IDs, timestamps, status,
+ *   next-run hint, and a list of module instance IDs after the last success.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {INT} @ModuleId  [in] (required)
+ *   The module identifier.
+ * @param {INT} @BatchId  [in] (required)
+ *   The batch identifier; use 0 for standalone runs.
  *
+ * @returns {TABLE}
+ *   LastBatchInstanceID BIGINT,
+ *   LastModuleInstanceID BIGINT,
+ *   LastStartTimestamp DATETIME2,
+ *   LastEndTimestamp DATETIME2,
+ *   LastExecutionStatus NVARCHAR(100),
+ *   LastNextExecutionFlag NVARCHAR(100),
+ *   LastModuleInstanceIDList VARCHAR(MAX),
+ *   ActiveIndicator CHAR(1)
  *
- * Purpose: Returns details about the most recent completed execution of a specified module within a specific batch context.
- *          If no such instance exists, a default placeholder value is returned.
- *          This information can be used for determining module execution eligibility.
- *          The function retrieves the latest completed module instance based on the execution status and batch context.
+ * @resultset table
  *
- * Inputs:
- *   - @ModuleId (INT): The ID of the module for which execution details are requested.
- *   - @BatchId (INT): The ID of the batch in which the module was executed. A value of 0 indicates standalone (non-batch) execution.
+ * @lineage
+ * - reads:
+ *     [omd].[MODULE_INSTANCE], [omd].[BATCH_INSTANCE], [omd].[MODULE]
  *
- * Outputs:
- *     A single-row table containing the following fields:
- *     - LastBatchInstanceID: ID of the most recent batch instance.
- *     - LastModuleInstanceID: ID of the most recent module instance.
- *     - LastStartTimestamp: Start time of the last module execution.
- *     - LastEndTimestamp: End time of the last module execution.
- *     - LastExecutionStatus: Execution status code of the last module run.
- *     - LastNextExecutionFlag: Indicator suggesting the next action (e.g., 'Proceed').
- *     - LastModuleInstanceIDList: Comma-separated list of relevant module instance IDs after the last successful run.
- *     - ActiveIndicator: Flag indicating whether the module is active (ACTIVE_INDICATOR from the MODULE table).
- *
- * Usage:
- *
- *******************************************************************************/
+ * @example
+
+SELECT * FROM [omd].[GetPreviousModuleInstanceDetails](123, 0);
+
+ */
 
 CREATE FUNCTION [omd].[GetPreviousModuleInstanceDetails]
 (

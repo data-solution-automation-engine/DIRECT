@@ -457,7 +457,7 @@ if ($AutoTestingFrameworkScripts) {
   Write-Heading "AutoTestingFrameworkScripts is on - compiling and running tests."
 
   # Recompile the test scripts
-  $CompileScript = Join-Path $PSScriptRoot '../testing/compile-tests.ps1'
+  $CompileScript = Join-Path $PSScriptRoot "../testing/compile-tests.ps1"
 
   if (Test-Path $CompileScript) {
     Write-Info "Running compile-tests.ps1..."

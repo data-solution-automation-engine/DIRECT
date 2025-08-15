@@ -1,41 +1,49 @@
-/*******************************************************************************
-Procedure:      [omd].[GetConsistencyTimestamp]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Get a Consistency Timestamp
-  For a given point in time, data will be consistent up to the lowest load
-  window end-date of the most-recently successfully completed process
-  execution instances involved in loading the target tables.
-
-Inputs:
-  - Table list (comma separated array)
-  - Measurement Date/Time (optional)
-  - Load Window Attribute (optional)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Consistency Date/Time
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
- *******************************************************************************
-
-DECLARE @ConsistencyTimestamp DATETIME2;
-
-EXEC [omd].[GetConsistencyTimestamp]
-  @TableList ='HUB_CUSTOMER, SAT_CUSTOMER, SAT_CUSTOMER_ADDITIONAL_DETAILS',
-  @LoadWindowAttributeName = 'LOAD_DATETIME',
-  @Debug = 'Y',
-  @ConsistencyTimestamp = @ConsistencyTimestamp OUTPUT;
-
-PRINT @ConsistencyDateTime;
-
-******************************************************************************/
+/**
+ * @procedure [omd].[GetConsistencyTimestamp]
+ * @description Compute the consistency timestamp across target tables as the minimum end-value of latest successful load windows.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(MAX)} @TableList             [in]  (required)
+ *   Comma-separated list of target table names.
+ * @param {DATETIME2(7)}  @MeasurementDateTime   [in]  (optional)
+ *   Timestamp at which to evaluate; defaults to current UTC time when NULL.
+ * @param {CHAR(1)}       @Debug                 [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {DATETIME2}     @ConsistencyDateTime   [out] (optional)
+ *   The computed consistency timestamp.
+ * @param {CHAR(1)}       @SuccessIndicator      [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog            [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     tables [omd].[MODULE], [omd].[MODULE_INSTANCE], [omd].[SOURCE_CONTROL]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @ConsistencyTimestamp DATETIME2, @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[GetConsistencyTimestamp]
+ *   @TableList = 'HUB_CUSTOMER, SAT_CUSTOMER, SAT_CUSTOMER_ADDITIONAL_DETAILS',
+ *   @Debug = 'Y',
+ *   @ConsistencyDateTime = @ConsistencyTimestamp OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * PRINT @ConsistencyTimestamp;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
 (

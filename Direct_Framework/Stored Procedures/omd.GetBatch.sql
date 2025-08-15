@@ -1,37 +1,40 @@
-/*******************************************************************************
-Procedure:      [omd].[GetBatch]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Gets attributes for an existing Batch by name (Batch Code)
-
-Inputs:
-  - Batch Code
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs as resultset 0:
-  - Batch Id
-  - Batch Code
-  - Batch Type
-  - Frequency Code
-  - Active Indicator
-  - Batch Description
-
-Output variables:
-  - Batch Details (JSON representation of the batch, or NULL if not found)
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
+/**
+ * @procedure [omd].[GetBatch]
+ * @description
+ *   Retrieves attributes for an existing Batch by code and returns both
+ *   a resultset and a JSON representation via an output parameter.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)} @BatchCode        [in]  (required)
+ *   Batch Code to retrieve.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(MAX)} @BatchDetails     [out] (optional)
+ *   JSON representation of the Batch or NULL if not found.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if found, otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {Resultset}
+ *   Columns: [BATCH_ID], [BATCH_CODE], [BATCH_TYPE], [FREQUENCY_CODE],
+ *   [ACTIVE_INDICATOR], [BATCH_DESCRIPTION]
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[BATCH]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     procedure [omd].[InsertIntoEventLog]
+ *
+ * @example
+ *
 EXEC [omd].[GetBatch]
-  @BatchCode = 'MyExistingBatch'
-
-******************************************************************************/
+  @BatchCode = N'MyExistingBatch';
+ */
 
 CREATE PROCEDURE [omd].[GetBatch]
 (

@@ -1,59 +1,60 @@
 /**
  * @procedure [omd].[RegisterBatch]
- * @description
- *   Assigns a Batch to be associated with a Parent Batch.
- *   Both Batches must already exist.
- *   Create new Batches using [omd].[RegisterBatch].
+ * @description Create (register) a new Batch by code, or update existing attributes if changed.
  *
  * @package DIRECT Framework
  * @version 2.1.0
-https://github.com/data-solution-automation-engine/DIRECT
-
-DIRECT model v2.0
-
-Purpose:
-  Creates (registers) a new Batch by name (Batch Code)
-  Updates any existing Batch if the checksums are different.
-
-Inputs:
-  - Batch Code
-  - Batch Type
-  - Batch Frequency
-  - Batch Active Indicator
-  - Batch Description
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Batch Id
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE
-  @BatchId          INT,
-  @SuccessIndicator CHAR(1),
-  @MessageLog       NVARCHAR(MAX);
-
-EXEC [omd].[RegisterBatch]
-  -- Mandatory parameters
-  @BatchCode            = 'MyNewBatch',
-  -- Optional parameters
-  @BatchType            = 'Data Object Load Orchestrator',
-  @BatchFrequency       = 'On-demand',
-  @BatchActiveIndicator = 'Y',
-  @BatchDescription     = 'Data logistics Workflow',
-  @Debug                = 'Y',
-  -- Output parameters
-  @BatchId              = @BatchId OUTPUT,
-  @SuccessIndicator     = @SuccessIndicator OUTPUT,
-  @MessageLog           = @MessageLog OUTPUT;
-
-  PRINT 'The Batch Id is: ''' + CONVERT(NVARCHAR(10), @BatchId) + '''.';
-
-******************************************************************************/
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)}  @BatchCode            [in]  (required)
+ *   Code/name of the batch to create or update.
+ * @param {NVARCHAR(100)}  @BatchType            [in]  (optional)
+ *   Type/category of the batch.
+ * @param {NVARCHAR(100)}  @BatchFrequency       [in]  (optional, default='On-demand')
+ *   Execution frequency.
+ * @param {CHAR(1)}        @BatchActiveIndicator [in]  (optional, default='Y')
+ *   Whether the batch is active.
+ * @param {NVARCHAR(4000)} @BatchDescription     [in]  (optional)
+ *   Description of the batch.
+ * @param {CHAR(1)}        @Debug                [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {INT}            @BatchId              [out] (optional)
+ *   Identifier of the created or existing batch.
+ * @param {CHAR(1)}        @SuccessIndicator     [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog           [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[BATCH]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[BATCH]
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @BatchId INT, @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[RegisterBatch]
+ *   @BatchCode = 'MyNewBatch',
+ *   @BatchType = 'Data Object Load Orchestrator',
+ *   @BatchFrequency = 'On-demand',
+ *   @BatchActiveIndicator = 'Y',
+ *   @BatchDescription = 'Data logistics Workflow',
+ *   @Debug = 'Y',
+ *   @BatchId = @BatchId OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * PRINT CONCAT('Batch Id: ', @BatchId);
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[RegisterBatch]
 (

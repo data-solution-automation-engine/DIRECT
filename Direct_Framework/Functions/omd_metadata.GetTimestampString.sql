@@ -1,13 +1,31 @@
--- =============================================
--- Function: GetTimestampString
--- Description: Formats a DATETIME2 value as a string using a format from metadata,
---              or a default format if not found.
--- Parameters:
---  @Timestamp DATETIME2:
---    The timestamp value to format as a string.
--- Returns:
---    NVARCHAR(4000): The formatted timestamp string.
--- =============================================
+/**
+ * @function [omd_metadata].[GetTimestampString]
+ * @description
+ *   Formats a DATETIME2 value as a string using a format stored in metadata,
+ *   or a default format when not found.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {DATETIME2} @Timestamp  [in] (required)
+ *   The timestamp to format.
+ *
+ * @returns {NVARCHAR(100)} The formatted timestamp string.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     table [omd_metadata].[FRAMEWORK_METADATA]
+ *
+ * @example
+
+DECLARE @s NVARCHAR(100);
+SET @s = [omd_metadata].[GetTimestampString](SYSUTCDATETIME());
+PRINT(@s);
+
+ */
 
 CREATE FUNCTION [omd_metadata].[GetTimestampString](@Timestamp DATETIME2)
 RETURNS NVARCHAR(100) AS

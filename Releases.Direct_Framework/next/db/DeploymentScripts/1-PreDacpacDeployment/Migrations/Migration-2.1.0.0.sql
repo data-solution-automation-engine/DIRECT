@@ -244,31 +244,25 @@ BEGIN TRY
     -- If all checks pass, alter the columns to the new size
 
     -- disable or drop any dependent objects or constraints.
--- 1) Drop the UNIQUE constraint (this also drops the backing unique index)
-IF EXISTS (
-  SELECT 1
-  FROM sys.key_constraints
-  WHERE [name] = N'IX_OMD_BATCH'
-  AND parent_object_id = OBJECT_ID(N'omd.BATCH') )
-ALTER TABLE [omd].[BATCH] DROP CONSTRAINT [IX_OMD_BATCH];
+    IF EXISTS (
+      SELECT 1
+      FROM sys.key_constraints
+      WHERE [name] = N'IX_OMD_BATCH'
+      AND parent_object_id = OBJECT_ID(N'omd.BATCH') )
+    ALTER TABLE [omd].[BATCH] DROP CONSTRAINT [IX_OMD_BATCH];
 
-IF EXISTS (
-  SELECT 1
-  FROM sys.key_constraints
-  WHERE [name] = N'IX_OMD_MODULE_MODULE_CODE'
-  AND parent_object_id = OBJECT_ID(N'omd.MODULE') )
-ALTER TABLE [omd].[MODULE] DROP CONSTRAINT [IX_OMD_MODULE_MODULE_CODE];
-
---    DROP INDEX IF EXISTS [IX_OMD_BATCH_BATCH_CODE] ON [omd].[BATCH];
---    DROP INDEX IF EXISTS [IX_OMD_MODULE_MODULE_CODE] ON [omd].[MODULE];
+    IF EXISTS (
+      SELECT 1
+      FROM sys.key_constraints
+      WHERE [name] = N'IX_OMD_MODULE_MODULE_CODE'
+      AND parent_object_id = OBJECT_ID(N'omd.MODULE') )
+    ALTER TABLE [omd].[MODULE] DROP CONSTRAINT [IX_OMD_MODULE_MODULE_CODE];
 
     ALTER TABLE [omd].[BATCH] ALTER COLUMN [BATCH_CODE] NVARCHAR(500) NOT NULL;
     ALTER TABLE [omd].[MODULE] ALTER COLUMN [MODULE_CODE] NVARCHAR(500) NOT NULL;
     ALTER TABLE [omd].[PARAMETER] ALTER COLUMN [PARAMETER_KEY_CODE] NVARCHAR(500) NOT NULL;
 
     -- Recreate any dependent objects or constraints after altering the columns
-    -- CREATE INDEX [IX_OMD_BATCH_BATCH_CODE] ON [omd].[BATCH] ([BATCH_CODE]);
-    -- CREATE INDEX [IX_OMD_MODULE_MODULE_CODE] ON [omd].[MODULE] ([MODULE_CODE]);
     IF NOT EXISTS (
       SELECT 1
       FROM sys.key_constraints
@@ -290,12 +284,6 @@ ALTER TABLE [omd].[MODULE] DROP CONSTRAINT [IX_OMD_MODULE_MODULE_CODE];
       CREATE UNIQUE NONCLUSTERED INDEX [IX_OMD_MODULE]
       ON [omd].[MODULE] ([MODULE_CODE] ASC);
     END
-
-/* -------------------------------------------------------------------------- */
-    /*
-      Rename the [omd].[SOURCE_CONTROL] primary key from
-      [MODULE_SOURCE_CONTROL_ID] to [SOURCE_CONTROL_ID]
-    */
 
 /* -------------------------------------------------------------------------- */
     -- Set new Direct Framework version as last step

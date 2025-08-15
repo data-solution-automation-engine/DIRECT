@@ -1,35 +1,49 @@
-/*******************************************************************************
-Procedure:      [omd].[ModuleEvaluation]
-Documentation:  https://github.com/data-solution-automation-engine/DIRECT
-Version:        DIRECT Framework 2.1.0
-********************************************************************************
-
-Purpose:
-  Checks if the Module Instance is able to proceed based on the state of all Module Instances for the particular Module.
-
-Inputs:
-  - Module Instance Id, the Module Instance Id to evaluate
-  - Module Instance Id Column Name (defaults to MODULE_INSTANCE_ID)
-  - Debug Flag (Y/N, defaults to N)
-
-Outputs:
-  - Internal Processing Status Code
-  - Success Indicator (Y/N)
-  - Message Log
-
-Usage:
-
-*****************************************************************************
-
-DECLARE @InternalProcessingStatusCode NVARCHAR(100);
-
-EXEC [omd].[ModuleEvaluation]
-  @ModuleInstanceId = <Id>,
-  @InternalProcessingStatusCode = @InternalProcessingStatusCode OUTPUT;
-
-PRINT @InternalProcessingStatusCode;
-
-******************************************************************************/
+/**
+ * @procedure [omd].[ModuleEvaluation]
+ * @description Determine whether a Module Instance can proceed based on current and prior instance states.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT}        @ModuleInstanceId           [in]  (required)
+ *   The Module Instance Id to evaluate.
+ * @param {NVARCHAR(1000)} @ModuleInstanceIdColumnName [in]  (optional, default='MODULE_INSTANCE_ID')
+ *   Column name used as Module Instance Id for rollback SQL.
+ * @param {CHAR(1)}       @Debug                      [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(100)} @InternalProcessingStatusCode [out] (optional, default='Cancel')
+ *   One of: 'Proceed', 'Cancel', 'Abort', 'Rollback'.
+ * @param {CHAR(1)}       @SuccessIndicator           [out] (optional)
+ *   'Y' if evaluation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog                 [out] (optional)
+ *   Structured JSON-format log for diagnostics.
+ *
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     tables [omd].[MODULE], [omd].[MODULE_INSTANCE]
+ *     functions [omd].[GetModuleIdByModuleInstanceId], [omd].[GetBatchIdByModuleInstanceId]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     procedures [omd].[InsertIntoEventLog], [omd].[UpdateModuleInstance]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
+ *
+ * @example
+ * DECLARE @Status NVARCHAR(100), @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[ModuleEvaluation]
+ *   @ModuleInstanceId = 123,
+ *   @InternalProcessingStatusCode = @Status OUTPUT,
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * PRINT @Status;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[ModuleEvaluation]
 (
