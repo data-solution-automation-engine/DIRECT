@@ -256,7 +256,7 @@ if (-not $MachineStatus) {
 }
 $SuccessMessages += "Check: Podman machine running"
 
-# with a machine running, check if the container (by name) already exists.
+# With a machine running, check if the container (by name) already exists.
 # This script creates the container, so if it already exists we must remove it.
 $ExistingContainer = podman ps -a --filter "name=$ContainerName" --format "{{.Names}}"
 
