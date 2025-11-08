@@ -160,7 +160,6 @@ BEGIN
         @BatchDescription
       );
 
-
       SET @LogMessage = 'The incoming attribute checksum is ''' + CONVERT(VARCHAR(128), @NewChecksum, 2) + '''.'
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
@@ -180,7 +179,8 @@ BEGIN
       IF @NewChecksum <> @ExistingChecksum
       BEGIN
 
-        SET @LogMessage = CONCAT('The checksums are different, and Batch ''',@BatchCode, ''' with Batch Id ''' + CONVERT(NVARCHAR(10), @BatchId)+''' will be updated.')
+        SET @LogMessage = CONCAT('The checksums are different, and Batch ''',
+          @BatchCode, ''' with Batch Id ''', @BatchId, ''' will be updated.')
         SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
         UPDATE [omd].[BATCH]
@@ -190,7 +190,8 @@ BEGIN
           [BATCH_DESCRIPTION] = @BatchDescription
         WHERE [BATCH_ID] = @BatchId;
 
-        SET @LogMessage = CONCAT('The Batch ''', @BatchCode, ''' has been updated with the new attribute values.')
+        SET @LogMessage = CONCAT('The Batch ''', @BatchCode,
+            ''' has been updated with the new attribute values.')
         SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
 
         SET @SuccessIndicator = 'Y';
