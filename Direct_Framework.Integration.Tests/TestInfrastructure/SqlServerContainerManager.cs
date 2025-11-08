@@ -1,6 +1,7 @@
 using System.Diagnostics;
 
 using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
 
 using Microsoft.SqlServer.Dac;
 using Microsoft.SqlServer.Dac.Model;
@@ -62,7 +63,6 @@ public class SqlServerContainerManager
         .WithEnvironment("ACCEPT_EULA", "Y")
         .WithEnvironment("MSSQL_SA_PASSWORD", "P@ssword123!")
         .WithPortBinding(0, 1433) // Random host port
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
         .WithCleanUp(true)
         .Build();
 

@@ -55,6 +55,23 @@ VALUES
       N'or just return the message log to the client. ' +
       N'For printing to happen, the @Debug parameter must be set to ''Y''.', 'Y')
 
+  ,(N'FAIL_BATCH_ON_MODULE_FAILURE', N'Y', N'SETTINGS',
+      N'Fail the parent Batch on end if any child module has failed', 'Y')
+
+  ,(N'END_MODULE_ON_BATCH_END', N'Y', N'SETTINGS',
+      N'End and fail all still running modules on batch end.', 'Y')
+
+  ,(N'AUTO_REGISTER_BATCHES', N'Y', N'SETTINGS',
+      N'Register any unregistered, new batches that are instantiated.', 'Y')
+
+  ,(N'AUTO_REGISTER_MODULES', N'Y', N'SETTINGS',
+      N'Register any unregistered, new modules that are instantiated.', 'Y')
+
+  ,(N'AUTO_REGISTER_RELATIONSHIPS', N'Y', N'SETTINGS',
+      N'Register any unregistered relationships if they are instantiated ' +
+      N'as part of an instance run.', 'Y')
+
+
 MERGE [omd_metadata].[FRAMEWORK_METADATA] AS TARGET
 USING @tblMerge AS src
   ON  TARGET.[CODE] = src.[CODE]

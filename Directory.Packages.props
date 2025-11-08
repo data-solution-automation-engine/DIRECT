@@ -9,20 +9,20 @@
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="ErikEJ.DacFX.SqlServer.Rules" Version="3.0.0-preview.2" />
     <PackageVersion Include="ErikEJ.DacFX.TSQLSmellSCA" Version="3.0.0-preview.2" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.0" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.0-preview2.25289.6" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.2.15-preview" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.Telemetry" Version="2.0.0-preview.25372.6" />
+    <PackageVersion Include="Microsoft.SqlServer.DacFx" Version="170.3.26-preview" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.Telemetry" Version="2.0.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" Version="2.0.0-preview.25372.6" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.0.0-preview.25372.6" />
     <PackageVersion Include="Microsoft.Testing.Platform" Version="1.7.3" />
-    <PackageVersion Include="MSTest" Version="4.0.0-preview.25372.6" />
+    <PackageVersion Include="MSTest" Version="4.0.1" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.13.1" />
     <PackageVersion Include="Roslynator.CodeFixes" Version="4.13.1" />
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.13.1" />
     <PackageVersion Include="Roslynator.Refactorings" Version="4.13.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
-    <PackageVersion Include="Testcontainers.MsSql" Version="4.6.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="4.8.1" />
   </ItemGroup>
 </Project>

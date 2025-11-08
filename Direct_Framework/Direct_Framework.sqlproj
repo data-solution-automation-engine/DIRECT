@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build">
-  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0-preview.3" />
+  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <!-- version definitions, dsp monikers and reference dacpac names:
+    <!-- version definitions, dsp monikers, and reference dacpac names:
       https://github.com/microsoft/dacfx
       https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/concepts/target-platform
       Microsoft.Build.SQL Sdk package versions:
@@ -87,20 +87,14 @@
   </ItemGroup>
 
   <Target Name="RunPreBuild" BeforeTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot; $(Configuration)" />
+    <Exec
+      Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PreBuild.cmd&quot; $(Configuration)" />
   </Target>
   <Target Name="RunPostBuild" AfterTargets="Build">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PostBuild.cmd&quot; $(Configuration)" />
+    <Exec
+      Command="&quot;$(MSBuildProjectDirectory)/BuildScripts/PostBuild.cmd&quot; $(Configuration)" />
   </Target>
-  <!-- This below deletion is only needed in sql sdk version 1.0.0 when building
-       in Visual Studio w dotnet 8/9 atm
-       in dotnet 10 and sql sdk 2.0.0 preview it is solved, but that comes with other errors atm.
-       When dotnet 10 and sql sdk v2 is released this should be revisited/removed,
-       else there will probably be other build errors... -->
-  <Target Name="DeleteProjectAssetsJson" BeforeTargets="BeforeBuild" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
-    <Delete Files="$(MSBuildProjectDirectory)\obj\project.assets.json" />
-  </Target>
-    <ItemGroup>
+  <ItemGroup>
     <!-- The ErikEJ packages currently has limited business rules and no mute function for them -->
     <!-- <PackageReference Include="ErikEJ.DacFX.SqlServer.Rules" >
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -114,8 +108,8 @@
       <GeneratePathProperty>True</GeneratePathProperty>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </PackageReference>
-    </ItemGroup>
-      <PropertyGroup>
+  </ItemGroup>
+  <PropertyGroup>
     <!-- Remove once we're on stable dotnet10, until next lts release preview -->
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
