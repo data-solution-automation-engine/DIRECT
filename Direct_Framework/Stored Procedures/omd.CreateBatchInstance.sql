@@ -36,6 +36,7 @@
  *
  * @example
  *
+
 DECLARE @BatchInstanceId BIGINT,
         @BatchInstanceStartTimestamp DATETIME2,
         @SuccessIndicator CHAR(1),
@@ -52,6 +53,7 @@ EXEC [omd].[CreateBatchInstance]
 
 PRINT @BatchInstanceId;
 EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+
  */
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
@@ -103,7 +105,7 @@ BEGIN
     DECLARE @DefaultTimeZone NVARCHAR(4000) =
             [omd_metadata].[GetSetting]('DEFAULT_TIMEZONE');
 
-/* ----- Validate input parameters ------------------------------------------ */
+    /* ----- Validate input parameters ------------------------------------------ */
 
     IF @BatchCode IS NULL OR TRIM(@BatchCode) = ''
     BEGIN
@@ -115,7 +117,7 @@ BEGIN
       GOTO EndOfProcedureFailure;
     END;
 
-/* ----- Default logging setup ---------------------------------------------- */
+    /* ----- Default logging setup ---------------------------------------------- */
 
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
@@ -139,7 +141,7 @@ BEGIN
           @ParentBatchInstanceId, @MessageLog);
     END
 
-/* ----- Start of main process ---------------------------------------------- */
+    /* ----- Start of main process ---------------------------------------------- */
 
 
     /* Local procedure variables */
@@ -192,8 +194,8 @@ BEGIN
     IF @ProcessMessageLog = 'Y' SET @MessageLog =
       [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
 
-  /* If a ParentBatchInstanceId was provided and auto-register relationships
-    is enabled, register any missing relationship */
+    /* If a ParentBatchInstanceId was provided and auto-register relationships
+      is enabled, register any missing relationship */
 
     IF @ParentBatchInstanceId IS NOT NULL AND @ParentBatchInstanceId > 0
       AND @AutoRegisterRelationships = 'Y'
@@ -275,7 +277,7 @@ BEGIN
       GOTO EndOfProcedureFailure;
     END CATCH;
 
-/* ----- Start of end state management -------------------------------------- */
+    /* ----- Start of end state management -------------------------------------- */
 
     EndOfProcedureFailure:
 
@@ -318,12 +320,15 @@ BEGIN
       RETURN @ReturnCode;
   END TRY
 
-/* ----- Common, standardized, Procedure-wrapping error handling ------------ */
+  /* ----- Common, standardized, Procedure-wrapping error handling ------------ */
 
   BEGIN CATCH
     /* reset all return/output values except the message log */
     SET @SuccessIndicator = 'N';
     SET @ReturnCode = -2;
+    SET @BatchInstanceId = NULL;
+    SET @BatchInstanceStartTimestamp = NULL;
+
 
     IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
     ELSE SET @MessageLog =
@@ -389,6 +394,5 @@ BEGIN
 
     IF @ThrowOnFailure = 'Y' THROW;
     RETURN @ReturnCode;
-
   END CATCH;
 END;
