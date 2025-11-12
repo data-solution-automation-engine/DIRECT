@@ -27,9 +27,9 @@ erDiagram
         BATCH_ID            INT PK
         BATCH_CODE          NVARCHAR(500) UK
         BATCH_TYPE          NVARCHAR(100)
-        FREQUENCY_CODE      NVARCHAR(1000) FK
+        FREQUENCY_CODE      NVARCHAR(100) FK
         ACTIVE_INDICATOR    CHAR(1)
-        BATCH_DESCRIPTION   NVARCHAR(1000)
+        BATCH_DESCRIPTION   NVARCHAR(4000)
     }
 
     BATCH ||..o{ BATCH_INSTANCE : instantiates

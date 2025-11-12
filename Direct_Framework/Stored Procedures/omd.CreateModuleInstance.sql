@@ -8,13 +8,13 @@
  * @version 2.1.0
  * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * @param {NVARCHAR(1000)} @ModuleCode                    [in]  (required)
+ * @param {NVARCHAR(500)} @ModuleCode                     [in]  (required)
  *   Module Code as defined in [omd].[MODULE].
  * @param {NVARCHAR(MAX)}  @Query                         [in]  (optional, default=NULL)
  *   Executable text for reference and hashing; NULL allowed.
  * @param {BIGINT}         @BatchInstanceId               [in]  (optional, default=0)
  *   Parent Batch Instance Id if invoked from a Batch; 0 for none.
- * @param {NVARCHAR(1000)} @ExecutionContext              [in]  (optional, default='')
+ * @param {NVARCHAR(4000)} @ExecutionContext              [in]  (optional, default='')
  *   Runtime context (e.g., GUID, SPID) for traceability.
  * @param {CHAR(1)}        @Debug                         [in]  (optional, default='N')
  *   Enables debug logging.
@@ -63,11 +63,11 @@ EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 CREATE PROCEDURE [omd].[CreateModuleInstance]
 (
    /* Required parameters */
-   @ModuleCode                    NVARCHAR(1000)  = NULL
+   @ModuleCode                    NVARCHAR(500)   = NULL
    /* Optional parameters */
   ,@Query                         NVARCHAR(MAX)   = NULL
   ,@BatchInstanceId               BIGINT          = 0
-  ,@ExecutionContext              NVARCHAR(1000)  = N''
+  ,@ExecutionContext              NVARCHAR(4000)  = N''
   ,@Debug                         CHAR(1)         = 'N'
    /* Output parameters */
   ,@ModuleInstanceId              BIGINT          = NULL OUTPUT

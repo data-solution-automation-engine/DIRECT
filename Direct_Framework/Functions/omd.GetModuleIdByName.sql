@@ -7,7 +7,7 @@
  * @version 2.1.0
  * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * @param {NVARCHAR(1000)} @ModuleCode  [in] (required)
+ * @param {NVARCHAR(500)} @ModuleCode  [in] (required)
  *   The MODULE_CODE to look up.
  *
  * @returns {INT} The module ID, or NULL if not found.
@@ -26,7 +26,7 @@ SELECT [omd].[GetModuleIdByName](N'MY_MODULE');
 
 CREATE FUNCTION [omd].[GetModuleIdByName]
 (
-  @ModuleCode NVARCHAR(1000) -- The name of the module, as identified in the MODULE_CODE attribute in the MODULE table.
+  @ModuleCode NVARCHAR(500)
 )
 RETURNS INT AS
 BEGIN

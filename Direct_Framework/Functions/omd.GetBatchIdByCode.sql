@@ -7,7 +7,7 @@
  * @version 2.1.0
  * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * @param {NVARCHAR(1000)} @BatchCode  [in] (required)
+ * @param {NVARCHAR(500)} @BatchCode  [in] (required)
  *   The BATCH_CODE to look up the id for.
  *
  * @returns {INT} The batch ID, or NULL if not found.
@@ -26,7 +26,7 @@ SELECT [omd].[GetBatchIdByCode](N'MY_BATCH');
 
 CREATE FUNCTION [omd].[GetBatchIdByCode]
 (
-  @BatchCode NVARCHAR(1000)
+  @BatchCode NVARCHAR(500)
 )
 RETURNS INT AS
 BEGIN

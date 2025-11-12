@@ -82,7 +82,7 @@ BEGIN
 
     DECLARE @Results TABLE (
       [MODULE_ID]           INT               NULL,
-      [MODULE_CODE]         NVARCHAR (1000)   NULL,
+      [MODULE_CODE]         NVARCHAR (500)    NULL,
       [MODULE_TYPE]         NVARCHAR (100)    NULL,
       [DATA_OBJECT_SOURCE]  NVARCHAR (1000)   NULL,
       [DATA_OBJECT_TARGET]  NVARCHAR (1000)   NULL,

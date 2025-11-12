@@ -86,7 +86,7 @@ BEGIN
 
     DECLARE @Results TABLE (
       [BATCH_ID]            INT                         NULL,
-      [BATCH_CODE]          NVARCHAR (1000)             NULL,
+      [BATCH_CODE]          NVARCHAR (500)              NULL,
       [BATCH_TYPE]          NVARCHAR (100)              NULL,
       [FREQUENCY_CODE]      NVARCHAR (100)              NULL,
       [ACTIVE_INDICATOR]    CHAR (1)                    NULL,

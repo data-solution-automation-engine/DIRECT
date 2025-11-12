@@ -12,7 +12,7 @@
  *   Module Instance key; takes precedence when provided.
  * @param {INT}            @ModuleId          [in]  (optional, default=NULL)
  *   Module Id key, used if instance id not provided.
- * @param {NVARCHAR(1000)} @ModuleCode        [in]  (optional, default=NULL)
+ * @param {NVARCHAR(500)} @ModuleCode         [in]  (optional, default=NULL)
  *   Module Code key, used if neither instance id nor id provided.
  * @param {CHAR(1)}        @Debug             [in]  (optional, default='N')
  *   Enables debug logging.
@@ -64,7 +64,7 @@ CREATE PROCEDURE [omd].[GetSourceControlValues]
   /* Alternative key parameters, one of these are required */
    @ModuleInstanceId    BIGINT          = NULL
   ,@ModuleId            INT             = NULL
-  ,@ModuleCode          NVARCHAR(1000)  = NULL
+  ,@ModuleCode          NVARCHAR(500)   = NULL
   -- Optional parameters
   ,@Debug               CHAR(1)         = 'N'
   -- Output parameters
