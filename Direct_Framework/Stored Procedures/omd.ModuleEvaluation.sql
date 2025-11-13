@@ -6,11 +6,11 @@
  * @version 2.1.0
  * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * @param {BIGINT}        @ModuleInstanceId           [in]  (required)
+ * @param {BIGINT}        @ModuleInstanceId           [in] (required)
  *   The Module Instance Id to evaluate.
- * @param {NVARCHAR(1000)} @ModuleInstanceIdColumnName [in]  (optional, default='MODULE_INSTANCE_ID')
+ * @param {NVARCHAR(1000)} @ModuleInstanceIdColumnName [in] (optional, default='MODULE_INSTANCE_ID')
  *   Column name used as Module Instance Id for rollback SQL.
- * @param {CHAR(1)}       @Debug                      [in]  (optional, default='N')
+ * @param {CHAR(1)}       @Debug                      [in] (optional, default='N')
  *   Enables debug logging.
  * @param {NVARCHAR(100)} @InternalProcessingStatusCode [out] (optional, default='Cancel')
  *   One of: 'Proceed', 'Cancel', 'Abort', 'Rollback'.
@@ -393,9 +393,18 @@ BEGIN
       --DECLARE @AreaCode VARCHAR(10);
       --SELECT @AreaCode = AREA_CODE FROM omd.MODULE WHERE MODULE_ID=@ModuleId;
       DECLARE @TableCode NVARCHAR(1000);
+      DECLARE @TableCodeSafe NVARCHAR(1000);
       SELECT @TableCode = DATA_OBJECT_TARGET FROM [omd].[MODULE] WHERE MODULE_ID=@ModuleId;
 
-      SET @LogMessage = 'The Table Code (DATA_OBJECT_TARGET) for Module ' + CONVERT(VARCHAR(10), @ModuleId) + ' is ' + @TableCode + '.'
+      -- Safety net to ensure brackets are in place for table names with brackets.
+      SELECT @TableCodeSafe = CASE
+         WHEN CHARINDEX('[', @TableCode) > 0
+           OR CHARINDEX(']', @TableCode) > 0
+           THEN @TableCode          -- Already has brackets, leave as-is
+         ELSE QUOTENAME(@TableCode) -- No brackets, add them
+       END;
+
+      SET @LogMessage = 'The Table Code (DATA_OBJECT_TARGET) for Module ' + CONVERT(VARCHAR(10), @ModuleId) + ' is ' + @TableCodeSafe + '.'
       SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
 
       -- Rollback
@@ -407,12 +416,12 @@ BEGIN
 
         DECLARE @LocalAreaCode NVARCHAR(100) = (SELECT omd.GetModuleAreaByModuleId(@ModuleId));
 
-        IF @TableCode <> 'N/A'
+        IF @TableCodeSafe <> 'N/A'
         BEGIN
         --IF @LocalAreaCode = 'INT'
-          --SET @SqlStatement = 'DELETE FROM '+@TableCode+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
+          --SET @SqlStatement = 'DELETE FROM '+@TableCodeSafe+' WHERE (omd_module_instance_id IN '+@ModuleInstanceIdList+') OR (omd_update_module_instance_id IN '+@ModuleInstanceIdList+')';
         --ELSE
-          SET @SqlStatement = 'DELETE FROM ' + QUOTENAME(@TableCode) + ' WHERE ' + QUOTENAME(@ModuleInstanceIdColumnName) + ' IN (' + @ModuleInstanceIdList + ')';
+          SET @SqlStatement = 'DELETE FROM ' + QUOTENAME(@TableCodeSafe) + ' WHERE ' + QUOTENAME(@ModuleInstanceIdColumnName) + ' IN (' + @ModuleInstanceIdList + ')';
 
           SET @LogMessage = 'Rollback SQL statement is: ' + @SqlStatement
           SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
@@ -433,7 +442,7 @@ BEGIN
         END
         ELSE
         BEGIN
-          SET @LogMessage = 'No rollback is required for '+@TableCode
+          SET @LogMessage = 'No rollback is required for '+@TableCodeSafe
           SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
         END
 
