@@ -4,7 +4,7 @@
 
 https://github.com/data-solution-automation-engine/DIRECT
 
-DIRECT Framework v2.0 Stored Procedures
+DIRECT Framework v2.1 Stored Procedures
 
 ********************************************************************************
 !! THIS IS A MSDB-BASED PROCESS,                 !!
@@ -12,20 +12,19 @@ DIRECT Framework v2.0 Stored Procedures
 ********************************************************************************
 
 Process:
-  TODO: tba
+  - Batch queue.
 
 Purpose:
-   TODO: tba
+  - State machine based job queue for batch processing.
 
 Input:
-   - TODO: tba
+  - Not applicable.
 
 Returns:
-  - TODO: tba
+  - Not applicable.
 
 Usage:
-
-TODO: tba
+  - Stop and start from SQL Server Agent as required.
 
 
 *******************************************************************************/

@@ -51,7 +51,6 @@ CREATE PROCEDURE [omd].[GetConsistencyTimestamp]
    @TableList                NVARCHAR(MAX) = NULL
    -- Optional parameters
   ,@MeasurementDateTime      DATETIME2(7)  = NULL
-   -- ,@LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP'
   ,@Debug                    CHAR(1)       = 'N'
    -- Output parameters
   ,@ConsistencyDateTime      DATETIME2     = NULL OUTPUT
@@ -67,7 +66,6 @@ BEGIN
   /* Debug block */
   --DECLARE @TableList NVARCHAR(MAX) = '[200_Integration_layer].vdw.HUB_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER, [200_Integration_layer].vdw.SAT_CUSTOMER_ADDITIONAL_DETAILS';
   --DECLARE @MeasurementDateTime DATETIME2(7) = SYSUTCDATETIME();
-  --DECLARE @LoadWindowAttributeName  NVARCHAR(255)  = 'INSCRIPTION_TIMESTAMP';
   --DECLARE @Debug CHAR(1) = 'Y';
   --DECLARE @ConsistencyDateTime DATETIME2(7) = NULL;
   --DECLARE @SuccessIndicator CHAR(1) = 'N';
@@ -95,8 +93,6 @@ BEGIN
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @TableList', @LogMessage, @MessageLog)
   SET @LogMessage = CONVERT(NVARCHAR(33), @MeasurementDateTime, 126);
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @MeasurementDateTime', @LogMessage, @MessageLog)
-  -- SET @LogMessage = @LoadWindowAttributeName;
-  -- SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @LoadWindowAttributeName', @LogMessage, @MessageLog)
 
   -- Process variables
   DECLARE @EventDetail NVARCHAR(4000);
@@ -356,7 +352,7 @@ FROM
  IF @Debug = 'Y'
  BEGIN
   PRINT 'The number of expected target tables is: ' + CONVERT(VARCHAR(10), @NumberOfExpectedTargetTables);
-  PRINT 'The number of expected target tables is: ' + CONVERT(VARCHAR(10), @NumberOfActualTargetTables);
+  PRINT 'The number of actual target tables is: ' + CONVERT(VARCHAR(10), @NumberOfActualTargetTables);
 END
 
   IF @NumberOfActualTargetTables < @NumberOfExpectedTargetTables
