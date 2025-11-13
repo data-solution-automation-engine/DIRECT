@@ -266,26 +266,30 @@ if ($ExistingContainer -and -not $AutoPurge) {
   $Remove = Read-Host "Do you want to remove the existing container? (y/n)"
 }
 
-if ($ExistingContainer -and ($AutoPurge -or ($Remove -ieq 'y'))) {
-  # If container exists, and it should be removed, then make it so.
+if (-not $ExistingContainer) {
+  # No existing container: just continue, nothing to remove.
+  Write-Info "No existing container named '$ContainerName' found. Continuing..."
+}
+elseif ($AutoPurge -or ($Remove -ieq 'y')) {
+  # Container exists *and* we are allowed to remove it
   Write-Warn "Removing existing container '$ContainerName'"
-  try {
-    podman rm -f $ContainerName
-    Write-Result "Container '$ContainerName' removed."
-  }
-  catch {
-    Write-Error "Exiting: Failed to remove container '$ContainerName':`n$_"
+
+  $rmOutput = podman rm -f $ContainerName 2>&1
+  if ($LASTEXITCODE -ne 0) {
+    Write-Error "Exiting: Failed to remove container '$ContainerName'.`nPodman output:`n$rmOutput"
     Exit 1
   }
+
+  Write-Result "Container '$ContainerName' removed."
 }
 else {
-  # If the container exists and we are not removing it, then exit.
-  # The script creates the container, which can't be done if it already exists.
+  # Container exists, but we are not removing it
   Write-Warn "Container '$ContainerName' already exists."
   Write-Info "Please remove it, or configure a different name to use."
   Write-Error "Exiting: container exists, please remove it before running script."
   Exit 1
 }
+
 
 <# =============================================================================
 CREATE THE SQL SERVER CONTAINER IN PODMAN
