@@ -260,7 +260,6 @@ BEGIN
         ''' has been created for Batch Code: ', @BatchCode);
       IF @ProcessMessageLog = 'Y' SET @MessageLog =
         [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
-      GOTO SuccessEndOfProcedure;
 
       COMMIT TRANSACTION;
       GOTO EndOfProcedureSuccess;

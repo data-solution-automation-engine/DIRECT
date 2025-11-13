@@ -4,9 +4,9 @@
     "net10.0": {
       "Microsoft.SqlServer.Dacpacs.Master": {
         "type": "Direct",
-        "requested": "[170.0.1, )",
-        "resolved": "170.0.1",
-        "contentHash": "rnIhmrob9LXFco1GTet+fA3Ji1q14VtHrlYFevnCA1uYjAUiXI5L2Co/xUNU+sBOydhF6OKqGsUnzgaI7mb8JQ=="
+        "requested": "[170.0.2, )",
+        "resolved": "170.0.2",
+        "contentHash": "wFjmWVez0/ymJb3nG5SiLZjtTQugcWV7U++c2YyVZ02/AYZ3cQQ4K6xgyD3eNDCgNzpa4mt1Ld16NYv0t6eUcA=="
       }
     }
   }

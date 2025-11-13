@@ -18,7 +18,6 @@
     <!-- Shared project properties -->
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Deterministic>true</Deterministic>
-    <EnableLegacyVSTest>false</EnableLegacyVSTest>
     <EnforceConsistentLineEndings>true</EnforceConsistentLineEndings>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -26,8 +25,12 @@
     <Nullable>enable</Nullable>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/data-solution-automation-engine/DIRECT</RepositoryUrl>
-    <TestResultsDirectory>$(MSBuildProjectDirectory)\TestResults</TestResultsDirectory>
+    <!-- Analyzers and related behavior -->
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <!-- Testing related -->
     <UseMicrosoftTestingPlatform>true</UseMicrosoftTestingPlatform>
+    <EnableLegacyVSTest>false</EnableLegacyVSTest>
+    <TestResultsDirectory>$(MSBuildProjectDirectory)\TestResults</TestResultsDirectory>
   </PropertyGroup>
 </Project>
