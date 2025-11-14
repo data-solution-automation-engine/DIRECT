@@ -461,24 +461,20 @@ if ($AutoTestingFrameworkScripts) {
   Write-Heading "AutoTestingFrameworkScripts is on - compiling and running tests."
 
   # Recompile the test scripts
-  $CompileScript = Join-Path $PSScriptRoot "../testing/compile-tests.ps1"
+  $CompileScript = Join-Path $PSScriptRoot "../Testing/Compile-Tests.ps1"
 
   if (Test-Path $CompileScript) {
-    Write-Info "Running compile-tests.ps1..."
+    Write-Info "Running Compile-Tests.ps1..."
     & $CompileScript
   }
   else {
-    Write-Error "Compile-tests.ps1 not found at '$CompileScript'"
+    Write-Error "Compile-Tests.ps1 not found at '$CompileScript'"
   }
 
   # Select all test scripts in the testing directory (the output from the previous step)
-  $SqlScripts = Get-ChildItem -Path "Compiled_Tests" -Filter "test*.sql" -File | ForEach-Object {
+  $SqlScripts = Get-ChildItem -Path "Testing/Compiled_Tests" -Filter "test*.sql" -File | ForEach-Object {
     $_.FullName
   }
-
-  # Get-ChildItem -Path "Compiled_Tests" -Filter "test*.sql" -File | ForEach-Object {
-  #   Write-Host "  -- looping over test script: $($_.Name)" -ForegroundColor Magenta
-  # }
 
   foreach ($ScriptFile in $SqlScripts) {
     $Result = Invoke-Sqlcmd -SqlPath $ScriptFile -ConnectionString $MasterConnectionString -Silent
@@ -495,7 +491,7 @@ if ($AutoTestingFrameworkScripts) {
   }
 
   # Run a final check and spool the results to the test output
-  $outputDir = "TestResults"
+  $outputDir = "Testing/TestResults"
   if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
   }

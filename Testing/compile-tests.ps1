@@ -1,3 +1,5 @@
+Push-Location
+
 # Set cwd to the script location, the RepoRoot/Testing directory.
 Set-Location $PSScriptRoot
 
@@ -60,3 +62,5 @@ ForEach-Object {
 }
 
 Write-Host "Compiled tests written to '$outputDirectory'." -ForegroundColor Green
+
+Pop-Location
