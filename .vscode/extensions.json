@@ -10,10 +10,7 @@
     "ms-mssql.mssql",
     "ms-mssql.sql-database-projects-vscode",
     "ms-vscode-remote.remote-containers",
-    "ms-vscode.powershell",
-    "visualstudioexptteam.intellicode-api-usage-examples",
-    "visualstudioexptteam.vscodeintellicode-completions",
-    "visualstudioexptteam.vscodeintellicode",
+    "ms-vscode.powershell"
   ],
   "unwantedRecommendations": []
 }
