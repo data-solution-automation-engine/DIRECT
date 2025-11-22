@@ -1,2 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Problems />
+<Problems>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0001</Rule>
+    <ProblemDescription>The shape of the result set produced by a SELECT * statement will change if the underlying table or view structure changes.</ProblemDescription>
+    <SourceFile>c:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.EndModuleInstance.sql</SourceFile>
+    <Line>203</Line>
+    <Column>18</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0001</Rule>
+    <ProblemDescription>The shape of the result set produced by a SELECT * statement will change if the underlying table or view structure changes.</ProblemDescription>
+    <SourceFile>c:\repos\github\data-solution-automation-engine\DIRECT\Direct_Framework\Stored Procedures\omd.EndBatchInstance.sql</SourceFile>
+    <Line>207</Line>
+    <Column>16</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+</Problems>

@@ -69,12 +69,12 @@ CREATE PROCEDURE [omd].[EndModuleInstance]
   ,@EventCode          NVARCHAR(100)  = 'Failure'
   ,@EventDetail        NVARCHAR(4000) = NULL
    -- Optional row count updates
-  ,@RowCountInput      BIGINT         = 0
-  ,@RowCountInserted   BIGINT         = 0
-  ,@RowCountUpdated    BIGINT         = 0
-  ,@RowCountDeleted    BIGINT         = 0
-  ,@RowCountDiscarded  BIGINT         = 0
-  ,@RowCountRejected   BIGINT         = 0
+  ,@RowCountInput      BIGINT         = NULL
+  ,@RowCountInserted   BIGINT         = NULL
+  ,@RowCountUpdated    BIGINT         = NULL
+  ,@RowCountDeleted    BIGINT         = NULL
+  ,@RowCountDiscarded  BIGINT         = NULL
+  ,@RowCountRejected   BIGINT         = NULL
    -- Optional parameters
   ,@EndTimestamp       DATETIME2      = NULL
   ,@Debug              CHAR(1)        = 'N'
@@ -176,13 +176,13 @@ BEGIN
 
     /* Normalize all other input parameters */
     SELECT
-      @EndTimestamp       = COALESCE(@EndTimestamp, @StartTimestamp),
-      @RowCountInput      = CASE WHEN @RowCountInput      >= 0 THEN @RowCountInput      ELSE 0 END,
-      @RowCountInserted   = CASE WHEN @RowCountInserted   >= 0 THEN @RowCountInserted   ELSE 0 END,
-      @RowCountUpdated    = CASE WHEN @RowCountUpdated    >= 0 THEN @RowCountUpdated    ELSE 0 END,
-      @RowCountDeleted    = CASE WHEN @RowCountDeleted    >= 0 THEN @RowCountDeleted    ELSE 0 END,
-      @RowCountDiscarded  = CASE WHEN @RowCountDiscarded  >= 0 THEN @RowCountDiscarded  ELSE 0 END,
-      @RowCountRejected   = CASE WHEN @RowCountRejected   >= 0 THEN @RowCountRejected   ELSE 0 END;
+      @EndTimestamp       = COALESCE(@EndTimestamp, @StartTimestamp)
+      -- @RowCountInput      = CASE WHEN @RowCountInput      >= 0 THEN @RowCountInput      ELSE 0 END,
+      -- @RowCountInserted   = CASE WHEN @RowCountInserted   >= 0 THEN @RowCountInserted   ELSE 0 END,
+      -- @RowCountUpdated    = CASE WHEN @RowCountUpdated    >= 0 THEN @RowCountUpdated    ELSE 0 END,
+      -- @RowCountDeleted    = CASE WHEN @RowCountDeleted    >= 0 THEN @RowCountDeleted    ELSE 0 END,
+      -- @RowCountDiscarded  = CASE WHEN @RowCountDiscarded  >= 0 THEN @RowCountDiscarded  ELSE 0 END,
+      -- @RowCountRejected   = CASE WHEN @RowCountRejected   >= 0 THEN @RowCountRejected   ELSE 0 END;
 
     /* Add normalized parameters log here if required */
 
@@ -202,12 +202,12 @@ BEGIN
         ;WITH StatusMap AS (
           SELECT *
           FROM (VALUES
-            ('Abort',    'Aborted',   'Abort',    'Proceed',  1, 0),
-            ('Cancel',   'Cancelled', 'Cancel',   'Proceed',  1, 0),
+            ('Abort',    'Aborted',   'Abort',    'Proceed',  1, 1),
+            ('Cancel',   'Cancelled', 'Cancel',   'Proceed',  1, 1),
             ('Success',  'Succeeded', 'Proceed',  'Proceed',  1, 1),
-            ('Failure',  'Failed',    NULL,       'Rollback', 1, 0),
-            ('Rollback', NULL,        'Rollback', NULL,       1, 0),
-            ('Proceed',  NULL,        'Proceed',  NULL,       1, 0)
+            ('Failure',  'Failed',    NULL,       'Rollback', 1, 1),
+            ('Rollback', NULL,        'Rollback', NULL,       1, 1),
+            ('Proceed',  NULL,        'Proceed',  NULL,       1, 1)
           ) AS map(EventCode, ExecutionStatusCode, InternalProcessingCode,
             NextRunStatusCode, ApplyEndTimestamp, ApplyRowCounts)
         )
@@ -217,12 +217,46 @@ BEGIN
           INTERNAL_PROCESSING_CODE = COALESCE(sm.InternalProcessingCode, mi.INTERNAL_PROCESSING_CODE),
           NEXT_RUN_STATUS_CODE = COALESCE(sm.NextRunStatusCode, mi.NEXT_RUN_STATUS_CODE),
           END_TIMESTAMP = CASE WHEN sm.ApplyEndTimestamp = 1 THEN @EndTimestamp ELSE mi.END_TIMESTAMP END,
-          ROWS_INPUT = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountInput ELSE mi.ROWS_INPUT END,
-          ROWS_INSERTED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountInserted ELSE mi.ROWS_INSERTED END,
-          ROWS_UPDATED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountUpdated ELSE mi.ROWS_UPDATED END,
-          ROWS_DELETED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountDeleted ELSE mi.ROWS_DELETED END,
-          ROWS_DISCARDED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountDiscarded ELSE mi.ROWS_DISCARDED END,
-          ROWS_REJECTED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountRejected ELSE mi.ROWS_REJECTED END
+          /* Update row counts if settings are enabled for it and
+          values are provided as parameters. If not, keep existing values.
+          If both are null, set them to 0 */
+          ROWS_INPUT = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_INPUT
+            WHEN @RowCountInput >= 0 THEN @RowCountInput
+            WHEN @RowCountInput IS NULL AND mi.ROWS_INPUT IS NULL THEN 0
+            ELSE mi.ROWS_INPUT
+          END,
+
+          ROWS_INSERTED = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_INSERTED
+            WHEN @RowCountInserted >= 0 THEN @RowCountInserted
+            WHEN @RowCountInserted IS NULL AND mi.ROWS_INSERTED IS NULL THEN 0
+            ELSE mi.ROWS_INSERTED
+          END,
+          ROWS_UPDATED = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_UPDATED
+            WHEN @RowCountUpdated >= 0 THEN @RowCountUpdated
+            WHEN @RowCountUpdated IS NULL AND mi.ROWS_UPDATED IS NULL THEN 0
+            ELSE mi.ROWS_UPDATED
+          END,
+          ROWS_DELETED = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_DELETED
+            WHEN @RowCountDeleted >= 0 THEN @RowCountDeleted
+            WHEN @RowCountDeleted IS NULL AND mi.ROWS_DELETED IS NULL THEN 0
+            ELSE mi.ROWS_DELETED
+          END,
+          ROWS_DISCARDED = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_DISCARDED
+            WHEN @RowCountDiscarded >= 0 THEN @RowCountDiscarded
+            WHEN @RowCountDiscarded IS NULL AND mi.ROWS_DISCARDED IS NULL THEN 0
+            ELSE mi.ROWS_DISCARDED
+          END,
+          ROWS_REJECTED = CASE
+            WHEN sm.ApplyRowCounts = 0 THEN mi.ROWS_REJECTED
+            WHEN @RowCountRejected >= 0 THEN @RowCountRejected
+            WHEN @RowCountRejected IS NULL AND mi.ROWS_REJECTED IS NULL THEN 0
+            ELSE mi.ROWS_REJECTED
+          END
         FROM [omd].[MODULE_INSTANCE] AS mi
         INNER JOIN StatusMap AS sm
           ON sm.EventCode = @EventCode
