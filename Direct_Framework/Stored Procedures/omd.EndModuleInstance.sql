@@ -9,11 +9,13 @@
  *
  * @param {BIGINT}  @ModuleInstanceId   [in]  (required)
  *   The Module Instance identifier to update.
- * @param {NVARCHAR(100)} @EventCode    [in]  (optional, default='None')
+ * @param {NVARCHAR(100)} @EventCode    [in]  (optional, default='Failure')
  *   One of: 'Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure'.
+ * @param {NVARCHAR(4000)} @EventDetail  [in]  (optional)
+ *   Additional details for the event log.
  * @param {BIGINT}  @RowCountSelect     [in]  (optional, default=0)
  *   Rows read during processing.
- * @param {BIGINT}  @RowCountInsert     [in]  (optional, default=0)
+ * @param {BIGINT}  @RowCountInserted   [in]  (optional, default=0)
  *   Rows inserted during processing.
  * @param {BIGINT}  @RowCountUpdated    [in]  (optional, default=0)
  *   Rows updated during processing.
@@ -52,7 +54,7 @@
  *   @ModuleInstanceId = 1001,
  *   @EventCode = 'Success',
  *   @RowCountSelect = 100,
- *   @RowCountInsert = 100,
+ *   @RowCountInserted = 100,
  *   @Debug = 'Y',
  *   @SuccessIndicator = @SuccessIndicator OUTPUT,
  *   @MessageLog = @MessageLog OUTPUT;
@@ -64,16 +66,16 @@ CREATE PROCEDURE [omd].[EndModuleInstance]
    -- Mandatory parameters
    @ModuleInstanceId   BIGINT         = NULL
    -- Optional parameters
-  ,@EventCode          NVARCHAR(100)  = 'None'
+  ,@EventCode          NVARCHAR(100)  = 'Failure'
   ,@EventDetail        NVARCHAR(4000) = NULL
-  -- optional row count updates
-  ,@RowCountSelect     BIGINT         = 0
-  ,@RowCountInsert     BIGINT         = 0
+   -- Optional row count updates
+  ,@RowCountInput      BIGINT         = 0
+  ,@RowCountInserted   BIGINT         = 0
   ,@RowCountUpdated    BIGINT         = 0
   ,@RowCountDeleted    BIGINT         = 0
   ,@RowCountDiscarded  BIGINT         = 0
   ,@RowCountRejected   BIGINT         = 0
-  -- Optional parameters
+   -- Optional parameters
   ,@EndTimestamp       DATETIME2      = NULL
   ,@Debug              CHAR(1)        = 'N'
    -- Output parameters
@@ -86,233 +88,298 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    -- allow end timestamp to be defined by the caller if needed
-    SET @EndTimestamp = COALESCE(@EndTimestamp, SYSUTCDATETIME());
-    DECLARE @EndTimestampString NVARCHAR(30) = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    /* ----- Standard setup and initialization ------------------------------ */
+    DECLARE @ProcessDescription NVARCHAR(4000) = N'End Module Instance process';
 
-    -- Default output logging setup
-    DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-    DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
+    SET @Debug = CASE WHEN TRIM(UPPER(@Debug)) = 'Y' THEN 'Y' ELSE 'N' END;
+    SET @SuccessIndicator = 'N';
+    SET @MessageLog = N'[]';
+    DECLARE @LogMessage NVARCHAR(2048);
+
+    /* Event and return codes */
+    DECLARE @ReturnCode INT = 0;
+    DECLARE @EventTypeCode NVARCHAR(100) = N'2';
+    -- reusing event detail for internal processing, consider reworking
+    -- DECLARE @EventDetail NVARCHAR(4000) = N'';
+    DECLARE @EventReturnCode NVARCHAR(100) = N'';
+
+    /* Load framework settings */
+    DECLARE @AddLogsToEventLog CHAR(1)      = [omd_metadata].[GetSettingFlag]('LOG_TO_EVENT_LOG');
+    DECLARE @PrintMessages CHAR(1)          = [omd_metadata].[GetSettingFlag]('SP_PRINT_MESSAGES');
+    DECLARE @ProcessMessageLog CHAR(1)      = [omd_metadata].[GetSettingFlag]('SP_PROCESS_MESSAGE_LOG');
+    DECLARE @ThrowOnFailure CHAR(1)         = [omd_metadata].[GetSettingFlag]('THROW_ON_FAILURE');
+    DECLARE @DefaultTimeZone NVARCHAR(4000) = [omd_metadata].[GetSetting]('DEFAULT_TIMEZONE');
+
+    /* ----- Default logging setup ------------------------------------------ */
+
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
-    DECLARE @StartTimestampString NVARCHAR(30) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    DECLARE @StartTimestampString NVARCHAR(4000) =
+      [omd_metadata].[GetTimestampString](@StartTimestamp);
+    DECLARE @SpName NVARCHAR(300) = CONCAT(
+      QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')), N'.',
+      QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
 
-    DECLARE @LogMessage NVARCHAR(MAX);
-
-    -- Log standard metadata
-    SET @LogMessage = @SpName;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
-    SET @LogMessage = @DirectVersion;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
-    SET @LogMessage = @StartTimestampString;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
-
-    -- Log parameters
-    SET @LogMessage = @ModuleInstanceId
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ModuleInstanceId', @LogMessage, @MessageLog)
-    SET @LogMessage = @EventCode
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EventCode', @LogMessage, @MessageLog)
-    SET @LogMessage = @RowCountSelect
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @RowCountSelect', @LogMessage, @MessageLog)
-    SET @LogMessage = @RowCountInsert
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @RowCountInsert', @LogMessage, @MessageLog)
-
-    -- Process variables
-    -- DECLARE @EventDetail NVARCHAR(4000);
-    DECLARE @EventReturnCode NVARCHAR(100);
-
-    /*
-      Start of main process
-    */
-
-    -- Input guard Exception handling. If the input parameters are not valid, throw an exception and exit.
-    IF @EventCode NOT IN ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
+    IF @ProcessMessageLog = 'Y'
     BEGIN
-      ;THROW 50000,'Incorrect Event Code specified. The available options are Proceed, Cancel, Abort, Success, Failure and Rollback',1
-    END
+      /* Log standard metadata */
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure',
+        @SpName, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Version',
+        [omd_metadata].[GetFrameworkVersion](), @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Start Timestamp',
+        @StartTimestampString, @MessageLog);
 
-    -- Abort event
-    -- This is an end-state event (no further processing)
-    IF @EventCode = 'Abort'
+      /* Log parameters and their values as single json block */
+      DECLARE @paramsJson NVARCHAR(max) =
+        (SELECT
+          @ModuleInstanceId   AS ModuleInstanceId,
+          @EventCode          AS EventCode,
+          @EventDetail        AS EventDetail,
+          @RowCountInput      AS RowCountInput,
+          @RowCountInserted   AS RowCountInserted,
+          @RowCountUpdated    AS RowCountUpdated,
+          @RowCountDeleted    AS RowCountDeleted,
+          @RowCountDiscarded  AS RowCountDiscarded,
+          @RowCountRejected   AS RowCountRejected,
+          @EndTimestamp       AS EndTimestamp,
+          @Debug              AS Debug
+        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
+
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('INFO', DEFAULT, N'Parameters', @paramsJson, @MessageLog);
+    END;
+
+    /* ----- Validate input parameters -------------------------------------- */
+
+    IF @ModuleInstanceId IS NULL OR @ModuleInstanceId <= 0
+    BEGIN
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = N'Parameter @ModuleInstanceId is required.'
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END;
+
+    IF @EventCode IS NULL OR TRIM(@EventCode) NOT IN
+      ('Proceed', 'Cancel', 'Abort', 'Rollback', 'Success', 'Failure')
+    BEGIN
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = concat(N'Parameter @EventCode is required and must be ',
+        N'one of the following values: ',
+        N'Proceed, Cancel, Abort, Rollback, Success, Failure.')
+      IF @ProcessMessageLog = 'Y'
+        SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END;
+
+    /* Normalize all other input parameters */
+    SELECT
+      @EndTimestamp       = COALESCE(@EndTimestamp, @StartTimestamp),
+      @RowCountInput      = CASE WHEN @RowCountInput      >= 0 THEN @RowCountInput      ELSE 0 END,
+      @RowCountInserted   = CASE WHEN @RowCountInserted   >= 0 THEN @RowCountInserted   ELSE 0 END,
+      @RowCountUpdated    = CASE WHEN @RowCountUpdated    >= 0 THEN @RowCountUpdated    ELSE 0 END,
+      @RowCountDeleted    = CASE WHEN @RowCountDeleted    >= 0 THEN @RowCountDeleted    ELSE 0 END,
+      @RowCountDiscarded  = CASE WHEN @RowCountDiscarded  >= 0 THEN @RowCountDiscarded  ELSE 0 END,
+      @RowCountRejected   = CASE WHEN @RowCountRejected   >= 0 THEN @RowCountRejected   ELSE 0 END;
+
+    /* Add normalized parameters log here if required */
+
+    DECLARE @RowsAffected INT = 0;
+
+    /* ----- Start of main process ------------------------------------------ */
+
     BEGIN TRY
+      BEGIN TRANSACTION;
 
-      SET @LogMessage = 'Setting Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' to ' + @EventCode + '.'
-      SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+        SET @LogMessage = CONCAT('Setting Module Instance ',
+          @ModuleInstanceId, ' to ', @EventCode, '.')
 
-      UPDATE [omd].[MODULE_INSTANCE]
-      SET
-        EXECUTION_STATUS_CODE = 'Aborted',
-        INTERNAL_PROCESSING_CODE = 'Abort',
-        NEXT_RUN_STATUS_CODE = 'Proceed',
-        END_TIMESTAMP = @EndTimestamp
-        WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
+        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT,
+          N'Status Update', @LogMessage, @MessageLog);
 
+        ;WITH StatusMap AS (
+          SELECT *
+          FROM (VALUES
+            ('Abort',    'Aborted',   'Abort',    'Proceed',  1, 0),
+            ('Cancel',   'Cancelled', 'Cancel',   'Proceed',  1, 0),
+            ('Success',  'Succeeded', 'Proceed',  'Proceed',  1, 1),
+            ('Failure',  'Failed',    NULL,       'Rollback', 1, 0),
+            ('Rollback', NULL,        'Rollback', NULL,       1, 0),
+            ('Proceed',  NULL,        'Proceed',  NULL,       1, 0)
+          ) AS map(EventCode, ExecutionStatusCode, InternalProcessingCode,
+            NextRunStatusCode, ApplyEndTimestamp, ApplyRowCounts)
+        )
+        UPDATE mi
+        SET
+          EXECUTION_STATUS_CODE = COALESCE(sm.ExecutionStatusCode, mi.EXECUTION_STATUS_CODE),
+          INTERNAL_PROCESSING_CODE = COALESCE(sm.InternalProcessingCode, mi.INTERNAL_PROCESSING_CODE),
+          NEXT_RUN_STATUS_CODE = COALESCE(sm.NextRunStatusCode, mi.NEXT_RUN_STATUS_CODE),
+          END_TIMESTAMP = CASE WHEN sm.ApplyEndTimestamp = 1 THEN @EndTimestamp ELSE mi.END_TIMESTAMP END,
+          ROWS_INPUT = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountInput ELSE mi.ROWS_INPUT END,
+          ROWS_INSERTED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountInserted ELSE mi.ROWS_INSERTED END,
+          ROWS_UPDATED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountUpdated ELSE mi.ROWS_UPDATED END,
+          ROWS_DELETED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountDeleted ELSE mi.ROWS_DELETED END,
+          ROWS_DISCARDED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountDiscarded ELSE mi.ROWS_DISCARDED END,
+          ROWS_REJECTED = CASE WHEN sm.ApplyRowCounts = 1 THEN @RowCountRejected ELSE mi.ROWS_REJECTED END
+        FROM [omd].[MODULE_INSTANCE] AS mi
+        INNER JOIN StatusMap AS sm
+          ON sm.EventCode = @EventCode
+        WHERE mi.MODULE_INSTANCE_ID = @ModuleInstanceId;
+
+        SET @RowsAffected = @@ROWCOUNT;
+
+        IF @RowsAffected = 0
+        BEGIN
+          IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+          SET @SuccessIndicator = 'N';
+          SET @LogMessage = CONCAT('No module instance row updated for ModuleInstanceId ',
+            @ModuleInstanceId, ' and EventCode ''', @EventCode, '''.');
+          IF @ProcessMessageLog = 'Y'
+            SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT,
+              N'Transaction Error', @LogMessage, @MessageLog);
+          IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+          GOTO EndOfProcedureFailure;
+        END;
+
+      COMMIT TRANSACTION;
+      GOTO EndOfProcedureSuccess;
     END TRY
     BEGIN CATCH
-      THROW
-    END CATCH
+      DECLARE
+        @TxnErrorMessage NVARCHAR(4000) = ERROR_MESSAGE(),
+        @TxnErrorNumber INT = ERROR_NUMBER(),
+        @TxnErrorSeverity INT = ERROR_SEVERITY(),
+        @TxnErrorState INT = ERROR_STATE(),
+        @TxnErrorLine INT = ERROR_LINE();
 
-    -- Skip / Cancel event
-    -- This is an end-state event (no further processing)
-    IF @EventCode = 'Cancel'
-      BEGIN TRY
-        SET @LogMessage = 'Setting Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' to ' + @EventCode + '.'
-        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+      IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+      SET @SuccessIndicator = 'N';
+      IF COALESCE(TRIM(@MessageLog), '') = '' SET @MessageLog = N'[]';
 
-        UPDATE [omd].[MODULE_INSTANCE]
-        SET
-          EXECUTION_STATUS_CODE     = 'Cancelled',
-          INTERNAL_PROCESSING_CODE  = 'Cancel',
-          NEXT_RUN_STATUS_CODE      = 'Proceed',
-          END_TIMESTAMP             = @EndTimestamp
-        WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
+      SET @LogMessage = CONCAT('Transaction error (', @TxnErrorNumber, '/', @TxnErrorState,
+        ') at line ', @TxnErrorLine, ': ', COALESCE(@TxnErrorMessage, 'No additional details.'));
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Transaction Error', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW;
+      GOTO EndOfProcedureFailure;
+    END CATCH;
 
-      END TRY
-      BEGIN CATCH
-        THROW
-      END CATCH
+/* ----- Start of end state management -------------------------------------- */
 
-    -- Success event
-    -- This is an end-state event (no further processing)
-    IF @EventCode = 'Success'
-      BEGIN TRY
+    EndOfProcedureFailure:
 
-        SET @LogMessage = 'Setting Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) +' to ' + @EventCode + ' and row count ' + CONVERT(NVARCHAR(10), @RowCountInsert) + '.'
-        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = CONCAT(@ProcessDescription, N' encountered errors.');
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Processing Error', @LogMessage, @MessageLog);
+      SET @ReturnCode = -1;
 
-        UPDATE [omd].[MODULE_INSTANCE]
-        SET
-          EXECUTION_STATUS_CODE     = 'Succeeded',
-          NEXT_RUN_STATUS_CODE      = 'Proceed',
-          INTERNAL_PROCESSING_CODE  = 'Proceed',
-          END_TIMESTAMP             = @EndTimestamp,
-          ROWS_INPUT                = @RowCountSelect,
-          ROWS_INSERTED             = @RowCountInsert,
-          ROWS_UPDATED              = @RowCountUpdated,
-          ROWS_DELETED              = @RowCountDeleted,
-          ROWS_DISCARDED            = @RowCountDiscarded,
-          ROWS_REJECTED             = @RowCountRejected
-        WHERE MODULE_INSTANCE_ID    = @ModuleInstanceId
-      END TRY
-      BEGIN CATCH
-        THROW
-      END CATCH
+      GOTO EndOfProcedure;
 
-    -- Failure event
-    -- This is an end-state event (no further processing)
-    IF @EventCode = 'Failure'
-      BEGIN TRY
+    EndOfProcedureSuccess:
 
-        SET @LogMessage = 'Setting the Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' to ' + @EventCode + '.'
-        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
+      SET @SuccessIndicator = 'Y';
+      SET @LogMessage = CONCAT(@ProcessDescription, N' completed successfully.');
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('SUCCESS', DEFAULT, 'Processing Completion', @LogMessage, @MessageLog);
+      SET @ReturnCode = 0;
 
-        UPDATE [omd].[MODULE_INSTANCE]
-        SET
-          EXECUTION_STATUS_CODE   = 'Failed',
-          NEXT_RUN_STATUS_CODE    = 'Rollback',
-          END_TIMESTAMP           = @EndTimestamp
-        WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
-      END TRY
-      BEGIN CATCH
-        THROW
-      END CATCH
+      GOTO EndOfProcedure;
 
-    -- Rollback event
-    IF @EventCode = N'Rollback'
-      BEGIN TRY
-
-        SET @LogMessage = 'Setting Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' to ' + @EventCode + '.'
-        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-        UPDATE [omd].[MODULE_INSTANCE]
-        SET
-          INTERNAL_PROCESSING_CODE = 'Rollback'
-          WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
-      END TRY
-      BEGIN CATCH
-        THROW
-      END CATCH
-
-    -- Proceed event
-    IF @EventCode = 'Proceed'
-    BEGIN TRY
-
-        SET @LogMessage = 'Setting Module Instance ' + CONVERT(NVARCHAR(20), @ModuleInstanceId) + ' to ' + @EventCode + '.'
-        SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Status Update', @LogMessage, @MessageLog)
-
-        UPDATE [omd].[MODULE_INSTANCE]
-        SET
-          INTERNAL_PROCESSING_CODE = 'Proceed'
-        WHERE MODULE_INSTANCE_ID = @ModuleInstanceId
-      END TRY
-      BEGIN CATCH
-        THROW
-      END CATCH
-
-    SET @SuccessIndicator = 'Y'
-
-    -- End procedure label
     EndOfProcedure:
 
-    DECLARE @processEndTimestamp DATETIME2 = SYSUTCDATETIME();
-    DECLARE @processEndTimestampString NVARCHAR(20) = '';
-    SET @processEndTimestampString = FORMAT(@processEndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+      DECLARE @ProcessEndTimestamp DATETIME2 = SYSUTCDATETIME();
+      DECLARE @ProcessEndTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@ProcessEndTimestamp);
+      DECLARE @DurationSeconds NVARCHAR(10) =
+        CAST(COALESCE(DATEDIFF(SECOND, @StartTimestamp, @ProcessEndTimestamp), 0) AS NVARCHAR(10));
 
-    SET @LogMessage = @processEndTimestampString;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
-    SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @processEndTimestamp);
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+      IF @ProcessMessageLog = 'Y'
+      BEGIN
+        SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'End Timestamp', @ProcessEndTimestampString, @MessageLog);
+        SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Elapsed Time (s)', @DurationSeconds, @MessageLog);
+        SET @MessageLog =
+          [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator', @SuccessIndicator, @MessageLog);
+      END
 
-    IF @Debug = 'Y'
-    BEGIN
-      EXEC [omd].[PrintMessageLog] @MessageLog;
-    END
+      IF @Debug = 'Y' AND @ProcessMessageLog = 'Y' AND @PrintMessages = 'Y'
+        EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 
+      RETURN @ReturnCode;
   END TRY
-  BEGIN CATCH
-    -- SP-wide error handler and logging
-    SET @SuccessIndicator = 'N'
-    SET @LogMessage = @SuccessIndicator;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 
-    DECLARE @ErrorMessage NVARCHAR(4000);
-    DECLARE @ErrorSeverity INT;
-    DECLARE @ErrorState INT;
-    DECLARE @ErrorProcedure NVARCHAR(128);
-    DECLARE @ErrorNumber INT;
-    DECLARE @ErrorLine INT;
+  /* ----- Common, standardized, Procedure-wrapping error handling ---------- */
+
+  BEGIN CATCH
+    /* reset all return/output values except the message log */
+    SET @SuccessIndicator = 'N';
+    SET @ReturnCode = -2;
+
+    IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
+    ELSE SET @MessageLog =
+      [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Parameter @SuccessIndicator',
+      @SuccessIndicator, @MessageLog);
+
+    DECLARE
+      @ErrorMessage     NVARCHAR(4000),
+      @ErrorSeverity    NVARCHAR(10),
+      @ErrorState       NVARCHAR(10),
+      @ErrorProcedure   NVARCHAR(128),
+      @ErrorNumber      NVARCHAR(10),
+      @ErrorLine        NVARCHAR(10);
 
     SELECT
-      @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-      @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-      @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-      @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-      @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-      @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
+      @ErrorMessage   = COALESCE(ERROR_MESSAGE(), 'No Message'),
+      @ErrorSeverity  = COALESCE(CAST(ERROR_SEVERITY() AS NVARCHAR(10)), 'N/A'),
+      @ErrorState     = COALESCE(CAST(ERROR_STATE()    AS NVARCHAR(10)), 'N/A'),
+      @ErrorProcedure = ERROR_PROCEDURE(),
+      @ErrorLine      = COALESCE(CAST(ERROR_LINE()     AS NVARCHAR(10)), 'N/A'),
+      @ErrorNumber    = COALESCE(CAST(ERROR_NUMBER()   AS NVARCHAR(10)), 'N/A');
 
-    IF @Debug = 'Y'
+    IF @Debug = 'Y' AND @PrintMessages = 'Y'
     BEGIN
-      PRINT 'Error in '''       + @SpName + ''''
-      PRINT 'Error Message: '   + @ErrorMessage
-      PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-      PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-      PRINT 'Error Procedure: ' + @ErrorProcedure
-      PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-      PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-      PRINT 'SuccessIndicator: '+ @SuccessIndicator
+      PRINT 'Error in:         ' + @SpName;
+      PRINT 'Error Message:    ' + @ErrorMessage;
+      PRINT 'Error Severity:   ' + @ErrorSeverity;
+      PRINT 'Error State:      ' + @ErrorState;
+      PRINT 'Error Procedure:  ' + @ErrorProcedure;
+      PRINT 'Error Line:       ' + @ErrorLine;
+      PRINT 'Error Number:     ' + @ErrorNumber;
+      PRINT 'SuccessIndicator: ' + @SuccessIndicator;
+    END;
 
-      -- Spool message log
-      EXEC [omd].[PrintMessageLog] @MessageLog;
+    SET @EventTypeCode = N'2';
+    DECLARE @ErrorProcedureString NVARCHAR(500);
+    IF TRIM(ISNULL(@ErrorProcedure, '')) <> ''
+      SET @ErrorProcedureString = CONCAT(', called from procedure: ''', @ErrorProcedure, '''');
 
-    END
-
-    SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
+    SET @EventDetail = CONCAT(
+      'Error in procedure: ''', @SpName,''', at line: ''', @ErrorLine, '''',
+      @ErrorProcedureString, ', error message:', CHAR(10), @ErrorMessage
+    );
     SET @EventReturnCode = ERROR_NUMBER();
 
     EXEC [omd].[InsertIntoEventLog]
-      @ModuleInstanceId  = @ModuleInstanceId,
-      @EventDetail       = @EventDetail,
-      @EventReturnCode   = @EventReturnCode;
+       @EventTypeCode     = @EventTypeCode
+      ,@EventDetail       = @EventDetail
+      ,@EventReturnCode   = @EventReturnCode;
 
-    THROW
-  END CATCH
-END
+    IF @ProcessMessageLog = 'Y'
+    BEGIN
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error EventTypeCode', @EventTypeCode, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error Details', @EventDetail, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error EventReturnCode', @EventReturnCode, @MessageLog);
+    END
+
+    IF @Debug = 'Y' AND @ProcessMessageLog = 'Y' AND @PrintMessages = 'Y'
+      EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+
+    IF @ThrowOnFailure = 'Y' THROW;
+    RETURN @ReturnCode;
+
+  END CATCH;
+END;

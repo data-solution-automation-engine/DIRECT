@@ -112,6 +112,21 @@ BEGIN
       GOTO EndOfProcedureFailure;
     END;
 
+    -- check that the Batch Instance exists
+    IF NOT EXISTS (
+      SELECT 1
+      FROM [omd].[BATCH_INSTANCE]
+      WHERE BATCH_INSTANCE_ID = @BatchInstanceId
+    )
+    BEGIN
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = N'Batch Instance not found.';
+      IF @ProcessMessageLog = 'Y'
+        SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Batch Instance', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END;
+
 /* ----- Default logging setup ---------------------------------------------- */
 
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
