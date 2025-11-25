@@ -1,6 +1,6 @@
 /**
  * @procedure [omd].[EndBatchInstance]
- * @description End the status of a Batch Instance based on an input event code.
+ * @description End a Batch Instance based on an input event code.
  *
  * @package DIRECT Framework
  * @version 2.1.0
@@ -32,14 +32,17 @@
  *     procedure [omd].[PrintMessageLog]
  *
  * @example
- * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
- * EXEC [omd].[UpdateBatchInstance]
- *   @BatchInstanceId = 42,
- *   @EventCode = 'Success',
- *   @Debug = 'Y',
- *   @SuccessIndicator = @SuccessIndicator OUTPUT,
- *   @MessageLog = @MessageLog OUTPUT;
- * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ *
+
+DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+EXEC [omd].[UpdateBatchInstance]
+  @BatchInstanceId = 42,
+  @EventCode = 'Success',
+  @Debug = 'Y',
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+
  */
 
 CREATE PROCEDURE [omd].[EndBatchInstance]
@@ -128,7 +131,7 @@ BEGIN
       GOTO EndOfProcedureFailure;
     END;
 
-/* ----- Default logging setup ---------------------------------------------- */
+    /* ----- Default logging setup ------------------------------------------ */
 
     DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
     DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
@@ -160,7 +163,8 @@ BEGIN
 
     DECLARE @RowsAffected INT = 0;
 
-/* ----- Start of main process ---------------------------------------------- */
+    /* ----- Start of main process ------------------------------------------ */
+
     BEGIN TRY
       BEGIN TRANSACTION;
 
@@ -204,7 +208,12 @@ BEGIN
         @LogMessage, @MessageLog);
 
       ;WITH StatusMap AS (
-        SELECT *
+        SELECT
+          map.EventCode,
+          map.ExecutionStatusCode,
+          map.InternalProcessingCode,
+          map.NextRunStatusCode,
+          map.ApplyEndTimestamp
         FROM (VALUES
           (N'Abort',    N'Aborted',   N'Abort',    N'Proceed', 1),
           (N'Cancel',   N'Cancelled', N'Cancel',   N'Proceed', 1),

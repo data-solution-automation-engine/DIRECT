@@ -200,7 +200,8 @@ BEGIN
           N'Status Update', @LogMessage, @MessageLog);
 
         ;WITH StatusMap AS (
-          SELECT *
+          SELECT EventCode, ExecutionStatusCode, InternalProcessingCode,
+            NextRunStatusCode, ApplyEndTimestamp, ApplyRowCounts
           FROM (VALUES
             ('Abort',    'Aborted',   'Abort',    'Proceed',  1, 1),
             ('Cancel',   'Cancelled', 'Cancel',   'Proceed',  1, 1),

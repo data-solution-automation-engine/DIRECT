@@ -126,7 +126,7 @@ BEGIN
     EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
     SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter Error', @LogMessage, @MessageLog);
 
-    GOTO FailureEndOfProcedure
+    GOTO EndOfProcedureFailure
   END
 
     -- Figure out what the source is.
@@ -254,7 +254,7 @@ BEGIN
 
     GOTO EndOfProcedure;
 
-    FailureEndOfProcedure:
+    EndOfProcedureFailure:
 
       SET @SuccessIndicator = 'N'
       SET @StartValue = NULL;

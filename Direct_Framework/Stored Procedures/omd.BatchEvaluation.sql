@@ -120,7 +120,7 @@ BEGIN
         @BatchInstanceId = @BatchInstanceId,
         @EventDetail = @EventDetail;
 
-      GOTO FailureEndOfProcedure;
+      GOTO EndOfProcedureFailure;
     END
 
     SET @LogMessage = 'For Batch Instance Id ' + CONVERT(NVARCHAR(20), @BatchInstanceId)+  ' the Batch Id ' + CONVERT(NVARCHAR(10), @BatchId) + ' was found in [omd].[BATCH].'
@@ -419,7 +419,7 @@ BEGIN
 
     RAISERROR('Incorrect Batch Evaluation path encountered (post-rollback).',16,1)
 
-    FailureEndOfProcedure:
+    EndOfProcedureFailure:
 
       SET @SuccessIndicator = 'N'
       SET @InternalProcessingStatusCode = 'Failure';
