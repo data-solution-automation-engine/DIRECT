@@ -1,26 +1,60 @@
 <#
 .SYNOPSIS
-  Deploys a DACPAC to a SQL Server database.
+    Deploys a DACPAC to a SQL Server database.
+
 .DESCRIPTION
-  Handles connection, optional database drop, and calls sqlpackage to deploy
-  the specified DACPAC to the target database.
+    Handles connection, optional database drop, and calls sqlpackage to deploy
+    the specified DACPAC to the target database. Supports both interactive and
+    automated deployment modes with configurable database purge behavior.
+
 .PARAMETER DacpacPath
-  The path to the DACPAC file to deploy.
+    The path to the DACPAC file to deploy.
+
 .PARAMETER ConnectionString
-  The connection string for the SQL Server instance.
+    The connection string for the SQL Server instance.
+
 .PARAMETER DatabaseName
-  The name of the database to deploy to (optional).
+    The name of the database to deploy to. If not specified, extracted from
+    the connection string.
+
 .PARAMETER Description
-  A description for the deployment (optional).
+    A description for the deployment (optional). Defaults to the DACPAC filename.
+
 .PARAMETER AutoDeploy
-  If true, skips user prompt and deploys automatically.
+    If true, skips user prompt and deploys automatically.
+
 .PARAMETER AutoPurge
-  If true, drops the database if it exists before deploying.
+    If true, drops the database if it exists before deploying.
+
 .EXAMPLE
-  Deploy-Dacpac -DacpacPath "./db/Direct_Framework.dacpac" -ConnectionString $cs `
-  -DatabaseName "Direct_Framework" -AutoDeploy $true -AutoPurge $true
+    Deploy-Dacpac -DacpacPath "./db/Direct_Framework.dacpac" -ConnectionString $cs `
+        -DatabaseName "Direct_Framework" -AutoDeploy $true -AutoPurge $true
+
+.EXAMPLE
+    Deploy-Dacpac -DacpacPath $dacpacFile -ConnectionString $connectionString
+
+.OUTPUTS
+    System.Boolean - Returns $true if deployment succeeds, otherwise $false.
+
 .NOTES
-  Returns $true if deployment succeeds, otherwise $false.
+    File Name      : Deploy-Dacpac.ps1
+    Prerequisite   : PowerShell 5.1 or later, sqlpackage dotnet tool
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.LINK
+    https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    Database deployment and DACPAC management.
 #>
 function Deploy-Dacpac {
   param(

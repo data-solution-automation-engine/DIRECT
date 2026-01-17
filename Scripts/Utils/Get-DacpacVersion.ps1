@@ -1,14 +1,40 @@
 <#
 .SYNOPSIS
-  Extracts the version from a DACPAC file.
+    Extracts the version from a DACPAC file.
+
 .DESCRIPTION
-  Unzips the DACPAC file, reads the model.xml, and returns the version property if present.
+    Unzips the DACPAC file, reads the model.xml, and returns the version property
+    if present. The DACPAC is extracted to a temporary directory which is cleaned
+    up after processing.
+
 .PARAMETER DacpacPath
-  The path to the DACPAC file, relative to the script file location.
+    The path to the DACPAC file to extract version information from.
+
 .EXAMPLE
-  $version = Get-DacpacVersion -DacpacPath "./db/Direct_Framework.dacpac"
+    $version = Get-DacpacVersion -DacpacPath "./db/Direct_Framework.dacpac"
+
+.EXAMPLE
+    Get-ChildItem -Filter *.dacpac | ForEach-Object { Get-DacpacVersion -DacpacPath $_.FullName }
+
+.OUTPUTS
+    System.String - The version string from the DACPAC, or $null if not found.
+
 .NOTES
-  Returns the version string or $null if not found.
+    File Name      : Get-DacpacVersion.ps1
+    Prerequisite   : PowerShell 5.1 or later
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    DACPAC version extraction and analysis.
 #>
 function Get-DacpacVersion {
   param([string]$DacpacPath)

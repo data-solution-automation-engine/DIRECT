@@ -1,18 +1,56 @@
 <#
 .SYNOPSIS
-  Executes a Sql File on a SQL Server database.
+    Executes a SQL file or query on a SQL Server database.
+
 .DESCRIPTION
-  Executes SQL file using sqlcmd against a SQL Server instance.
+    Executes SQL file or inline query using the sqlcmd utility against a SQL Server
+    instance. Supports both file-based and inline query execution with configurable
+    output display options.
+
 .PARAMETER SqlPath
-  The path to the SQL file to deploy.
+    The path to the SQL file to execute. Either SqlPath or Query must be provided.
+
+.PARAMETER Query
+    An inline SQL query to execute. Either SqlPath or Query must be provided.
+
 .PARAMETER ConnectionString
-  The connection string for the SQL Server instance.
+    The connection string for the SQL Server instance. Must include Server,
+    Initial Catalog, User ID, and Password.
+
 .PARAMETER ShowResult
-  Should the function print the output from the command.
+    If true (default), prints the output from the sqlcmd command.
+
+.PARAMETER Silent
+    If specified, suppresses informational output messages.
+
 .EXAMPLE
-  Invoke-Sqlcmd -SqlPath "./sqlFile.sql" -ConnectionString $cs
+    Invoke-Sqlcmd -SqlPath "./sqlFile.sql" -ConnectionString $cs
+
+.EXAMPLE
+    Invoke-Sqlcmd -Query "SELECT @@VERSION" -ConnectionString $cs -Silent
+
+.OUTPUTS
+    Returns the command output on success, or $false on failure.
+
 .NOTES
-  Returns $true if invocation succeeds, otherwise $false.
+    File Name      : Invoke-Sqlcmd.ps1
+    Prerequisite   : PowerShell 5.1 or later, sqlcmd utility
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.LINK
+    https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    SQL script execution and database query management.
 #>
 function Invoke-Sqlcmd {
   param(

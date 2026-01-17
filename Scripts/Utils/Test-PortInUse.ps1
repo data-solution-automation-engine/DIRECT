@@ -1,15 +1,45 @@
 <#
 .SYNOPSIS
-  Checks if a TCP port is in use on the local machine.
+    Checks if a TCP port is in use on the local machine.
+
 .DESCRIPTION
-  Determines if the specified port is currently in use,
-  using platform-appropriate methods.
-.PARAMETER Port
-  The port number to check.
+    Determines if the specified port is currently in use on a given local address,
+    using platform-appropriate methods (Get-NetTCPConnection on Windows, netstat
+    on other platforms).
+
+.PARAMETER LocalAddress
+    The local IP address to check (e.g., '127.0.0.1', '0.0.0.0').
+
+.PARAMETER LocalPort
+    The port number to check.
+
 .EXAMPLE
-  if (Test-PortInUse -Port 1433) { Write-Host "Port in use!" }
+    if (Test-PortInUse -LocalAddress '127.0.0.1' -LocalPort 1433) {
+        Write-Host "SQL Server port is in use!"
+    }
+
+.EXAMPLE
+    Test-PortInUse -LocalAddress '0.0.0.0' -LocalPort 8080
+
+.OUTPUTS
+    System.Boolean - Returns $true if the port is in use, otherwise $false.
+
 .NOTES
-  Returns $true if the port is in use, otherwise $false.
+    File Name      : Test-PortInUse.ps1
+    Prerequisite   : PowerShell 5.1 or later
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    Network port availability checking and validation.
 #>
 function Test-PortInUse {
   param(

@@ -1,3 +1,45 @@
+<#
+.SYNOPSIS
+    Converts pipeline objects to a Markdown-formatted table.
+
+.DESCRIPTION
+    This function takes objects from the pipeline and converts them into a Markdown table format.
+    It supports automatic property detection or custom property selection, handles escaping of
+    special characters, and formats datetime values consistently.
+
+.PARAMETER InputObject
+    The object(s) to convert to a Markdown table. Accepts pipeline input.
+
+.PARAMETER Property
+    Optional array of property names to include in the table. If not specified,
+    all NoteProperty members from the first object are used.
+
+.EXAMPLE
+    Get-Process | Select-Object -First 5 Name, Id, CPU | ConvertTo-MarkdownTable
+
+.EXAMPLE
+    $results | ConvertTo-MarkdownTable -Property 'Name', 'Status', 'Duration'
+
+.OUTPUTS
+    System.String - A Markdown-formatted table string.
+
+.NOTES
+    File Name      : ConvertTo-MarkdownTable.ps1
+    Prerequisite   : PowerShell 5.1 or later
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    Utility function for generating Markdown output from PowerShell objects.
+#>
 function ConvertTo-MarkdownTable {
   [CmdletBinding()]
   param(

@@ -1,3 +1,48 @@
+<#
+.SYNOPSIS
+    Installs or updates the SqlServer PowerShell module.
+
+.DESCRIPTION
+    Ensures the SqlServer module is installed from PSGallery. Handles NuGet provider
+    installation, PSGallery trust configuration, module version checking, and optional
+    upgrade to the latest version. Supports both interactive and non-interactive modes.
+
+.PARAMETER NoAutoUpgrade
+    If specified, prevents automatic upgrade to the latest version when a newer
+    version is available.
+
+.PARAMETER Interactive
+    If specified, prompts the user for upgrade confirmation rather than just logging.
+
+.EXAMPLE
+    Install-SqlServerModule
+
+.EXAMPLE
+    Install-SqlServerModule -NoAutoUpgrade -Interactive
+
+.OUTPUTS
+    System.Version - The version of the installed SqlServer module, or $null on failure.
+
+.NOTES
+    File Name      : Install-SqlServerModule.ps1
+    Prerequisite   : PowerShell 5.1 or later, Internet connectivity
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.LINK
+    https://www.powershellgallery.com/packages/SqlServer
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    PowerShell module management and SQL Server tooling setup.
+#>
 function Install-SqlServerModule {
   [CmdletBinding()]
   param(

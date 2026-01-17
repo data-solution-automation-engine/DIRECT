@@ -1,15 +1,44 @@
-
 <#
 .SYNOPSIS
-  Checks for the existence and usability of a dotnet tool (local or global).
+    Checks for the existence and usability of a dotnet tool (local or global).
+
 .DESCRIPTION
-  Checks if the specified dotnet tool is installed locally or globally, attempts to restore if missing, and returns a hashtable with tool existence and command string.
+    Checks if the specified dotnet tool is installed locally or globally, attempts
+    to restore from dotnet-tools.json if missing, and returns a hashtable with tool
+    existence status and the command string to invoke it.
+
 .PARAMETER ToolName
-  The name of the dotnet tool to check (e.g., 'sqlpackage').
+    The name of the dotnet tool to check (e.g., 'sqlpackage').
+
 .EXAMPLE
-  $tool = Test-Tool -ToolName "sqlpackage"
+    $tool = Test-DotnetTool -ToolName "sqlpackage"
+    if ($tool.Exists) { & $tool.Command --version }
+
+.EXAMPLE
+    $result = Test-DotnetTool -ToolName "dotnet-ef"
+
+.OUTPUTS
+    System.Collections.Hashtable - Returns @{ Exists = $true/$false; Command = "..." }
+
 .NOTES
-  Returns a hashtable: @{ Exists = $true/$false; Command = "..." }
+    File Name      : Test-DotnetTool.ps1
+    Prerequisite   : PowerShell 5.1 or later, .NET SDK
+    License        : LGPL-3.0 (GNU Lesser General Public License v3.0)
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT
+
+.LINK
+    https://github.com/data-solution-automation-engine/DIRECT/blob/main/COPYING.txt
+
+.LINK
+    https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install
+
+.COMPONENT
+    DIRECT Framework - Data Integration Runtime Execution Control Tools
+
+.FUNCTIONALITY
+    Dotnet tool discovery and validation.
 #>
 function Test-DotnetTool {
   param(
