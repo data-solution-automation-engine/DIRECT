@@ -1,192 +1,227 @@
-/*******************************************************************************
- * [omd].[GetBatch]
- *******************************************************************************
+/**
+ * @procedure [omd].[GetBatch]
+ * @description
+ *   Retrieves attributes for an existing Batch by code and returns both
+ *   a resultset and a JSON representation via an output parameter.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {NVARCHAR(500)} @BatchCode        [in]  (required)
+ *   Batch Code to retrieve.
+ * @param {CHAR(1)}       @Debug            [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(MAX)} @BatchDetails     [out] (optional)
+ *   JSON representation of the Batch or NULL if not found.
+ * @param {CHAR(1)}       @SuccessIndicator [out] (optional)
+ *   'Y' if found, otherwise 'N'.
+ * @param {NVARCHAR(MAX)} @MessageLog       [out] (optional)
+ *   Structured JSON-format log for diagnostics.
  *
- * Purpose:
- *   Gets attributes for an existing Batch by name (Batch Code)
+ * @returns {Resultset}
+ *   Columns: [BATCH_ID], [BATCH_CODE], [BATCH_TYPE], [FREQUENCY_CODE],
+ *   [ACTIVE_INDICATOR], [BATCH_DESCRIPTION]
  *
- * Inputs:
- *   - Batch Code
- *   - Debug Flag (Y/N, defaults to N)
+ * @lineage
+ * - reads:
+ *     table [omd].[BATCH]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     procedure [omd].[InsertIntoEventLog]
  *
- * Outputs as resultset 0:
- *   - Batch Id
- *   - Batch Code
- *   - Batch Type
- *   - Frequency Code
- *   - Active Indicator
- *   - Batch Description
+ * @example
  *
- * Output variables:
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
-
 EXEC [omd].[GetBatch]
-  @BatchCode = 'MyExistingBatch'
-
- *******************************************************************************
- *
- ******************************************************************************/
+  @BatchCode = N'MyExistingBatch';
+ */
 
 CREATE PROCEDURE [omd].[GetBatch]
 (
-  -- Mandatory parameters
-  @BatchCode                NVARCHAR(1000),
-  -- Optional parameters
-  @Debug                    CHAR(1)         = 'N',
-  -- Output parameters
-  @BatchDetails             NVARCHAR(MAX)   = NULL  OUTPUT,
-  @SuccessIndicator         CHAR(1)         = 'N'   OUTPUT,
-  @MessageLog               NVARCHAR(MAX)   = NULL  OUTPUT
+   -- Mandatory parameters
+   @BatchCode         NVARCHAR(500)   = NULL
+   -- Optional parameters
+  ,@Debug             CHAR(1)         = 'N'
+   -- Output parameters
+  ,@BatchDetails      NVARCHAR(MAX)   = NULL OUTPUT
+  ,@SuccessIndicator  CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog        NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
-BEGIN TRY
-  SET NOCOUNT ON;
-  SET ANSI_WARNINGS OFF; -- Suppress NULL elimination warning within SET operation.
+BEGIN
+  BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-  -- Default output logging setup
-  DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
-  DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
-  DECLARE @EndTimestampString NVARCHAR(20) = N'';
-  DECLARE @LogMessage NVARCHAR(MAX);
+    SET @Debug = UPPER(@Debug);
 
-  -- Log standard metadata
-  SET @LogMessage = @SpName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
-  SET @LogMessage = @DirectVersion;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
-  SET @LogMessage = @StartTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
+    -- Default output logging setup
+    DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
+    DECLARE @DirectVersion NVARCHAR(4000) = [omd_metadata].[GetFrameworkVersion]();
+    DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
+    DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    DECLARE @EndTimestamp DATETIME2 = NULL;
+    DECLARE @EndTimestampString NVARCHAR(20) = N'';
+    DECLARE @LogMessage NVARCHAR(MAX);
 
-  -- Log parameters
-  SET @LogMessage = @BatchCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchCode', @LogMessage, @MessageLog)
+    -- Log standard metadata
+    SET @LogMessage = @SpName;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
+    SET @LogMessage = @DirectVersion;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
+    SET @LogMessage = @StartTimestampString;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
 
-  -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+    -- Log parameters
+    SET @LogMessage = @BatchCode;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchCode', @LogMessage, @MessageLog)
 
-/*******************************************************************************
- * Start of main process
- ******************************************************************************/
+    -- Process variables
+    DECLARE @EventDetail NVARCHAR(4000);
+    DECLARE @EventReturnCode NVARCHAR(100);
 
-  DECLARE @Results TABLE (
-    [BATCH_ID]            INT                         NULL,
-    [BATCH_CODE]          NVARCHAR (1000)             NULL,
-    [BATCH_TYPE]          NVARCHAR (100)              NULL,
-    [FREQUENCY_CODE]      NVARCHAR (100)              NULL,
-    [ACTIVE_INDICATOR]    CHAR (1)                    NULL,
-    [BATCH_DESCRIPTION]   NVARCHAR (4000)             NULL
-  )
+  /*******************************************************************************
+   * Start of main process
+   ******************************************************************************/
 
-  INSERT INTO @Results
-    SELECT
-    [BATCH_ID],
-    [BATCH_CODE],
-    [BATCH_TYPE],
-    [FREQUENCY_CODE],
-    [ACTIVE_INDICATOR],
-    [BATCH_DESCRIPTION]
-  FROM
-    [omd].[BATCH]
-  WHERE
-    [BATCH_CODE] = @BatchCode;
+    DECLARE @Results TABLE (
+      [BATCH_ID]            INT                         NULL,
+      [BATCH_CODE]          NVARCHAR (500)              NULL,
+      [BATCH_TYPE]          NVARCHAR (100)              NULL,
+      [FREQUENCY_CODE]      NVARCHAR (100)              NULL,
+      [ACTIVE_INDICATOR]    CHAR (1)                    NULL,
+      [BATCH_DESCRIPTION]   NVARCHAR (4000)             NULL
+    )
 
-  IF EXISTS (SELECT 1 FROM @Results)
-  BEGIN
-      SET @SuccessIndicator = 'Y';
-      SET @LogMessage = 'Batch with Code ''' + @BatchCode + ''' was found.'
-      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Batch Found', @LogMessage, @MessageLog)
+    INSERT INTO @Results
+      SELECT
+      [BATCH_ID],
+      [BATCH_CODE],
+      [BATCH_TYPE],
+      [FREQUENCY_CODE],
+      [ACTIVE_INDICATOR],
+      [BATCH_DESCRIPTION]
+    FROM
+      [omd].[BATCH]
+    WHERE
+      [BATCH_CODE] = @BatchCode;
 
-  END
-  ELSE
-  BEGIN
+    IF EXISTS (SELECT 1 FROM @Results)
+    BEGIN
+        SET @SuccessIndicator = 'Y';
+        SET @LogMessage = 'Batch with Code ''' + @BatchCode + ''' was found.'
+        SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Batch Found', @LogMessage, @MessageLog)
+    END
+    ELSE
+    BEGIN
       SET @SuccessIndicator = 'N';
-    SET @LogMessage = 'No Batch with Code ''' + @BatchCode + ''' was found.'
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Error Message', @LogMessage, @MessageLog)
-  END
+      SET @LogMessage = 'No Batch with Code ''' + @BatchCode + ''' was found.'
+      SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, N'Error Message', @LogMessage, @MessageLog)
+    END
 
-/*******************************************************************************
- * Return Resultset
- ******************************************************************************/
+  /*******************************************************************************
+   * Return Resultset
+   ******************************************************************************/
 
-  SELECT *
-  FROM @Results;
+    SELECT TOP 1
+      [BATCH_ID],
+      [BATCH_CODE],
+      [BATCH_TYPE],
+      [FREQUENCY_CODE],
+      [ACTIVE_INDICATOR],
+      [BATCH_DESCRIPTION]
+    FROM @Results;
 
-/*******************************************************************************
- * EndOfProcedure Label
- ******************************************************************************/
+  /*******************************************************************************
+   * Return Output Parameter @BatchDetails
+   ******************************************************************************/
 
-  EndOfProcedure:
+    SELECT @BatchDetails = (
+      SELECT TOP 1
+        [BATCH_ID],
+        [BATCH_CODE],
+        [BATCH_TYPE],
+        [FREQUENCY_CODE],
+        [ACTIVE_INDICATOR],
+        [BATCH_DESCRIPTION]
+      FROM @Results
+      FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+    );
 
-  SET @EndTimestamp = SYSUTCDATETIME();
-  SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  SET @LogMessage = @EndTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
-  SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
+  /*******************************************************************************
+   * EndOfProcedure Label
+   ******************************************************************************/
 
-  IF @Debug = 'Y'
-  BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
+    EndOfProcedure:
 
-END TRY
-BEGIN CATCH
-  -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
-  SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
+    SET @EndTimestamp = SYSUTCDATETIME();
+    SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
+    SET @LogMessage = @EndTimestampString;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
+    SET @LogMessage = FORMAT(DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp), 'N0');
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
 
-  DECLARE @ErrorMessage NVARCHAR(4000);
-  DECLARE @ErrorSeverity INT;
-  DECLARE @ErrorState INT;
-  DECLARE @ErrorProcedure NVARCHAR(128);
-  DECLARE @ErrorNumber INT;
-  DECLARE @ErrorLine INT;
+    IF @Debug = 'Y'
+    BEGIN
+      EXEC [omd].[PrintMessageLog] @MessageLog;
+    END
 
-  SELECT
-    @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-    @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-    @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-    @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-    @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-    @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
+  END TRY
+  BEGIN CATCH
+    -- SP-wide error handler and logging
+    SET @SuccessIndicator = 'N'
+    SET @LogMessage = @SuccessIndicator;
+    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
 
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
+    DECLARE @ErrorMessage NVARCHAR(4000);
+    DECLARE @ErrorSeverity INT;
+    DECLARE @ErrorState INT;
+    DECLARE @ErrorProcedure NVARCHAR(128);
+    DECLARE @ErrorNumber INT;
+    DECLARE @ErrorLine INT;
 
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
+    SELECT
+      @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
+      @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
+      @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
+      @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
+      @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
+      @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
 
-  END
+    IF @Debug = 'Y'
+    BEGIN
+      PRINT 'Error in '''       + @SpName + ''''
+      PRINT 'Error Message: '   + @ErrorMessage
+      PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
+      PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
+      PRINT 'Error Procedure: ' + @ErrorProcedure
+      PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
+      PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
+      PRINT 'SuccessIndicator: '+ @SuccessIndicator
 
-  SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
-  SET @EventReturnCode = ERROR_NUMBER();
+      -- Spool message log
+      EXEC [omd].[PrintMessageLog] @MessageLog;
 
-  EXEC [omd].[InsertIntoEventLog]
-    @EventDetail       = @EventDetail,
-    @EventReturnCode   = @EventReturnCode;
+    END
 
-  THROW
-END CATCH
+    SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
+    SET @EventReturnCode = ERROR_NUMBER();
+
+    EXEC [omd].[InsertIntoEventLog]
+      @EventDetail       = @EventDetail,
+      @EventReturnCode   = @EventReturnCode;
+
+    -- Ensure output parameters are set before re-throwing
+    SET @BatchDetails = (
+      SELECT
+        'ERROR' AS [Status],
+        COALESCE(@ErrorMessage, 'Unknown error') AS [ErrorMessage],
+        COALESCE(@ErrorProcedure, 'N/A') AS [ErrorProcedure],
+        COALESCE(@ErrorLine, -1) AS [ErrorLine],
+        COALESCE(@ErrorNumber, -1) AS [ErrorNumber]
+      FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+    );
+    SET @SuccessIndicator = 'N';
+
+  END CATCH
+END

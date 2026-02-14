@@ -1,9 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Direct_Framework", "Direct_Framework\Direct_Framework.sqlproj", "{B88FF268-22F9-4416-9E36-CFE598D243EB}"
+Project("{42EA0DBD-9CF1-443E-919E-BE9C484E4577}") = "Direct_Framework", "Direct_Framework\Direct_Framework.sqlproj", "{B88FF268-22F9-4416-9E36-CFE598D243EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Direct_Framework.Integration.Tests", "Direct_Framework.Integration.Tests\Direct_Framework.Integration.Tests.csproj", "{DB1DB597-B212-D439-B9C3-2FABAAC7191D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.vsconfig = .vsconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		dotnet.config = dotnet.config
+		global.json = global.json
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +32,10 @@ Global
 		{B88FF268-22F9-4416-9E36-CFE598D243EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B88FF268-22F9-4416-9E36-CFE598D243EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B88FF268-22F9-4416-9E36-CFE598D243EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DB1DB597-B212-D439-B9C3-2FABAAC7191D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB1DB597-B212-D439-B9C3-2FABAAC7191D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB1DB597-B212-D439-B9C3-2FABAAC7191D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB1DB597-B212-D439-B9C3-2FABAAC7191D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

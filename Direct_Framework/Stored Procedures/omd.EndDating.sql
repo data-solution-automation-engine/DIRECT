@@ -1,65 +1,89 @@
-/*******************************************************************************
- * [omd].[EndDating]
- *******************************************************************************
+/**
+ * @procedure [omd].[END_DATING]
+ * @description End-date non-latest records in a historized table by clearing current-record flags based on key(s).
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {NVARCHAR(500)}  @DataObjectName                    [in]  (required)
+ *   Target table name.
+ * @param {NVARCHAR(500)}  @DataObjectSchema                  [in]  (required)
+ *   Target schema name.
+ * @param {NVARCHAR(4000)} @KeyArray                          [in]  (required)
+ *   Comma-separated list of key columns.
+ * @param {INT}            @ModuleInstanceId                  [in]  (optional, default=0)
+ *   Module instance context for logging.
+ * @param {NVARCHAR(500)}  @CurrentRecordIndicatorColumnName  [in]  (optional, default='CURRENT_RECORD_INDICATOR')
+ *   Column name marking current records.
+ * @param {NVARCHAR(500)}  @InscriptionRecordIdColumnName     [in]  (optional, default='INSCRIPTION_RECORD_ID')
+ *   Column name for record identity.
+ * @param {NVARCHAR(500)}  @ExpiryDateColumnName              [in]  (optional, default='INSCRIPTION_TIMESTAMP')
+ *   Column name for expiry date.
+ * @param {NVARCHAR(500)}  @EffectiveDateColumnName           [in]  (optional, default='INSCRIPTION_BEFORE_TIMESTAMP')
+ *   Column name for the effective date.
+ * @param {CHAR(1)}        @Debug                             [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {CHAR(1)}        @SuccessIndicator                  [out] (optional)
+ *   'Y' if the operation completed successfully; otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                        [out] (optional)
+ *   Structured JSON-format log for diagnostics.
  *
- * Purpose:
- *   End Dating
+ * @returns {INT} Return code: 0 = success, -1 = failure, -2 = unhandled error.
  *
- * Inputs:
- *   - Data Object Name
- *   - Data Object Schema
- *   - Key Array (list of keys to end-date against)
- *   - Current Record Indicator Column Name (if available)
- *   - Inscripion Record Id Column Name (defaulted to INSCRIPTION_RECORD_ID)
- *   - Expiry Date Column Name (defaulted to INSCRIPTION_TIMESTAMP)
- *   - Effective Date Column Name (defaulted to INSCRIPTION_BEFORE_TIMESTAMP)
- *   - Debug Flag (Y/N, defaults to N)
+ * @resultset none
  *
- * Outputs:
- *   - Success Indicator (Y/N)
- *   - Message Log
+ * @lineage
+ * - reads:
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     target table [@DataObjectSchema].[@DataObjectName] via dynamic SQL UPDATE/DELETE
+ *     procedure [omd].[InsertIntoEventLog]
+ * - utilities:
+ *     function [omd].[AddLogMessage]
+ *     procedure [omd].[PrintMessageLog]
  *
- * Usage:
- *
- *******************************************************************************
-
-TBA
-
- *******************************************************************************
- *
- ******************************************************************************/
+ * @example
+ * DECLARE @SuccessIndicator CHAR(1), @MessageLog NVARCHAR(MAX);
+ * EXEC [omd].[END_DATING]
+ *   @DataObjectName = N'PSA_CUSTOMER',
+ *   @DataObjectSchema = N'dbo',
+ *   @KeyArray = N'CustomerId, CountryCode',
+ *   @Debug = 'Y',
+ *   @SuccessIndicator = @SuccessIndicator OUTPUT,
+ *   @MessageLog = @MessageLog OUTPUT;
+ * EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+ */
 
 CREATE PROCEDURE [omd].[END_DATING]
 (
-  -- Mandatory parameters
-  @DataObjectName                   VARCHAR(MAX)
- ,@DataObjectSchema                 VARCHAR(MAX)
- ,@KeyArray                         VARCHAR(MAX)  = NULL
- ,@ModuleInstanceId                 INT           = 0
-  -- Optional parameters
- ,@CurrentRecordIndicatorColumnName VARCHAR(50)   = 'CURRENT_RECORD_INDICATOR'
- ,@InscriptionRecordIdColumnName    VARCHAR(50)   = 'INSCRIPTION_RECORD_ID'
- ,@ExpiryDateColumnName             VARCHAR(50)   = 'INSCRIPTION_TIMESTAMP'
- ,@EffectiveDateColumnName          VARCHAR(50)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
- ,@Debug                            CHAR(1)       = 'N',
-  -- Output parameters
-  @SuccessIndicator                 CHAR(1)       = NULL OUTPUT,
-  @MessageLog                       NVARCHAR(MAX) = NULL OUTPUT
+   /* Required parameters */
+   @DataObjectName                    NVARCHAR(500)   = NULL
+  ,@DataObjectSchema                  NVARCHAR(500)   = NULL
+  ,@KeyArray                          NVARCHAR(4000)  = NULL
+  ,@ModuleInstanceId                  INT             = 0
+   -- Optional parameters
+  ,@CurrentRecordIndicatorColumnName  NVARCHAR(500)   = 'CURRENT_RECORD_INDICATOR'
+  ,@InscriptionRecordIdColumnName     NVARCHAR(500)   = 'INSCRIPTION_RECORD_ID'
+  ,@ExpiryDateColumnName              NVARCHAR(500)   = 'INSCRIPTION_TIMESTAMP'
+  ,@EffectiveDateColumnName           NVARCHAR(500)   = 'INSCRIPTION_BEFORE_TIMESTAMP'
+  ,@Debug                             CHAR(1)         = 'N'
+   -- Output parameters
+  ,@SuccessIndicator                  CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                        NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
-BEGIN TRY
-SET NOCOUNT ON
+BEGIN
+  BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
   -- Default output logging setup
   DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
+  DECLARE @DirectVersion NVARCHAR(100) = [omd_metadata].[GetFrameworkVersion]();
+  DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
   DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
+  DECLARE @EndTimestamp DATETIME2 = NULL;
   DECLARE @EndTimestampString NVARCHAR(20) = N'';
   DECLARE @LogMessage NVARCHAR(MAX);
 
@@ -90,9 +114,8 @@ SET NOCOUNT ON
   SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @EffectiveDateColumnName', @LogMessage, @MessageLog)
 
   -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
+  DECLARE @EventDetail NVARCHAR(4000);
+  DECLARE @EventReturnCode NVARCHAR(100);
 
 /*******************************************************************************
  * Start of main process
@@ -110,10 +133,6 @@ DECLARE
   ,@EffectiveDateColumnName VARCHAR(50)                 = 'INSCRIPTION_TIMESTAMP'
   ,@ExpiryDateColumnName VARCHAR(50)                    = 'INSCRIPTION_BEFORE_TIMESTAMP'
   ,@DirectUpdateModuleInstanceIdColumnName VARCHAR(50)  = 'MODULE_INSTANCE_UPDATE_ID'
-
-    -- Process variables
-  DECLARE @EventDetail NVARCHAR(4000);
-  DECLARE @EventReturnCode INT;
 
 -- The resulting query
 DECLARE @Query AS VARCHAR(MAX);
@@ -240,18 +259,19 @@ BEGIN CATCH
     PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
     PRINT 'SuccessIndicator: '+ @SuccessIndicator
 
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
+      -- Spool message log
+      EXEC [omd].[PrintMessageLog] @MessageLog;
 
-  END
+    END
 
-  SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
-  SET @EventReturnCode = ERROR_NUMBER();
+    SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
+    SET @EventReturnCode = ERROR_NUMBER();
 
-  EXEC [omd].[InsertIntoEventLog]
-    @EventDetail       = @EventDetail,
-    @EventReturnCode   = @EventReturnCode,
-    @ModuleInstanceId  = @ModuleInstanceId;
+    EXEC [omd].[InsertIntoEventLog]
+      @EventDetail       = @EventDetail,
+      @EventReturnCode   = @EventReturnCode,
+      @ModuleInstanceId  = @ModuleInstanceId;
 
-  THROW
-END CATCH
+    THROW
+  END CATCH
+END

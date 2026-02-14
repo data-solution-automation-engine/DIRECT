@@ -1,6 +1,6 @@
 CREATE TABLE [omd].[BATCH] (
   [BATCH_ID]            INT IDENTITY (1, 1)         NOT NULL,
-  [BATCH_CODE]          NVARCHAR (1000)             NOT NULL,
+  [BATCH_CODE]          NVARCHAR (500)              NOT NULL,
   [BATCH_TYPE]          NVARCHAR (100)              NULL,
   [FREQUENCY_CODE]      NVARCHAR (100)
     CONSTRAINT [DF_OMD_BATCH_FREQUENCY_CODE]

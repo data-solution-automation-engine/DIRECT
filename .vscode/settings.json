@@ -1,0 +1,125 @@
+{
+  "files.associations": {
+    "*.{sqlproj,csproj}": "xml"
+  },
+  "git.autofetch": true,
+  "editor.rulers": [
+    {
+      "column": 80,
+      "color": "#333333"
+    },
+    {
+      "column": 120,
+      "color": "#772233"
+    }
+  ],
+  "editor.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "mssql.intelliSense.enableIntelliSense": true,
+  "mssql.intelliSense.enableErrorChecking": true,
+  "mssql.intelliSense.enableSuggestions": true,
+  "mssql.intelliSense.enableQuickInfo": true,
+  "mssql.intelliSense.lowerCaseSuggestions": false,
+  "editor.formatOnSave": false,
+  "editor.renderWhitespace": "all",
+  "workbench.colorCustomizations": {
+    "editorWhitespace.foreground": "#555555"
+  },
+  "commentAnchors.workspace.matchFiles": "Direct_Framework/**/*.sql",
+  "commentAnchors.tags.displayInRuler": false,
+  "commentAnchors.tags.displayInGutter": false,
+  "commentAnchors.tags.anchors": {
+    "@procedure": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@package": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@description": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@version": {
+      "scope": "hidden",
+      "highlightColor": "#dcdcaa",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@see": {
+      "scope": "hidden",
+      "highlightColor": "#9cdcfe",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@param": {
+      "scope": "hidden",
+      "highlightColor": "#9cdcfe",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@resultset": {
+      "scope": "hidden",
+      "highlightColor": "#ce9178",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@returns": {
+      "scope": "hidden",
+      "highlightColor": "#ce9178",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@lineage": {
+      "scope": "hidden",
+      "highlightColor": "#d16969",
+      "isBold": true,
+      "isItalic": false
+    },
+    "@example": {
+      "scope": "hidden",
+      "highlightColor": "#b5cea8",
+      "isBold": true,
+      "isItalic": false
+    }
+  },
+  "mssql.connections": [],
+  "cSpell.words": [
+    "azurepowershell",
+    "Dacpac",
+    "Dacpacs",
+    "FORMATMESSAGE",
+    "HASHBYTES",
+    "INTPR",
+    "ISJSON",
+    "ISNULL",
+    "LASTEXITCODE",
+    "MAINT",
+    "modinst",
+    "msdb",
+    "NOCOUNT",
+    "NVARCHAR",
+    "OPENJSON",
+    "Passw",
+    "resultset",
+    "Roslynator",
+    "sqlcmd",
+    "sqlpackage",
+    "Subselect",
+    "succ",
+    "SYSUTCDATETIME",
+    "tempdb",
+    "tsqlt",
+    "tuln",
+    "winget",
+    "XACT",
+    "xmltmp"
+  ]
+}

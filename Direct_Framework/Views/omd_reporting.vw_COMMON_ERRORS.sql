@@ -1,35 +1,54 @@
+/**
+ * @view [omd_reporting].[vw_COMMON_ERRORS]
+ * @description Aggregate recent error messages per module to identify common errors.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - MODULE_CODE: Module code.
+ *   - MODULE_DESCRIPTION: Module description.
+ *   - ERROR_MSG: Concatenated error message text (last month).
+ *   - ERROR_COUNT: Number of error rows aggregated per message.
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[EVENT_LOG]
+ *
+ * @example
+
+SELECT TOP 100 * FROM [omd_reporting].[vw_COMMON_ERRORS];
+
+ */
+
 CREATE VIEW [omd_reporting].[vw_COMMON_ERRORS]
 AS
 
 SELECT
-  m.MODULE_CODE
+   m.MODULE_CODE
   ,m.MODULE_DESCRIPTION
-  ,CASE WHEN UPPER(error.ERROR_MSG) LIKE '%TEMPDB%' THEN 'TempDB'
-  WHEN error.ERROR_MSG LIKE '%WinSCP%' THEN 'WinSCP'
-  WHEN error.ERROR_MSG LIKE '%deadlocked%' THEN 'Dead Lock'
-  WHEN error.ERROR_MSG LIKE '%duplicate key%' THEN 'Duplicate Key'
-
-  ELSE REPLACE(error.ERROR_MSG,'&#x0D;','')
-  END AS ERROR_MSG
-  ,count(*) AS COUNT
-
-from omd.MODULE m
-join (
-  select mi.MODULE_ID
-  ,mi.MODULE_INSTANCE_ID
-  ,mi.BATCH_INSTANCE_ID
-  ,(
-    SELECT EVENT_DETAIL + ''
-    from [omd].[EVENT_LOG] sub 
-    where sub.MODULE_INSTANCE_ID = mi.MODULE_INSTANCE_ID
-      and sub.BATCH_INSTANCE_ID = mi.BATCH_INSTANCE_ID
-      and sub.EVENT_TIMESTAMP > dateadd(MONTH, -1, SYSUTCDATETIME())
-    for xml path ('') ) as ERROR_MSG
-  from omd.MODULE_INSTANCE mi
-  WHERE mi.START_TIMESTAMP> dateadd(MONTH, -1, SYSUTCDATETIME())
-  group by mi.MODULE_ID,mi.MODULE_INSTANCE_ID, mi.BATCH_INSTANCE_ID
+  ,error.ERROR_MSG AS ERROR_MSG
+  ,COUNT(*) AS ERROR_COUNT
+FROM omd.MODULE m
+JOIN (
+  SELECT
+     mi.MODULE_ID
+    ,mi.MODULE_INSTANCE_ID
+    ,mi.BATCH_INSTANCE_ID
+    ,(
+      SELECT EVENT_DETAIL + ''
+      FROM [omd].[EVENT_LOG] sub
+      WHERE sub.MODULE_INSTANCE_ID = mi.MODULE_INSTANCE_ID
+        AND sub.BATCH_INSTANCE_ID = mi.BATCH_INSTANCE_ID
+        AND sub.EVENT_TIMESTAMP > dateadd(MONTH, -1, SYSUTCDATETIME())
+      FOR XML PATH ('') ) as ERROR_MSG
+    FROM omd.MODULE_INSTANCE mi
+    WHERE mi.START_TIMESTAMP > dateadd(MONTH, -1, SYSUTCDATETIME())
+    GROUP BY mi.MODULE_ID,mi.MODULE_INSTANCE_ID, mi.BATCH_INSTANCE_ID
   ) error
-on error.MODULE_ID = m.MODULE_ID
-and rtrim(ERROR_MSG) <> ''
-group by m.MODULE_CODE, m.MODULE_DESCRIPTION, error.ERROR_MSG
---order by 4 desc
+ON error.MODULE_ID = m.MODULE_ID
+AND rtrim(ERROR_MSG) <> ''
+GROUP BY m.MODULE_CODE, m.MODULE_DESCRIPTION, error.ERROR_MSG

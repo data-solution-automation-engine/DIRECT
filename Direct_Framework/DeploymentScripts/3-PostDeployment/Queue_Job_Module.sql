@@ -1,34 +1,33 @@
 /*******************************************************************************
- * [omd].[Queue_Job_Module]
- *******************************************************************************
- *
- * https://github.com/data-solution-automation-engine/DIRECT
- *
- * DIRECT Framework v2.0 Stored Procedures
- *
- *******************************************************************************
- * !! THIS IS A MSDB-BASED PROCESS,                 !!
- * !! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
- *******************************************************************************
- *
- * Process:
- *   TODO: tba
- *
- * Purpose:
- *   TODO: tba
- *
- * Input:
- *   - TODO: tba
- *
- * Returns:
- *   - TODO: tba
- *
- * Usage:
+[omd].[Queue_Job_Module]
+********************************************************************************
 
-TODO: tba
+https://github.com/data-solution-automation-engine/DIRECT
 
- *
- ******************************************************************************/
+DIRECT Framework v2.1 Stored Procedures
+
+********************************************************************************
+!! THIS IS A MSDB-BASED PROCESS,                 !!
+!! IT ONLY WORKS ON ON-PREMISES TYPE SQL SERVERS !!
+********************************************************************************
+
+Process:
+  - Module queue.
+
+Purpose:
+  - State machine based job queue for module processing.
+
+Input:
+  - Not applicable.
+
+Returns:
+  - Not applicable.
+
+Usage:
+  - Stop and start from SQL Server Agent as required.
+
+
+*******************************************************************************/
 
 USE [msdb]
 GO
@@ -84,7 +83,7 @@ AS
 GO
 
 DECLARE @DEBUG_FLAG INT = 1; -- Debug is enabled by default
-DECLARE @MAX_CONCURRENCY INT = 2 -- Determines how many processes can be run in parallel / concurrent
+DECLARE @MAX_CONCURRENCY INT = 4 -- Determines how many processes can be run in parallel / concurrent
 DECLARE @NUMBER_OF_RUNNING_PROCESSES INT = 0;
 DECLARE @NUMBER_OF_QUEUED_PROCESSES INT = 0;
 DECLARE @DELAY_TIME VARCHAR(8) = ''00:00:05'' -- This is the time the queue waits upon detecting concurrency

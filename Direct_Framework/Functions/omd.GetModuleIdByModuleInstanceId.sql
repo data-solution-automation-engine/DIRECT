@@ -1,18 +1,38 @@
 
+/**
+ * @function [omd].[GetModuleIdByModuleInstanceId]
+ * @description
+ *   Returns the MODULE_ID for a given MODULE_INSTANCE_ID.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {BIGINT} @ModuleInstanceId  [in] (required)
+ *   The module instance identifier.
+ *
+ * @returns {INT} The module ID, or NULL if not found.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     [omd].[MODULE_INSTANCE]
+ *
+ * @example
+
+SELECT [omd].[GetModuleIdByModuleInstanceId](123456789);
+
+ */
+
 CREATE FUNCTION [omd].[GetModuleIdByModuleInstanceId]
 (
-  @ModuleInstanceId INT -- An instance of the module.
+  @ModuleInstanceId BIGINT -- An instance of the module.
 )
 RETURNS INT AS
-
--- =============================================
--- Function: Get Module Id (by Module Instance Id)
--- Description: Takes the module instance id as input and returns the Module Id as registered in the framework
--- =============================================
-
 BEGIN
-  -- Declare ouput variable
 
+  -- Declare output variable
   DECLARE @ModuleId INT =
   (
     SELECT DISTINCT mi.MODULE_ID
@@ -24,4 +44,5 @@ BEGIN
 
   -- Return the result of the function
   RETURN @ModuleId
+
 END

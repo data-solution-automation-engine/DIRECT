@@ -8,12 +8,12 @@ CREATE TABLE [omd].[MODULE_INSTANCE] (
   [NEXT_RUN_STATUS_CODE]      NVARCHAR (100)          NOT NULL,
   [EXECUTION_STATUS_CODE]     NVARCHAR (100)          NOT NULL,
   [EXECUTION_CONTEXT]         NVARCHAR (4000)         NULL,
-  [ROWS_INPUT]                INT                     NULL,
-  [ROWS_INSERTED]             INT                     NULL,
-  [ROWS_UPDATED]              INT                     NULL,
-  [ROWS_DELETED]              INT                     NULL,
-  [ROWS_DISCARDED]            INT                     NULL,
-  [ROWS_REJECTED]             INT                     NULL,
+  [ROWS_INPUT]                BIGINT                  NULL,
+  [ROWS_INSERTED]             BIGINT                  NULL,
+  [ROWS_UPDATED]              BIGINT                  NULL,
+  [ROWS_DELETED]              BIGINT                  NULL,
+  [ROWS_DISCARDED]            BIGINT                  NULL,
+  [ROWS_REJECTED]             BIGINT                  NULL,
   [EXECUTED_CODE_CHECKSUM]    VARBINARY(64)           NULL,
 
   CONSTRAINT [PK_MODULE_INSTANCE]
@@ -38,4 +38,20 @@ CREATE TABLE [omd].[MODULE_INSTANCE] (
   CONSTRAINT [FK_OMD_MODULE_INSTANCE_OMD_METADATA_PROCESSING_STATUS]
     FOREIGN KEY ([INTERNAL_PROCESSING_CODE])
     REFERENCES [omd_metadata].[INTERNAL_PROCESSING_STATUS] ([INTERNAL_PROCESSING_STATUS_CODE])
+);
+
+GO
+
+CREATE INDEX IX_OMD_MODULE_INSTANCE_OMD_BATCH_INSTANCE_ID
+  ON [omd].[MODULE_INSTANCE] ([BATCH_INSTANCE_ID]);
+
+GO
+
+CREATE INDEX IX_OMD_MODULE_INSTANCE_MODULE_BATCH_STATUS
+ON [omd].[MODULE_INSTANCE] (
+    [MODULE_ID],
+    [BATCH_INSTANCE_ID],
+    [EXECUTION_STATUS_CODE],
+    [NEXT_RUN_STATUS_CODE],
+    [MODULE_INSTANCE_ID]
 );

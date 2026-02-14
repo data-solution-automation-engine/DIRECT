@@ -12,7 +12,7 @@ SET IDENTITY_INSERT [omd].[MODULE] ON;
 
 DECLARE @tblMerge TABLE(
   [MODULE_ID]           INT             NOT NULL,
-  [MODULE_CODE]         NVARCHAR (1000) NOT NULL,
+  [MODULE_CODE]         NVARCHAR (500)  NOT NULL,
   [MODULE_DESCRIPTION]  NVARCHAR (4000) NOT NULL,
   [MODULE_TYPE]         NVARCHAR (100)  NOT NULL,
   [DATA_OBJECT_SOURCE]  NVARCHAR (1000) NOT NULL,
@@ -44,15 +44,15 @@ VALUES
   N'DataLogistics',
   N'N/A',
   N'N/A',
-  N'Maintenance',
+  N'MAINT',
   N'On-demand',
   'Y',
   N'SELECT NULL'
 )
 
-MERGE [omd].[MODULE] AS TARGET
+MERGE [omd].[MODULE] AS tgt
 USING @tblMerge AS src
-    ON  TARGET.[MODULE_ID] = src.[MODULE_ID]
+    ON  tgt.[MODULE_ID] = src.[MODULE_ID]
 
 WHEN MATCHED THEN
     UPDATE

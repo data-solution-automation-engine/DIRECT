@@ -1,16 +1,35 @@
-CREATE FUNCTION omd.GetModuleIdByName
+/**
+ * @function [omd].[GetModuleIdByName]
+ * @description
+ *   Returns the MODULE_ID for the given MODULE_CODE.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {NVARCHAR(500)} @ModuleCode  [in] (required)
+ *   The MODULE_CODE to look up.
+ *
+ * @returns {INT} The module ID, or NULL if not found.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     [omd].[MODULE]
+ *
+ * @example
+
+SELECT [omd].[GetModuleIdByName](N'MY_MODULE');
+
+ */
+
+CREATE FUNCTION [omd].[GetModuleIdByName]
 (
-  @ModuleCode VARCHAR(255) -- The name of the module, as identified in the MODULE_CODE attribute in the MODULE table.
+  @ModuleCode NVARCHAR(500)
 )
-RETURNS VARCHAR(255) AS
-
--- =============================================
--- Function: Get Module Id (by name)
--- Description: Takes the module code as input and returns the Module ID as registered in the framework
--- =============================================
-
+RETURNS INT AS
 BEGIN
-  -- Declare ouput variable
 
   DECLARE @ModuleId INT =
   (
@@ -19,6 +38,6 @@ BEGIN
     WHERE m.MODULE_CODE = @ModuleCode
   )
 
-  -- Return the result of the function
   RETURN @ModuleId
+
 END

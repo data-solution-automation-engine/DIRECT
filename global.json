@@ -1,0 +1,10 @@
+{
+  "sdk": {
+    "allowPrerelease": true,
+    "rollForward": "latestFeature",
+    "version": "10.0.0"
+  },
+  "msbuild-sdks": {
+    "MSTest.Sdk": "4.0.2"
+  }
+}

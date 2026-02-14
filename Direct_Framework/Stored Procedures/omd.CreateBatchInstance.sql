@@ -1,251 +1,414 @@
-/*******************************************************************************
- * [omd].[CreateBatchInstance]
- *******************************************************************************
+/**
+ * @procedure [omd].[CreateBatchInstance]
+ * @description
+ *   Creates/registers a new Batch Instance (execution/run) for a Batch by its code.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {NVARCHAR(500)}  @BatchCode                     [in]  (required)
+ *   The Batch Code (BATCH.BATCH_CODE) for which to create an instance.
+ * @param {BIGINT}         @ParentBatchInstanceId         [in]  (optional, default=0)
+ *   Parent Batch Instance when creating hierarchical runs; 0 for none.
+ * @param {CHAR(1)}        @Debug                         [in]  (optional, default='N')
+ *   Enables debug logging.
+ * @param {NVARCHAR(4000)} @ExecutionContext              [in]  (optional, default='')
+ *   Runtime context (e.g., GUID, SPID) for traceability.
+ * @param {BIGINT}         @BatchInstanceId               [out] (optional)
+ *   Newly created Batch Instance Id.
+ * @param {DATETIME2}      @BatchInstanceStartTimestamp   [out] (optional)
+ *   Start timestamp captured at creation.
+ * @param {CHAR(1)}        @SuccessIndicator              [out] (optional)
+ *   'Y' if creation succeeded, otherwise 'N'.
+ * @param {NVARCHAR(MAX)}  @MessageLog                    [out] (optional)
+ *   Structured JSON-format log for diagnostics.
  *
+ * @resultset none
  *
- * Purpose:
- *   Create/Register a new Batch Instance/Execution/Run of a Batch, by Batch Code.
+ * @lineage
+ * - reads:
+ *     function [omd].[GetBatchIdByName]
+ *     function [omd_metadata].[GetFrameworkVersion]
+ * - writes:
+ *     table [omd].[BATCH_INSTANCE]
+ *     procedure [omd].[InsertIntoEventLog]
  *
- * Inputs:
- *   - Batch Code, the name of the batch (from BATCH_CODE in omd.BATCH)
- *   - Execution runtime Is (e.g. GUID, SPID)
- *   - Debug Flag (Y/N, defaults to N)
+ * @example
  *
- * Outputs:
- *   - Batch Instance Id
- *   - Success Indicator (Y/N)
- *   - Message Log
- *
- * Usage:
- *
- *******************************************************************************
 
-DECLARE @BatchInstanceId BIGINT
+DECLARE @BatchInstanceId BIGINT,
+        @BatchInstanceStartTimestamp DATETIME2,
+        @SuccessIndicator CHAR(1),
+        @MessageLog NVARCHAR(MAX);
 
 EXEC [omd].[CreateBatchInstance]
-  -- Mandatory parameters
-  @BatchCode = N'<Batch Code / Name>',
-  -- Optional parameters
+  @BatchCode = N'MyBatch',
   @Debug = 'Y',
-  @ExecutionRuntimeId = N'<GUID, SPID>',
-  -- Output parameters
-  @BatchInstanceId = @BatchInstanceId OUTPUT;
+  @ExecutionContext = N'MyContext',
+  @BatchInstanceId = @BatchInstanceId OUTPUT,
+  @BatchInstanceStartTimestamp = @BatchInstanceStartTimestamp OUTPUT,
+  @SuccessIndicator = @SuccessIndicator OUTPUT,
+  @MessageLog = @MessageLog OUTPUT;
 
 PRINT @BatchInstanceId;
+EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 
- *******************************************************************************
- *
- ******************************************************************************/
+ */
 
 CREATE PROCEDURE [omd].[CreateBatchInstance]
 (
-  -- Mandatory parameters
-  @BatchCode              NVARCHAR(1000),
-  -- Optional parameters
-  @ParentBatchInstanceId  BIGINT          = 0,
-  @Debug                  CHAR(1)         = 'N',
-  @ExecutionContext       NVARCHAR(4000)  = N'',
-  -- Output parameters
-  @BatchInstanceId        BIGINT          = NULL OUTPUT,
-  @SuccessIndicator       CHAR(1)         = 'N' OUTPUT,
-  @MessageLog             NVARCHAR(MAX)   = N'' OUTPUT
+   /* Required parameters */
+   @BatchCode                    NVARCHAR(500)  = NULL
+   /* Optional parameters */
+  ,@ParentBatchInstanceId        BIGINT          = 0
+  ,@ExecutionContext             NVARCHAR(4000)  = N''
+  ,@Debug                        CHAR(1)         = 'N'
+   /* Output parameters */
+  ,@BatchInstanceId              BIGINT          = NULL OUTPUT
+  ,@BatchInstanceStartTimestamp  DATETIME2       = NULL OUTPUT
+  ,@SuccessIndicator             CHAR(1)         = 'N' OUTPUT
+  ,@MessageLog                   NVARCHAR(MAX)   = N'' OUTPUT
 )
 AS
-BEGIN TRY
-  SET NOCOUNT ON;
-
-  -- Default output logging
-  DECLARE @SpName NVARCHAR(100) = N'[' + OBJECT_SCHEMA_NAME(@@PROCID) + '].[' + OBJECT_NAME(@@PROCID) + ']';
-  DECLARE @DirectVersion NVARCHAR(10) = [omd_metadata].[GetFrameworkVersion]();
-  DECLARE @StartTimestamp DATETIME = SYSUTCDATETIME();
-  DECLARE @StartTimestampString NVARCHAR(20) = FORMAT(@StartTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  DECLARE @EndTimestamp DATETIME = NULL;
-  DECLARE @EndTimestampString NVARCHAR(20) = N'';
-  DECLARE @LogMessage NVARCHAR(MAX);
-
-  -- Log standard metadata
-  SET @LogMessage = @SpName;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Procedure', @LogMessage, @MessageLog)
-  SET @LogMessage = @DirectVersion;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Version',@LogMessage, @MessageLog)
-  SET @LogMessage = @StartTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Start Timestamp', @LogMessage, @MessageLog)
-
-  -- Log parameters
-  SET @LogMessage = @BatchCode;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @BatchCode', @LogMessage, @MessageLog)
-  SET @LogMessage = @ParentBatchInstanceId;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ParentBatchInstanceId', @LogMessage, @MessageLog)SET @LogMessage = @ExecutionContext;
-  SET @LogMessage = @ExecutionContext
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @ExecutionContext', @LogMessage, @MessageLog)
-
-  -- Process variables
-  DECLARE @EventDetail VARCHAR(4000);
-  DECLARE @EventReturnCode INT;
-  SET @SuccessIndicator = 'N' -- Ensure the process starts as not successful, so that is updated accordingly when it is.
-
-/*******************************************************************************
- * Start of main process
- ******************************************************************************/
-
-  -- Local procedure variables
-  DECLARE @BatchId INT;
-  SELECT @BatchId = [omd].[GetBatchIdByName](@BatchCode);
-
-  -- Exception handling
-  -- The Batch Id cannot be NULL
-  IF @BatchId IS NULL
-  BEGIN
-    SET @LogMessage = N'The Batch Id was not found for Batch Code ''' + @BatchCode + '''';
-    SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-    SET @EventDetail = @LogMessage
-    EXEC [omd].[InsertIntoEventLog] @EventDetail = @EventDetail;
-
-    GOTO FailureEndOfProcedure
-
-  END
-
-  SET @LogMessage =  N'For Batch Code ''' + @BatchCode + ''' the following Batch Id was found in omd.BATCH: ' + CONVERT(NVARCHAR(10), @BatchId);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+BEGIN
   BEGIN TRY
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-    INSERT INTO omd.BATCH_INSTANCE
-    (
-      [BATCH_ID],
-      [PARENT_BATCH_INSTANCE_ID],
-      [START_TIMESTAMP],
-      [EXECUTION_STATUS_CODE],
-      [NEXT_RUN_STATUS_CODE],
-      [INTERNAL_PROCESSING_CODE],
-      [EXECUTION_CONTEXT]
-    )
-    VALUES
-    (
-      @BatchId,
-      @ParentBatchInstanceId,
-      SYSUTCDATETIME(),   -- Start Timestamp (UTC)
-      N'Executing',       -- Execution Status Code
-      N'Proceed',         -- Next Run Indicator
-      N'Abort',           -- Processing Indicator
-      @ExecutionContext   -- Execution Context, runtime information
-    )
+    /* standard setup and initialization */
+    SET @Debug = CASE WHEN TRIM(UPPER(@Debug)) = 'Y' THEN 'Y' ELSE 'N' END;
+    SET @SuccessIndicator = 'N';
+    SET @MessageLog = N'[]';
+    DECLARE @LogMessage NVARCHAR(2048);
+    DECLARE @ProcessDescription NVARCHAR(4000) = N'Create Batch Instance process';
 
-    SET @BatchInstanceId = SCOPE_IDENTITY();
+    /* Set output variables to default */
+    SET @BatchInstanceId = NULL;
+    SET @BatchInstanceStartTimestamp = NULL;
 
-    SET @LogMessage = 'A new Batch Instance Id ''' + CONVERT(NVARCHAR(10), @BatchInstanceId) + ''' has been created for Batch Code: ' + @BatchCode;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-    GOTO SuccessEndOfProcedure
+    /* Event and return codes */
+    DECLARE @ReturnCode INT = 0;
+    DECLARE @EventTypeCode NVARCHAR(100) = N'2';
+    DECLARE @EventDetail NVARCHAR(4000) = N'';
+    DECLARE @EventReturnCode NVARCHAR(100) = N'';
 
+    /* Load framework settings */
+    DECLARE @AddLogsToEventLog CHAR(1)      = [omd_metadata].[GetSettingFlag]('LOG_TO_EVENT_LOG');
+    DECLARE @PrintMessages CHAR(1)          = [omd_metadata].[GetSettingFlag]('SP_PRINT_MESSAGES');
+    DECLARE @ProcessMessageLog CHAR(1)      = [omd_metadata].[GetSettingFlag]('SP_PROCESS_MESSAGE_LOG');
+    DECLARE @ThrowOnFailure CHAR(1)         = [omd_metadata].[GetSettingFlag]('THROW_ON_FAILURE');
+
+    DECLARE @AutoRegisterBatches CHAR(1) =
+            [omd_metadata].[GetSettingFlag]('AUTO_REGISTER_BATCHES');
+    DECLARE @AutoRegisterRelationships CHAR(1) =
+            [omd_metadata].[GetSettingFlag]('AUTO_REGISTER_RELATIONSHIPS');
+    DECLARE @DefaultTimeZone NVARCHAR(4000) =
+            [omd_metadata].[GetSetting]('DEFAULT_TIMEZONE');
+
+    /* ----- Validate input parameters -------------------------------------- */
+
+    IF @BatchCode IS NULL OR TRIM(@BatchCode) = ''
+    BEGIN
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = N'Parameter @BatchCode is required.'
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+      GOTO EndOfProcedureFailure;
+    END;
+
+    /* ----- Default logging setup ------------------------------------------ */
+
+    DECLARE @StartTimestamp DATETIME2 = SYSUTCDATETIME();
+    DECLARE @StartTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@StartTimestamp);
+    DECLARE @SpName NVARCHAR(300) = CONCAT(
+      QUOTENAME(COALESCE(OBJECT_SCHEMA_NAME(@@PROCID),'Unknown')), N'.',
+      QUOTENAME(COALESCE(OBJECT_NAME(@@PROCID), 'Unknown')));
+
+    IF @ProcessMessageLog = 'Y'
+    BEGIN
+      /* Log standard metadata */
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Procedure',
+        @SpName, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Version',
+        [omd_metadata].[GetFrameworkVersion](), @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Start Timestamp',
+        @StartTimestampString, @MessageLog);
+
+      /* Log parameters in a single JSON block */
+      DECLARE @paramsJson NVARCHAR(MAX) = (
+        SELECT
+          @BatchCode AS BatchCode,
+          @ParentBatchInstanceId AS ParentBatchInstanceId,
+          @ExecutionContext AS ExecutionContext,
+          @Debug AS Debug
+        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
+
+      SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameters',
+        @paramsJson, @MessageLog);
+    END
+
+    DECLARE @RowsAffected INT = 0;
+
+    /* ----- Start of main process ------------------------------------------ */
+
+    BEGIN TRY
+      BEGIN TRANSACTION;
+
+      /* Local procedure variables */
+      DECLARE @BatchId INT;
+      DECLARE @ParentBatchId INT;
+
+      SELECT @BatchId = [omd].[GetBatchIdByCode](@BatchCode);
+
+      /* If auto-register Batch is enabled, register the Batch if needed */
+      IF @BatchId IS NULL AND @AutoRegisterBatches = 'Y'
+      BEGIN
+        SET @LogMessage = CONCAT(N'Batch Code ''', @BatchCode,
+          ''' not found, attempting to auto-register the Batch.');
+        IF @ProcessMessageLog = 'Y' SET @MessageLog =
+          [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+
+        DECLARE @RegisterSuccessIndicator CHAR(1);
+        EXEC [omd].[RegisterBatch]
+          @BatchCode = @BatchCode,
+          @Debug = @Debug,
+          @BatchId = @BatchId OUTPUT,
+          @SuccessIndicator = @RegisterSuccessIndicator OUTPUT,
+          @MessageLog = @MessageLog OUTPUT;
+
+        IF @RegisterSuccessIndicator = 'N' OR @BatchId IS NULL
+        BEGIN
+          SET @SuccessIndicator = 'N';
+          SET @LogMessage = CONCAT(N'Auto-registration of Batch Code ''', @BatchCode,
+            ''' failed.');
+          IF @ProcessMessageLog = 'Y' SET @MessageLog =
+            [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+          IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+          GOTO EndOfProcedureFailure;
+        END
+      END
+
+      /* Exception handling: The Batch Id cannot be NULL, 0, or negative. */
+      IF @BatchId IS NULL OR @BatchId <= 0
+      BEGIN
+        SET @SuccessIndicator = 'N';
+        SET @LogMessage = CONCAT(N'A Valid Batch Id was not found for Batch Code ''', @BatchCode, '''');
+        IF @ProcessMessageLog = 'Y' SET @MessageLog =
+          [omd].[AddLogMessage]('ERROR', DEFAULT, 'Parameter', @LogMessage, @MessageLog);
+        IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+        GOTO EndOfProcedureFailure;
+      END
+
+      SET @LogMessage = CONCAT(N'For Batch Code ''', @BatchCode,
+        ''' the following Batch Id was found in omd.BATCH: ', @BatchId);
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+
+      /* If a ParentBatchInstanceId was provided and auto-register relationships
+        is enabled, register any missing relationship */
+
+      IF @ParentBatchInstanceId IS NOT NULL AND @ParentBatchInstanceId > 0
+        AND @AutoRegisterRelationships = 'Y'
+      BEGIN
+        /* Get the Parents BATCH_ID and BATCH_CODE from the instance */
+        SET @ParentBatchId = [omd].[GetBatchIdByBatchInstanceId](@ParentBatchInstanceId);
+        DECLARE @ParentBatchCode NVARCHAR(500) =
+          [omd].[GetBatchCodeById](@ParentBatchId);
+        SET @LogMessage = CONCAT(N'Auto-registering any missing Batch relationship ' +
+          N'between Parent Batch Code ''', @ParentBatchCode,
+          ''' and Child Batch Code ''', @BatchCode, '''.');
+        IF @ProcessMessageLog = 'Y' SET @MessageLog =
+          [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+        DECLARE @RegisterRelSuccessIndicator CHAR(1);
+        EXEC [omd].[AddBatchToParentBatch]
+          @BatchCode = @BatchCode,
+          @ParentBatchCode = @ParentBatchCode,
+          @Debug = @Debug,
+          @SuccessIndicator = @RegisterRelSuccessIndicator OUTPUT,
+          @MessageLog = @MessageLog OUTPUT;
+        IF @RegisterRelSuccessIndicator = 'N'
+        BEGIN
+          SET @SuccessIndicator = 'N';
+          SET @LogMessage = CONCAT(N'Auto-registration of Batch relationship ' +
+            N'between Parent Batch Code ''', @ParentBatchCode,
+            ''' and Child Batch Code ''', @BatchCode, ''' failed.');
+          IF @ProcessMessageLog = 'Y' SET @MessageLog =
+            [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+          IF @ThrowOnFailure = 'Y' THROW 50000, @LogMessage, 1;
+          GOTO EndOfProcedureFailure;
+        END
+      END
+
+      INSERT INTO omd.BATCH_INSTANCE
+      (
+        [BATCH_ID],
+        [PARENT_BATCH_INSTANCE_ID],
+        [START_TIMESTAMP],
+        [EXECUTION_STATUS_CODE],
+        [NEXT_RUN_STATUS_CODE],
+        [INTERNAL_PROCESSING_CODE],
+        [EXECUTION_CONTEXT]
+      )
+      VALUES
+      (
+         @BatchId
+        ,@ParentBatchInstanceId
+        ,@StartTimestamp -- Start Timestamp (UTC)
+        ,N'Executing' -- Execution Status Code
+        ,N'Proceed' -- Next Run Indicator
+        ,N'Abort' -- Processing Indicator
+        ,@ExecutionContext   -- Execution Context, runtime information
+      );
+
+      SET @BatchInstanceId = SCOPE_IDENTITY();
+      SET @BatchInstanceStartTimestamp = @StartTimestamp;
+
+      SET @LogMessage = CONCAT('A new Batch Instance Id ''', @BatchInstanceId,
+        ''' has been created for Batch Code: ', @BatchCode);
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog);
+
+      COMMIT TRANSACTION;
+      GOTO EndOfProcedureSuccess;
+    END TRY
+    BEGIN CATCH
+      DECLARE
+        @TxnErrorMessage NVARCHAR(4000) = ERROR_MESSAGE(),
+        @TxnErrorNumber INT = ERROR_NUMBER(),
+        @TxnErrorSeverity INT = ERROR_SEVERITY(),
+        @TxnErrorState INT = ERROR_STATE(),
+        @TxnErrorLine INT = ERROR_LINE();
+
+      IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+      SET @SuccessIndicator = 'N';
+      IF COALESCE(TRIM(@MessageLog), '') = '' SET @MessageLog = N'[]';
+
+      SET @LogMessage = CONCAT('Transaction error (', @TxnErrorNumber, '/', @TxnErrorState,
+        ') at line ', @TxnErrorLine, ': ', COALESCE(@TxnErrorMessage, 'No additional details.'));
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Transaction Error', @LogMessage, @MessageLog);
+      IF @ThrowOnFailure = 'Y' THROW;
+      GOTO EndOfProcedureFailure;
+    END CATCH;
+
+    /* ----- Start of end state management ---------------------------------- */
+
+    EndOfProcedureFailure:
+
+      SET @SuccessIndicator = 'N';
+      SET @LogMessage = CONCAT(@ProcessDescription, N' encountered errors.');
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('ERROR', DEFAULT, 'Processing Error', @LogMessage, @MessageLog);
+      SET @ReturnCode = -1;
+
+      GOTO EndOfProcedure;
+
+    EndOfProcedureSuccess:
+
+      SET @SuccessIndicator = 'Y';
+      SET @LogMessage = CONCAT(@ProcessDescription, N' completed successfully.');
+      IF @ProcessMessageLog = 'Y' SET @MessageLog =
+        [omd].[AddLogMessage]('SUCCESS', DEFAULT, 'Processing Completion', @LogMessage, @MessageLog);
+      SET @ReturnCode = 0;
+
+      GOTO EndOfProcedure;
+
+    EndOfProcedure:
+
+      DECLARE @EndTimestamp DATETIME2 = SYSUTCDATETIME();
+      DECLARE @EndTimestampString NVARCHAR(4000) = [omd_metadata].[GetTimestampString](@EndTimestamp);
+      DECLARE @DurationSeconds NVARCHAR(10) =
+        CAST(COALESCE(DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp), 0) AS NVARCHAR(10));
+
+      IF @ProcessMessageLog = 'Y'
+      BEGIN
+        SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'End Timestamp', @EndTimestampString, @MessageLog);
+        SET @MessageLog = [omd].[AddLogMessage]('INFO', DEFAULT, N'Elapsed Time (s)', @DurationSeconds, @MessageLog);
+        SET @MessageLog =
+          [omd].[AddLogMessage]('INFO', DEFAULT, N'Parameter @SuccessIndicator', @SuccessIndicator, @MessageLog);
+      END
+
+      IF @Debug = 'Y' AND @ProcessMessageLog = 'Y' AND @PrintMessages = 'Y'
+        EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
+
+      RETURN @ReturnCode;
   END TRY
 
+  /* ----- Common, standardized, Procedure-wrapping error handling ---------- */
+
   BEGIN CATCH
+    /* reset all return/output values except the message log */
+    SET @SuccessIndicator = 'N';
+    SET @ReturnCode = -2;
+    SET @BatchInstanceId = NULL;
+    SET @BatchInstanceStartTimestamp = NULL;
 
-    SET @LogMessage = N'A technical error was encountered';
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, DEFAULT, @LogMessage, @MessageLog)
+    IF @ProcessMessageLog <> 'Y' SET @MessageLog = N'[]'
+    ELSE SET @MessageLog =
+      [omd].[AddLogMessage]('DEBUG', DEFAULT, N'Parameter @SuccessIndicator',
+      @SuccessIndicator, @MessageLog);
 
-    -- Logging
-    SET @EventDetail = ERROR_MESSAGE();
+    DECLARE
+      @ErrorMessage     NVARCHAR(4000),
+      @ErrorSeverity    NVARCHAR(10),
+      @ErrorState       NVARCHAR(10),
+      @ErrorProcedure   NVARCHAR(128),
+      @ErrorNumber      NVARCHAR(10),
+      @ErrorLine        NVARCHAR(10);
+
+    SELECT
+      @ErrorMessage   = COALESCE(ERROR_MESSAGE(), 'No Message'),
+      @ErrorSeverity  = COALESCE(CAST(ERROR_SEVERITY() AS NVARCHAR(10)), 'N/A'),
+      @ErrorState     = COALESCE(CAST(ERROR_STATE()    AS NVARCHAR(10)), 'N/A'),
+      @ErrorProcedure = ERROR_PROCEDURE(),
+      @ErrorLine      = COALESCE(CAST(ERROR_LINE()     AS NVARCHAR(10)), 'N/A'),
+      @ErrorNumber    = COALESCE(CAST(ERROR_NUMBER()   AS NVARCHAR(10)), 'N/A');
+
+    IF @Debug = 'Y' AND @PrintMessages = 'Y'
+    BEGIN
+      PRINT 'Error in:         ' + @SpName;
+      PRINT 'Error Message:    ' + @ErrorMessage;
+      PRINT 'Error Severity:   ' + @ErrorSeverity;
+      PRINT 'Error State:      ' + @ErrorState;
+      PRINT 'Error Procedure:  ' + @ErrorProcedure;
+      PRINT 'Error Line:       ' + @ErrorLine;
+      PRINT 'Error Number:     ' + @ErrorNumber;
+      PRINT 'SuccessIndicator: ' + @SuccessIndicator;
+    END;
+
+    SET @EventTypeCode = N'2';
+    DECLARE @ErrorProcedureString NVARCHAR(500);
+    IF TRIM(ISNULL(@ErrorProcedure, '')) <> ''
+      SET @ErrorProcedureString = CONCAT(', called from procedure: ''', @ErrorProcedure, '''');
+
+    SET @EventDetail = CONCAT(
+      'Error in procedure: ''', @SpName,''', at line: ''', @ErrorLine, '''',
+      @ErrorProcedureString, ', error message:', CHAR(10), @ErrorMessage
+    );
     SET @EventReturnCode = ERROR_NUMBER();
 
-    SET @LogMessage = @EventDetail;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Message', @LogMessage, @MessageLog)
-
-    SET @LogMessage = @EventReturnCode;
-    SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, 'Error Return Code', @LogMessage, @MessageLog)
-
     EXEC [omd].[InsertIntoEventLog]
-      @BatchInstanceId = @BatchInstanceId,
-      @EventDetail = @EventDetail,
-      @EventReturnCode = @EventReturnCode;
+       @EventTypeCode     = @EventTypeCode
+      ,@EventDetail       = @EventDetail
+      ,@EventReturnCode   = @EventReturnCode;
 
-    THROW
+    IF @ProcessMessageLog = 'Y'
+    BEGIN
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error EventTypeCode', @EventTypeCode, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error Details', @EventDetail, @MessageLog);
+      SET @MessageLog = [omd].[AddLogMessage]
+        ('CRITICAL', DEFAULT, N'Error EventReturnCode', @EventReturnCode, @MessageLog);
+    END
 
-  END CATCH
+    IF @Debug = 'Y' AND @ProcessMessageLog = 'Y' AND @PrintMessages = 'Y'
+      EXEC [omd].[PrintMessageLog] @MessageLog = @MessageLog;
 
-  FailureEndOfProcedure:
+    IF @ThrowOnFailure = 'Y' THROW;
+    RETURN @ReturnCode;
 
-  SET @SuccessIndicator = 'N'
-
-  SET @LogMessage = N'' + @SpName + ' ended in failure.';
-  SET @MessageLog = [omd].[AddLogMessage]('ERROR', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-
-  GOTO EndOfProcedure
-
-  SuccessEndOfProcedure:
-
-  SET @SuccessIndicator = 'Y'
-
-  SET @LogMessage = N'' + @SpName + ' completed succesfully.';
-  SET @MessageLog = [omd].[AddLogMessage]('SUCCESS', DEFAULT, DEFAULT, @LogMessage, @MessageLog)
-
-  GOTO EndOfProcedure
-
-  -- End of procedure label
-  EndOfProcedure:
-
-  SET @EndTimestamp = SYSUTCDATETIME();
-  SET @EndTimestampString = FORMAT(@EndTimestamp, 'yyyy-MM-dd HH:mm:ss.fffffff');
-  SET @LogMessage = @EndTimestampString;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'End Timestamp', @LogMessage, @MessageLog)
-  SET @LogMessage = DATEDIFF(SECOND, @StartTimestamp, @EndTimestamp);
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Elapsed Time (s)', @LogMessage, @MessageLog)
-  SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
-
-  IF @Debug = 'Y'
-  BEGIN
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-  END
-
-END TRY
-BEGIN CATCH
-  -- SP-wide error handler and logging
-  SET @SuccessIndicator = 'N'
-  SET @LogMessage = @SuccessIndicator;
-  SET @MessageLog = [omd].[AddLogMessage](DEFAULT, DEFAULT, N'Parameter @SuccessIndicator', @LogMessage, @MessageLog)
-
-  DECLARE @ErrorMessage NVARCHAR(4000);
-  DECLARE @ErrorSeverity INT;
-  DECLARE @ErrorState INT;
-  DECLARE @ErrorProcedure NVARCHAR(128);
-  DECLARE @ErrorNumber INT;
-  DECLARE @ErrorLine INT;
-
-  SELECT
-    @ErrorMessage   = COALESCE(ERROR_MESSAGE(),     'No Message'    ),
-    @ErrorSeverity  = COALESCE(ERROR_SEVERITY(),    -1              ),
-    @ErrorState     = COALESCE(ERROR_STATE(),       -1              ),
-    @ErrorProcedure = COALESCE(ERROR_PROCEDURE(),   'No Procedure'  ),
-    @ErrorLine      = COALESCE(ERROR_LINE(),        -1              ),
-    @ErrorNumber    = COALESCE(ERROR_NUMBER(),      -1              );
-
-  IF @Debug = 'Y'
-  BEGIN
-    PRINT 'Error in '''       + @SpName + ''''
-    PRINT 'Error Message: '   + @ErrorMessage
-    PRINT 'Error Severity: '  + CONVERT(NVARCHAR(10), @ErrorSeverity)
-    PRINT 'Error State: '     + CONVERT(NVARCHAR(10), @ErrorState)
-    PRINT 'Error Procedure: ' + @ErrorProcedure
-    PRINT 'Error Line: '      + CONVERT(NVARCHAR(10), @ErrorLine)
-    PRINT 'Error Number: '    + CONVERT(NVARCHAR(10), @ErrorNumber)
-    PRINT 'SuccessIndicator: '+ @SuccessIndicator
-
-    -- Spool message log
-    EXEC [omd].[PrintMessageLog] @MessageLog;
-
-  END
-
-  SET @EventDetail = 'Error in ''' + COALESCE(@SpName,'N/A') + ''' from ''' + COALESCE(@ErrorProcedure,'N/A') + ''' at line ''' + CONVERT(NVARCHAR(10), COALESCE(@ErrorLine,'N/A')) + ''': '+ CHAR(10) + COALESCE(@ErrorMessage,'N/A');
-  SET @EventReturnCode = ERROR_NUMBER();
-
-  EXEC [omd].[InsertIntoEventLog]
-    @EventDetail       = @EventDetail,
-    @EventReturnCode   = @EventReturnCode,
-    @BatchInstanceId   = @BatchInstanceId;
-
-  THROW
-END CATCH
+  END CATCH;
+END;

@@ -1,7 +1,36 @@
+/**
+ * @view [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES]
+ * @description Long-running executing batch and module instances beyond thresholds (4h modules, 8h batches).
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - MODULE_CODE/BATCH_CODE: Code by section.
+ *   - EXECUTION_STATUS_CODE: Should be 'Executing'.
+ *   - BATCH_INSTANCE_ID: Associated batch instance id.
+ *   - MODULE_INSTANCE_ID: Module instance id or 'N/A' for batches.
+ *   - MODULE_ID: Module id or 'N/A' for batches.
+ *   - START_TIMESTAMP: Start time.
+ *   - END_TIMESTAMP: End time.
+ *   - HOURS_DIFFERENCE: Hours since start to now or end.
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *     table [omd].[BATCH]
+ *     table [omd].[BATCH_INSTANCE]
+ *
+ * @example
+
+SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES];
+
+ */
+
 CREATE VIEW [omd_reporting].[vw_EXCEPTIONS_LONG_RUNNING_PROCESSES]
-
 AS
-
 -- Module level
 SELECT
   module.MODULE_CODE,

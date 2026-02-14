@@ -1,0 +1,24 @@
+{
+  "TestContainers": {
+    "SqlServer": {
+      "Image": "mcr.microsoft.com/mssql/server:2022-latest",
+      "Password": "P@ssword123!",
+      "DatabaseName": "Direct_Framework",
+      "WaitTimeoutSeconds": 60,
+      "EnableCleanup": true,
+      "PortBinding": {
+        "HostPort": 0,
+        "ContainerPort": 1433
+      }
+    }
+  },
+  "Database": {
+    "DacpacPath": "../Direct_Framework/bin/Debug/Direct_Framework.dacpac",
+    "DeploymentOptions": {
+      "BlockOnPossibleDataLoss": false,
+      "CreateNewDatabase": true,
+      "DropObjectsNotInSource": true,
+      "VerifyDeployment": true
+    }
+  }
+}

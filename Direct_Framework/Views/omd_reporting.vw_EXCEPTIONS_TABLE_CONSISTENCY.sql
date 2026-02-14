@@ -1,3 +1,25 @@
+/**
+ * @view [omd_reporting].[vw_EXCEPTIONS_TABLE_CONSISTENCY]
+ * @description Validates non-omd schema base tables for required OMD lineage columns and reports missing attributes.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - TABLE_CATALOG: Database name.
+ *   - TABLE_NAME: Table name.
+ *   - TABLE_SCHEMA: Schema name.
+ *   - ERROR_TOTAL: Concatenated human-readable error summary.
+ *
+ * @lineage
+ * - reads:
+ *     view [INFORMATION_SCHEMA].[TABLES]
+ *     view [INFORMATION_SCHEMA].[COLUMNS]
+ *
+ * @example
+ * SELECT TOP 100 * FROM [omd_reporting].[vw_EXCEPTIONS_TABLE_CONSISTENCY];
+ */
 CREATE VIEW [omd_reporting].[vw_EXCEPTIONS_TABLE_CONSISTENCY] AS
 WITH TableCheckCTE AS
 (
@@ -86,5 +108,10 @@ WITH TableCheckCTE AS
     )) AS ERROR_TOTAL
   FROM ErrorEvaluation
 )
-SELECT * FROM SingleErrorEvaluation
+SELECT
+  TABLE_CATALOG,
+  TABLE_NAME,
+  TABLE_SCHEMA,
+  ERROR_TOTAL
+FROM SingleErrorEvaluation
 WHERE ERROR_TOTAL <> ''

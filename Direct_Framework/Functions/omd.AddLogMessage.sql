@@ -1,97 +1,146 @@
-/*******************************************************************************
- * [omd].[AddLogMessage]
- *******************************************************************************
+/**
+ * @function [omd].[AddLogMessage]
+ * @description
+ *   Appends a severity/timestamp/key/message JSON entry to a JSON array log.
+ *   Ensures valid JSON and injects an error entry when malformed.
  *
- * https://github.com/data-solution-automation-engine/DIRECT
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
  *
- * DIRECT model v2.0
+ * @param {NVARCHAR(100)} @Severity  [in] (required)
+ *   One of DEBUG, INFO, WARNING, ERROR, CRITICAL.
+ * @param {DATETIME2} @Timestamp  [in] (optional)
+ *   Defaults to current UTC time when NULL.
+ * @param {NVARCHAR(1000)} @LogMessageKey  [in] (optional)
+ *   Message category key; defaults to 'Info' when NULL/empty.
+ * @param {NVARCHAR(MAX)} @LogMessage  [in] (required)
+ *   The message to append; defaults to 'N/A' when NULL.
+ * @param {NVARCHAR(MAX)} @MessageLog  [in] (optional)
+ *   The existing JSON array log; defaults to '[]' if NULL/invalid.
  *
- * Purpose:
- *   Add a row to the Message Log, by concatenating the input message with
- *   a severity and timestamp as a JSON object in the MessageLog JSON array.
+ * @returns {NVARCHAR(MAX)} Updated JSON array log.
  *
- * Input:
- *   - Severity (e.g. INFO, WARNING, ERROR)
- *   - Timesetamp
- *   - Log Message Key (a key to identify the message)
- *   - Log Message (the message to add to the log)
- *   - Message Log (the existing message log)
+ * @resultset none
  *
- * Returns:
- *   - Message Log (with the new message appended)
+ * @lineage
+ * - reads: none
  *
- * Usage:
- *
+ * @example
 
-DECLARE @LogMessage NVARCHAR(MAX);
+DECLARE @LogMessage NVARCHAR(MAX) = N'The parsing of ''2319'' as event code failed';
 DECLARE @MessageLog NVARCHAR(MAX);
-
-SET @LogMessage = 'The parsing of ''2319'' as event code failed';
-SET @MessageLog =
-  [omd].[AddLogMessage]
-  ('WARNING', DEFAULT, N'Value Parsing', @LogMessage, @MessageLog)
-
+SET @MessageLog = [omd].[AddLogMessage]('WARNING', DEFAULT, N'Value Parsing', @LogMessage, @MessageLog);
 SELECT @MessageLog;
 
- *
- ******************************************************************************/
+ */
 
 CREATE FUNCTION [omd].[AddLogMessage]
 (
-  @Severity NVARCHAR(100), -- The severity of the message (e.g. INFO, WARNING, ERROR)
-  @Timestamp DATETIME2, -- The timestamp of the message
-  @LogMessageKey NVARCHAR(1000), -- The key of the message to add to the Log
-  @LogMessage NVARCHAR(MAX), -- The Message to add to the Log
-  @MessageLog NVARCHAR(MAX) -- The existing Message Log (Json array of Json objects)
+  @Severity       NVARCHAR(100), -- The severity of the message
+                                 -- (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  @Timestamp      DATETIME2, -- The timestamp of the message (defaults to current UTC time if not provided)
+  @LogMessageKey  NVARCHAR(1000), -- The key of the message to add to the Log
+  @LogMessage     NVARCHAR(MAX), -- The Message to add to the Log
+  @MessageLog     NVARCHAR(MAX) -- The existing Message Log (Json array of Json objects)
 )
 RETURNS NVARCHAR(MAX) AS
-
 BEGIN
 
   IF @LogMessage IS NULL
   BEGIN
-    SET @LogMessage = 'N/A'
+    SET @LogMessage = 'N/A';
   END
 
-  IF @MessageLog IS NULL OR TRIM(@MessageLog) = ''
+  -- Ensure the MessageLog is a valid JSON array
+  IF  @MessageLog IS NULL OR
+      TRIM(@MessageLog) = '' OR
+      NOT ISJSON(@MessageLog) = 1
   BEGIN
-    SET @MessageLog = '[]'
+    SET @MessageLog = '[]';
+  END
+
+  -- Ensure the input parameters are valid and not NULL
+  SET @Severity = UPPER(ISNULL(@Severity, 'INFO'));
+  IF  TRIM(@Severity) = '' OR
+      @Severity NOT IN ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+  BEGIN
+    SET @Severity = 'INFO'; -- Default severity if not provided
+  END
+
+  SET @Timestamp = ISNULL(@Timestamp, SYSUTCDATETIME());
+
+  IF @LogMessageKey IS NULL OR TRIM(@LogMessageKey) = ''
+  BEGIN
+    SET @LogMessageKey = 'Info';
   END
 
   DECLARE
     @TimestampString NVARCHAR(MAX),
     @SeverityString NVARCHAR(MAX),
-    @LogMessageKeyString NVARCHAR(MAX)
+    @LogMessageKeyString NVARCHAR(1000)
 
   -- Set parameters to valid values, including defaulting missing ones
-  SET @TimestampString  = CAST(STRING_ESCAPE(FORMAT(ISNULL(@Timestamp, SYSUTCDATETIME()), 'yyyy-MM-dd HH:mm:ss.fffffff'), 'json') AS NVARCHAR(MAX));
-  SET @SeverityString   = CAST(STRING_ESCAPE(ISNULL(@Severity, 'INFO'), 'json') AS NVARCHAR(MAX));
-  SET @LogMessageKey    = CAST(STRING_ESCAPE(ISNULL(@LogMessageKey, ''), 'json') AS NVARCHAR(MAX));
-  SET @LogMessage       = CAST(STRING_ESCAPE(ISNULL(@LogMessage, ''), 'json') AS NVARCHAR(MAX));
+  SET @TimestampString      = CAST(CONVERT(NVARCHAR(27), ISNULL(@Timestamp, SYSUTCDATETIME()), 126) AS NVARCHAR(MAX));
+  SET @SeverityString       = @Severity;
+  SET @LogMessageKeyString  = CAST(STRING_ESCAPE(@LogMessageKey, 'json') AS NVARCHAR(1000));
+  DECLARE @LogMessageEscaped NVARCHAR(MAX);
+  SET @LogMessageEscaped = STRING_ESCAPE(@LogMessage, 'json');
 
-  -- Declare ouput variable and populate it with the new message log
-  DECLARE @NewMessageLog NVARCHAR(MAX) =
-  (
-  -- New node into the existing Json array
-  SELECT
-    JSON_QUERY(
-      JSON_MODIFY(
-        @MessageLog,
-        'append $',
-        JSON_QUERY(
-          CONCAT(
-            '{',
-              '"severity": "',  @SeverityString,  '",',
-              '"timestamp": "', @TimestampString, '",',
-              '"key": "',       @LogMessageKey,   '",',
-              '"message": "',   @LogMessage,      '"',
-            '}'
-          )
-        )
-      )
-    )
-  )
+  -- Construct the new log entry as a JSON object
+  DECLARE @NewLogEntry NVARCHAR(MAX) =
+    CONCAT(
+      '{',
+        '"severity": "',  @SeverityString,      '",',
+        '"timestamp": "', @TimestampString,     '",',
+        '"key": "',       @LogMessageKeyString, '",',
+        '"message": "',   @LogMessageEscaped,   '"',
+      '}'
+    );
 
-  -- Return the resulting new message log
-  RETURN @NewMessageLog
+  -- also prepare an error entry if something goes wrong
+  DECLARE @ErrorLogEntry NVARCHAR(MAX) = CONCAT(
+    '{',
+      '"severity": "CRITICAL",',
+      '"timestamp": "', @TimestampString, '",',
+      '"key": "LogError",',
+      '"message": "Failed to append log entry: invalid JSON encountered"',
+    '}'
+  );
+
+  -- If the new log entry is not valid JSON, inject an error message instead
+  IF ISJSON('[' + @NewLogEntry + ']') = 0
+  BEGIN
+    SET @NewLogEntry = @ErrorLogEntry;
+  END
+
+  -- Save the original log
+  DECLARE @OriginalMessageLog NVARCHAR(MAX) = @MessageLog;
+  DECLARE @NewMessageLog NVARCHAR(MAX);
+
+  -- Append the new log entry to the existing message log JSON array
+  SET @NewMessageLog =
+    JSON_MODIFY(
+      @MessageLog,
+      'append $',
+      JSON_QUERY(@NewLogEntry)
+    );
+
+  -- If the whole new log valid JSON, return it
+  IF ISJSON(@NewMessageLog) = 1
+  BEGIN
+    RETURN @NewMessageLog;
+  END
+
+  -- else, if something happened and the full, updated, log is not valid JSON,
+  -- surface the error by appending a valid JSON error entry to the original log
+  DECLARE @OriginalLogWithError NVARCHAR(MAX) =
+    JSON_MODIFY(
+      @OriginalMessageLog,
+      'append $',
+      JSON_QUERY(@ErrorLogEntry)
+    );
+
+  RETURN @OriginalLogWithError;
+
 END

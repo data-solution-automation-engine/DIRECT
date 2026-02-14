@@ -17,6 +17,8 @@
  *               SELECT * FROM [$(TableName)]
  ******************************************************************************/
 
+PRINT 'Post-Deployment Script Starting'
+
 -- Reference data for metadata tables, run in dependency order
 :r .\omd_metadata.LAYER.sql
 :r .\omd_metadata.AREA.sql
@@ -38,3 +40,5 @@
 -- Traditional on-premises SQL server/Local SQL Server instance, or Azure Managed Instance deployments only:
 -- :r .\Queue_Job_Batch.sql
 -- :r .\Queue_Job_Module.sql
+
+PRINT 'Post-Deployment Script Completed'

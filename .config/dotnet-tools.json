@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-sqltest": {
+      "version": "1.4.4",
+      "commands": [
+        "sqltest"
+      ],
+      "rollForward": false
+    },
+    "microsoft.sqlpackage": {
+      "version": "170.1.61",
+      "commands": [
+        "sqlpackage"
+      ],
+      "rollForward": false
+    },
+    "dotnet-format": {
+      "version": "5.1.250801",
+      "commands": [
+        "dotnet-format"
+      ],
+      "rollForward": false
+    },
+    "dotnet-outdated-tool": {
+      "version": "4.6.8",
+      "commands": [
+        "dotnet-outdated"
+      ],
+      "rollForward": false
+    }
+  }
+}

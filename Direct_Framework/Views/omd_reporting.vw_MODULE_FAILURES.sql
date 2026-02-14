@@ -1,3 +1,25 @@
+/**
+ * @view [omd_reporting].[vw_MODULE_FAILURES]
+ * @description Aggregates module failures in the last 3 months with average execution minutes.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @resultset Columns:
+ *   - MODULE_CODE: Module code.
+ *   - MODULE_DESCRIPTION: Description.
+ *   - AVG_EXEC_MIN: Average execution time in minutes.
+ *   - COUNT_ERRORS: Number of failed runs in the window.
+ *
+ * @lineage
+ * - reads:
+ *     table [omd].[MODULE]
+ *     table [omd].[MODULE_INSTANCE]
+ *
+ * @example
+ * SELECT TOP 100 * FROM [omd_reporting].[vw_MODULE_FAILURES];
+ */
 CREATE VIEW [omd_reporting].[vw_MODULE_FAILURES] AS
 
 select     --TOP 40

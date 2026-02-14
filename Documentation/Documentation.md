@@ -10,9 +10,9 @@ DIRECT features a database repository where each data logistics process is regis
 
 The primary goal of the DIRECT framework is to provide a structured approach to describing and recording data logistics processes, which may consist of many distinct components. This structure allows these processes to be represented and managed as a cohesive system.
 
-# Concepts
+## Concepts
 
-## Purpose
+### Purpose
 
 The framework enables tracing of processed data, detailing when and how each data logistics process was handled.
 
@@ -31,7 +31,7 @@ By connecting the module instance id in DIRECT, it becomes possible to determine
 * Whether the process was successful, and if not, the errors encountered
 * How long it takes to complete a process
 
-## Elements of process information
+### Elements of process information
 
 While the physical components involved in data logistics processes can vary in scope and employ a range of technologies, the framework provides a logical layer of abstraction that ensures a consistent view of workflows. This allows for processes to be visualized, maintained, and reported in a uniform manner.
 
@@ -42,19 +42,19 @@ At the core of the framework is a logical model for describing units of work. Al
 
 The following diagram illustrates the logical and physical units of work:
 
-<img src="Images/Components.png" alt="Logical and physical components" height="250">
+![Logical and physical components](./Images/Components.png)
 
-## Logical model
+### Logical model
 
 The concepts and principles of the DIRECT framework can be summarized in this logical model:
 
-<img src="Images/LogicalModel.png" alt="Logical model" width="75%" height="75%">
+![Logical model](./Images/LogicalModel.png)
 
 The blue objects are static in nature, these contain the metadata required to define and orchestrate the modules and batches. For a module to run, and the audit trail to be created, a module must know its definition, and any classifications and/or parameters that might apply.
 
 The green objects contain runtime metadata, logs of the process execution.
 
-## Instantiation
+### Instantiation
 
 Each time a Batch or Module is executed, a unique instance identifier is generated, known as the Batch or Module instance ID. This identifier is added to the processed data set.
 
@@ -67,7 +67,7 @@ If a Batch or Module is restarted or re-run, a new instance record is created to
 
 The following figure illustrates how static Batch/Module definitions generate run-time instances.
 
-<img src="Images/Instantiation.png" alt="Instantiation" width="75%" height="75%">
+![Instantiation](./Images/Instantiation.png)
 
 Different technologies might be involved in the invocation and tracking of Modules and Batches. At a high level, the process for a Batch execution works as follows:
 
@@ -80,9 +80,9 @@ Different technologies might be involved in the invocation and tracking of Modul
 
 The following diagram illustrates the layers and technologies involved in this process:
 
-<img src="Images/Execution.png" alt="Layers of execution" width="50%" height="50%">
+![Execution](./Images/Execution.png)
 
-## Orchestration
+### Orchestration
 
 Conceptually, both Modules and Batches can be executed. When a Batch is executed, it triggers the execution of its associated Modules in a predefined order.
 
@@ -94,30 +94,31 @@ By convention, if a Batch contains both Modules and other Batches, the Modules a
 
 ![Orchestration](Images/Orchestration.png "Orchestration")
 
-## Parameters
+### Parameters
 
 The framework supports the definition of parameters and their association with specific Modules and/or Batches. These parameters can be used by processes at run-time, depending on the underlying technology.
 
 Parameters can also be reused across multiple Modules or Batches when necessary.
 
-# Design
+## Design
 
 The physical implementation of the framework consists of a database repository and various procedures that interact with it to manage process execution, data logging, and error handling.
 
-## Repository database
+### Repository database
 
 The data model for the process control framework includes all relevant entities, attributes, and their descriptions. It also defines the content for various tables, including reference values for Layers, Areas, and code tables such as `Frequency` and `Severity`.
 
 The physical model is available here:
-<img src="Images/DIRECT_Framework.png" alt="Physical model" width="75%" height="75%">
 
-### Core tables
+![Physical model](Images/DIRECT_Framework.png "DIRECT_Framework")
+
+#### Core tables
 
 The following tables make up the backbone of the DIRECT framework. They reside in the `omd` schema, which stands for operational metadata.
 
 Table | Description
 ----- | -----
-BATCH	| Contains the unique list of Batches registered in the framework. Each Batch must have a unique Batch identifier to execute successfully. A Batch can be enabled or disabled using the `ACTIVE_INDICATOR` flag. 
+BATCH	| Contains the unique list of Batches registered in the framework. Each Batch must have a unique Batch identifier to execute successfully. A Batch can be enabled or disabled using the `ACTIVE_INDICATOR` flag.
 BATCH_HIERARCHY | Defines the parent/child relationship between batches, when these are intended to be called from higher-level (parent) Batches. The relationship can be enabled or disabled using the `ACTIVE_INDICATOR` flag.
 BATCH_INSTANCE |At runtime, the framework generates a unique Batch Instance ID for each Batch execution. This table is key for process control and recovery, as it tracks the status and results of Batch runs.
 BATCH_MODULE | Defines the many-to-many relationships between Batches and Modules. A Batch can contain multiple Modules, and a Module can be used in multiple Batches. The relationship can be enabled or disabled using the `ACTIVE_INDICATOR` flag.
@@ -130,7 +131,7 @@ MODULE_PARAMETER |Establishes relationships between specific parameters and the 
 PARAMETER | Defines parameters that can be used for custom purposes related to the data logistics processes. Examples include flags (e.g., Initial Load Y/N) or tracking date ranges for shifting data loading windows to downstream layers.
 SOURCE_CONTROL |Manages the administration of load windows, such as CDC-based interfaces, pull-delta interfaces, or partial dataset loads. This table is used to track load windows for individual Modules.
 
-### Metadata tables
+#### Metadata tables
 
 The metadata tables contain the reference codes and descriptions used by the DIRECT framework. They reside in the `omd_metadata` schema.
 
@@ -140,13 +141,13 @@ AREA | Contains the list of architecture areas as defined in the reference archi
 EVENT_TYPE | Stores descriptive information about various event or error types for reporting, including process logs, environmental issues, custom-defined errors, and process errors.
 EVENT_LOG |	A generic logging table used to track and record events during process execution. It can store both informational entries (e.g., "Batch Instance was created") and error messages provided by the platform.
 EXECUTION_STATUS | Contains descriptions of the execution status codes used by the framework to monitor the process.
-FRAMEWORK_METADATA | Versioning details to store specifics about the version of the framework in use, which can be used to determine future upgrade strategies.
+FRAMEWORK_METADATA | Versioning details storing specifics about the version of the framework in use, which can be used to determine future upgrade strategies.
 FREQUENCY | A label that defines the frequencythe Module or Batch is intended to be run. This can be used to limit excessive runs, or set certain processes to run continuously. It is usually a descriptive code only as the running interval for the process is normally managed by scheduling software external to the framework.
 INTERNAL_PROCESSING_STATUS | Stores descriptive attributes for the `INTERNAL_PROCESSING_STATUS_CODE` used by the framework during process execution.
 LAYER	| Lists the Layers defined in the solution architecture. Unlike Areas, this information is not used during Module execution and is primarily for reporting purposes. Layers serve as a higher-level grouping for processes and areas.
 NEXT_RUN_STATUS | Contains descriptions of the `NEXT_RUN_STATUS_CODE` used by the framework to manage the execution flow during processes execution.
 
-## Status codes
+### Status codes
 
 DIRECT defines Modules as small (atomic) processes and Batches as a combination or series of Modules to be run in coherence. The framework defines how these concepts integrate with and impact each other. To manage these processes both the Batch and Module Instance tables maintain a set of three operational code fields which together govern the way the metadata layer executes and directs the flow.
 
@@ -164,7 +165,7 @@ These checks are:
 * Check if rollback / data recovery is required
 * Check if the Batch is executed in compliance with its frequency settings
 
-### Execution status
+#### Execution status
 
 Of the three code fields, the execution status summarizes the (Module / Batch) Instance's processing and as such is the main operational indicator. Although there are exceptions, in most cases the status of an Instance will always be either Executing, Failed, or Succeeded. The Execution Status Code is completely driven by the process framework subsystem and should not be altered.
 
@@ -180,7 +181,7 @@ The detailed code purpose is defined in the following table:
 | Aborted   | An abort is a 'soft' failure, an attempted execution which led to the instance unable to start. Abort means that the process did not run, but was supposed to. This is typically the result of incorrect configuration or race conditions in the orchestration. The most common reasons for an abort is that another instance of the same Batch or Module is already running. The same logical unit of processing can never run more than once at the same time to maintain data consistency. If this situation is detected the second process will abort before any data is processed.<br /><br />The Module (Instance) was executed from a parent Batch (Instance) but not registered as such in the Batch/Module relationship. |
 | Cancelled | Nothing is run. The cancelled (skipped) status code indicates that the instance was attempted to be executed, but that the control framework found that it was not necessary to run the process. <br /><br />This can be due to Modules or Batches being disabled in the framework using the 'active indicator'. Disabling processes can be done at Batch, Batch/Module and Module level.<br /><br />Another common scenario is that, when Batches are restarted, earlier successful Modules in that Batch will not be reprocessed. These Module Instances will be skipped / cancelled until the full Batch has completed successfully. This is to prevents data loss. |
 
-### Internal processing status
+#### Internal processing status
 
 The Internal Processing Status Codes direct the internal actions of the instance e.g., what the instance is allowed to do next.
 
@@ -195,7 +196,7 @@ The Internal Processing Status is the outcome of the Module (or Batch) Evaluatio
 | Cancel | The instance evaluation has determined that it is not necessary to run this process (see also the equivalent Execution Status Code for additional detail). As with Abort, if the Internal Process Status code is `Cancel` then all further processing should stop after the Execution Status Code has also been updated to `Cancel`. |
 | Rollback | The `Rollback` code is only temporarily set during rollback execution in the Module Evaluation event. This is essentially for debugging purposes. After the rollback is completed the Internal Processing Status will be set to `Proceed` again to enable the continuation of the process. |
 
-### Next run status
+#### Next run status
 
 The Next Run Status codes are used for internal management of the framework. They are used to pass processing directions between instances of the same entity (e.g,Module or Batch).
 
@@ -207,13 +208,13 @@ The primary function of the Next Run Status codes is to direct the rollback func
 | Proceed  | The `Proceed` code will direct the next run of the Batch/Module to continue processing. This is the default value. Each process step will evaluate the Internal Process Status code and continue only if it was set to `Proceed`. After the rollback has been completed the `Proceed` value is the code that is required to initiate the main process. |
 | Cancel   | Administrators can manually set this code to for the Next Run Status (i.e. this will not be automatically set by the DIRECT controls) to force a one-off skip of the instance. |
 
-## Events
+### Events
 
 To provide a common and reusable means of interacting with the repository, the framework includes several processes that collectively form the logic tier. The implementation of these events varies depending on the data integration methods used in different projects. DIRECT offers SQL Stored Procedures out of the box, along with specifications for implementing similar concepts in other technologies.
 
-### Event overview
+#### Event overview
 
-#### Module events
+##### Module events
 
 Event | Description
 ----- | -----
@@ -221,7 +222,7 @@ Event | Description
 `ModuleEvaluation` | Checks if the Module Instance is able to proceed based on the state of all Module Instances for the particular Module
 `UpdateModuleInstance` | Modifies the status of the Module Instance
 
-#### Batch events
+##### Batch events
 
 Event | Description
 ----- | -----
@@ -229,7 +230,7 @@ Event | Description
 `BatchEvaluation` | Checks if the provided Batch Instance is able to proceed, based on the state of all Batch Instances of the related Batch
 `UpdateBatchInstance` | Modifies the status of the Batch Instance
 
-### Batch integration
+#### Batch integration
 
 When a Batch is executed, the following steps will take place:
 
@@ -257,7 +258,8 @@ UpdateBatchInstance --> End
 %% Styling
     classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
 ```
-#### Create new Batch Instance
+
+##### Create new Batch Instance
 
 This is the CreateBatchInstance event. This step inserts a new record in the `BATCH_INSTANCE` table based on the Batch ID with the:
 
@@ -278,7 +280,8 @@ FROM BATCH_INSTANCE
 WHERE EXECUTION_STATUS_CODE = 'Executing'
 AND BATCH_ID = <the Batch ID>
 ```
-#### Evalute the Batch Instance
+
+##### Evalute the Batch Instance
 
 The next step is the BatchEvaluation event. This will check the current Batch Instance by performing sanity checks and housekeeping for the framework.
 
@@ -339,7 +342,7 @@ The process is as follows:
    * Similarly, if the Internal Processing Status Code is `Abort` the Batch will be aborted (Batch Abort event).
    * As mentioned, if the Internal Processing Status Code is `Proceed` the subsequent sessions (Modules) will start. No Modules are allowed to start unless this indicator equals `Proceed`.
 
-#### Update the Batch Instance
+##### Update the Batch Instance
 
 After all Modules have been completed without any issues the UpdateBatchInstance event will update the Batch Instance to set the following status codes:
 
@@ -351,7 +354,7 @@ This indicates that the Batch has been completed successfully and can be run nor
 
 If a failure is detected at any time during this process the Execution Status Code is set to `Failure` which is used to drive rollbacks on Module level the next time the Batch is initiated.
 
-### Module integration
+#### Module integration
 
 The Module execution process is as follows:
 
@@ -379,7 +382,7 @@ UpdateModuleInstance --> End
     classDef Main fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
 ```
 
-#### Create new Module Instance
+##### Create new Module Instance
 
 The CreateModuleInstance event will retrieve the Module details using the Module Code as input. This includes the `MODULE_ID` but also other relevant properties such as `AREA_CODE`, `TARGET_DATA_OBJECT`, and `FREQUENCY_CODE`.
 
@@ -399,7 +402,7 @@ It must be possible to run Modules individually (i.e. without a parent Batch)
 
 The Module ID, Execution Status Code (for that Module) and Batch Instance ID are required since Modules can be potentially be executed in parallel from different Batches and it is required that DIRECT is able to select the correct running Instance. In this scenario the Module Evaluation event will 'Abort' all Instances after the first of the parallel Instances based on the Module Instance ID value (which is a sequenced attribute). In other words; the earliest instance will be allowed to continue to run, but all others will abort.
 
-#### Evaluate the Module Instance
+##### Evaluate the Module Instance
 
 The ModuleEvaluation event performs the sanity checks and housekeeping for the framework on Module level. It is the most complex part of the pre-processing.
 
@@ -448,7 +451,7 @@ IsRollback -- No --> End
    * The previous Batch failed but the specific Module (Instance) was run successfully in that particular Batch and is skipped when the Batch is run again (rollback on Batch level)
    * If the previous Module Next Run Status is `Rollback` (rollback) the rollback process is started (see Rollback section). The Rollback process uses the Area Code and Table Name to create dynamic SQL statements. After the rollback SQL has been executed correctly the Internal Processing Status Code is set to `Proceed` and processing will continue as usual.
 
-#### Update the Module Instance
+##### Update the Module Instance
 
 The Module Evaluation returns the Internal Processing Status Code for the current Module Instance. The next step for the processing is to interpret this indicator for the current Module Instance, to either stop or continue the processing
 
@@ -465,10 +468,10 @@ If the Internal Processing Status Code is `Cancel`, the Module Instance is updat
 
 If the Internal Processing Status Code is `Abort`, the Module Instance is updated with:
 
-* The Execution Status Code set to `Aborted`, 
-* The Next Run Status as `Proceed` and 
+* The Execution Status Code set to `Aborted`,
+* The Next Run Status as `Proceed` and
 * End Date/Time as the current timestamp
-   
+
 If the Internal Processing Status Code is `Proceed` and the Module runs without issues the Module Instance is updated to set the Execution Status Code to `Succesful`, the Next Run Status as `Proceed` and the current date/time as the End Date/Time. 
 
 As a separate step the record counts are updated in the `MODULE_INSTANCE` table.
@@ -477,11 +480,11 @@ If a failure is detected at any time during the process (i.e. either Module star
 
 Any meaningful information will be logged to the EVENT_LOG table.
 
-## Registration
+### Registration
 
 Any new Batch or Module must be registered, added, to the framework prior to execution.
 
-### Batch registration
+#### Batch registration
 
 The Batch registration is done by adding a record in the `BATCH` table. This can be done using the `omd.RegisterBatch` procedure.
 
@@ -493,7 +496,7 @@ The following details will be added:
 * `BATCH_DESCRIPTION`, the descriptive information of the Batch
 * `ACTIVE_INDICATOR`, indicate whether a Batch is active or should be skipped when attempted to be run
 
-### Module registration
+#### Module registration
 
 The Module registration is done by adding a record in the MODULE table with the following details:
 
@@ -504,7 +507,7 @@ The Module registration is done by adding a record in the MODULE table with the 
 * `MODULE_DESCRIPTION`, the descriptive information of the Module
 * `ACTIVE_INDICATOR`, indicate whether a Module is inactive and should be skipped during process execution
 
-### Batch-Module relationship registration
+#### Batch-Module relationship registration
 
 The relationship between Batch and Module is registered by adding a record in the BATCH_MODULE table with the following details:
 
@@ -514,7 +517,7 @@ The relationship between Batch and Module is registered by adding a record in th
 
 Depending on the configuration and design of the data platform, a Batch could contain multiple Modules, and a Module can be utilized by multiple Batches. Modules and Batches can be enabled/disabled on both individual (Batch and Module) as well as within the relationship.
 
-### Parameter registration
+#### Parameter registration
 
 The Parameter registration is done by adding a record in the PARAMETER table with the following details:
 
@@ -523,7 +526,7 @@ The Parameter registration is done by adding a record in the PARAMETER table wit
 * `PARAMETER_VALUE_CODE`, this is the value of the Parameter
 * `PARAMETER_DESCRIPTION`, the descriptive information of the Parameter
 
-### Parameter Relationship registration
+#### Parameter Relationship registration
 
 The Module registration is done by adding a record in the MODULE_PARAMETER table with the following details:
 
@@ -533,9 +536,9 @@ The Module registration is done by adding a record in the MODULE_PARAMETER table
 
 Depending on the configuration and design of the data platform, a Module can be configured to utilize one or more parameters.
 
-## Other features
+### Other features
 
-### Rollback
+#### Rollback
 
 When a process fails, the framework records detailed information about the failure in the repository. This information can be used to recover from data loading errors and restore the data solution to its original state before the error occurred.
 
@@ -553,7 +556,7 @@ The default rollback procedures are essentially SQL queries that are dynamically
 
 In all cases, the rollback procedure depends on consistency of the Batch definition (i.e. all Modules in a Batch Instance must be completed). The following inputs are required:
 
-#### Rollback on time-variant tables
+##### Rollback on time-variant tables
 
 Time-variant (historized) tables make up the majority of a typical data solution. Because these persist the recorded changes over time, for this reason, a rollback typically removes records associated by their Module Instance Id.
 
@@ -569,7 +572,7 @@ SET EXPIRY_DATE = '9999-12-31', CURRENT_RECORD_INDICATOR = 'Y'
 WHERE INSERT_MODULE_INSTANCE_ID IN (<Instance array>)
 ```
 
-#### Rollback for source control
+##### Rollback for source control
 
 It may be required to rollback load window / source control tables in line with regular tables. Some processes use 'high water mark' or similar load window mechanism that control what data delta is processed from one place to another.
 

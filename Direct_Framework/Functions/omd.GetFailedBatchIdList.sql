@@ -1,15 +1,35 @@
+/**
+ * @function [omd].[GetFailedBatchIdList]
+ * @description
+ *   Returns a parenthesized, comma-separated list of batch instance IDs that
+ *   failed between the last successful run and the current one for a batch.
+ *
+ * @package DIRECT Framework
+ * @version 2.1.0
+ * @see https://github.com/data-solution-automation-engine/DIRECT
+ *
+ * @param {INT} @BatchId  [in] (required)
+ *   The batch identifier to analyze.
+ *
+ * @returns {VARCHAR(MAX)} E.g., '(1001,1002,1003)'; may be NULL.
+ *
+ * @resultset none
+ *
+ * @lineage
+ * - reads:
+ *     [omd].[BATCH_INSTANCE]
+ *
+ * @example
+
+SELECT [omd].[GetFailedBatchIdList](101);
+
+ */
+
 CREATE FUNCTION [omd].[GetFailedBatchIdList]
 (
   @BatchId INT -- The array of previously failed Batch process relative to the input Batch Id.
 )
 RETURNS VARCHAR(MAX) AS
-
--- =============================================
--- Function: Get the list (array) of failed Batch Ids.
--- Description: Takes the Batch Id as input and returns the failures prior to the current run (from the last previously successful execution).
---              In other words, the failed execution between the last succesful run and the current one.
--- =============================================
-
 BEGIN
 
   DECLARE @BatchIdArray VARCHAR(MAX);
@@ -48,4 +68,5 @@ BEGIN
     )
 
   RETURN @BatchIdArray;
+
 END
